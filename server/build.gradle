@@ -55,6 +55,9 @@ dependencies {
 	// mapstruct
 	implementation 'org.mapstruct:mapstruct:1.5.1.Final' // mapper 작성 위해 추가
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'// mapper 작성 위해 추가
+
+	implementation 'com.auth0:java-jwt:3.19.2' // 토큰 생성을 위해 추가
+
 }
 
 tasks.named('bootBuildImage') {
