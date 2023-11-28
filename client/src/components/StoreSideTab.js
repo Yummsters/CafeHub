@@ -9,7 +9,7 @@ const SideTab = () => {
         {label:'커피콩/권한 등록', link:'/keypad'},
         {label:'가게 리뷰 조회',link:'/storeReview'},
 
-        {label:'광고 배너 신청',link:'storeBanner'}, // 임시
+        {label:'광고 배너 신청',link:'/storeBanner'},
         {label: '서비스 종료 신청', link: '/storeClose' }
 
     ];
