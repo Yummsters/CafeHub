@@ -1,0 +1,156 @@
+.reviewDetail-bgBox {
+    background: url(/public/img/reviewBg.png), lightgray 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 50px 0;
+}
+
+.reviewBox {
+    margin: 0 auto;
+    width: 85%;
+    border-radius: 20px;
+    background: #FFF;
+    border: 3px solid #007355;
+}
+
+.reviewContent {
+    width: 85%;
+    margin: 0 auto;
+    font-size: 20px;
+}
+
+.detailTitle {
+    padding-top: 50px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.detailLine { 
+    background-color: #007355;
+    width: 100%;
+    margin: 20px 0;
+    height: 3px; 
+}
+
+.detailInfo {
+    display: flex;
+    justify-content: space-between;
+}
+
+.detailInfo img, .replyInfo .infoT img, .comment img {
+    width: 25px; height: 25px;
+    margin-right: 10px;
+    align-self: flex-start;
+}
+
+.detailInfo .infoR {
+    text-align: right;
+}
+
+.detailInfo p {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.detailContent {
+    margin: 50px auto;    
+}
+
+.starNheart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 50px;
+}
+
+.starNheart img {
+    width: 90px;
+    height: 90px;
+}
+
+.detailBtnBox{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+}
+
+.Gbtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 60px;
+    border-radius: 10px;
+    background: #007355;
+    color: #FFF;
+    margin: 0 3px;
+}
+
+.Obtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 60px;
+    border-radius: 10px;
+    background: #F59A23;
+    color: #FFF;
+    margin: 0 3px;
+}
+
+.reply {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.reply input[type=text] {
+    width: 85%;
+    height: 80px;
+    font-size: 20px;
+    border-radius: 10px;
+    background-color: #F3F3F3;
+    border : none;
+}
+
+.infoT, .infoB {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.infoT .underline {
+    text-decoration: underline;
+}
+
+.replyInfo p {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.replyInfo .infoB img {
+    width: 60px; height: 35px;
+    margin-right: 10px;
+}
+
+.replyInfo .comment {
+    width: 96%;
+    margin-left: auto;
+}
+
+.reviewDetail-pagination {
+    padding: 50px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color :#F59A23;
+}
+
+.reviewDetail-pagination div {
+    margin: 0 15px;
+}

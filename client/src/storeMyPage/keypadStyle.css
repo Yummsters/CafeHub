@@ -1,0 +1,36 @@
+.keypad-container{
+    text-align: center;
+}
+
+.keypadInput{
+    padding:20px;
+    width: 100%;
+    height: 170px;
+    font-size: 60px;
+    text-align: center;
+}
+
+.keypadNum-section{
+    background-color: #F3F3F3;
+    text-align: center;
+}
+
+.keypadNum-section button{
+    margin:20px;
+    border-radius: 10px;
+    width: 350px;
+    height: 100px;
+    border : none;
+    font-size: 50px;
+    background-color: #FFFFFF;
+}
+
+.keypadNum-section .keypad-confirm{
+    background-color: #F59A23;
+}
+
+.keypadNum-section button:hover{
+    background-color: #007355;
+    color:white;
+}
+    
