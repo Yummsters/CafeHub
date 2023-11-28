@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer memberNo;
+    private Integer memNo;
 
     @Column(nullable = false, unique = true)
     private String id;
