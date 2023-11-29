@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.global.auth.userdetails;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+@Getter
 public class PrincipalDetails implements UserDetails {
     private Member member;
     private Map<String, Object> attribute;
@@ -27,7 +29,7 @@ public class PrincipalDetails implements UserDetails {
         collect.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return member.getMemberType().toString();
+                return "ROLE_"+member.getMemberType().toString();
             }
         });
         return collect;
