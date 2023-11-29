@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.member.controller;
 
-import com.yummsters.cafehub.domain.member.dto.MemberSignUpDto;
+import com.yummsters.cafehub.domain.member.dto.SignUpReqDto;
+import com.yummsters.cafehub.domain.member.dto.SignUpResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.domain.member.service.MemberService;
@@ -51,11 +52,11 @@ public class MemberController {
 
     // 사용자 회원가입
     @PostMapping("/signUp")
-    public ResponseEntity<Object> signUpUser(@RequestBody MemberSignUpDto requestDto){
-        Member member = mapper.memberSignUpDtoToMember(requestDto);
+    public ResponseEntity<Object> signUpUser(@RequestBody SignUpReqDto requestDto){
+        Member member = mapper.signUpReqDtoToMember(requestDto);
         try{
             member = memberService.existMember(member);
-            MemberSignUpDto memberResponse = mapper.memberToMemberSignUpDto(member);
+            SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);
             return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
         }catch (Exception e){
             e.printStackTrace();
