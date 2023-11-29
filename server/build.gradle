@@ -52,6 +52,10 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+
+	// https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+  
 	// mapstruct
 	implementation 'org.mapstruct:mapstruct:1.5.1.Final' // mapper 작성 위해 추가
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'// mapper 작성 위해 추가
