@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface MapService {
     void saveCafe() throws Exception; // 카페 정보 저장
+    List<CafeDTO> getCafes() throws Exception; // 카페 정보 불러오기
 }

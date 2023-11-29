@@ -25,4 +25,15 @@ public class MapController {
             return new ResponseEntity<>("저장실패", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/mapMarker")
+    public ResponseEntity<List<CafeDTO>> getAllCafes() {
+        try {
+            List<CafeDTO> cafes = service.getCafes(); // 서비스에서 DTO 목록을 가져옴
+            return new ResponseEntity<>(cafes, HttpStatus.OK); // 클라이언트에 반환
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

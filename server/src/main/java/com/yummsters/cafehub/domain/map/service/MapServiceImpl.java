@@ -73,4 +73,16 @@ public class MapServiceImpl implements MapService {
         }
         repository.saveAll(cafes);
     }
+
+    @Override
+    public List<CafeDTO> getCafes() throws Exception {
+        List<Cafe> cafeList = repository.findAll(); // Entity, DB의 모든 정보
+
+        List<CafeDTO> cafeDTOList = new ArrayList<>(); // DTO
+        for (Cafe cafe : cafeList) {
+            CafeDTO cafeDTO = cafe.toDto(); // Entity -> DTO로 변환
+            cafeDTOList.add(cafeDTO); // 내용 복사
+        }
+        return cafeDTOList;
+    }
 }
