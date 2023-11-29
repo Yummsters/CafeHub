@@ -1,0 +1,185 @@
+body, button, input{
+    font-family:'NanumMyeongjo', sans-serif;;
+}
+
+.storeInfo-container {
+    display: flex;
+}
+
+.storeInfo-container-other{
+    display: flex;
+    margin: 50px auto 30px auto;
+}
+
+.storeInfo-left-section{
+    margin-right: 60px;
+}
+.storeInfo-auth{
+    float:right;
+    font-size: 15px;
+}
+
+/* 회원정보 입력 박스 */
+.storeInfoInputDiv {
+    margin-left: 20px;
+    padding:10px;
+    display: flex;
+    flex-direction: column;
+    background:#FFFFFF;
+    width: 475px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.storeInfoInputDiv-other{
+    margin-bottom: 20px;
+    margin-left: 20px;
+    padding:10px;
+    display: flex;
+    flex-direction: column;
+    background:#FFFFFF;
+    width: 385px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    float: left;
+}
+
+.storeInfoInputDiv input{
+    border: 0px;
+    width:250px;
+    font-size:20px;
+}
+
+.storeInfoInputDiv-other input{
+    border: 0px;
+    width: 210px;;
+    font-size:20px;
+}
+
+.storeInfoAuthNum {
+    float: right;
+}
+
+.storeInfoAuthNum button{
+    background-color: #F59A23;
+    color:#FFFFFF;
+    width: 78px;
+    height: 76px;
+    border: 0px;
+    border-radius: 10px;
+    font-size:15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.storeInfo-button{
+    float: right;
+}
+
+.storeInfo-button button {
+    color:#FFFFFF;
+    font-size:20px;
+    width:150px;
+    height:50px;
+    border-radius:10px;
+    background-color:#007355;
+    border:0px;
+    margin:10px 0 15px 0;
+}
+
+/* 사용자 회원가입 오른쪽 박스 - 정보*/
+.storeInfo-right-section {
+    flex: 1;
+}
+
+.storeInfoInputDiv span{
+    color: #F59A23;
+}
+
+.storeInfoInputDiv-other span{
+    color: #F59A23;
+}
+
+/* 왼쪽 가게 미리보기 */
+.storeInfo{
+    width: 487px;
+    height: 550px;
+    background-color: #f3f3f3cc;
+    border-radius: 20px;
+    margin:0px auto;
+    text-align: center;
+    right: 50px;
+}
+
+.storeInfo-storeName{
+    font-size:40px;
+    padding-top: 20px;
+}
+
+.storeInfo-picture{
+    width: 320px;
+    height: 320px;
+    margin: 20px 80px;
+    border-radius: 20px;
+}
+
+.storeInfo-location{
+    margin-top: 20px;
+    font-size:25px;
+}
+
+.storeInfo-time{
+    margin-top: 10px;
+    font-size:25px;
+}
+
+.storeInfo-point{
+    padding: 10px;
+    width: 487px;
+    height: 100px;
+    background-color: #f3f3f3cc;
+    border-radius: 20px;
+    margin:0px auto;
+    text-align: center;
+    font-size: 30px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.storeInfo-pointImg{
+    margin: 0 10px;
+}
+
+.storeInfo-pointCheck{
+    border : none;
+    background-color: #007355;
+    border-radius: 10px;
+    color:#FFFFFF;
+    float: right;
+    margin-top : 15px;
+    font-size:20px;
+    width:130px;
+    height:50px;
+}
+
+/* 태그 버튼 스타일*/
+.storeInfo-tag1{
+    border: 2px solid #F59A23;
+    border-radius: 10px;
+    width: 150px;
+    height: 45px;
+    font-size: 18px;
+    margin: 10px 10px 10px 0;
+    background-color: #FFFFFF;
+}
+
+.storeInfo-tag1:hover {
+    border-radius: 10px;
+    border: 2px solid #F59A23;
+    background: #F59A23;
+    color: #FFF;
+}
+
+.storeInfo-tag{
+    margin-left: 20px;
+}

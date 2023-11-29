@@ -1,0 +1,134 @@
+.mypage {
+    display: flex;
+}
+
+.userPointBox {
+    margin: 0 auto;
+    width: 844px;
+    font-size: 20px;
+}
+
+.nicknameBox {
+    border-radius: 10px;
+    background: #F3F3F3;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    margin: 75px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nicknameBox p {
+    font-size: 35px;
+    padding-left: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nicknameBox img {
+    margin-right: 10px;
+}
+
+.coffeebeanBox {
+    width: 844px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    margin-bottom: 75px;
+}
+
+.badgeWrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.notOwnBadgeBox, .ownBadgeBox {
+    width: 400px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    margin-bottom: 75px;
+    display: flex;
+    flex-direction: column;
+}
+
+.coffeebeanBox .infoTitle,
+.notOwnBadgeBox .ownTitle,
+.ownBadgeBox .ownTitle {
+    height: 52px;
+    border-radius: 10px 10px 0px 0px;
+    background: #F59A23;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    justify-content: space-between;
+}
+
+.ownBadgeBox .ownTitle {
+    background: #007355;
+    color: #FFF;
+}
+
+.ownTitle p {
+    margin: 0;
+}
+
+.badgeBox {
+    margin: 20px;
+    background-color: #F3F3F3;
+    border-radius: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.badgeBox p img {
+    margin: 20px;
+}
+
+.pointContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.badgeContent1 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.badgeContent2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.coffeeBox {
+    background-color: #F3F3F3;
+    border-radius: 10px;
+    width: 120px;
+    height: 120px;
+    margin: 30px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.purchaseWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.purchaseBtn {
+    background-color: #F59A23;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    width: 250px;
+    height: 50px;
+    margin-bottom: 30px;
+}
