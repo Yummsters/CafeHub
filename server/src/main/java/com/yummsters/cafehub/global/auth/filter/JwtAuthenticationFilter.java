@@ -3,6 +3,7 @@ package com.yummsters.cafehub.global.auth.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.global.auth.dto.LoginReqDto;
 import com.yummsters.cafehub.global.auth.jwt.JwtProvider;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
@@ -36,8 +37,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-        String dbMemberType = principalDetails.getMember().getMemberType().toString();
+        Member member = principalDetails.getMember();
+        String dbMemberType = member.getMemberType().toString();
 
+        // 탈퇴 회원 로그인 불가
+        if(!member.isStatus()){
+            try {
+                response.sendError(880, "탈퇴 회원입니다.");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // 사용자, 사장님에 따른 로그인 구분
         if(!dbMemberType.equals(loginReqDto.getMemberType().toString())){
             try{
                 if(dbMemberType.equals("USER")) {

@@ -8,5 +8,5 @@ public interface MemberService {
     boolean existEmail(String email) throws Exception;
     boolean existNickname(String nickname) throws Exception;
     Member existMember(Member member) throws Exception;
-
+    void deleteMember(Integer memNo, String password) throws  Exception;
 }
