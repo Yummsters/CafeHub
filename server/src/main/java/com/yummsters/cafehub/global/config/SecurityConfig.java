@@ -1,6 +1,8 @@
 package com.yummsters.cafehub.global.config;
 
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.global.auth.filter.JwtAuthenticationFilter;
+import com.yummsters.cafehub.global.auth.filter.JwtAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().disable() // 로그인 폼 비활성화
                 .httpBasic().disable()
+                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // 로그인 시에만 호출되는 필터
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
                 .authorizeRequests()
                 .anyRequest().permitAll();
     }
