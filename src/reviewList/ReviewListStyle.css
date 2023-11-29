@@ -1,0 +1,118 @@
+.reviewWrapper {
+  background-image: url(/public/img/backgroundImg_list.png);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  height: 100%; /* 화면 전체 높이를 사용하여 세로 중앙 정렬 */
+  margin: 0; /* body의 기본 마진 제거 */
+}
+
+tbody tr {
+  vertical-align: middle;
+  border-top:2px solid #555555;
+  border-bottom:2px solid #555555;
+}
+tbody td {
+  border-top:2px solid #555555;
+  border-bottom:2px solid #555555;
+}
+
+.reviewListBox {
+    width: 1000px;
+    border: none;
+    border-radius: 10px;
+    background-color: white;
+    font-family: 'NanumMyeongjo';
+    display: flex; /* 부모 요소를 Flex 컨테이너로 설정 */
+    flex-direction: column; /* 자식 요소들을 세로로 배치 */
+    align-items: center; /* 수직 정렬 설정 */
+    margin: 50px 0 75px 0;
+    justify-content: center;
+  }
+.reviewline{
+  border:1px solid #555555;
+  width: 750px;
+
+}
+.reviewtable{
+  width: 750px;
+}
+
+  .searchBar {
+    width: 700px;
+    height: 70px;
+    border: 5px solid #555555;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    margin: 70px 0 50px 0;
+  }
+
+  .searchBox {
+    width: 600px;
+    height: 50px;
+    border: none;
+    outline: none;
+    margin: 0 20px 0 20px;
+  }
+
+  .reviewBtn {
+    font-size: 20px;
+    width: 115px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: #F59A23;
+    color: white;
+    border: none;
+    margin: 10px 0px 10px 640px;
+    float: right;
+  }
+  
+
+  .listImg {
+    margin-left: -5px;
+    vertical-align: middle;
+    border-radius: 10px;
+  }
+  
+  .listMiniTitle {
+    font-size: 20px;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  
+  .description1, .description2, .writeInfo, .dateTime {
+    font-size: 15px;
+    vertical-align: middle;
+    
+  }
+
+  .writeInfo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 우측 정렬 설정 */
+    font-size: 14px; /* 원하는 텍스트 크기로 설정 */
+    margin-right: 10px;
+}
+
+.dateTime {
+    text-align: right; /* 우측 정렬 설정 */
+    font-size: 14px; /* 원하는 텍스트 크기로 설정 */
+    margin-right: 10px;
+}
+
+.reviewList-pagination {
+  padding: 40px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color :#F59A23;
+}
+
+.reviewList-pagination div {
+  margin: 0 15px;
+}

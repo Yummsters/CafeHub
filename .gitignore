@@ -250,6 +250,10 @@ sketch
 # Ignore all local history of files
 .history
 .ionide
+<<<<<<< Updated upstream
+=======
+.env
+>>>>>>> Stashed changes
 
 ### Windows ###
 # Windows thumbnail cache files
