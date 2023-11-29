@@ -8,8 +8,8 @@ const Header = () => {
                 <a href="/" style={{textDecoration:"none"}}><div className='logo'>Café<span className="hub">Hub</span></div></a>
                 <div className='center'>
                     <p>카페 추천</p>
-                    <p><a href="/ReviewList">리뷰 게시판</a></p>
-                    <p><a href="/Map">내 근처 카페</a></p>
+                    <p><a href="/reviewList">리뷰 게시판</a></p>
+                    <p><a href="/map">내 근처 카페</a></p>
                 </div>
                 <div className='right'>
                     <p><a href="/userInfo">마이페이지</a></p>

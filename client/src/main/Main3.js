@@ -1,13 +1,13 @@
 import React from 'react';
+import Map from '../map/Map';
+
 
 const Main3 = () => {
     return (
         <div className='Main'>
             <div className='Main3'>
                 <div className='left-box'>
-                    <div className='main-map'>
-                        <h1>지도!</h1>
-                    </div>
+                    <div className='main-map'><Map/></div>
                 </div>
                 <span className='hubmapment1'>
                     주변 핫플 카페 알아보기도<br/>

@@ -1,11 +1,7 @@
 .Main {
-    font-family: 'NanumMyeongjo';
-    font-style: normal;
     margin: 0 auto;
     position: relative;
-}
-
-.Main{
+    overflow: hidden;
 }
 
 .bannerImg{
@@ -178,7 +174,6 @@
 }
 
 .main-map {
-
     margin-left: 50%;
     margin-top: 40%;
     background-color:white;
@@ -186,6 +181,17 @@
     border-radius: 10px;
     width: 500px;
     height: 500px;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-map > #mapView {
+    position: absolute; /* 절대 위치로 설정하여 부모 요소인 .main-map 내에 위치시킵니다 */
+    top: 0;
+    left: 0;
+    width: 100%; /* 부모 요소(.main-map)의 너비를 100%로 설정하여 꽉 채우도록 합니다 */
+    height: 100%; /* 부모 요소(.main-map)의 높이를 100%로 설정하여 꽉 채우도록 합니다 */
+
 }
 
 .hubmapment1 {
