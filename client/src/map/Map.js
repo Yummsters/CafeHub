@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './mapStyle.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import MapLayout from './MapLayout';
+import axios from 'axios';
+
 const Map = () => {
+  const [cafes, setCafes] = useState([]);
+  
+  useEffect(() => {
+    axios.get('http://localhost:8080/mapMarker')
+    .then(response => {
+      setCafes(response.data);
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('에러:', error);
+    });
+  }, []); 
 
-
-  return (
+return (
     <div className='Map'>
-      <div className='map_box'>
+      <MapLayout cafes={cafes}/>
+      {/* <div className='map_box'>
         <img className='x' src='/img/X.png' />
         <div className='store'>
           <img src='/img/store.png' />
@@ -138,7 +153,7 @@ const Map = () => {
         </Table>
 
 
-      </div>
+      </div> */}
     </div>
   );
 };
