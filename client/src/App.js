@@ -29,6 +29,7 @@ import StoreInfo from './storeMyPage/StoreInfo';
 import Keypad from './storeMyPage/Keypad';
 import StoreReview from './storeMyPage/StoreReview';
 import StoreClose from './storeMyPage/StoreClose';
+import StoreBanner from './storeMyPage/StoreBanner';
 
 function App() {
 
@@ -76,6 +77,7 @@ function App() {
         <Route exact path='/storeClose' element={<DefaultLayout><StoreClose/></DefaultLayout>}/>
         <Route exact path='/keypad' element={<NoHeaderFooterLayout><Keypad/></NoHeaderFooterLayout>}/>
         <Route exact path='/storeReview' element={<DefaultLayout><StoreReview/></DefaultLayout>}/>
+        <Route exact path='/storeBanner' element={<DefaultLayout><StoreBanner/></DefaultLayout>}/>
       </Routes>
   );
 }
