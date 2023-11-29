@@ -22,6 +22,12 @@
     align-items: center;
 }
 
+.title{
+    margin-left: 20px;
+ border: none;
+ font-size: 20px;
+}
+
 .reviewTitle select {
     border: 2px solid #007355;
     background: rgba(217, 217, 217, 0.46);

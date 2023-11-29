@@ -11,7 +11,7 @@ const ReviewList = () => {
                 <img src='/img/searchIcon.png' alt=''/>
             </div>
                     <div className='reviewline'/>
-                    <a href='/reviewModify'><button className='reviewBtn'>리뷰 등록</button></a>
+                    <a href='/reviewwrite'><button className='reviewBtn'>리뷰 등록</button></a>
                     
              <div className='reviewtable'>
             <Table hover >
