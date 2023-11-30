@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@toast-ui/editor-plugin-code-syntax-highlight": "^3.1.0",
     "@toast-ui/react-editor": "^3.2.3",
+
     "axios": "^1.6.2",
     "bootstrap": "^5.3.2",
     "prismjs": "^1.29.0",
