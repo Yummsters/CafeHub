@@ -20,7 +20,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean existId(String id) throws Exception {
         Member member = memberRepository.findById(id);
-        if(member != null) throw new Exception("중복된 아이디입니다");
+        if(member != null) return true;
         return false;
     }
 
@@ -28,14 +28,14 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean existEmail(String email) throws Exception {
         Member member = memberRepository.findByEmail(email);
-        if(member != null) throw new Exception("중복된 이메일입니다");
+        if(member != null) return true;
         return false;
     }
 
     // 닉네임 중복 체크
     public boolean existNickname(String nickname) throws Exception {
         Member member = memberRepository.findByNickname(nickname);
-        if(member != null) throw new Exception("중복된 닉네임입니다");
+        if(member != null) return true;
         return false;
     }
 

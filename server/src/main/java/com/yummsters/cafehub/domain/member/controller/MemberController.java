@@ -52,7 +52,7 @@ public class MemberController {
     }
 
     // 사용자 회원가입
-    @PostMapping("/signUp")
+    @PostMapping("/signUpUser")
     public ResponseEntity<Object> signUpUser(@RequestBody SignUpReqDto requestDto){
         Member member = mapper.signUpReqDtoToMember(requestDto);
         try{
