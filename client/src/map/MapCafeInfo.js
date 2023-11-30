@@ -4,7 +4,7 @@ import { Table } from "reactstrap";
 const MapCafeInfo = ({ selectCafe, setSelectCafe }) => {
     // null이 아닌 정보만 띄울 수 있게 만들기
     const cafeInfo = (name, src, col, text) => {
-        return text !== null ? (
+        return text !== null && text !== "" ? (
           <div className={name}>
             <img src={src} alt="" />
             <div className={col}>{text}</div>
@@ -37,7 +37,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe }) => {
         {cafeInfo('store_address', '/img/pin.png', 'address', selectCafe.address)}
         {cafeInfo('store_call', '/img/phone.png', 'call', selectCafe.tel)}
         {cafeInfo('store_time', '/img/clock.png', 'time', selectCafe.operTime)}
-        {cafeInfo('store_type', '/img/store.png', 'call', selectCafe.tagName)}
+        {cafeInfo('store_type', '/img/store.png', 'type', selectCafe.tagName)}
         {cafeInfo('store_info', '/img/bean.png', 'info', "가게 정보 넣을 곳")}
         <div className="store_review">
             <img src="/img/review.png" alt=""/>
