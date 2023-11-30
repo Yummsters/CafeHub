@@ -1,9 +1,148 @@
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
 import loginStyle from './loginStyle.css';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
+
+// 로그인 시 토큰 확인 완료 >> 토큰 이용해서 네비게이션 바 변경 및 권한 부여 로직 작성
+// 로그인 시 에러 발생 처리 코드 - 사장님이 사용자 페이지에서 로그인 / 사용자가 사장님 페이지에서 로그인 / 탈퇴한 회원
 const LoginPage = () =>{
-    const [login, setLogin] = useState({id:'', password:''});
-    const [showLoginPage, setShowLoginPage] = useState(false);
+  // 사용자/사장님 페이지 변경
+  const [showLoginPage, setShowLoginPage] = useState(false);
+  
+  // 회원가입 후 화면 이동 결정
+  const location = useLocation();
+  useEffect(()=>{
+    const showLoginPageParam = new URLSearchParams(location.search).get('showLoginPage');
+    if(showLoginPageParam === "STORE") setShowLoginPage(true);
+  }, [location.search]);
+  
+
+
+  // 사용자 관련
+    const [userLogin, setUserLogin] = useState({id:'', password:'', memberType:'USER'});
+    const [validUser, setValidUser] = useState({id : false, password: false});
+    const [warningUser, setWarningUser] = useState({id : false, password : false});
+
+    const submitUserCheck = userLogin.id !=='' && userLogin.password !=='' && validUser.id && validUser.password &&
+    !warningUser.id && !warningUser.password;
+    
+  const handleClickUser = (e) =>{
+    e.preventDefault();
+    setWarningUser((prevWarnings) => ({
+      ...prevWarnings,
+      id: userLogin.id.trim() === '',
+      password: userLogin.password.trim() === ''
+    }));
+
+    console.log(submitUserCheck);
+    if(submitUserCheck){
+      axios.post(`http://localhost:8080/login`, userLogin)
+      .then(res=>{
+        console.log(res);
+        console.log(res.headers.getAuthorization);
+      })
+      .catch(err =>{
+        console.log(err);
+      })
+    }
+  }
+
+  const changeUserLogin = (e) => {
+    const { name, value } = e.target;
+    console.log("name" + name + "value" + value);
+
+    setUserLogin((prevInputs) => ({
+      ...prevInputs,
+      [name]: value
+    }));
+
+    setWarningUser((prevWarnings) => ({
+      ...prevWarnings,
+      [name]: false
+    }));
+
+    validUserCheck(name, value);
+  };
+
+  const validUserCheck = (name, value) =>{
+    let isValid;
+
+    if (name === 'id') {
+      isValid = inputRegexs.idRegex.test(value);
+    }
+    else if (name === 'password') {
+      isValid = inputRegexs.passwordRegex.test(value);
+    }
+    setValidUser((prevChecks) => ({
+      ...prevChecks,
+      [name]: isValid,
+    }));
+  }
+
+  // 사장님 관련
+  const [storeLogin, setStoreLogin] = useState({id:'', password:'', memberType:'STORE'});
+  const [validStore, setValidStore] = useState({id : false, password: false});
+  const [warningStore, setWarningStore] = useState({id : false, password : false});
+
+  const submitStoreCheck = storeLogin.id !=='' && storeLogin.password !=='' && validStore.id && validStore.password &&
+    !warningStore.id && !warningStore.password;
+
+  const handleClickStore = (e) =>{
+    e.preventDefault();
+    setWarningStore((prevWarnings) => ({
+      ...prevWarnings,
+      id: storeLogin.id.trim() === '',
+      password: storeLogin.password.trim() === ''
+    }));
+
+    console.log(submitStoreCheck);
+    if(submitStoreCheck){
+      axios.post(`http://localhost:8080/login`, storeLogin)
+      .then(res=>{
+        console.log(res.data);
+      })
+      .catch(err=>{
+        console.log(err.data);
+      })
+    }
+  }
+
+  const changeStoreLogin = (e) => {
+    const { name, value } = e.target;
+
+    setStoreLogin((prevInputs) => ({
+      ...prevInputs,
+      [name]: value
+    }));
+
+    setWarningStore((prevWarnings) => ({
+      ...prevWarnings,
+      [name]: false
+    }));
+
+    validStoreCheck(name, value);
+  };
+
+  const validStoreCheck = (name, value) =>{
+    let isValid;
+
+    if (name === 'id') {
+      isValid = inputRegexs.idRegex.test(value);
+    }
+    else if (name === 'password') {
+      isValid = inputRegexs.passwordRegex.test(value);
+    }
+    setValidStore((prevChecks) => ({
+      ...prevChecks,
+      [name]: isValid,
+    }));
+  }
+
+    const inputRegexs = {
+      idRegex: /^[a-z0-9]{5,12}$/,
+      passwordRegex: /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()-_+=<>?]).{8,20}$/
+    };
 
     return (
         <div className='login-container'>
@@ -27,17 +166,24 @@ const LoginPage = () =>{
             <div className='login-title-store'>Login</div> <br/>
             <form>
             <div className='loginInputDiv'>
-                <label>아이디 <span className='login-authId'>5~12자로 작성하세요.</span><br/>
-                <input type="text" id="id" name="id" /></label>
+                <label>아이디 
+                  <span className='login-auth'>
+                  {warningStore.id ? "아이디를 입력하세요" :
+                    (storeLogin.id &&!validStore.id ? "5~12자로 작성하세요" : "")}
+                    </span><br/>
+                <input type="text" id="id" name="id" onChange={changeStoreLogin}/></label>
             </div>
               <br/><br/>
             <div className='loginInputDiv'>
-              <label> 비밀번호 <span className='login-authPw'> 소문자/숫자/특수문자를 포함하여 작성하세요.</span><br/>
-              <input type="password" id="password" name="password"/></label>
+              <label> 비밀번호 <span className='login-auth'>
+              {warningStore.password ? "비밀번호를 입력하세요" :
+                (storeLogin.password &&!validStore.password ? "소문자/숫자/특수문자 포함 8~20자로 작성하세요" : "")}
+                </span><br/>
+              <input type="password" id="password" name="password" onChange={changeStoreLogin}/></label>
             </div>
             
             <div className='login-button'>
-                <button type="submit" > Login </button>
+                <button type="submit"  onClick={handleClickStore}> Login </button>
             </div>
             <div className='searchInfo'><a href="/signUpStore">회원가입</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchId">아이디 찾기</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchPw">비밀번호 찾기</a></div>
             </form>
@@ -48,13 +194,21 @@ const LoginPage = () =>{
           <div className='login-title'>Login</div><br/>
           <form>
           <div className='loginInputDiv'>
-              <label>아이디 <span className='login-authId'>5~12자로 작성하세요.</span><br/>
-              <input type="text" id="id" name="id" /> </label>
+              <label>아이디 
+                <span className='login-auth'>
+                    {warningUser.id ? "아이디를 입력하세요" :
+                    (userLogin.id &&!validUser.id ? "5~12자로 작성하세요" : "")}
+                  </span><br/>
+              <input type="text" id="id" name="id" onChange={changeUserLogin}/> </label>
           </div>
             <br/><br/>
           <div className='loginInputDiv'>
-            <label> 비밀번호 <span className='login-authPw'> 소문자/숫자/특수문자를 포함하여 작성하세요.</span><br/>
-            <input type="password" id="password" name="password"/></label>
+            <label> 비밀번호
+              <span className='login-auth'>
+                {warningUser.password ? "비밀번호를 입력하세요" :
+                (userLogin.password &&!validUser.password ? "소문자/숫자/특수문자를 포함한 8~20자로 작성하세요" : "")}
+              </span><br/>
+            <input type="password" id="password" name="password" onChange={changeUserLogin}/></label>
           </div>
           <div className='socialLoginBtn' style={{textAlign:"center"}}>
               <img className='google' src="/img/GoogleBtn.png" alt='Google'/>
@@ -62,7 +216,7 @@ const LoginPage = () =>{
               <img className="naver" src="/img/NaverBtn.png" alt='Naver'/>
           </div><br/>
           <div className='login-button'>
-              <button type="submit" > Login </button>
+              <button type="submit"  onClick={handleClickUser}> Login </button>
           </div>
           <div className='searchInfo'><a href="/signUpUser">회원가입</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="searchId">아이디 찾기</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="searchPw">비밀번호 찾기</a></div>
           </form>
