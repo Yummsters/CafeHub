@@ -26,5 +26,18 @@ public class ReviewDto {
 	private Integer likeCount;
 	private LocalDateTime regDate;
 	
+	public Review toEntity() {
+		 return Review.builder()
+				 .reviewNo(reviewNo)
+		            .title(title)
+		            .content(content)
+		            .tagName(tagName)
+		            .thumbImg(thumbImg)
+		            .writer(writer)
+		            .cafeNo(cafeNo)
+		            .likeCount(likeCount)
+		            .regDate(regDate)
+		            .build();
+	}
 
 }

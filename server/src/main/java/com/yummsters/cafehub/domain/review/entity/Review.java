@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -27,11 +31,13 @@ import lombok.Setter;
 @DynamicUpdate
 public class Review {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer reviewNo;
-	@Column
+	@Column(length = 255)
 	private String title;
 	@Column
 	private String content;
+	
 	@Column
 	private String tagName;
 	@Column
@@ -44,7 +50,21 @@ public class Review {
 	private Integer likeCount;
 	@Column
 	private LocalDateTime regDate;
-	
+
+//	public enum TagName {
+//		    카공,
+//		    인스타감성,
+//		    고양이,
+//		    드로잉,
+//		    이색,
+//		    주류판매,
+//		    뷰맛집,
+//		    브런치,
+//		    인테리어맛집,
+//		    대형,
+//		    디저트,
+//		    자연친화적
+//	}
 	@Override
 	public String toString() {	
 		return String.format("[%d,%s,%s,%s,%s,%d,%d,%d,%s]", reviewNo, title,content,tagName, thumbImg,writer,cafeNo,likeCount,regDate);
