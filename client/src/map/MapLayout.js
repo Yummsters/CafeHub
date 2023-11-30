@@ -1,45 +1,65 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import MapCafeInfo from "./MapCafeInfo";
 
 const { kakao } = window;
 
 const MapLayout = ({ cafes }) => {
+  const [selectCafe, setSelectCafe] = useState(null);
+
   useEffect(() => {
     var mapContainer = document.getElementById("mapView"),
       mapOption = {
         center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
-        level: 6, 
+        level: 6,
       };
 
     // 지도를 생성합니다
     var map = new kakao.maps.Map(mapContainer, mapOption);
+
     cafes.forEach((cafe) => {
+      console.log(cafe.existing);
+      var imageSrc = cafe.existing
+          ? "/img/marker_in.png"
+          : "/img/marker_out.png", // 마커이미지 주소
+        imageSize = new kakao.maps.Size(60, 60), // 마커이미지의 크기
+        imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커 좌표와 일치시킬 이미지 내 좌표
+
+      // 마커이미지 생성
+      var markerImage = new kakao.maps.MarkerImage(
+        imageSrc,
+        imageSize,
+        imageOption
+      );
+
       const markerPosition = new kakao.maps.LatLng(cafe.lat, cafe.lng);
       const marker = new kakao.maps.Marker({
         position: markerPosition,
         map: map,
-      });
-
-      const infowindow = new kakao.maps.InfoWindow({
-        content: `<div><strong>${cafe.cafeName}</strong><br />${cafe.address}</div>`,
+        image: markerImage,
       });
 
       kakao.maps.event.addListener(marker, "click", function () {
-        infowindow.open(map, marker);
+        setSelectCafe(cafe); // 클릭한 카페 정보 상태에 저장
       });
     });
 
     if (navigator.geolocation) {
+      // GPS 기반
       navigator.geolocation.getCurrentPosition(function (position) {
         const lat = position.coords.latitude; // 위도
         const lon = position.coords.longitude; // 경도
         const locPosition = new kakao.maps.LatLng(lat, lon); // 사용자 위치
-
         map.setCenter(locPosition); // 지도 중심 좌표 설정
       });
     }
   }, [cafes]);
 
-  return <div id="mapView"></div>;
+  return (
+    <div style={{ display: "flex" }}>
+      <div id="mapView" style={{ flex: selectCafe ? 3 : "none" }}></div>
+      <MapCafeInfo selectCafe={selectCafe} setSelectCafe={setSelectCafe}/>
+    </div>
+  );
 };
 
 export default MapLayout;
