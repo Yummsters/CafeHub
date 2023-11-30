@@ -36,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager())) // 로그인 시에만 호출되는 필터
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
                 .authorizeRequests()
+                .antMatchers("/member/**").access("hasRole('USER') or hasRole('STORE')") // 권한 부여 확인용 임시 코드
+                .antMatchers("/store/**").access("hasRole('STORE')")
                 .anyRequest().permitAll();
     }
 }

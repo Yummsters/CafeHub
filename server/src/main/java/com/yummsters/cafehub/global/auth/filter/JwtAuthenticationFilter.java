@@ -34,8 +34,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginReqDto.getId(), loginReqDto.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        return authentication;
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
+        String dbMemberType = principalDetails.getMember().getMemberType().toString();
+
+        if(!dbMemberType.equals(loginReqDto.getMemberType().toString())){
+            try{
+                if(dbMemberType.equals("USER")) {
+                    response.sendError(990, "사장님이 아닙니다. 사용자 로그인을 이용하세요." );
+                } else{
+                    response.sendError(990, "사용자가 아닙니다. 사장님 로그인을 이용하세요.");
+                }
+            }catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return authentication;
     }
 
     @Override
@@ -48,7 +62,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME))
                 .withClaim("id", principalDetails.getUsername())
-                .withClaim("memberType", request.getParameter("memberType"))
                 .sign(Algorithm.HMAC256(JwtProvider.SECRET));
 
         response.addHeader(JwtProvider.HEADER_STRING, JwtProvider.TOKEN_PREFIX+accessToken);

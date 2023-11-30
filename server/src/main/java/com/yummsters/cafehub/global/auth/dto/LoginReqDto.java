@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 public class LoginReqDto {
     private String id;
     private String password;
+    private MemberType memberType;
 
     @Builder
-    public LoginReqDto(String id, String password) {
+    public LoginReqDto(String id, String password, MemberType memberType) {
         this.id = id;
         this.password = password;
+        this.memberType = memberType;
     }
 }
