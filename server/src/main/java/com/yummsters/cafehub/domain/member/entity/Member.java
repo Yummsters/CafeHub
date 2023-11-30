@@ -62,4 +62,8 @@ public class Member {
         this.email = email;
         this.memberType = memberType;
     }
+
+    public void changeStatus(boolean status) {
+        this.status = status;
+    }
 }

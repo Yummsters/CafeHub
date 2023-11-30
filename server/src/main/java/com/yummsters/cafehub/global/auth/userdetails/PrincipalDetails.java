@@ -37,7 +37,6 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        System.out.println(member.getPassword());
         return member.getPassword();
     }
 

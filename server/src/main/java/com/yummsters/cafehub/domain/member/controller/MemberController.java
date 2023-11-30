@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.member.controller;
 
+import com.yummsters.cafehub.domain.member.dto.DeleteReqDto;
 import com.yummsters.cafehub.domain.member.dto.SignUpReqDto;
 import com.yummsters.cafehub.domain.member.dto.SignUpResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
@@ -60,6 +61,20 @@ public class MemberController {
             return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
         }catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 사장, 사용자(소셜x) 회원 탈퇴
+    @DeleteMapping("/member/delete/{memNo}")
+    public ResponseEntity<Object> deleteMember(@PathVariable Integer memNo, @RequestBody DeleteReqDto requestDto){
+        Member member = mapper.deleteReqDtoToMember(requestDto);
+        try{
+            memberService.deleteMember(memNo, member.getPassword());
+            return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.NO_CONTENT);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
