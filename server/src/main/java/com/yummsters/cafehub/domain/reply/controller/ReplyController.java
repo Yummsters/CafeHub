@@ -25,7 +25,6 @@ public class ReplyController {
 			return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
 //	@PutMapping("bestReply/{reviewNo}")
 //	
 }

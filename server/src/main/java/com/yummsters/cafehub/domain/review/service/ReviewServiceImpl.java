@@ -37,17 +37,12 @@ public class ReviewServiceImpl implements ReviewService {
 						.data(file.getBytes()).build();
 				
 				fileVoRepository.save(fileVo);
-
-	            // upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
-	            String originalFilePath = dir + fileVo.getName();
-
-	            // 리뷰에 썸네일 이미지를 직접 추가
-	            review.setThumbImg(originalFilePath);
+	           
 //				// upload 폴더에 upload
-//				File uploadFile = new File(dir + fileVo.getReviewNo());
-//				System.out.println("File Path: " + uploadFile.getAbsolutePath());
-//
-//				file.transferTo(uploadFile);
+				File uploadFile = new File(dir + fileVo.getReviewNo());
+				System.out.println("File Path: " + uploadFile.getAbsolutePath());
+
+				file.transferTo(uploadFile);
 
 				// file번호 목록 만들기
 				if (!fileNums.equals(""))
