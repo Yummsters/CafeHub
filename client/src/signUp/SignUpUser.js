@@ -1,27 +1,42 @@
 import { useState} from 'react';
 import signUpUserStyle from './signUpUserStyle.css';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
-// 유효성 정규표현식 더 정확하게 다듬기
+
 // 커서 관련하여 매끄럽지 않은 부분 수정 필요
-// 입력하자마자 사용 불가능하다는 부분 수정 필요
 // 디비 연동 완료로 다듬기만 하면 완료
+// 확인 버튼 클릭 시 다시한 번 체크하도록 설정하기 > 대신에 값 검증이 안된 곳은 검증해야 한다는 알림 띄우기 >> 해당 검증 여부를 체크할 것이 또 필요
 const SignUp_User = () =>{
     const [member, setMember] = useState({name : "", nickname : "", id : "", password : "", passwordConfirm : "", phone : "", phoneConfirm : "", email : ""});
     const [valid, setValid] = useState({ id : false, password : false, email : false, phone : false})
     const [check, setCheck] = useState({nickname : false, id : false, email : false})
     const [warnings, setWarnings] = useState({name : false, nickname : false, id : false, password : false, passwordConfirm : false, phone : false, phoneConfirm : false, email : false});
 
+    // 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
     // 회원가입 제출 가능 여부 확인
     const submitSignUP = 
         member.name !=='' && member.nickname !== '' && member.id !== '' && member.password !== '' && member.passwordConfirm !== '' && member.phone!== ''  && member.email !== '' && 
         valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email;
     
-    // 빈 값에 대한 warning 처리
+    // 제출 버튼 클릭
     const handleClick = (e) => {
         e.preventDefault();
         console.log(submitSignUP);
 
+        // 빈값에 대한 warning 체크
         setWarnings((prevWarnings) => ({
             ...prevWarnings,
             name: member.name.trim() === '',
@@ -32,16 +47,97 @@ const SignUp_User = () =>{
             phone: member.phone.trim() === '',
             phoneConfirm: member.phoneConfirm.trim() === '',
             email: member.email.trim() === ''
-        }));
+        }));  
+        
+        // 제출 전 다시 체크
+        if(!check.id){
+            axios.get(`http://localhost:8080/id/${member.id}`)
+            .then(res => {
+                console.log(res.data);
+                if (res.data) {
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        id: false
+                    }));
+                } else {
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        id: true
+                    }));
+                }
+            }).catch(err =>{
+                console.log(err.data);
+            })
+        }
+
+        if(!check.nickname){
+            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            .then(res =>{
+                console.log(res.data);
+                if(res.data){
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        nickname: false
+                    }));
+                } 
+                else{
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        nickname: true
+                    }));
+                }
+            })
+            .catch(err =>{
+                console.log(err.data);
+            })
+        }
+
+        if(check.email){
+            axios.get(`http://localhost:8080/email/${member.email}`)
+            .then(res =>{
+                console.log(res.data);
+                if(res.data){
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        email : false
+                    }));
+                } 
+                else{
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        email : true
+                    }));
+                }
+
+            })
+            .catch(err =>{
+                console.log(err.data);
+            })
+        }
 
         if(submitSignUP){
             axios.post(`http://localhost:8080/signUpUser`, member)
             .then(res =>{
-                window.location.href="/login?showLoginPage=USER";
+                Toast.fire({
+                    icon: 'success',
+                    title: '회원가입이 완료되었습니다 '
+                })
+                setTimeout(() => {
+                    window.location.href = "/login?showLoginPage=USER";
+                  }, 1000);
             })
             .catch(err=>{
                 console.log(err);
                 console.log(err.data);
+                Toast.fire({
+                    icon: 'error',
+                    title: '가입이 불가능한 아이디입니다 다시 확인해 주세요'
+                })
+            })
+        }else{
+            Toast.fire({
+                icon: 'error',
+                title: '인증 여부를 다시 확인해주세요'
             })
         }
     };
@@ -49,7 +145,7 @@ const SignUp_User = () =>{
     // 유효성 정규표현식
     const inputRegexs = {
         idRegex: /^[a-z0-9]{5,12}$/,
-        passwordRegex: /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()-_+=<>?]).{8,}$/,
+        passwordRegex: /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/,
         phoneRegex : /^[0-9]+$/,
         emailRegex : /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     };
@@ -65,6 +161,12 @@ const SignUp_User = () =>{
         setWarnings((prevWarnings) => ({
           ...prevWarnings,
           [name]: false
+        }));
+
+        // 값이 변경되면 check도 다시 하도록
+        setCheck((prevWarnings) => ({
+            ...prevWarnings,
+            [name]: false
         }));
 
         validUserCheck(name, value);
@@ -210,7 +312,7 @@ const SignUp_User = () =>{
                         {warnings.nickname && "닉네임을 입력하세요"}
                         {member.nickname ? (!check.nickname ? "사용 불가능한 닉네임입니다" : "사용 가능한 닉네임입니다"):""}
                         </span><br/>
-                <input type="text" id="nickname" name="nickname" onChange={changeMember} onBlur={getNicknameCheck}/></label>
+                <input type="text" id="nickname" name="nickname" onChange={changeMember} onFocus={getNicknameCheck} onBlur={getNicknameCheck}/></label>
             </div> <br/>
             <div className='signUpUserInputDiv'>
                 <label htmlFor="id">아이디 
