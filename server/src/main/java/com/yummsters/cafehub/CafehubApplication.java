@@ -11,5 +11,4 @@ public class CafehubApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CafehubApplication.class, args);
 	}
-
 }
