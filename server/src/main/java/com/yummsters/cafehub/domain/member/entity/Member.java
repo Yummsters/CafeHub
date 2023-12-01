@@ -1,17 +1,20 @@
 package com.yummsters.cafehub.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yummsters.cafehub.domain.review.entity.Review;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@ToString
+@ToString(exclude = "reviews")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +52,9 @@ public class Member {
     @CreatedDate
     private LocalDateTime regDate;
 
+    @OneToMany(mappedBy = "member")  @JsonIgnore
+    private List<Review> reviews;
+
     @Builder
     public Member (String id, String password, String name, String nickname,
                   Social social, boolean status, String phone, String email, MemberType memberType) {
@@ -66,4 +72,5 @@ public class Member {
     public void changeStatus(boolean status) {
         this.status = status;
     }
+
 }
