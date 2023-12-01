@@ -16,26 +16,28 @@ const ReviewDetail = () => {
       .get(`http://localhost:8080/review/${reviewNo}`)
       .then((res) => {
         setReview(res.data);
-        console.log(res.data);
-        // 지도
-        if (review) {
-          const mapContainer = document.getElementById("detailMap"),
-            mapOption = {
-              center: new kakao.maps.LatLng(review.lat, review.lng),
-              level: 3,
-            };
-          const map = new kakao.maps.Map(mapContainer, mapOption);
-          const markerPosition = new kakao.maps.LatLng(review.lat, review.lng);
-          const marker = new kakao.maps.Marker({
-            position: markerPosition,
-          });
-          marker.setMap(map);
-        }
+        console.log(res.data.tagName);
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
-  }, []);
+  }, [reviewNo]);
+
+  useEffect(() => {
+    if (review && review.lat && review.lng) {
+      const mapContainer = document.getElementById("detailMap"),
+        mapOption = {
+          center: new kakao.maps.LatLng(review.lat, review.lng),
+          level: 3,
+        };
+      const map = new kakao.maps.Map(mapContainer, mapOption);
+      const markerPosition = new kakao.maps.LatLng(review.lat, review.lng);
+      const marker = new kakao.maps.Marker({
+        position: markerPosition,
+      });
+      marker.setMap(map);
+    }
+  }, [review]);
 
   return (
     <div className="reviewDetail-bgBox">
@@ -51,7 +53,7 @@ const ReviewDetail = () => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                <p>#고양이 카페 #이색 카페</p>
+                <p>{review.tagName}</p>
               </div>
               <div className="infoR">
                 <span>{review.nickname}</span>&nbsp;|&nbsp;
@@ -60,7 +62,7 @@ const ReviewDetail = () => {
               </div>
             </div>
             <div className="detailContent">{review.content}</div>
-            
+
             <div id="detailMap"></div>
 
             <div className="starNheart">
