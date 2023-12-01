@@ -3,7 +3,9 @@ package com.yummsters.cafehub.domain.review.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.yummsters.cafehub.domain.review.entity.Review;
+import org.springframework.stereotype.Repository;
 
-public interface ReviewRepository extends JpaRepository<Review, String> {
+import java.util.List;
 
+public interface ReviewRepository extends JpaRepository<Review, Integer> {
 }
