@@ -42,7 +42,7 @@ public class MapServiceImpl implements MapService {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("content-type", "application/json;charset=UTF-8");
-            conn.setRequestProperty("Authorization", "key");
+            conn.setRequestProperty("Authorization", " KakaoAK c95c7f73f119e07ce4e82a038f1d7883");
 
             StringBuilder resBuilder = new StringBuilder();
             try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {

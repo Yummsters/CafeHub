@@ -1,11 +1,15 @@
 package com.yummsters.cafehub.domain.review.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yummsters.cafehub.domain.map.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -20,7 +24,7 @@ import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 @Builder
 @DynamicInsert
 @DynamicUpdate
-@ToString(exclude = {"member", "cafe"})
+@ToString(exclude = {"member", "cafe", "reviewToTags"})
 public class Review {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,11 +51,12 @@ public class Review {
 	@ManyToOne
 	@JoinColumn(name = "cafeNo") // 외래키
 	private Cafe cafe;
-
 	@Column
 	private Integer likeCount;
 	@Column
 	private LocalDateTime regDate;
+	@OneToMany(mappedBy = "review")
+	private List<ReviewToTag> reviewToTags = new ArrayList<>();
 
 //	public enum TagName {
 //		    카공,

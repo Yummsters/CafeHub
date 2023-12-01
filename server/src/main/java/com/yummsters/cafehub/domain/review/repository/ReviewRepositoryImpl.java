@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ReviewRepositoryImpl{
+public class ReviewRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
 
     public ReviewDto findReviewByReviewNo(Integer reviewNo) {
