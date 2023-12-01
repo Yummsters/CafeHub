@@ -7,6 +7,8 @@ import com.yummsters.cafehub.domain.review.repository.ReviewRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -16,7 +18,10 @@ public class ReviewServiceImpl implements ReviewService {
     // 선진 part ----------------------------------------------------------------------
     @Override
     public ReviewDto reviewDetail(Integer reviewNo) throws Exception {
-        return reviewRepository.findReviewByReviewNo(reviewNo);
+        ReviewDto reviewDto = reviewRepository.findReviewByReviewNo(reviewNo);
+        List<String> tags = reviewRepository.findReviewTags(reviewNo);
+        reviewDto.setTagName(tags.toString());
+        return reviewDto;
     }
 
 

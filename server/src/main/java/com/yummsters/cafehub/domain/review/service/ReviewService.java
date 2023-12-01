@@ -16,7 +16,7 @@ public interface ReviewService {
 
 
     // 선진 part ----------------------------------------------------------------------
-    ReviewDto reviewDetail(Integer reviewNo) throws Exception;
+    ReviewDto reviewDetail(Integer reviewNo) throws Exception; // 리뷰 상세 조회
 
     // 선진 part ----------------------------------------------------------------------
 

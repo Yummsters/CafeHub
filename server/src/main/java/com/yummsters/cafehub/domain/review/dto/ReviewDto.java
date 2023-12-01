@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.review.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.yummsters.cafehub.domain.map.entity.Cafe;
@@ -24,7 +25,7 @@ public class ReviewDto {
 	private String title;
 	private String content;
 	private String tagName;
-	private String thumbImg;
+//	private String thumbImg;
 	private Integer likeCount;
 	private LocalDateTime regDate;
 
@@ -44,7 +45,7 @@ public class ReviewDto {
 		            .title(title)
 		            .content(content)
 		            .tagName(tagName)
-		            .thumbImg(thumbImg)
+//		            .thumbImg(thumbImg)
 		            .likeCount(likeCount)
 		            .regDate(regDate)
 		            .build();
