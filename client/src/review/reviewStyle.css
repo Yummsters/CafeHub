@@ -21,7 +21,10 @@
     display: flex;
     align-items: center;
 }
-
+.thumbnail-preview {
+    width: 100px;
+    height: 100px;
+}
 .title{
     margin-left: 20px;
  border: none;
