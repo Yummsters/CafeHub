@@ -4,6 +4,7 @@ import com.yummsters.cafehub.domain.map.dto.CafeDTO;
 import com.yummsters.cafehub.domain.map.entity.Cafe;
 import com.yummsters.cafehub.domain.map.repository.CafeRepository;
 import lombok.extern.log4j.Log4j2;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

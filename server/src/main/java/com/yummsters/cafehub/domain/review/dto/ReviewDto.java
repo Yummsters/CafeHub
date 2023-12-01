@@ -25,6 +25,12 @@ public class ReviewDto {
 	private Integer cafeNo;
 	private Integer likeCount;
 	private LocalDateTime regDate;
+	private String fileurl;
+	
+	public void setFileurl(String fileurl) {
+		this.fileurl = fileurl;
+	}
+	
 	
 	public Review toEntity() {
 		 return Review.builder()
@@ -32,9 +38,7 @@ public class ReviewDto {
 		            .title(title)
 		            .content(content)
 		            .tagName(tagName)
-		            .thumbImg(thumbImg)
-		            .writer(writer)
-		            .cafeNo(cafeNo)
+		            .thumbImg(thumbImg)   
 		            .likeCount(likeCount)
 		            .regDate(regDate)
 		            .build();

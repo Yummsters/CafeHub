@@ -14,13 +14,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
-@CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
-	@Autowired
 	
+//	@GetMapping("/cafelist")
+//	public ResponseEntity<Object>cafelist(){
+//		try {
+//			Review cafel = reviewService.reviewInfo(writer);
+//			return new ResponseEntity<Object>(cafel, HttpStatus.OK );
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return new ResponseEntity<Object>(e.getMessage(),HttpStatus.BAD_REQUEST);
+//		}
+//	}
 	@PostMapping("/reviewwrite")
 	public ResponseEntity<Integer> reviewWrite(@ModelAttribute ReviewDto review,
 	                                          @RequestParam("file") List<MultipartFile> files) {
@@ -32,6 +42,7 @@ public class ReviewController {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
+
 	
 
 }
