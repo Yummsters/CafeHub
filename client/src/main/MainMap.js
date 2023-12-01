@@ -1,10 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import MapCafeInfo from "./MapCafeInfo";
-
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 const { kakao } = window;
 
-const MapLayout = ({ cafes }) => {
-  const [selectCafe, setSelectCafe] = useState(null);
+const MainMap = () => {
+  const [cafes, setCafes] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/mapMarker')
+    .then(response => {
+      setCafes(response.data);
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('에러:', error);
+    });
+  }, []); 
 
   useEffect(() => {
     var mapContainer = document.getElementById("mapView"),
@@ -13,7 +23,6 @@ const MapLayout = ({ cafes }) => {
         level: 6,
       };
 
-    // 지도를 생성합니다
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
     cafes.forEach((cafe) => {
@@ -38,13 +47,21 @@ const MapLayout = ({ cafes }) => {
         image: markerImage,
       });
 
-      kakao.maps.event.addListener(marker, "click", function () {
-        setSelectCafe(cafe); // 클릭한 카페 정보 상태에 저장
+      const infowindow = new kakao.maps.InfoWindow({
+        content: cafe.cafeName,
+      });
+  
+      // 마커에 마우스 호버 이벤트 추가
+      kakao.maps.event.addListener(marker, 'mouseover', function () {
+        infowindow.open(map, marker);
+      });
+  
+      kakao.maps.event.addListener(marker, 'mouseout', function () {
+        infowindow.close();
       });
     });
 
-    if (navigator.geolocation) {
-      // GPS 기반
+    if (navigator.geolocation) { // GPS 기반
       navigator.geolocation.getCurrentPosition(function (position) {
         const lat = position.coords.latitude; // 위도
         const lon = position.coords.longitude; // 경도
@@ -54,12 +71,9 @@ const MapLayout = ({ cafes }) => {
     }
   }, [cafes]);
 
-  return (
-    <div style={{ display: "flex" }}>
-      <div id="mapView" style={{ flex: selectCafe ? 3 : "none" }}></div>
-      <MapCafeInfo selectCafe={selectCafe} setSelectCafe={setSelectCafe}/>
-    </div>
+return (
+    <div id="mapView"></div>
   );
 };
 
-export default MapLayout;
+export default MainMap;
