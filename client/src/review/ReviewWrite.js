@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -16,7 +16,8 @@ const ReviewWrite = () => {
     const [selectTag, setSelectTag] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [cafes, setCafes] = useState([]); // cafes 상태 추가
-
+    const editorRef = useRef();
+    const [thumbnail, setThumbnail] = useState(null); // 썸네일 이미지 경로 상태
     useEffect(() => {
         // 카페 목록을 가져옴
         fetchCafeList();
@@ -43,11 +44,14 @@ const ReviewWrite = () => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("title", review.title);
-        formData.append("content", review.content);
+        formData.append("content",editorRef.current.getInstance().getMarkdown());
         formData.append("writer", review.writer);
 
-        for (let file of files) {
-            formData.append("file", file);
+        if (selectedFile) {
+            formData.append("file", selectedFile);
+        }
+        if (thumbnail) {
+            formData.append("thumbnail", thumbnail); // 리뷰에 썸네일 이미지 경로 추가
         }
 
         axios.post('http://localhost:8080/reviewwrite', formData)
@@ -89,6 +93,10 @@ const ReviewWrite = () => {
 
         if (file) {
             setSelectedFile(file);
+
+            // 썸네일 이미지 경로 설정 (로컬 프리뷰를 위한 URL)
+            const thumbnailURL = URL.createObjectURL(file);
+            setThumbnail(thumbnailURL);
         }
     };
 
@@ -111,13 +119,16 @@ const ReviewWrite = () => {
                     <label className='review-img'> 사진 선택
                         <input type="file" name="thumbImg" onChange={handleFileChange} />
                     </label>
-                    {selectedFile && (
-                        <p className="selected-file">선택된 파일: {selectedFile.name}</p>
+                    {thumbnail && (
+                        <img className="thumbnail-preview" src={thumbnail} alt="Thumbnail Preview" />
                     )}
                 </div>
                 <div className='editor'>
-                    <Editor plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
-                        placeholder="Please Enter Text."
+                    <Editor
+                                            ref={editorRef}
+                                            plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
+                                            placeholder="Please Enter Text."
+                    
                     />
                 </div>
                 <div className='tagBox'>
