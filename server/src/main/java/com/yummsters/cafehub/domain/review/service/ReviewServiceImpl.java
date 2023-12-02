@@ -1,5 +1,8 @@
 package com.yummsters.cafehub.domain.review.service;
 
+
+import java.io.Console;
+
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepositoryImpl;
@@ -32,9 +35,12 @@ public class ReviewServiceImpl implements ReviewService {
 	//리뷰작성
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
+		System.out.println("33333");
+
 		if (files != null && files.size()!= 0) {
 			String dir = "c:/soobin/upload/";
 			String fileNums = "";
+			
 			for (MultipartFile file : files) {
 				
 				FileVo fileVo = FileVo.builder()
@@ -42,12 +48,17 @@ public class ReviewServiceImpl implements ReviewService {
 						.name(file.getOriginalFilename())
 						.size(file.getSize())
 						.contenttype(file.getContentType())
-						.data(file.getBytes()).build();
+						.data(file.getBytes())
+						.build();
 				
 				fileVoRepository.save(fileVo);
-	           
+
+//	            // upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
+	            String originalFilePath = dir + fileVo.getName();
+
+//	            // 리뷰에 썸네일 이미지를 직접 추가
 //				// upload 폴더에 upload
-				File uploadFile = new File(dir + fileVo.getReviewNo());
+				File uploadFile = new File(dir + fileVo.getFileNum());
 				System.out.println("File Path: " + uploadFile.getAbsolutePath());
 
 				file.transferTo(uploadFile);
@@ -55,11 +66,17 @@ public class ReviewServiceImpl implements ReviewService {
 				// file번호 목록 만들기
 				if (!fileNums.equals(""))
 					fileNums += ",";
-				fileNums += fileVo.getReviewNo();
+				fileNums += fileVo.getFileNum();
+				System.out.println("11111"+fileNums);
+				System.out.println("22222"+fileVo.getFileNum());
+				
 			}
-			review.setFileurl(fileNums); // 1,2,3
+			// 파일 번호 목록을 썸네일 이미지로 사용
+			review.setThumbImg(fileNums);
 			
+
 		}
+		
 		// table에 insert
 		Review reviewEntity = review.toEntity();
 		reviewRepository.save(reviewEntity);

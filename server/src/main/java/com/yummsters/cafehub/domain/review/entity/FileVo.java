@@ -29,7 +29,7 @@ public class FileVo {
 	@Column(name = "fileNum" , insertable = false, updatable = false)
 	private Integer fileNum;
 	@ManyToOne
-	@JoinColumn(name = "reviewNo")
+	@JoinColumn(name = "review_no")
 	private Review review;
 	@Column
 	private String directory;
