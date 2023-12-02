@@ -1,8 +1,13 @@
 import React from 'react';
 import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import './ReviewListStyle.css';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const ReviewList = () => {
+    const reviewNo = 1; // 수정 필요
     return (
         <div className='reviewWrapper'>
         <div className='reviewListBox'>
@@ -16,14 +21,14 @@ const ReviewList = () => {
              <div className='reviewtable'>
             <Table hover >
                 <tbody>
-                    
-
                     <tr>
                     <th scope="row">
                         <img className='listImg' src='/img/Ad1.png' alt=''/>
                     </th>
                     <td colSpan={10}>
+                    <Link to={`/reviewDetail/${reviewNo}`}>
                         <div className='listMiniTitle'>따뜻한 느낌의 책 읽기 좋은 카페</div>
+                    </Link>
                         <div className='description1'>따뜻한 카페</div>
                     </td>
                     <td colSpan={2}>
