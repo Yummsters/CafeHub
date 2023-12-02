@@ -15,7 +15,6 @@ public interface ReviewService {
 
     // 선진 part ----------------------------------------------------------------------
 
-	ReviewDto reviewDetail(Integer reviewNo) throws Exception;
 	Integer reviewWrite(ReviewDto review, List<MultipartFile> file) throws Exception;
 	//썸네일 이미지
 	void thumbImg(Integer reviewNo, OutputStream out) throws Exception;

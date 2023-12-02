@@ -40,22 +40,9 @@ public class Review {
    private String tagName;
    @Column(name = "thumb_img", nullable = false)
    private String thumbImg;
-
-//   @Column
-//   @ManyToOne
-//   private Member writer;
-//   @Column
-//   private Integer cafeNo;
-
    @ManyToOne (fetch = FetchType.LAZY)
    @JoinColumn(name = "writer") // 외래키
    private Member member;
-
-
-	@ManyToOne
-	@JoinColumn(name = "writer") // 외래키
-	private Member member;
-
 	@ManyToOne
 	@JoinColumn(name = "cafeNo") // 외래키
 	private Cafe cafe;
