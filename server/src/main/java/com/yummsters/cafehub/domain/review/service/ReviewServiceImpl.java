@@ -26,11 +26,11 @@ import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
-	@Autowired
 	private ReviewRepository reviewRepository;
-	@Autowired
 	private FileVoRepository fileVoRepository;
+	private ReviewRepositoryImpl rimplRepository;
 	
 	//리뷰작성
 	@Override
@@ -115,8 +115,8 @@ public class ReviewServiceImpl implements ReviewService {
       // 선진 part ----------------------------------------------------------------------
     @Override
     public ReviewDto reviewDetail(Integer reviewNo) throws Exception {
-        ReviewDto reviewDto = reviewRepository.findReviewByReviewNo(reviewNo);
-        List<String> tags = reviewRepository.findReviewTags(reviewNo);
+        ReviewDto reviewDto = rimplRepository.findReviewByReviewNo(reviewNo);
+        List<String> tags = rimplRepository.findReviewTags(reviewNo);
         reviewDto.setTagName(tags.toString());
         return reviewDto;
     }
