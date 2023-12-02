@@ -83,7 +83,7 @@ function App() {
               <Route exact path="/storeuserInfo" element={<DefaultLayout><StoreUserInfo/></DefaultLayout>} />
               <Route exact path="/myReivew" element={<DefaultLayout><MyReivew/></DefaultLayout>} />
               <Route exact path="/myReply" element={<DefaultLayout><MyReply/></DefaultLayout>} />
-              <Route exact path='/reviewDetail' element={<DefaultLayout><ReviewDetail/></DefaultLayout>}/>
+              <Route exact path='/reviewDetail/:reviewNo' element={<DefaultLayout><ReviewDetail/></DefaultLayout>}/>
               <Route exact path='/reviewModify' element={<DefaultLayout><ReviewModify/></DefaultLayout>}/>
               <Route exact path='/reviewWrite' element={<DefaultLayout><ReviewWrite/></DefaultLayout>}/>
               <Route exact path='/storeInfo' element={<DefaultLayout><StoreInfo/></DefaultLayout>}/>
@@ -92,7 +92,7 @@ function App() {
               <Route exact path='/storeReview' element={<DefaultLayout><StoreReview/></DefaultLayout>}/>
               <Route exact path='/storeBanner' element={<DefaultLayout><StoreBanner/></DefaultLayout>}/>
             </Routes>
-            </BrowserRouter>
+       </BrowserRouter>
   );
 }
 
