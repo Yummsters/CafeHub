@@ -1,10 +1,13 @@
 package com.yummsters.cafehub.domain.map.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yummsters.cafehub.domain.map.dto.CafeDTO;
+import com.yummsters.cafehub.domain.review.entity.Review;
 import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -12,7 +15,7 @@ import java.sql.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "reviews")
 public class Cafe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +44,11 @@ public class Cafe {
     private Date paidDate;
     @Column
     private boolean isExisting;
+    @Column
+    private String cafeInfo;
+
+    @OneToMany(mappedBy = "cafe") @JsonIgnore
+    private List<Review> reviews;
 
     public CafeDTO toDto() {
         return CafeDTO.builder()

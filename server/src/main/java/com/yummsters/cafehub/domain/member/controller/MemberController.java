@@ -1,7 +1,10 @@
 package com.yummsters.cafehub.domain.member.controller;
 
+import com.yummsters.cafehub.domain.member.dto.TokenResDto;
+import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,6 +72,15 @@ public class MemberController {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // 토큰에 따른 Member 가져오기
+    @GetMapping("/member")
+    public ResponseEntity<Object> member(Authentication authentication){
+        Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
+        System.out.println(member.toString());
+        TokenResDto memberResponse = mapper.memberToTokenResDto(member);
+        return new ResponseEntity<>(memberResponse, HttpStatus.OK);
     }
 
     // 사장, 사용자(소셜x) 회원 탈퇴

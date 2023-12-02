@@ -2,14 +2,11 @@ package com.yummsters.cafehub.domain.review.controller;
 
 import java.util.List;
 
+import com.yummsters.cafehub.domain.review.entity.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
@@ -43,6 +40,14 @@ public class ReviewController {
 	    }
 	}
 
-	
-
+    @GetMapping("/review/{reviewNo}")
+    public ResponseEntity<ReviewDto> getReviewDetail(@PathVariable Integer reviewNo) {
+        try {
+            ReviewDto review = reviewService.reviewDetail(reviewNo);
+            return new ResponseEntity<>(review, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

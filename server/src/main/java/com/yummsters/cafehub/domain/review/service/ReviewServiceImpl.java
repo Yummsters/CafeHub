@@ -1,6 +1,16 @@
 package com.yummsters.cafehub.domain.review.service;
 
+
 import java.io.Console;
+
+import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
+import com.yummsters.cafehub.domain.review.repository.ReviewRepositoryImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
@@ -73,14 +83,6 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewEntity.getReviewNo();
 	}
 	
-	
-
-	@Override
-	public ReviewDto reviewDetail(Integer reviewNo) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	@Override
 	public void thumbImg(Integer reviewNo, OutputStream out) throws Exception {
 //		 Optional<Review> optionalReview = reviewRepository.findById(reviewNo);
@@ -109,8 +111,17 @@ public class ReviewServiceImpl implements ReviewService {
 //		ReviewDto reviewDto = modelMapper.map(cafel.get(), ReviewDto.class);
 //		return reviewDto;
 //	}
-	
+  
+      // 선진 part ----------------------------------------------------------------------
+    @Override
+    public ReviewDto reviewDetail(Integer reviewNo) throws Exception {
+        ReviewDto reviewDto = reviewRepository.findReviewByReviewNo(reviewNo);
+        List<String> tags = reviewRepository.findReviewTags(reviewNo);
+        reviewDto.setTagName(tags.toString());
+        return reviewDto;
+    }
 
-	
+
+    // 선진 part ----------------------------------------------------------------------
 
 }

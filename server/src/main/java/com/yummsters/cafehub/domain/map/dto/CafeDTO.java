@@ -25,6 +25,7 @@ public class CafeDTO {
     private boolean isPaid;
     private Date paidDate;
     private boolean isExisting;
+    private String cafeInfo;
 
     public Cafe toEntity() {
         return Cafe.builder()
