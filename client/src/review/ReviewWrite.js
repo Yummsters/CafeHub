@@ -8,9 +8,10 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 import 'prismjs/themes/prism.css';
 import Prism from 'prismjs';
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all.js';
-
+import Swal from 'sweetalert2';
 const ReviewWrite = () => {
-    const [review, setReview] = useState({ title: '', content: '', writer: '' });
+    const initialReviewState = { title: '', content: '', writer: '' };
+    const [review, setReview] = useState(initialReviewState);
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
     const [selectTag, setSelectTag] = useState([]);
@@ -18,6 +19,8 @@ const ReviewWrite = () => {
     const [cafes, setCafes] = useState([]); // cafes 상태 추가
     const editorRef = useRef();
     const [thumbnail, setThumbnail] = useState(null); // 썸네일 이미지 경로 상태
+    const [isFileSelected, setIsFileSelected] = useState(false);
+
     useEffect(() => {
         // 카페 목록을 가져옴
         fetchCafeList();
@@ -49,6 +52,7 @@ const ReviewWrite = () => {
 
         if (selectedFile) {
             formData.append("file", selectedFile);
+            formData.append("thumb_img", selectedFile);
         }
         if (thumbnail) {
             formData.append("thumbnail", thumbnail); // 리뷰에 썸네일 이미지 경로 추가
@@ -58,11 +62,29 @@ const ReviewWrite = () => {
             .then(res => {
                 console.log(res);
                 let reviewNo = res.data;
-                navigate(`/reviewwrite/${reviewNo}`);
-            })
-            .catch(err => {
-                console.log(err)
+                 
+            // 성공 시 SweetAlert를 표시
+            Swal.fire({
+                title: '커피콩 1개 적립 성공!',
+                text: '리뷰가 성공적으로 등록되었습니다.',
+                icon: 'success',
+                confirmButtonText: '확인',
+            }).then(() => {
+                // 사용자가 확인을 클릭한 후에 리다이렉트 또는 다른 작업 수행
+                navigate(`/reviewList`);
             });
+        })
+        .catch(err => {
+            console.log(err);
+
+            // 오류 발생 시 SweetAlert를 표시
+            Swal.fire({
+                title: 'error',
+                text: '리뷰를 등록하는 중에 오류가 발생했습니다.',
+                icon: 'error',
+                confirmButtonText: '확인',
+            });
+        });
     }
 
     const tags = [
@@ -97,9 +119,20 @@ const ReviewWrite = () => {
             // 썸네일 이미지 경로 설정 (로컬 프리뷰를 위한 URL)
             const thumbnailURL = URL.createObjectURL(file);
             setThumbnail(thumbnailURL);
+
+            setIsFileSelected(true);
         }
     };
-
+    const handleReset = () => {
+        // 초기화 버튼 클릭 시 상태 초기화
+        setReview(initialReviewState);
+        setFiles([]);
+        setIsFileSelected(false);
+        setThumbnail(null);
+        // 에디터 내용 초기화
+    const editorInstance = editorRef.current.getInstance();
+    editorInstance.setMarkdown('');
+    }
     return (
         <div className='review-bgBox'>
             <div className='reviewBox'>
@@ -116,9 +149,11 @@ const ReviewWrite = () => {
                 <hr className='line' />
                 <div className='thumbnail'>
                     <p className='review-thum'>썸네일 선택 &nbsp;&nbsp;&nbsp;</p>
-                    <label className='review-img'> 사진 선택
-                        <input type="file" name="thumbImg" onChange={handleFileChange} />
-                    </label>
+                     {!isFileSelected && (
+                        <label className='review-img'> 사진 선택
+                            <input type="file" name="thumbImg" onChange={handleFileChange} />
+                        </label>
+                    )}
                     {thumbnail && (
                         <img className="thumbnail-preview" src={thumbnail} alt="Thumbnail Preview" />
                     )}
@@ -141,7 +176,7 @@ const ReviewWrite = () => {
                     ))}
                 </div>
                 <div className='btnBox'>
-                    <div className='btn'>초기화</div>
+                    <div className='btn' onClick={handleReset}>초기화</div>
                     <div className='btn' onClick={submit}>리뷰 등록</div>
                 </div>
             </div>
