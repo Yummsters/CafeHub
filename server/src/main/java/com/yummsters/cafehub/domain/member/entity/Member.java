@@ -68,6 +68,12 @@ public class Member {
         this.email = email;
         this.memberType = memberType;
     }
+    
+    @Builder
+    public Member(Integer memNo, String nickname) {
+    	this.memNo = memNo;
+    	this.nickname = nickname;
+    }
 
     public void changeStatus(boolean status) {
         this.status = status;

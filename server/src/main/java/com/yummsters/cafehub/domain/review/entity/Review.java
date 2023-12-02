@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yummsters.cafehub.domain.map.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
+import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -37,12 +39,6 @@ public class Review {
 	private String tagName;
 	@Column
 	private String thumbImg;
-
-//	@Column
-//	@ManyToOne
-//	private Member writer;
-//	@Column
-//	private Integer cafeNo;
 
 	@ManyToOne
 	@JoinColumn(name = "writer") // 외래키

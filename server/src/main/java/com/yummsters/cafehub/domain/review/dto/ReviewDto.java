@@ -38,7 +38,13 @@ public class ReviewDto {
 	private String cafeName;  // Cafe의 이름
 	private String lat;
 	private String lng;
-
+  
+	private String fileurl;
+	
+	public void setFileurl(String fileurl) {
+		this.fileurl = fileurl;
+	}
+	
 	public Review toEntity() {
 		 return Review.builder()
 				 .reviewNo(reviewNo)
