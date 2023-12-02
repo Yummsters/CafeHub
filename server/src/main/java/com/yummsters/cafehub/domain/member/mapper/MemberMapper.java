@@ -10,11 +10,7 @@ import com.yummsters.cafehub.domain.member.dto.SignUpResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 
 
-@Mapper(
-		componentModel = "spring", 
-//		injectionStrategy=InjectionStrategy.CONSTRUCTOR,
-		unmappedTargetPolicy = ReportingPolicy.ERROR
-)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface MemberMapper {
 
     @Mapping(target = "social", ignore = true)
