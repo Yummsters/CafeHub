@@ -32,7 +32,7 @@ public class Review {
    private String content;
    @Column
    private String tagName;
-   @Column(name = "thumb_img")
+   @Column(name = "thumb_img", nullable = false)
    private String thumbImg;
 
 //   @Column
@@ -57,26 +57,9 @@ public class Review {
    @Column
    private LocalDateTime regDate;
 
-//   public enum TagName {
-//          카공,
-//          인스타감성,
-//          고양이,
-//          드로잉,
-//          이색,
-//          주류판매,
-//          뷰맛집,
-//          브런치,
-//          인테리어맛집,
-//          대형,
-//          디저트,
-//          자연친화적
-//   }
 
-//   @Override
-//   public String toString() {
-//      return String.format("[%d,%s,%s,%s,%s,%d,%d,%d,%s]",
-//            reviewNo, title,content,tagName, thumbImg,member.getMemNo(),cafe.getCafeNo(),likeCount,regDate);
-//   }
+
+
    @Override
    public String toString() {
        return String.format("[%d,%s,%s,%s,%s,%d,%d,%d,%s]",
