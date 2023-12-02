@@ -1,12 +1,16 @@
-import { useState, useEffect} from 'react';
 import loginStyle from './loginStyle.css';
-import axios from 'axios';
+import { useState, useEffect} from 'react';
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router';
+import {useDispatch} from 'react-redux';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 
-// 로그인 시 토큰 확인 완료 >> 토큰 이용해서 네비게이션 바 변경 및 권한 부여 로직 작성
-// 로그인 시 에러 발생 처리 코드 - 사장님이 사용자 페이지에서 로그인 / 사용자가 사장님 페이지에서 로그인 / 탈퇴한 회원
 const LoginPage = () =>{
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   // 사용자/사장님 페이지 변경
   const [showLoginPage, setShowLoginPage] = useState(false);
   
@@ -16,8 +20,19 @@ const LoginPage = () =>{
     const showLoginPageParam = new URLSearchParams(location.search).get('showLoginPage');
     if(showLoginPageParam === "STORE") setShowLoginPage(true);
   }, [location.search]);
-  
 
+// swal
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top',
+  showConfirmButton: false,
+  timer: 1000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
   // 사용자 관련
     const [userLogin, setUserLogin] = useState({id:'', password:'', memberType:'USER'});
@@ -35,22 +50,40 @@ const LoginPage = () =>{
       password: userLogin.password.trim() === ''
     }));
 
-    console.log(submitUserCheck);
     if(submitUserCheck){
       axios.post(`http://localhost:8080/login`, userLogin)
-      .then(res=>{
-        console.log(res);
-        console.log(res.headers.getAuthorization);
+      .then(res=>{  
+        // 토큰과 회원정보 저장
+        console.log(res.data);
+        dispatch({type:"token", payload:res.headers.authorization});
+        dispatch({type:"member", payload:res.data});
+        navigate("/");
       })
       .catch(err =>{
-        console.log(err);
+        console.log(err.response.data.status);
+        const errStatus = err.response.data.status;
+        // 사장이 회원 페이지에서 로그인 한 경우
+        if(errStatus === 990){
+          Toast.fire({
+            icon: 'error',
+            title: '사장 회원은 사장 로그인을 이용해 주세요'
+        })
+        setShowLoginPage(true);
+      } else if(errStatus === 880){
+          Toast.fire({
+            icon: 'error',
+            title: '탈퇴한 회원입니다'
+        })}else{
+          Toast.fire({
+            icon: 'error',
+            title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
+        })}
       })
     }
   }
 
   const changeUserLogin = (e) => {
     const { name, value } = e.target;
-    console.log("name" + name + "value" + value);
 
     setUserLogin((prevInputs) => ({
       ...prevInputs,
@@ -100,10 +133,29 @@ const LoginPage = () =>{
     if(submitStoreCheck){
       axios.post(`http://localhost:8080/login`, storeLogin)
       .then(res=>{
-        console.log(res.data);
+        dispatch({type:"token", payload:res.headers.authorization});
+        dispatch({type:"member", payload:res.data});
+        navigate("/");
       })
       .catch(err=>{
-        console.log(err.data);
+        console.log(err.response.data.status);
+        const errStatus = err.response.data.status;
+        // 사장이 회원 페이지에서 로그인 한 경우
+        if(errStatus === 991){
+          Toast.fire({
+            icon: 'error',
+            title: '사용자 회원은 사용자 로그인을 이용해 주세요'
+        })
+        setShowLoginPage(false);
+      } else if(errStatus === 880){
+          Toast.fire({
+            icon: 'error',
+            title: '탈퇴한 회원입니다'
+        })}else{
+          Toast.fire({
+            icon: 'error',
+            title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
+        })}
       })
     }
   }
@@ -141,7 +193,7 @@ const LoginPage = () =>{
 
     const inputRegexs = {
       idRegex: /^[a-z0-9]{5,12}$/,
-      passwordRegex: /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()-_+=<>?]).{8,20}$/
+      passwordRegex: /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/
     };
 
     return (
