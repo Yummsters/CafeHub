@@ -3,7 +3,9 @@ package com.yummsters.cafehub.global.auth.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yummsters.cafehub.domain.member.dto.TokenResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.global.auth.dto.LoginReqDto;
 import com.yummsters.cafehub.global.auth.jwt.JwtProvider;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
@@ -24,6 +26,7 @@ import java.sql.Date;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final MemberMapper mapper;
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         ObjectMapper mapper = new ObjectMapper();
@@ -53,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         if(!dbMemberType.equals(loginReqDto.getMemberType().toString())){
             try{
                 if(dbMemberType.equals("USER")) {
-                    response.sendError(990, "사장님이 아닙니다. 사용자 로그인을 이용하세요." );
+                    response.sendError(991, "사장님이 아닙니다. 사용자 로그인을 이용하세요." );
                 } else{
                     response.sendError(990, "사용자가 아닙니다. 사장님 로그인을 이용하세요.");
                 }
@@ -73,9 +76,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = JWT.create()
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME))
+                .withClaim("memNo", principalDetails.getMember().getMemNo())
                 .withClaim("id", principalDetails.getUsername())
                 .sign(Algorithm.HMAC256(JwtProvider.SECRET));
-
+        System.out.println("access = " + accessToken);
         response.addHeader(JwtProvider.HEADER_STRING, JwtProvider.TOKEN_PREFIX+accessToken);
+
+        // member를 가지고 와서 바디에 넣어줌
+        Member member = principalDetails.getMember();
+        TokenResDto responseMember = mapper.memberToTokenResDto(member);
+        // ResponseEntity로 응답
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(responseMember));
     }
 }

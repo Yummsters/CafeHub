@@ -1,16 +1,9 @@
 package com.yummsters.cafehub.domain.member.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class DeleteReqDto {
     private String password;
 }

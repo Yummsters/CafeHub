@@ -1,9 +1,10 @@
 package com.yummsters.cafehub.global.config;
 
+import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.global.auth.filter.JwtAuthenticationFilter;
 import com.yummsters.cafehub.global.auth.filter.JwtAuthorizationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,11 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private CorsFilter corsFilter;
+    private final MemberRepository memberRepository;
+    private final CorsFilter corsFilter;
+    private final MemberMapper memberMapper;
 
     @Bean
     public BCryptPasswordEncoder passwordEncode(){
@@ -33,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().disable() // 로그인 폼 비활성화
                 .httpBasic().disable()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // 로그인 시에만 호출되는 필터
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), memberMapper)) // 로그인 시에만 호출되는 필터
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
                 .authorizeRequests()
                 .antMatchers("/member/**").access("hasRole('USER') or hasRole('STORE')") // 권한 부여 확인용 임시 코드
