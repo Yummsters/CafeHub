@@ -39,11 +39,11 @@ public class ReviewDto {
 	private LocalDateTime regDate;
 
 	// Member 정보
-	private Integer memNo;  // Member의 PK 혹은 외래키
+//	private Integer memNo;  // Member의 PK 혹은 외래키
 	private String nickname;  // Member의 이름 등
 
 	// Cafe 정보
-	private Integer cafeNo;  // Cafe의 PK 혹은 외래키
+//	private Integer cafeNo;  // Cafe의 PK 혹은 외래키
 	private String cafeName;  // Cafe의 이름
 	private String lat;
 	private String lng;

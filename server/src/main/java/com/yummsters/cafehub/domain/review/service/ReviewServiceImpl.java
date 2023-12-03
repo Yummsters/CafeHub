@@ -1,11 +1,14 @@
 package com.yummsters.cafehub.domain.review.service;
 
 
-import java.io.Console;
-
+import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.repository.LikeReviewRepository;
+import com.yummsters.cafehub.domain.review.repository.ReviewDetailRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
-import com.yummsters.cafehub.domain.review.repository.ReviewRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,25 +16,23 @@ import java.util.List;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
-import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
-	private ReviewRepository reviewRepository;
-	private FileVoRepository fileVoRepository;
-	private ReviewRepositoryImpl rimplRepository;
-	
+	private final ReviewRepository reviewRepository;
+	private final FileVoRepository fileVoRepository;
+	private final ReviewDetailRepository detailRepository;
+	private final LikeReviewRepository likeRepository;
+	private final MemberRepository memberRepository;
+
 	//리뷰작성
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
@@ -113,13 +114,33 @@ public class ReviewServiceImpl implements ReviewService {
 //	}
   
       // 선진 part ----------------------------------------------------------------------
-    @Override
-    public ReviewDto reviewDetail(Integer reviewNo) throws Exception {
-        ReviewDto reviewDto = rimplRepository.findReviewByReviewNo(reviewNo);
-        List<String> tags = rimplRepository.findReviewTags(reviewNo);
-        reviewDto.setTagName(tags.toString());
-        return reviewDto;
-    }
+	  @Override
+	  public ReviewDetailDTO reviewDetail(Integer reviewNo) throws Exception {
+		  return detailRepository.findReviewByReviewNo(reviewNo);
+	  }
+
+	@Override
+	public boolean isLikeReview(Integer memNo, Integer reviewNo) throws Exception {
+		return likeRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+	}
+
+	@Override
+	@Transactional
+	public boolean toggleLikeReview(Integer memNo, Integer reviewNo) throws Exception {
+		Review review = reviewRepository.findByReviewNo(reviewNo);
+		Member member = memberRepository.findByMemNo(memNo);
+		boolean isLike = likeRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+		if(isLike) {
+			likeRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+			review.setLikeCount(review.getLikeCount() - 1);
+			return false; // 좋아요 취소
+		} else {
+			likeRepository.save(LikeReview.builder()
+					.member(member).review(review).build());
+			review.setLikeCount(review.getLikeCount() + 1);
+			return true;
+		}
+	}
 
 
     // 선진 part ----------------------------------------------------------------------
