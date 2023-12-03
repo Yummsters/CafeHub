@@ -6,24 +6,26 @@ const { kakao } = window;
 const ReviewDetail = () => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
+  const [like, setLike] = useState(false);
+  const [wish, setWish] = useState(false);
   const reviewNo = 1;
   const showReplyClick = () => {
     setShowReply(!showReply);
   };
 
-  useEffect(() => {
+  useEffect(() => { // 디테일 가져오기
     axios
       .get(`http://localhost:8080/review/${reviewNo}`)
       .then((res) => {
         setReview(res.data);
-        console.log(res.data.tagName);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
   }, [reviewNo]);
 
-  useEffect(() => {
+  useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
       const mapContainer = document.getElementById("detailMap"),
         mapOption = {
@@ -53,7 +55,7 @@ const ReviewDetail = () => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                <p>{review.tagName}</p>
+                <p>{review.tagNames.map((tag) => <span>#{tag}&nbsp;</span>)}</p>
               </div>
               <div className="infoR">
                 <span>{review.nickname}</span>&nbsp;|&nbsp;
@@ -66,9 +68,8 @@ const ReviewDetail = () => {
             <div id="detailMap"></div>
 
             <div className="starNheart">
-              <img src="/img/star.png" alt="star" />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <img src="/img/heart.png" alt="heart" />
+              <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" />
             </div>
             <div className="detailBtnBox">
               <div className="Gbtn">수정</div>
