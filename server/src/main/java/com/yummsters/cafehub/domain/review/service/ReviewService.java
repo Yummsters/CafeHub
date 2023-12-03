@@ -14,6 +14,8 @@ public interface ReviewService {
 	ReviewDetailDTO reviewDetail(Integer reviewNo) throws Exception; // 리뷰 상세 조회
 	boolean isLikeReview(Integer memNo, Integer reviewNo) throws Exception; // 회원의 리뷰 추천 여부
 	boolean toggleLikeReview(Integer memNo, Integer reviewNo) throws Exception; // 추천, 추천취소
+	boolean isWishReview(Integer memNo, Integer reviewNo) throws Exception; // 회원의 리뷰 찜 여부
+	boolean toggleWishReview(Integer memNo, Integer reviewNo) throws Exception; // 찜, 찜 취소
 
 
 	// 선진 part ----------------------------------------------------------------------

@@ -6,9 +6,8 @@ import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.domain.review.repository.LikeReviewRepository;
-import com.yummsters.cafehub.domain.review.repository.ReviewDetailRepository;
-import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
+import com.yummsters.cafehub.domain.review.entity.WishReview;
+import com.yummsters.cafehub.domain.review.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +28,9 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final FileVoRepository fileVoRepository;
 	private final ReviewDetailRepository detailRepository;
-	private final LikeReviewRepository likeRepository;
 	private final MemberRepository memberRepository;
+	private final LikeReviewRepository likeRepository;
+	private final WishReviewRepository wishRepository;
 
 	//리뷰작성
 	@Override
@@ -132,17 +131,35 @@ public class ReviewServiceImpl implements ReviewService {
 		boolean isLike = likeRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
 		if(isLike) {
 			likeRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
-			review.setLikeCount(review.getLikeCount() - 1);
-			return false; // 좋아요 취소
+			review.setLikeCount(review.getLikeCount() - 1); // 추천 수 증가
+			return false; // 추천 취소
 		} else {
-			likeRepository.save(LikeReview.builder()
-					.member(member).review(review).build());
-			review.setLikeCount(review.getLikeCount() + 1);
+			likeRepository.save(LikeReview.builder().member(member).review(review).build());
+			review.setLikeCount(review.getLikeCount() + 1); // 추천 수 증가
+			return true; // 추천
+		}
+	}
+
+	@Override
+	public boolean isWishReview(Integer memNo, Integer reviewNo) throws Exception {
+		return wishRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+	}
+
+	@Override
+	@Transactional
+	public boolean toggleWishReview(Integer memNo, Integer reviewNo) throws Exception {
+		Review review = reviewRepository.findByReviewNo(reviewNo);
+		Member member = memberRepository.findByMemNo(memNo);
+		boolean isWish = wishRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+		if(isWish) {
+			wishRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+			return false;
+		} else {
+			wishRepository.save(WishReview.builder().member(member).review(review).build());
 			return true;
 		}
 	}
 
-
-    // 선진 part ----------------------------------------------------------------------
+	// 선진 part ----------------------------------------------------------------------
 
 }

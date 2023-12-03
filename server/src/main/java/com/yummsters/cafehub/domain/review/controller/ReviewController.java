@@ -53,6 +53,8 @@ public class ReviewController {
 			res.put("review", review);
 			boolean isLike = reviewService.isLikeReview(2, reviewNo); // 수정 필요
 			res.put("isLike", isLike);
+			boolean isWish = reviewService.isWishReview(2, reviewNo); // 수정 필요
+			res.put("isWish", isWish);
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,7 +62,7 @@ public class ReviewController {
 		}
 	}
 
-	@GetMapping("/like/{memNo}/{reviewNo}")
+	@PostMapping("/like/{memNo}/{reviewNo}")
 	public ResponseEntity<Object> isLikeReview(@PathVariable Integer memNo, @PathVariable Integer reviewNo) {
 		try {
 			Map<String,Object> res = new HashMap<>();
@@ -69,6 +71,17 @@ public class ReviewController {
 			Integer likeCount = reviewService.reviewDetail(reviewNo).getLikeCount();
 			res.put("likeCount", likeCount);
 			return new ResponseEntity<>(res, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/wish/{memNo}/{reviewNo}")
+	public ResponseEntity<Boolean> isWishReview(@PathVariable Integer memNo, @PathVariable Integer reviewNo) {
+		try {
+			Boolean toggleWish = reviewService.toggleWishReview(memNo, reviewNo);
+			return new ResponseEntity<>(toggleWish, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
