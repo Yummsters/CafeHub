@@ -10,12 +10,12 @@ const ReviewDetail = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const reviewNo = 1;
-  const memNo = 1;
+  const memNo = 2;
   const showReplyClick = () => {
     setShowReply(!showReply);
   };
   const toggleLike = () => {
-    axios.get(`http://localhost:8080/like/${memNo}/${reviewNo}`)
+    axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
       .then((res) => {
         setLike(res.data.toggleLike);
         setLikeCount(res.data.likeCount);
@@ -26,7 +26,14 @@ const ReviewDetail = () => {
       });
   }
   const toggleWish = () => {
-    setWish(!wish);
+    axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
+    .then((res) => {
+      setWish(res.data);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.error("에러:" + error);
+    });
   }
 
   useEffect(() => { // 디테일 가져오기
@@ -35,6 +42,7 @@ const ReviewDetail = () => {
       .then((res) => {
         setReview(res.data.review);
         setLike(res.data.isLike);
+        setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
         console.log(res.data);
       })
