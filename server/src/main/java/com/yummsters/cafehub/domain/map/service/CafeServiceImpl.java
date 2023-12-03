@@ -2,7 +2,15 @@ package com.yummsters.cafehub.domain.map.service;
 
 import com.yummsters.cafehub.domain.map.dto.CafeDTO;
 import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.map.entity.WishCafe;
 import com.yummsters.cafehub.domain.map.repository.CafeRepository;
+import com.yummsters.cafehub.domain.map.repository.WishCafeRepository;
+import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.entity.WishReview;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import org.json.simple.JSONArray;
@@ -10,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,24 +28,15 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
-import com.yummsters.cafehub.domain.map.repository.CafeRepository;
-
-import lombok.extern.log4j.Log4j2;
-
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
-public class MapServiceImpl implements MapService {
-    @Autowired
-    private CafeRepository repository;
+public class CafeServiceImpl implements CafeService {
+    private final CafeRepository cafeRepository;
+    private final WishCafeRepository wishRepository;
+    private final MemberRepository memberRepository;
+
 
     @Override
     public void saveCafe() throws Exception {
@@ -84,18 +84,37 @@ public class MapServiceImpl implements MapService {
                 cafes.add(cafe);
             }
         }
-        repository.saveAll(cafes);
+        cafeRepository.saveAll(cafes);
     }
 
     @Override
     public List<CafeDTO> getCafes() throws Exception {
-        List<Cafe> cafeList = repository.findAll(); // Entity, DB의 모든 정보
-
+        List<Cafe> cafeList = cafeRepository.findAll(); // Entity, DB의 모든 정보
         List<CafeDTO> cafeDTOList = new ArrayList<>(); // DTO
         for (Cafe cafe : cafeList) {
-            CafeDTO cafeDTO = cafe.toDto(); // Entity -> DTO로 변환
+            CafeDTO cafeDTO = cafe.toDTO(); // Entity -> DTO로 변환
             cafeDTOList.add(cafeDTO); // 내용 복사
         }
         return cafeDTOList;
+    }
+
+    @Override
+    public boolean isWishCafe(Integer memNo, Integer cafeNo) throws Exception {
+        return wishRepository.existsByMember_memNoAndCafe_cafeNo(memNo, cafeNo);
+    }
+
+    @Override
+    @Transactional
+    public boolean toggleWishCafe(Integer memNo, Integer cafeNo) throws Exception {
+        Cafe cafe = cafeRepository.findByCafeNo(cafeNo);
+        Member member = memberRepository.findByMemNo(memNo);
+        boolean isWish = wishRepository.existsByMember_memNoAndCafe_cafeNo(memNo, cafeNo);
+        if(isWish) {
+            wishRepository.deleteByMember_memNoAndCafe_cafeNo(memNo, cafeNo);
+            return false;
+        } else {
+            wishRepository.save(WishCafe.builder().member(member).cafe(cafe).build());
+            return true;
+        }
     }
 }
