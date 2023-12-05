@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
+    Review findByReviewNo(Integer reviewNo);
 }
