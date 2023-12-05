@@ -1,11 +1,11 @@
 package com.yummsters.cafehub.domain.reply.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.yummsters.cafehub.domain.reply.entity.Reply;
 
+@Repository
 public interface ReplyRepository extends JpaRepository<Reply, Integer> {
-	Optional<Reply> findByReplyByNo(Integer replyNo);
+	Reply findByReplyNo(Integer replyNo);
 }
