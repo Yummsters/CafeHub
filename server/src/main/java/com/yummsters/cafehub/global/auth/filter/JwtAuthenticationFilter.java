@@ -76,11 +76,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = JWT.create()
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME))
-                .withClaim("memNo", principalDetails.getMember().getMemNo())
-                .withClaim("id", principalDetails.getUsername())
+                .withClaim("memNo", principalDetails.getUsername())
                 .sign(Algorithm.HMAC256(JwtProvider.SECRET));
-        System.out.println("access = " + accessToken);
+
+        String refreshToken = JWT.create()
+                .withSubject(principalDetails.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME*24))
+                .withClaim("memNo", principalDetails.getUsername())
+                .sign(Algorithm.HMAC256(JwtProvider.SECRET));
+
+        // token 헤더에 허용하기 위한 설정
+        response.addHeader("Access-Control-Expose-Headers", JwtProvider.REFRESH_STRING);
         response.addHeader(JwtProvider.HEADER_STRING, JwtProvider.TOKEN_PREFIX+accessToken);
+        response.addHeader(JwtProvider.REFRESH_STRING, JwtProvider.TOKEN_PREFIX+refreshToken);
+
 
         // member를 가지고 와서 바디에 넣어줌
         Member member = principalDetails.getMember();

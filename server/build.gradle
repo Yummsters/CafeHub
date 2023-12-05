@@ -62,6 +62,11 @@ dependencies {
 
 	implementation 'com.auth0:java-jwt:3.19.2' // 토큰 생성을 위해 추가
 
+	// 토큰 관련 에러 처리를 위해 추가
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly	'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
 }
 
 tasks.named('bootBuildImage') {
