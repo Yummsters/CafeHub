@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.mypage.service;
 
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.mypage.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.mypage.dto.WishStoreDTO;
 import com.yummsters.cafehub.domain.mypage.repository.UserRepository;
 import com.yummsters.cafehub.domain.review.repository.*;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
@@ -18,6 +19,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<WishReviewDTO> getWishReviewList(Integer memNo) throws Exception {
         return dslRepository.findWishReviewList(memNo);
+    }
+
+    @Override
+    public List<WishStoreDTO> getWishStoreList(Integer memNo) throws Exception {
+        return dslRepository.findWishStoreList(memNo);
     }
 
     // 선진 part ----------------------------------------------------------------------

@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.mypage.controller;
 
 import com.yummsters.cafehub.domain.mypage.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.mypage.dto.WishStoreDTO;
 import com.yummsters.cafehub.domain.mypage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     // 선진 part ----------------------------------------------------------------------
-    @GetMapping("member/wishStoreList/{memNo}")
+    @GetMapping("member/wishReviewList/{memNo}")
     public ResponseEntity<Object> getWishReview(@PathVariable Integer memNo) {
         try {
             List<WishReviewDTO> wishReviewList = userService.getWishReviewList(memNo);
@@ -27,4 +28,16 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("member/wishStoreList/{memNo}")
+    public ResponseEntity<Object> getWishStore(@PathVariable Integer memNo) {
+        try {
+            List<WishStoreDTO> wishStoreList = userService.getWishStoreList(memNo);
+            return new ResponseEntity<>(wishStoreList, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    // 선진 part ----------------------------------------------------------------------
+
 }

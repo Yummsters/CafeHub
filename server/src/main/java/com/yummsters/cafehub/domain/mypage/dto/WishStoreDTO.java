@@ -7,9 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WishReviewDTO {
-    private Integer reviewNo;
+public class WishStoreDTO {
+    private Integer cafeNo;
     private String thumbImg;
-    private String nickname;
     private String cafeName;
 }
