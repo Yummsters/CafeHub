@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.review.entity.WishReview;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
@@ -16,6 +18,7 @@ public interface ReviewService {
 	boolean toggleLikeReview(Integer memNo, Integer reviewNo) throws Exception; // 추천, 추천취소
 	boolean isWishReview(Integer memNo, Integer reviewNo) throws Exception; // 회원의 리뷰 찜 여부
 	boolean toggleWishReview(Integer memNo, Integer reviewNo) throws Exception; // 찜, 찜 취소
+	List<WishReviewDTO> getWishReviewList(Integer memNo) throws Exception; // 리뷰 찜 목록
 
 
 	// 선진 part ----------------------------------------------------------------------

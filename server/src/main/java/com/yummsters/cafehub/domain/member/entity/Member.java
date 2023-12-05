@@ -69,7 +69,7 @@ public class Member {
         this.memberType = memberType;
     }
     
-    @Builder
+    @Builder(builderMethodName = "noBuilder")
     public Member(Integer memNo, String nickname) {
     	this.memNo = memNo;
     	this.nickname = nickname;

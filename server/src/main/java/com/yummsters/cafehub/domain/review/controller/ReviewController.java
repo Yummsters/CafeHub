@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.WishReviewDTO;
 import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.entity.WishReview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,6 +84,17 @@ public class ReviewController {
 		try {
 			Boolean toggleWish = reviewService.toggleWishReview(memNo, reviewNo);
 			return new ResponseEntity<>(toggleWish, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping("member/wishStoreList/{memNo}")
+	public ResponseEntity<Object> getWishReview(@PathVariable Integer memNo) {
+		try {
+			List<WishReviewDTO> wishReviewList = reviewService.getWishReviewList(memNo);
+			return new ResponseEntity<>(wishReviewList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -4,6 +4,7 @@ package com.yummsters.cafehub.domain.review.service;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.WishReviewDTO;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.WishReview;
@@ -27,7 +28,7 @@ import com.yummsters.cafehub.domain.review.entity.FileVo;
 public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final FileVoRepository fileVoRepository;
-	private final ReviewDetailRepository detailRepository;
+	private final ReviewRepositoryImpl dslRepository;
 	private final MemberRepository memberRepository;
 	private final LikeReviewRepository likeRepository;
 	private final WishReviewRepository wishRepository;
@@ -113,7 +114,7 @@ public class ReviewServiceImpl implements ReviewService {
       // 선진 part ----------------------------------------------------------------------
 	  @Override
 	  public ReviewDetailDTO reviewDetail(Integer reviewNo) throws Exception {
-		  return detailRepository.findReviewByReviewNo(reviewNo);
+		  return dslRepository.findReviewByReviewNo(reviewNo);
 	  }
 
 	@Override
@@ -156,6 +157,11 @@ public class ReviewServiceImpl implements ReviewService {
 			wishRepository.save(WishReview.builder().member(member).review(review).build());
 			return true;
 		}
+	}
+
+	@Override
+	public List<WishReviewDTO> getWishReviewList(Integer memNo) throws Exception {
+		return dslRepository.findWishReviewList(memNo);
 	}
 
 	// 선진 part ----------------------------------------------------------------------

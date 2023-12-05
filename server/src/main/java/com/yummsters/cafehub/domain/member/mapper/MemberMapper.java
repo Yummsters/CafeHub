@@ -17,6 +17,7 @@ public interface MemberMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "memberType", ignore = true)
     @Mapping(target = "memNo", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
     Member signUpReqDtoToMember(SignUpReqDto signUpReqDto);
 
     SignUpResDto memberToSignUpResDto(Member member);
@@ -30,6 +31,7 @@ public interface MemberMapper {
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "phone", ignore = true)
     @Mapping(target = "memNo", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
     Member deleteReqDtoToMember(DeleteReqDto deleteReqDto);
 
     TokenResDto memberToTokenResDto(Member member);
