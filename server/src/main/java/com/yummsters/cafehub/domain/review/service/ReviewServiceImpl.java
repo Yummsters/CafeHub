@@ -35,8 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
 	//리뷰작성
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
-		System.out.println("33333");
-
+		
 		if (files != null && files.size()!= 0) {
 			String dir = "c:/soobin/upload/";
 			String fileNums = "";
@@ -67,8 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
 				if (!fileNums.equals(""))
 					fileNums += ",";
 				fileNums += fileVo.getFileNum();
-				System.out.println("11111"+fileNums);
-				System.out.println("22222"+fileVo.getFileNum());
+				
 				
 			}
 			// 파일 번호 목록을 썸네일 이미지로 사용
