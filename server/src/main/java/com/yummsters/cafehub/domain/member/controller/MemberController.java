@@ -64,6 +64,7 @@ public class MemberController {
     @PostMapping("/signUpUser")
     public ResponseEntity<Object> signUpUser(@RequestBody SignUpReqDto requestDto){
         Member member = mapper.signUpReqDtoToMember(requestDto);
+        System.out.println(member);
         try{
             member = memberService.existMember(member);
             SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);

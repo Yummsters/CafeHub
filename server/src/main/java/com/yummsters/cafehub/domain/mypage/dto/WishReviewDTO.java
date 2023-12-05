@@ -1,4 +1,4 @@
-package com.yummsters.cafehub.domain.review.dto;
+package com.yummsters.cafehub.domain.mypage.dto;
 
 import lombok.*;
 

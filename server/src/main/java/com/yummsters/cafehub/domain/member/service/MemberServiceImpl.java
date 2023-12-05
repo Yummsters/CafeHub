@@ -46,6 +46,8 @@ public class MemberServiceImpl implements MemberService{
         if(checkMember != null){
             throw new Exception("중복된 회원입니다");
         }
+        System.out.println(member.getEmail());
+        System.out.println(member);
 
         member = Member.builder()
                     .id(member.getId())

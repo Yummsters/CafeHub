@@ -4,7 +4,7 @@ package com.yummsters.cafehub.domain.review.service;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
-import com.yummsters.cafehub.domain.review.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.mypage.dto.WishReviewDTO;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.WishReview;
@@ -157,11 +157,6 @@ public class ReviewServiceImpl implements ReviewService {
 			wishRepository.save(WishReview.builder().member(member).review(review).build());
 			return true;
 		}
-	}
-
-	@Override
-	public List<WishReviewDTO> getWishReviewList(Integer memNo) throws Exception {
-		return dslRepository.findWishReviewList(memNo);
 	}
 
 	// 선진 part ----------------------------------------------------------------------
