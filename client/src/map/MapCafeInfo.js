@@ -1,16 +1,30 @@
+import axios from "axios";
 import React from "react";
+import { useState } from "react";
 import { Table } from "reactstrap";
 
-const MapCafeInfo = ({ selectCafe, setSelectCafe }) => {
-    // null이 아닌 정보만 띄울 수 있게 만들기
-    const cafeInfo = (name, src, col, text) => {
-        return text !== null && text !== "" ? (
-          <div className={name}>
-            <img src={src} alt="" />
-            <div className={col}>{text}</div>
-          </div>
-        ) : null;
-      };
+const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
+  const memNo = 2; // 임시
+  // null이 아닌 정보만 띄울 수 있게 만들기
+  const cafeInfo = (name, src, col, text) => {
+      return text !== null && text !== "" ? (
+        <div className={name}>
+          <img src={src} alt="" />
+          <div className={col}>{text}</div>
+        </div>
+      ) : null;
+    };
+
+  const toggleWish = () => {
+    axios.post(`http://localhost:8080/cafeWish/${memNo}/${selectCafe.cafeNo}`)
+    .then((res) => {
+      setWish(res.data);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.error("에러:" + error);
+    });
+  }
 
   return (
     <div style={{ flex: selectCafe ? 1 : 0 }}>
@@ -24,13 +38,13 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe }) => {
         />
 
         <div className="store">
-          <img src="/img/store.png" alt="" />
-          {selectCafe.cafeName}
+          <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} />
+          <span>{selectCafe.cafeName}</span>
         </div>
 
         {selectCafe.thumbImg !== null ? ( 
             <div className="storeImag">
-              <img src="/img/{selectCafe.tel}" alt="" />
+              <img src="/img/{selectCafe.thumbImg}" alt="" />
             </div>
           ) : null}
         <div className="storeLine" />
