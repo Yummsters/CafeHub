@@ -25,15 +25,6 @@ import com.yummsters.cafehub.domain.review.entity.FileVo;
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
-<<<<<<< HEAD
-	@Autowired
-	private ReviewRepository reviewRepository;
-	@Autowired
-	private FileVoRepository fileVoRepository;
-	@Autowired
-	private ReviewRepositoryImpl rimplRepository;
-	
-=======
 	private final ReviewRepository reviewRepository;
 	private final FileVoRepository fileVoRepository;
 	private final ReviewDetailRepository detailRepository;
@@ -41,7 +32,6 @@ public class ReviewServiceImpl implements ReviewService {
 	private final LikeReviewRepository likeRepository;
 	private final WishReviewRepository wishRepository;
 
->>>>>>> refs/heads/dev_be
 	//리뷰작성
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
