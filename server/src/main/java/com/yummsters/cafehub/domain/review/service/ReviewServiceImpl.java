@@ -1,32 +1,46 @@
 package com.yummsters.cafehub.domain.review.service;
 
-import java.io.File;
-import java.io.OutputStream;
+
+import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.entity.LikeReview;
+import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.entity.WishReview;
+import com.yummsters.cafehub.domain.review.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.io.File;
+import java.io.OutputStream;
+
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
-import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
-	@Autowired
-	private ReviewRepository reviewRepository;
-	@Autowired
-	private FileVoRepository fileVoRepository;
-	
+	private final ReviewRepository reviewRepository;
+	private final FileVoRepository fileVoRepository;
+	private final ReviewDetailRepository detailRepository;
+	private final MemberRepository memberRepository;
+	private final LikeReviewRepository likeRepository;
+	private final WishReviewRepository wishRepository;
+
 	//리뷰작성
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
+		System.out.println("33333");
+
 		if (files != null && files.size()!= 0) {
 			String dir = "c:/soobin/upload/";
 			String fileNums = "";
+			
 			for (MultipartFile file : files) {
 				
 				FileVo fileVo = FileVo.builder()
@@ -34,12 +48,17 @@ public class ReviewServiceImpl implements ReviewService {
 						.name(file.getOriginalFilename())
 						.size(file.getSize())
 						.contenttype(file.getContentType())
-						.data(file.getBytes()).build();
+						.data(file.getBytes())
+						.build();
 				
 				fileVoRepository.save(fileVo);
-	           
+
+//	            // upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
+	            String originalFilePath = dir + fileVo.getName();
+
+//	            // 리뷰에 썸네일 이미지를 직접 추가
 //				// upload 폴더에 upload
-				File uploadFile = new File(dir + fileVo.getReviewNo());
+				File uploadFile = new File(dir + fileVo.getFileNum());
 				System.out.println("File Path: " + uploadFile.getAbsolutePath());
 
 				file.transferTo(uploadFile);
@@ -47,23 +66,21 @@ public class ReviewServiceImpl implements ReviewService {
 				// file번호 목록 만들기
 				if (!fileNums.equals(""))
 					fileNums += ",";
-				fileNums += fileVo.getReviewNo();
+				fileNums += fileVo.getFileNum();
+				System.out.println("11111"+fileNums);
+				System.out.println("22222"+fileVo.getFileNum());
+				
 			}
-			review.setFileurl(fileNums); // 1,2,3
+			// 파일 번호 목록을 썸네일 이미지로 사용
+			review.setThumbImg(fileNums);
 			
+
 		}
+		
 		// table에 insert
 		Review reviewEntity = review.toEntity();
 		reviewRepository.save(reviewEntity);
 		return reviewEntity.getReviewNo();
-	}
-	
-	
-
-	@Override
-	public ReviewDto reviewDetail(Integer reviewNo) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	@Override
@@ -94,8 +111,55 @@ public class ReviewServiceImpl implements ReviewService {
 //		ReviewDto reviewDto = modelMapper.map(cafel.get(), ReviewDto.class);
 //		return reviewDto;
 //	}
-	
+  
+      // 선진 part ----------------------------------------------------------------------
+	  @Override
+	  public ReviewDetailDTO reviewDetail(Integer reviewNo) throws Exception {
+		  return detailRepository.findReviewByReviewNo(reviewNo);
+	  }
 
-	
+	@Override
+	public boolean isLikeReview(Integer memNo, Integer reviewNo) throws Exception {
+		return likeRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+	}
+
+	@Override
+	@Transactional
+	public boolean toggleLikeReview(Integer memNo, Integer reviewNo) throws Exception {
+		Review review = reviewRepository.findByReviewNo(reviewNo);
+		Member member = memberRepository.findByMemNo(memNo);
+		boolean isLike = likeRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+		if(isLike) {
+			likeRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+			review.setLikeCount(review.getLikeCount() - 1); // 추천 수 증가
+			return false; // 추천 취소
+		} else {
+			likeRepository.save(LikeReview.builder().member(member).review(review).build());
+			review.setLikeCount(review.getLikeCount() + 1); // 추천 수 증가
+			return true; // 추천
+		}
+	}
+
+	@Override
+	public boolean isWishReview(Integer memNo, Integer reviewNo) throws Exception {
+		return wishRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+	}
+
+	@Override
+	@Transactional
+	public boolean toggleWishReview(Integer memNo, Integer reviewNo) throws Exception {
+		Review review = reviewRepository.findByReviewNo(reviewNo);
+		Member member = memberRepository.findByMemNo(memNo);
+		boolean isWish = wishRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+		if(isWish) {
+			wishRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
+			return false;
+		} else {
+			wishRepository.save(WishReview.builder().member(member).review(review).build());
+			return true;
+		}
+	}
+
+	// 선진 part ----------------------------------------------------------------------
 
 }

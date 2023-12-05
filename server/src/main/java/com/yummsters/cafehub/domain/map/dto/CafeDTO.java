@@ -25,22 +25,5 @@ public class CafeDTO {
     private boolean isPaid;
     private Date paidDate;
     private boolean isExisting;
-
-    public Cafe toEntity() {
-        return Cafe.builder()
-                .cafeNo(cafeNo)
-                .cafeName(cafeName)
-                .tel(tel)
-                .businessNo(businessNo)
-                .address(address)
-                .operTime(operTime)
-                .thumbImg(thumbImg)
-                .tagName(tagName)
-                .lat(lat)
-                .lng(lng)
-                .isPaid(isPaid)
-                .paidDate(paidDate)
-                .isExisting(isExisting)
-                .build();
-    }
+    private String cafeInfo;
 }
