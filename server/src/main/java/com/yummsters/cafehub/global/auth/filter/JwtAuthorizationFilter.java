@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.global.auth.filter;
 
+import io.jsonwebtoken.*;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.yummsters.cafehub.domain.member.entity.Member;
@@ -17,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -38,8 +38,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String accessToken = header.replace(JwtProvider.TOKEN_PREFIX, "");
-        String id = JWT.require(Algorithm.HMAC256(JwtProvider.SECRET)).build().verify(accessToken)
-                .getClaim("id").asString();
+        String id = null;
+        try{
+            id = JWT.require(Algorithm.HMAC256(JwtProvider.SECRET)).build().verify(accessToken)
+                    .getClaim("memNo").asString();
+        } catch (ExpiredJwtException e) {
+            response.sendError(501, "TOKEN_EXPIRED");
+        } catch (Exception e) {
+            response.sendError(502, "ERROR");
+        }
+
         if(id != null){
             Member member = memberRepository.findById(id);
             PrincipalDetails principalDetails = new PrincipalDetails(member);
