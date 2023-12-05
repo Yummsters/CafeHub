@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService{
 
     // 사용자, 사장 회원탈퇴
     @Override
-    public void deleteMember(Integer memNo, String password) throws Exception {
+    public Boolean deleteMember(Integer memNo, String password) throws Exception {
         Member member = memberRepository.findByMemNo(memNo);
         if(member == null){
             throw new Exception("존재하지 않는 회원입니다.");
@@ -73,10 +73,11 @@ public class MemberServiceImpl implements MemberService{
         }
         boolean match = bCryptPasswordEncoder.matches(password, member.getPassword());
         if(!match){
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            return false;
         }
         // 추후 사장 회원의 경우 커피콩 개수에 따른 Exception 발생 필요
         member.changeStatus(false);
         memberRepository.save(member);
+        return true;
     }
 }

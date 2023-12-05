@@ -84,12 +84,12 @@ public class MemberController {
     }
 
     // 사장, 사용자(소셜x) 회원 탈퇴
-    @DeleteMapping("/member/delete/{memNo}")
+    @PostMapping("/member/delete/{memNo}")
     public ResponseEntity<Object> deleteMember(@PathVariable Integer memNo, @RequestBody DeleteReqDto requestDto){
         Member member = mapper.deleteReqDtoToMember(requestDto);
         try{
-            memberService.deleteMember(memNo, member.getPassword());
-            return new ResponseEntity<>("회원 탈퇴 완료", HttpStatus.NO_CONTENT);
+            boolean deleteResult = memberService.deleteMember(memNo, member.getPassword());
+            return new ResponseEntity<>(deleteResult, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
             System.out.println(e.getMessage());
