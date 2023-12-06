@@ -76,13 +76,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = JWT.create()
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME))
-                .withClaim("memNo", principalDetails.getUsername())
+                .withClaim("id", principalDetails.getUsername())
                 .sign(Algorithm.HMAC256(JwtProvider.SECRET));
 
         String refreshToken = JWT.create()
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME*24))
-                .withClaim("memNo", principalDetails.getUsername())
+                .withClaim("id", principalDetails.getUsername())
                 .sign(Algorithm.HMAC256(JwtProvider.SECRET));
 
         // token 헤더에 허용하기 위한 설정
