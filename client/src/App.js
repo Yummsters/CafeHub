@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, BrowserRouter } from 'react-rou
 import { persistStore } from 'redux-persist';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import {useEffect} from 'react';
 import Main from './main/Main';
 import ReviewList from './reviewList/ReviewList';
 import LoginPage from './login/LoginPage';
@@ -39,6 +40,13 @@ import OAuth2 from './login/OAuth2';
 export const persistor = persistStore(store);
 function App() {
 
+  useEffect(()=>{
+    window.onbeforeunload = () =>{ // 브라우저가 닫힐 때
+      persistor.purge();
+    }
+  },[])
+
+
   const DefaultLayout = ({ children }) => (
     <div>
        <Provider store={store}>
@@ -61,6 +69,7 @@ function App() {
     </Provider>
     </div>
   );
+
 
   return (
     <BrowserRouter>

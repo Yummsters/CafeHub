@@ -99,9 +99,6 @@ const Header = () => {
         e.preventDefault();
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
-        dispatch({type:"isLogin", payload:false});
-        dispatch({type:"member", payload:''});
-        dispatch({type:"accessToken", payload:''});
         removeCookie("refreshToken");
 
         persistor.purge();
