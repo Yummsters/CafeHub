@@ -35,6 +35,19 @@ const Header = () => {
     const mypage = (e) =>{
         e.preventDefault();
 
+        axios.get(`http://localhost:8080/member`,{
+            headers : {
+                Authorization : accessToken
+            }
+        })
+        .then(res=>{
+            console.log(res);
+            navigate("/");
+        })
+        .catch(err =>{
+            console.log(err);
+        })
+
         if(!isLogin){
             Toast.fire({
                 icon: 'error',

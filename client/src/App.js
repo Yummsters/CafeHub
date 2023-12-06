@@ -34,6 +34,7 @@ import StoreReview from './storeMyPage/StoreReview';
 import StoreClose from './storeMyPage/StoreClose';
 import StoreBanner from './storeMyPage/StoreBanner';
 import store from './persist-store';
+import OAuth2 from './login/OAuth2';
 
 export const persistor = persistStore(store);
 function App() {
@@ -91,6 +92,8 @@ function App() {
               <Route exact path='/keypad' element={<NoHeaderFooterLayout><Keypad/></NoHeaderFooterLayout>}/>
               <Route exact path='/storeReview' element={<DefaultLayout><StoreReview/></DefaultLayout>}/>
               <Route exact path='/storeBanner' element={<DefaultLayout><StoreBanner/></DefaultLayout>}/>
+              <Route exact path='/oauth2/redirect/:accessToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
+
             </Routes>
        </BrowserRouter>
   );
