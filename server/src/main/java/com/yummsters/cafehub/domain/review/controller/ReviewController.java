@@ -19,7 +19,7 @@ import com.yummsters.cafehub.domain.review.service.ReviewService;
 public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
-	
+//	
 //	@GetMapping("/cafelist")
 //	public ResponseEntity<Object>cafelist(){
 //		try {
@@ -31,6 +31,7 @@ public class ReviewController {
 //			return new ResponseEntity<Object>(e.getMessage(),HttpStatus.BAD_REQUEST);
 //		}
 //	}
+	
 	@PostMapping("/reviewwrite")
 	public ResponseEntity<Integer> reviewWrite(@ModelAttribute ReviewDto review,
 	                                          @RequestParam("file") List<MultipartFile> files) {

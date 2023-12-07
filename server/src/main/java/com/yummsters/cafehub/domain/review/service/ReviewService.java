@@ -3,9 +3,10 @@ package com.yummsters.cafehub.domain.review.service;
 import java.io.OutputStream;
 import java.util.List;
 
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 
 public interface ReviewService {
