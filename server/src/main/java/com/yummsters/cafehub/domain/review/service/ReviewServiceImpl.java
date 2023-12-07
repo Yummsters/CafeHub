@@ -8,6 +8,7 @@ import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.WishReview;
 import com.yummsters.cafehub.domain.review.repository.*;
+import com.yummsters.cafehub.domain.review.repository.WishReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
