@@ -91,6 +91,26 @@ public class MemberServiceImpl implements MemberService{
         return true;
     }
 
+    // 소셜 회원탈퇴
+    @Override
+    public Boolean deleteSocialMember(Integer memNo, String email) throws Exception {
+        Member member = memberRepository.findByMemNo(memNo);
+        if(member == null){
+            throw new Exception("존재하지 않는 회원입니다.");
+        }
+        if(member.getSocial().equals(Social.NORMAL)){
+            throw new Exception("웹사이트 자체 회원입니다. 소셜 탈퇴를 이용하세요.");
+        }
+        boolean match = member.getEmail().equals(email);
+
+        if(!match){
+            return false;
+        }
+        member.changeStatus(false);
+        memberRepository.save(member);
+        return true;
+    }
+
     // 휴대폰 번호로 회원 조회
     @Override
     public Member phoneSearch(String phone) throws Exception {

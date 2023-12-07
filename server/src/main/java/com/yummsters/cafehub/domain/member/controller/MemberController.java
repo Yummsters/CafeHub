@@ -1,6 +1,6 @@
 package com.yummsters.cafehub.domain.member.controller;
 
-import com.yummsters.cafehub.domain.member.dto.TokenResDto;
+import com.yummsters.cafehub.domain.member.dto.*;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yummsters.cafehub.domain.member.dto.DeleteReqDto;
-import com.yummsters.cafehub.domain.member.dto.SignUpReqDto;
-import com.yummsters.cafehub.domain.member.dto.SignUpResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.domain.member.service.MemberService;
@@ -83,11 +80,29 @@ public class MemberController {
     }
 
     // 사장, 사용자(소셜x) 회원 탈퇴
-    @PostMapping("/member/delete/{memNo}")
-    public ResponseEntity<Object> deleteMember(@PathVariable Integer memNo, @RequestBody DeleteReqDto requestDto){
+    @PostMapping("/member/delete/normal/{memNo}")
+    public ResponseEntity<Object> deleteNormalMember(@PathVariable Integer memNo, @RequestBody DeleteReqDto requestDto){
         Member member = mapper.deleteReqDtoToMember(requestDto);
         try{
             boolean deleteResult = memberService.deleteMember(memNo, member.getPassword());
+            return new ResponseEntity<>(deleteResult, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 소셜 회원 탈퇴
+    @PostMapping("/member/delete/social/{memNo}")
+    public ResponseEntity<Object> deleteSocialMember(@PathVariable Integer memNo, @RequestBody DeleteSocialDto requestDto){
+        Member member = mapper.deleteSocialReqDtoToMember(requestDto);
+        try{
+            // 서비스 이메일에 맞게 수정 필요
+            boolean deleteResult = memberService.deleteSocialMember(memNo, member.getEmail());
+
+            // deleteResult가 true일 경우 api를 이용한 탈퇴 구현 진행할 예정이라면 로직 추가 필요
+
             return new ResponseEntity<>(deleteResult, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
