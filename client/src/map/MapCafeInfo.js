@@ -37,7 +37,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
           onClick={() => setSelectCafe(null)}
         />
 
-        <div className="store">
+        <div className="storebox">
           <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} />
           <span>{selectCafe.cafeName}</span>
         </div>
