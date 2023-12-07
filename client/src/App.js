@@ -42,13 +42,6 @@ import OAuth2 from './login/OAuth2';
 export const persistor = persistStore(store);
 function App() {
 
-  useEffect(()=>{
-    window.onbeforeunload = () =>{ // 브라우저가 닫힐 때
-      persistor.purge();
-    }
-  },[])
-
-
   const DefaultLayout = ({ children }) => (
     <div>
        <Provider store={store}>
