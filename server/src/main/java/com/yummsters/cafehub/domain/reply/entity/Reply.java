@@ -54,11 +54,21 @@ public class Reply {
     private LocalDateTime regDate;
  
     @Builder
-    public Reply(String content, Review review, Integer depth, Member member, int likeCount) {
-        this.content = content;
+    public Reply(Integer replyNo, String content, Review review, Integer depth, Member member, int likeCount) {
+        this.replyNo = replyNo;
+    	this.content = content;
         this.review = review;
         this.depth = depth;
         this.member = member;
         this.likeCount = likeCount;
     }
+    
+    public void decreaseLikeCount() {
+    	this.likeCount--;
+    }
+    
+    public void increaseLikeCount() {
+    	this.likeCount++;
+    }
+    
 }

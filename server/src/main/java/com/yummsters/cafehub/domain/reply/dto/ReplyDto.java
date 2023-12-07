@@ -31,10 +31,11 @@ public class ReplyDto {
 
 	public Reply toEntity() {
 		return Reply.builder()
+				.replyNo(replyNo)
 				.content(content)
 				.review(review)
 				.depth(depth)
-				.member(Member.builder().memNo(writerNo).nickname(nickname).build())
+				.member(Member.noBuilder().memNo(writerNo).nickname(nickname).build())
 				.likeCount(likeCount)
 				.build();
 	}
