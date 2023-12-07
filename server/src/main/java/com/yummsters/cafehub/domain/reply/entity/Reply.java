@@ -70,4 +70,5 @@ public class Reply {
     public void increaseLikeCount() {
     	this.likeCount++;
     }
+    
 }

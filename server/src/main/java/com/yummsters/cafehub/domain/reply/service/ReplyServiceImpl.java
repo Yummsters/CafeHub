@@ -1,5 +1,7 @@
 package com.yummsters.cafehub.domain.reply.service;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +9,7 @@ import com.yummsters.cafehub.domain.likeReply.entity.LikeReply;
 import com.yummsters.cafehub.domain.likeReply.repository.LikeReplyRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.reply.repository.ReplyRepository;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -17,13 +20,10 @@ public class ReplyServiceImpl implements ReplyService {
 		
 	@Autowired
 	private ReviewRepository reviewRepository;
-	
 	@Autowired
 	private ReplyRepository replyRepository;
-	
 	@Autowired
 	private MemberRepository memberRepository;
-	
 	@Autowired
 	private LikeReplyRepository likeReplyRepository;
 	
@@ -76,5 +76,28 @@ public class ReplyServiceImpl implements ReplyService {
 		} else {
 			throw new Exception("존재하지 않는 댓글입니다.");
 		}
+	}
+
+	@Override
+	@Transactional
+	public void addReReply(Integer replyNo, ReplyDto replyDto) {
+		Reply parentReply = replyRepository.findByReplyNo(replyNo);
+
+        if (parentReply != null) {
+            Review review = parentReply.getReview();
+            Member member = memberRepository.findByMemNo(replyDto.getWriterNo());
+
+            Reply reReply = Reply.builder()
+                    .content(replyDto.getContent())
+                    .review(review)
+                    .depth(parentReply.getDepth() + 1) // 댓글의 depth 증가
+                    .member(member)
+                    .likeCount(replyDto.getLikeCount())
+                    .build();
+
+            replyRepository.save(reReply);
+        } else {
+            throw new IllegalArgumentException("원댓글을 찾을 수 없습니다.");
+        }
 	}
 }
