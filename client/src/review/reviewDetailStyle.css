@@ -38,7 +38,7 @@
     justify-content: space-between;
 }
 
-.detailInfo img, .replyInfo .infoT img, .comment img {
+.detailInfo img, .replyInfo .infoT img, .reReplyInfo .infoT img, .comment img {
     width: 25px; height: 25px;
     margin-right: 10px;
     align-self: flex-start;
@@ -127,18 +127,18 @@
     text-decoration: underline;
 }
 
-.replyInfo p {
+.replyInfo p, .reReplyInfo p {
     display: flex;
     align-items: center;
     margin: 5px 0;
 }
 
-.replyInfo .infoB img {
+.replyInfo .infoB img, .reReplyInfo .infoB img {
     width: 60px; height: 35px;
     margin-right: 10px;
 }
 
-.replyInfo .comment {
+.replyInfo .comment, .reReplyInfo .comment {
     width: 96%;
     margin-left: auto;
 }
