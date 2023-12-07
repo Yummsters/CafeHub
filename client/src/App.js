@@ -38,7 +38,7 @@ import store from './persist-store';
 import ChoicePoint from './storeMyPage/ChoicePoint';
 import UsePoint from './storeMyPage/UsePoint';
 import OAuth2 from './login/OAuth2';
-import OAuth2Err from './login/\bOAuth2Err';
+import OAuth2Err from './login/OAuth2Err';
 
 export const persistor = persistStore(store);
 function App() {
@@ -101,7 +101,6 @@ function App() {
               <Route exact path='/usePoint/:memNo' element={<NoHeaderFooterLayout><UsePoint/></NoHeaderFooterLayout>}/>
               <Route exact path='/oauth2/redirect/:accessToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
               <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
-
             </Routes>
        </BrowserRouter>
   );
