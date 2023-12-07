@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapCafeInfo from "./MapCafeInfo";
+import axios from "axios";
 
 const { kakao } = window;
 
 const MapLayout = ({ cafes }) => {
   const [selectCafe, setSelectCafe] = useState(null);
+  const [wish, setWish] = useState(false);
 
   useEffect(() => {
     var mapContainer = document.getElementById("mapView"),
@@ -39,7 +41,18 @@ const MapLayout = ({ cafes }) => {
       });
 
       kakao.maps.event.addListener(marker, "click", function () {
-        setSelectCafe(cafe); // 클릭한 카페 정보 상태에 저장
+        // 클릭한 카페 정보 상태에 저장
+        setSelectCafe(cafe);
+        console.log(cafe);
+
+        // 클릭한 카페에 대해 현재 회원의 찜 여부
+        axios.get(`http://localhost:8080/cafeIsWish/2/${cafe.cafeNo}`) 
+        .then((res) => {
+            setWish(res.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       });
     });
 
@@ -57,7 +70,7 @@ const MapLayout = ({ cafes }) => {
   return (
     <div style={{ display: "flex" }}>
       <div id="mapView" style={{ flex: selectCafe ? 3 : "none" }}></div>
-      <MapCafeInfo selectCafe={selectCafe} setSelectCafe={setSelectCafe}/>
+      <MapCafeInfo selectCafe={selectCafe} setSelectCafe={setSelectCafe} wish={wish} setWish={setWish}/>
     </div>
   );
 };
