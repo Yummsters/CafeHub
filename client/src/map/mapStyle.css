@@ -27,12 +27,18 @@
     margin-left: 93%;
 }
 
-.store {
-    position:relative;
-    margin-left: 30%;
+.storebox {
+    display: flex;
     font-size: 30px;
-    
+    justify-content: center;
+    align-items: center;
 }
+.storebox > img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
 .store_name{
     position:absolute;
     bottom: 5px;

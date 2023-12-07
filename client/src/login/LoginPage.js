@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import {useDispatch} from 'react-redux';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { getCookie, setCookie } from '../components/Cookie';
 
 
 const LoginPage = () =>{
@@ -54,16 +55,37 @@ const Toast = Swal.mixin({
       axios.post(`http://localhost:8080/login`, userLogin)
       .then(res=>{  
         // 토큰과 회원정보 저장
-        console.log(res.data);
-        dispatch({type:"token", payload:res.headers.authorization});
+        dispatch({type:"isLogin", payload:true});
         dispatch({type:"member", payload:res.data});
+        dispatch({type:"accessToken", payload:res.headers.authorization});
+
+        // refreshtoken을 쿠키에 담아서 저장
+         const refreshToken = res.headers.refresh;
+         console.log(res.headers);
+         console.log(res);
+         setCookie("refreshToken", `${refreshToken}`);
+         console.log("cookie = " + getCookie("refreshToken"));
+
+
+        Toast.fire({
+          icon: 'success',
+          title: '로그인 완료되었습니다'
+      })
+      setTimeout(() => {
         navigate("/");
+      }, 700); 
       })
       .catch(err =>{
-        console.log(err.response.data.status);
+        //console.log(err.response.data.status);
         const errStatus = err.response.data.status;
-        // 사장이 회원 페이지에서 로그인 한 경우
-        if(errStatus === 990){
+        // 로그인 에러
+        if(errStatus === 401){
+          Toast.fire({
+            icon: 'error',
+            title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
+        })
+        navigate('/signUpUser');
+        }else if(errStatus === 990){
           Toast.fire({
             icon: 'error',
             title: '사장 회원은 사장 로그인을 이용해 주세요'
@@ -133,15 +155,37 @@ const Toast = Swal.mixin({
     if(submitStoreCheck){
       axios.post(`http://localhost:8080/login`, storeLogin)
       .then(res=>{
-        dispatch({type:"token", payload:res.headers.authorization});
-        dispatch({type:"member", payload:res.data});
-        navigate("/");
-      })
+         // 토큰과 회원정보 저장
+         dispatch({type:"isLogin", payload:true});
+         dispatch({type:"member", payload:res.data});
+         dispatch({type:"accessToken", payload:res.headers.authorization});
+ 
+          // refreshtoken을 쿠키에 담아서 저장
+         const refreshToken = res.headers.refresh;
+         console.log(res.headers);
+         console.log(res);
+         setCookie("refreshToken", `${refreshToken}`);
+         console.log("cookie = " + getCookie("refreshToken"));
+
+        Toast.fire({
+          icon: 'success',
+          title: '로그인 완료되었습니다'
+      }).then(() => {
+        navigate('/');
+      });
+    })
       .catch(err=>{
         console.log(err.response.data.status);
         const errStatus = err.response.data.status;
-        // 사장이 회원 페이지에서 로그인 한 경우
-        if(errStatus === 991){
+        // 로그인 에러
+        if(errStatus === 401){
+          Toast.fire({
+            icon: 'error',
+            title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
+        }).then(() => {
+          navigate('/signUpStore');
+        }); 
+        }else if(errStatus === 991){
           Toast.fire({
             icon: 'error',
             title: '사용자 회원은 사용자 로그인을 이용해 주세요'
@@ -189,6 +233,10 @@ const Toast = Swal.mixin({
       ...prevChecks,
       [name]: isValid,
     }));
+  }
+
+  const handleKakaoOauthLogin = () => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/kakao`;
   }
 
     const inputRegexs = {
@@ -263,8 +311,7 @@ const Toast = Swal.mixin({
             <input type="password" id="password" name="password" onChange={changeUserLogin}/></label>
           </div>
           <div className='socialLoginBtn' style={{textAlign:"center"}}>
-              <img className='google' src="/img/GoogleBtn.png" alt='Google'/>
-              <img className="kakao" src="/img/KakaoBtn.png" alt='Kakao'/>
+              <img className="kakao" src="/img/KakaoBtn.png" alt='Kakao' onClick={handleKakaoOauthLogin}/>
               <img className="naver" src="/img/NaverBtn.png" alt='Naver'/>
           </div><br/>
           <div className='login-button'>
