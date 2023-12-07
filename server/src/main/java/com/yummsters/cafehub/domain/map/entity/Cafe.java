@@ -3,12 +3,10 @@ package com.yummsters.cafehub.domain.map.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yummsters.cafehub.domain.map.dto.CafeDTO;
 import com.yummsters.cafehub.domain.member.entity.Member;
-import com.yummsters.cafehub.domain.review.entity.Review;
 import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -48,8 +46,10 @@ public class Cafe {
     @Column
     private String cafeInfo;
 
-    @OneToMany(mappedBy = "cafe") @JsonIgnore
+    @OneToOne(mappedBy="cafe")
+    private Member member;
 
+    @OneToMany(mappedBy = "cafe") @JsonIgnore
     public CafeDTO toDTO() {
         return CafeDTO.builder()
                 .cafeNo(cafeNo)

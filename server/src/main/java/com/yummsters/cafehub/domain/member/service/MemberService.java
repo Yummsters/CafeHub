@@ -9,4 +9,6 @@ public interface MemberService {
     boolean existNickname(String nickname) throws Exception;
     Member existMember(Member member) throws Exception;
     Boolean deleteMember(Integer memNo, String password) throws  Exception;
+    Member phoneSearch(String phone) throws Exception;
+    Member storeSearch(Integer cafeNo) throws Exception;
 }

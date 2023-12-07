@@ -26,4 +26,7 @@ public interface ReviewService {
 	//카페리스트
 //	ReviewDto cafeList(String writer) throws Exception;
 
+	// 희진 part
+	// 리뷰 권한
+	void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
 }

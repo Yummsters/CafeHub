@@ -15,7 +15,6 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter(){
-    	log.info("잘되고있냐");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
 

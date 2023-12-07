@@ -4,8 +4,10 @@ import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
 import com.yummsters.cafehub.domain.member.entity.Social;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.point.entity.Point;
+import com.yummsters.cafehub.domain.point.repository.PointRepository;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,10 +15,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
 
-    @Autowired
     private MemberRepository memberRepository;
+    private PointRepository pointRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -50,6 +53,13 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
                     .phone("Kakao 로그인 유저")
                     .build();
             memberRepository.save(member);
+
+            // 포인트 정보 생성
+            Point point = Point.builder()
+                    .pointCount(0)
+                    .member(member)
+                    .build();
+            pointRepository.save(point);
         }
 
         return new PrincipalDetails(member, oAuth2User.getAttributes());

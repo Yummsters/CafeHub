@@ -1,7 +1,10 @@
 package com.yummsters.cafehub.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -54,6 +57,16 @@ public class Member {
 
     @OneToMany(mappedBy = "member")  @JsonIgnore
     private List<Review> reviews;
+
+    @OneToMany(mappedBy = "member")
+    private List<ReviewAuth> reviewAuths;
+
+    @OneToOne(mappedBy="member")
+    private Point point;
+
+    @OneToOne
+    @JoinColumn(name="cafeNo")
+    private Cafe cafe;
 
     @Builder
     public Member (String id, String password, String name, String nickname,
