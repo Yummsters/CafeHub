@@ -35,6 +35,19 @@ const Header = () => {
     const mypage = (e) =>{
         e.preventDefault();
 
+        axios.get(`http://localhost:8080/member`,{
+            headers : {
+                Authorization : accessToken
+            }
+        })
+        .then(res=>{
+            console.log(res);
+            navigate("/");
+        })
+        .catch(err =>{
+            console.log(err);
+        })
+
         if(!isLogin){
             Toast.fire({
                 icon: 'error',
@@ -86,9 +99,6 @@ const Header = () => {
         e.preventDefault();
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
-        dispatch({type:"isLogin", payload:false});
-        dispatch({type:"member", payload:''});
-        dispatch({type:"accessToken", payload:''});
         removeCookie("refreshToken");
 
         persistor.purge();

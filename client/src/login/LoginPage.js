@@ -59,7 +59,7 @@ const Toast = Swal.mixin({
         dispatch({type:"member", payload:res.data});
         dispatch({type:"accessToken", payload:res.headers.authorization});
 
-         // refreshtoken을 쿠키에 담아서 저장
+        // refreshtoken을 쿠키에 담아서 저장
          const refreshToken = res.headers.refresh;
          console.log(res.headers);
          console.log(res);
@@ -235,6 +235,10 @@ const Toast = Swal.mixin({
     }));
   }
 
+  const handleKakaoOauthLogin = () => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/kakao`;
+  }
+
     const inputRegexs = {
       idRegex: /^[a-z0-9]{5,12}$/,
       passwordRegex: /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/
@@ -307,8 +311,7 @@ const Toast = Swal.mixin({
             <input type="password" id="password" name="password" onChange={changeUserLogin}/></label>
           </div>
           <div className='socialLoginBtn' style={{textAlign:"center"}}>
-              <img className='google' src="/img/GoogleBtn.png" alt='Google'/>
-              <img className="kakao" src="/img/KakaoBtn.png" alt='Kakao'/>
+              <img className="kakao" src="/img/KakaoBtn.png" alt='Kakao' onClick={handleKakaoOauthLogin}/>
               <img className="naver" src="/img/NaverBtn.png" alt='Naver'/>
           </div><br/>
           <div className='login-button'>
