@@ -34,6 +34,8 @@ import StoreReview from './storeMyPage/StoreReview';
 import StoreClose from './storeMyPage/StoreClose';
 import StoreBanner from './storeMyPage/StoreBanner';
 import store from './persist-store';
+import ChoicePoint from './storeMyPage/ChoicePoint';
+import UsePoint from './storeMyPage/UsePoint';
 
 export const persistor = persistStore(store);
 function App() {
@@ -91,6 +93,9 @@ function App() {
               <Route exact path='/keypad' element={<NoHeaderFooterLayout><Keypad/></NoHeaderFooterLayout>}/>
               <Route exact path='/storeReview' element={<DefaultLayout><StoreReview/></DefaultLayout>}/>
               <Route exact path='/storeBanner' element={<DefaultLayout><StoreBanner/></DefaultLayout>}/>
+              <Route exact path='/choicePoint/:memNo' element={<NoHeaderFooterLayout><ChoicePoint/></NoHeaderFooterLayout>}/>
+              <Route exact path='/usePoint/:memNo' element={<NoHeaderFooterLayout><UsePoint/></NoHeaderFooterLayout>}/>
+
             </Routes>
        </BrowserRouter>
   );
