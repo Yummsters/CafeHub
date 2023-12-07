@@ -27,13 +27,13 @@
     margin-left: 93%;
 }
 
-.store {
+.storebox {
     display: flex;
     font-size: 30px;
     justify-content: center;
     align-items: center;
 }
-.store > img {
+.storebox > img {
     width: 40px;
     height: 40px;
     margin-right: 10px;

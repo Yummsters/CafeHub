@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
+import { useSelector } from "react-redux";
 const { kakao } = window;
 
-const ReviewDetail = () => {
+const ReviewDetail = ({modalDetail}) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const reviewNo = 1;
-  const memNo = 2;
+  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+
   const showReplyClick = () => {
     setShowReply(!showReply);
   };
   const toggleLike = () => {
-    axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
+    axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`, {
+      headers : {
+          Authorization : accessToken,
+          'Content-Type' : 'application/json'
+      }
+    })
       .then((res) => {
         setLike(res.data.toggleLike);
         setLikeCount(res.data.likeCount);
@@ -26,7 +34,12 @@ const ReviewDetail = () => {
       });
   }
   const toggleWish = () => {
-    axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
+    axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`, {
+      headers : {
+          Authorization : accessToken,
+          'Content-Type' : 'application/json'
+      }
+    })
     .then((res) => {
       setWish(res.data);
       console.log(res.data);
@@ -93,16 +106,15 @@ const ReviewDetail = () => {
 
             <div id="detailMap"></div>
 
-            <div className="starNheart">
-              <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
-            </div>
-            <div className="detailBtnBox">
-              <div className="Gbtn">수정</div>
-              <div className="Obtn">삭제</div>
-            </div>
-            <div className="detailLine" />
-
+          {!modalDetail && (
+            <><div className="starNheart">
+                <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
+              </div><div className="detailBtnBox">
+                  <div className="Gbtn">수정</div>
+                  <div className="Obtn">삭제</div>
+                </div><div className="detailLine" /></>
+            )}
 
 
 
