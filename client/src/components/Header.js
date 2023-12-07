@@ -5,8 +5,9 @@ import {useSelector} from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import {persistor} from '../App';
-import Swal from 'sweetalert2';
 import { getCookie, removeCookie, setCookie } from './Cookie';
+import Swal from 'sweetalert2';
+
 
 const Header = () => {
     const memberType = useSelector(state=>state.persistedReducer.member.memberType);
@@ -14,6 +15,8 @@ const Header = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const isLogin = useSelector(state=>state.persistedReducer.isLogin);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     
     // swal
     const Toast = Swal.mixin({
@@ -31,6 +34,19 @@ const Header = () => {
     // 마이페이지
     const mypage = (e) =>{
         e.preventDefault();
+
+        axios.get(`http://localhost:8080/member`,{
+            headers : {
+                Authorization : accessToken
+            }
+        })
+        .then(res=>{
+            console.log(res);
+            navigate("/");
+        })
+        .catch(err =>{
+            console.log(err);
+        })
 
         if(!isLogin){
             Toast.fire({
@@ -59,7 +75,6 @@ const Header = () => {
                     removeCookie("accessToken");
                     dispatch({type:"isLogin", payload:false});
                     dispatch({type:"member", payload:''});
-                    dispatch()
                     Toast.fire({
                         icon: 'error',
                         title: '로그인 후 이용해주세요.'
@@ -80,14 +95,10 @@ const Header = () => {
     }
 
     // 로그아웃
-    const dispatch = useDispatch();
     const logout = (e) =>{
         e.preventDefault();
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
-        dispatch({type:"isLogin", payload:false});
-        dispatch({type:"member", payload:''});
-        dispatch({type:"accessToken", payload:''});
         removeCookie("refreshToken");
 
         persistor.purge();
