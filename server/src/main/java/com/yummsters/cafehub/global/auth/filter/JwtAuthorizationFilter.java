@@ -41,7 +41,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String id = null;
         try{
             id = JWT.require(Algorithm.HMAC256(JwtProvider.SECRET)).build().verify(accessToken)
-                    .getClaim("memNo").asString();
+                    .getClaim("id").asString();
         } catch (ExpiredJwtException e) {
             response.sendError(501, "TOKEN_EXPIRED");
         } catch (Exception e) {
