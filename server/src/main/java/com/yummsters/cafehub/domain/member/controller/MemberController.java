@@ -5,7 +5,6 @@ import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +89,19 @@ public class MemberController {
         try{
             boolean deleteResult = memberService.deleteMember(memNo, member.getPassword());
             return new ResponseEntity<>(deleteResult, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 휴대폰 번호로 회원 조회
+    @GetMapping("/member/phone/{phone}")
+    public ResponseEntity<Object> phoneSearch(@PathVariable String phone){
+        try{
+           Member member = memberService.phoneSearch(phone);
+            return new ResponseEntity<>(member.getMemNo(), HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
             System.out.println(e.getMessage());

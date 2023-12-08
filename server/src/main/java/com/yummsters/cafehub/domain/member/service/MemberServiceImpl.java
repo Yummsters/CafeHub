@@ -4,17 +4,18 @@ import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
 import com.yummsters.cafehub.domain.member.entity.Social;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.yummsters.cafehub.domain.point.entity.Point;
+import com.yummsters.cafehub.domain.point.repository.PointRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PointRepository pointRepository;
 
     // 아이디 중복 체크
     @Override
@@ -47,6 +48,7 @@ public class MemberServiceImpl implements MemberService{
             throw new Exception("중복된 회원입니다");
         }
 
+        // 회원 정보 생성
         member = Member.builder()
                     .id(member.getId())
                     .password(bCryptPasswordEncoder.encode(member.getPassword()))
@@ -58,7 +60,15 @@ public class MemberServiceImpl implements MemberService{
                     .phone(member.getPhone())
                     .social(Social.NORMAL)
                     .build();
-        return memberRepository.save(member);
+
+        // 포인트 정보 생성
+        Point point = Point.builder()
+                .pointCount(0)
+                .member(member)
+                .build();
+        memberRepository.save(member);
+        pointRepository.save(point);
+        return member;
     }
 
     // 사용자, 사장 회원탈퇴
@@ -79,5 +89,21 @@ public class MemberServiceImpl implements MemberService{
         member.changeStatus(false);
         memberRepository.save(member);
         return true;
+    }
+
+    // 휴대폰 번호로 회원 조회
+    @Override
+    public Member phoneSearch(String phone) throws Exception {
+        Member member = memberRepository.findByPhone(phone);
+        if(member == null) throw new Exception("존재하지 않는 회원입니다.");
+        return member;
+    }
+
+    // cafeNo로 회원 조회
+    @Override
+    public Member storeSearch(Integer cafeNo) throws Exception {
+        Member member = memberRepository.findByCafe_CafeNo(cafeNo);
+        if(member == null) throw new Exception("존재하지 않는 회원입니다.");
+        return member;
     }
 }
