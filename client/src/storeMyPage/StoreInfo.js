@@ -1,9 +1,17 @@
 import { useState, useRef, useEffect} from 'react';
+import {useSelector} from 'react-redux';
 import storeInfoStyle from './storeInfoStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 
 const StoreInfo= () =>{
+    const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+
+    const [point, setPoint] = useState(0);
+
     const [owner, setOwner] = useState({name:"", id:"", password:"", passwordCk:"", phone:"", email:"",
     storeName:"", storePhone:"", storeNum:"", location:"", time:""});
     const [picture, setPicture] = useState("");
@@ -16,7 +24,21 @@ const StoreInfo= () =>{
         '#이색',
         '#커피 전문',
         '#주류 판매',
-        ]);
+    ]);
+
+    // swal
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
 
     const change = (e) =>{
         let name = e.target.name;
@@ -50,7 +72,49 @@ const StoreInfo= () =>{
             console.error("Element with class 'storeInfo' not found.");
         }
     }, [])
+
+    // 가게 포인트 조회
+    useEffect(()=>{
+        axios.get(`http://localhost:8080/point/${memNo}`,{
+            headers : {
+                Authorization : accessToken
+            }
+        })
+        .then(res=>{
+            const resPoint = res.data;
+            setPoint(resPoint);
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    })
     
+    const pointCalReq = () =>{
+        if(point < 100){
+            Toast.fire({
+                icon: 'error',
+                title: '100개 이상부터 정산 신청이 가능합니다'
+            })
+        }else{
+            axios.post(`http://localhost:8080/point/calculate/${memNo}`,{
+                headers : {
+                    Authorization : accessToken
+                }
+            })
+            .then(res=>{
+                console.log(res);
+                console.log(res.data);
+                setPoint(res.data);
+                Toast.fire({
+                    icon: 'success',
+                    title: '포인트 정산 신청이 완료되었습니다'
+                })
+            })
+            .catch(err =>{
+                console.log(err);
+            })
+        }
+    }
 
     return (
         <div className='storeInfo-container'>
@@ -68,9 +132,9 @@ const StoreInfo= () =>{
             </div> <br/>
             <div className='storeInfo-point'>
                 보유 커피콩
-                <img className='storeInfo-pointImg' src="/img/bean.png" alt='bean'/> 2000개
+                <img className='storeInfo-pointImg' src="/img/bean.png" alt='bean'/> {point}개
             </div>
-            <button className='storeInfo-pointCheck'>환급신청</button>
+            <button className='storeInfo-pointCheck' onClick={pointCalReq}>환급신청</button>
           </div>
 
 
