@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
 
-    private MemberRepository memberRepository;
-    private PointRepository pointRepository;
+    private final MemberRepository memberRepository;
+    private final PointRepository pointRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
