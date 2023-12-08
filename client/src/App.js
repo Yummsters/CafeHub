@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, BrowserRouter } from 'react-rou
 import { persistStore } from 'redux-persist';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import {useEffect} from 'react';
 import Main from './main/Main';
 import ReviewList from './reviewList/ReviewList';
 import LoginPage from './login/LoginPage';
@@ -34,9 +35,21 @@ import StoreReview from './storeMyPage/StoreReview';
 import StoreClose from './storeMyPage/StoreClose';
 import StoreBanner from './storeMyPage/StoreBanner';
 import store from './persist-store';
+import ChoicePoint from './storeMyPage/ChoicePoint';
+import UsePoint from './storeMyPage/UsePoint';
+import OAuth2 from './login/OAuth2';
+import OAuth2Err from './login/OAuth2Err';
 
 export const persistor = persistStore(store);
 function App() {
+
+
+  // useEffect(()=>{
+  //   window.onbeforeunload = () =>{ // 브라우저가 닫힐 때
+  //     persistor.purge();
+  //   }
+  // },[])
+
 
   const DefaultLayout = ({ children }) => (
     <div>
@@ -60,6 +73,7 @@ function App() {
     </Provider>
     </div>
   );
+
 
   return (
     <BrowserRouter>
@@ -91,6 +105,10 @@ function App() {
               <Route exact path='/keypad' element={<NoHeaderFooterLayout><Keypad/></NoHeaderFooterLayout>}/>
               <Route exact path='/storeReview' element={<DefaultLayout><StoreReview/></DefaultLayout>}/>
               <Route exact path='/storeBanner' element={<DefaultLayout><StoreBanner/></DefaultLayout>}/>
+              <Route exact path='/choicePoint/:memNo' element={<NoHeaderFooterLayout><ChoicePoint/></NoHeaderFooterLayout>}/>
+              <Route exact path='/usePoint/:memNo' element={<NoHeaderFooterLayout><UsePoint/></NoHeaderFooterLayout>}/>
+              <Route exact path='/oauth2/redirect/:accessToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
+              <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
             </Routes>
        </BrowserRouter>
   );
