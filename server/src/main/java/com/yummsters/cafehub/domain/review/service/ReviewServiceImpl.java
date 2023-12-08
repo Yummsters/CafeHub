@@ -172,4 +172,10 @@ public class ReviewServiceImpl implements ReviewService {
 				.build();
 		reviewAuthRepository.save(reviewAuth);
 	}
+
+	//혜리 part ----------------------------------------------------------------
+	@Override
+	public List<Review> getReviewList() throws Exception {
+		return reviewRepository.findAllByOrderByRegDateDesc();
+	}	
 }

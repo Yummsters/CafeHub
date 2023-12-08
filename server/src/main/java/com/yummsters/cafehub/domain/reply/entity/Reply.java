@@ -16,6 +16,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
 import lombok.Builder;
@@ -71,4 +72,17 @@ public class Reply {
     	this.likeCount++;
     }
     
+    public ReplyDto toDto() {
+        return ReplyDto.builder()
+                .replyNo(this.replyNo)
+                .content(this.content)
+                .review(this.review)
+                .depth(this.depth)
+                .writerNo(this.member.getMemNo())
+                .writer(this.member.getNickname())
+                .nickname(this.member.getNickname())
+                .likeCount(this.likeCount)
+                .regDate(this.regDate)
+                .build();
+    }
 }

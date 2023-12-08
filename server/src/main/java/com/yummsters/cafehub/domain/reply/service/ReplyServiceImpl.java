@@ -1,5 +1,8 @@
 package com.yummsters.cafehub.domain.reply.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,5 +102,16 @@ public class ReplyServiceImpl implements ReplyService {
         } else {
             throw new IllegalArgumentException("원댓글을 찾을 수 없습니다.");
         }
+	}
+
+	@Override
+	public List<ReplyDto> getRepliesByReviewNo(Integer reveiwNo) throws Exception {
+		List<Reply> replies = replyRepository.findAllByReview_ReviewNo(reveiwNo);
+		List<ReplyDto> replyDtoList = new ArrayList<>();
+		
+		for(Reply reply : replies) {
+			replyDtoList.add(reply.toDto());
+		}
+		return replyDtoList;
 	}
 }
