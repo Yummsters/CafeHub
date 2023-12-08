@@ -22,13 +22,8 @@ const ReviewWrite = () => {
     const editorRef = useRef();
     const [thumbnail, setThumbnail] = useState(null);
     const [isFileSelected, setIsFileSelected] = useState(false);
-    //const token = useSelector(state=>state.persistedReducer.accessToken);
-    //const memNo = useSelector(state=>state.persistedReducer.member.memNo);
-    //const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const token = useSelector(state => state.persistedReducer.accessToken);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    
-    // 주석 해제한 부분을 여기로 이동
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
     
 useEffect(() => {
@@ -81,7 +76,7 @@ useEffect(() => {
             })
             .catch((error) => {
                 console.error('프론트 이미지 업로드 실패', error);
-                callback('image_load_failfff');
+                callback('image_load_fail');
             });
     };
 
@@ -103,11 +98,12 @@ useEffect(() => {
     };
 
     const submit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
         const formData = new FormData();
         formData.append('title', review.title);
         const content = editorRef.current.getInstance().getMarkdown();
         console.log('FormData의 콘텐츠:', content);
+        console.log(review);
         formData.append('content', content);
         formData.append('writer', review.writer);
         if (selectedFile) {

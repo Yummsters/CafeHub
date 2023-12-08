@@ -43,6 +43,14 @@ import OAuth2Err from './login/OAuth2Err';
 export const persistor = persistStore(store);
 function App() {
 
+
+  // useEffect(()=>{
+  //   window.onbeforeunload = () =>{ // 브라우저가 닫힐 때
+  //     persistor.purge();
+  //   }
+  // },[])
+
+
   const DefaultLayout = ({ children }) => (
     <div>
        <Provider store={store}>
