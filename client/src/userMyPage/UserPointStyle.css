@@ -105,7 +105,7 @@
     align-items: center;
 }
 
-.coffeeBox {
+.coffeeBox, .selectBox {
     background-color: #F3F3F3;
     border-radius: 10px;
     width: 120px;
@@ -115,6 +115,10 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+
+.selectBox {
+    border: 3px solid #F59A23;
 }
 
 .purchaseWrap {

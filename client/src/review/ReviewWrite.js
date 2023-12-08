@@ -36,7 +36,7 @@ useEffect(() => {
         console.log('현재 토큰:', token);
 
         // 토큰을 이용한 사용자 정보 가져오기
-        axios.get(`http://localhost:8080/member/${memNo}`, {
+        axios.get(`http://localhost:8080/member`, {
             headers: {
                 Authorization: accessToken,
                 'Content-Type': 'application/json'
