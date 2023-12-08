@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 const ReviewList = () => {
 
     const [reviews, setReviews] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const reviewsPerPage = 5; //페이지 당 리뷰 수
 
     useEffect(() => {
         axios.get(`http://localhost:8080/reviewList`)
@@ -17,8 +19,27 @@ const ReviewList = () => {
             })
             .catch((error) => {
                 console.error('리뷰 가져오기 오류:', error);
+    if (error.response) {
+        // 서버 응답이 도착한 경우
+        console.error('서버 응답:', error.response.data);
+        console.error('응답 상태 코드:', error.response.status);
+    } else if (error.request) {
+        // 서버에 요청이 전송되지 않은 경우
+        console.error('요청이 전송되지 않음:', error.request);
+    } else {
+        // 오류를 발생시킨 요청을 설정하는 중에 문제가 발생한 경우
+        console.error('오류를 발생시키는 중에 문제 발생:', error.message);
+    }
             });
     }, []); // 빈 배열을 전달하여 컴포넌트가 처음 로드될 때만 useEffect가 실행되도록 설정
+
+    const indexOfLastReview = currentPage * reviewsPerPage;
+    const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+    const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
 
     return (
         <div className='reviewWrapper'>
@@ -57,9 +78,19 @@ const ReviewList = () => {
                     </Table>
                 </div>
                 <div className='reviewList-pagination'>
-                    <div className='reviewList-prevPage'>&lt;</div>
-                    <div className='reviewList-page'>1 2 3 맵사용해~</div>
-                    <div className='reviewList-nextPage'>&gt;</div>
+                    <ul className="pagination">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>&lt;</button>
+                        </li>
+                        {Array.from({ length: Math.ceil(reviews.length / reviewsPerPage) }, (_, index) => (
+                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageChange(index + 1)}>{index + 1}</button>
+                            </li>
+                        ))}
+                        <li className={`page-item ${currentPage === Math.ceil(reviews.length / reviewsPerPage) ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>&gt;</button>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
