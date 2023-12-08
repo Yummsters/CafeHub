@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
@@ -23,7 +23,7 @@ public class CafeDTO {
     private String lat;
     private String lng;
     private boolean isPaid;
-    private Date paidDate;
+    private LocalDateTime paidDate;
     private boolean isExisting;
     private String cafeInfo;
 }

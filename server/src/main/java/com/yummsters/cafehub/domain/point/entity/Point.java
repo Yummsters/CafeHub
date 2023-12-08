@@ -24,16 +24,20 @@ public class Point {
     @Column(nullable = false)
     private Integer pointCount;
 
-    @CreatedDate
-    private LocalDateTime regDate;
+    @Column(nullable = false)
+    private boolean isRefund;
+
+    @Column
+    private LocalDateTime refDate;
 
     @OneToOne
     @JoinColumn(name="memNo")
     private Member member;
 
     @Builder
-    public Point(Integer pointCount, Member member) {
+    public Point(Integer pointCount, boolean isRefund, Member member) {
         this.pointCount = pointCount;
+        this.isRefund = isRefund;
         this.member = member;
     }
 
@@ -47,10 +51,18 @@ public class Point {
          this.pointCount = calculatePoint(getPointCount()-pointCount);
     }
 
+    // 포인트 수정
     private Integer calculatePoint(Integer pointCount) throws InsufficientResourcesException {
         if (pointCount < 0) {
             throw new InsufficientResourcesException("포인트는 음수가 될 수 없습니다.");
         }
         return pointCount;
+    }
+
+    // 사장 포인트 정산
+    public void calPoint() {
+        this.pointCount = 0;
+        this.refDate = LocalDateTime.now();
+        this.isRefund = true;
     }
 }
