@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import StoreSideTab from '../components/StoreSideTab';
+import storeCloseStyle from './storeCloseStyle.css';
 import { useNavigate } from 'react-router-dom';
 
 const StoreClose = () => {
@@ -21,27 +22,32 @@ const StoreClose = () => {
     };
     return (
         <div>
-            <StoreSideTab/>
+            <StoreSideTab />
 
-                        {/* 종료 신청 모달 */}
-                {isTerminationModalOpen && (
+            {/* 종료 신청 모달 */}
+            {isTerminationModalOpen && (
                 <div className="modal-overlay">
                     <div className="termination-modal">
-                        <img className="closeBtn" onClick={closeModal} src='/img/X.png' />
-                        <p>정말 서비스를 종료하시겠습니까?</p>
-                        <p>카페 허브 서비스를 해지할 경우, 회원 정보와 가게 정보가 함께 삭제됩니다.</p>
-                        <p>미정산 금액이 있는 경우 정산 후 해지가 가능합니다. 단, 커피콩을 100개 미만 보유한 경우 정산 없이 서비스가 종료됩니다.</p>
-                        <div className="passwordInput">
-                            <label>비밀번호 확인</label>
-                            <input
-                                type="password"
-                                value={passwordInput}
-                                onChange={(e) => setPasswordInput(e.target.value)}
-                            />
+                        <div className="closeBtn">
+                            <img onClick={closeModal} src='/img/X.png' />
                         </div>
-                        <div className="button-container">
-                            <button className="cancelBtn" onClick={closeModal}>취소</button>
-                            <button className="withdrawBtn" onClick={handleTerminationRequest}>종료 신청</button>
+                        <div className="termination-modal-wrap">
+                            <p>정말 서비스를 종료하시겠습니까?</p>
+                            <p>카페 허브 서비스를 해지할 경우, 회원 정보와 가게 정보가 함께 삭제됩니다.</p>
+                            <p>미정산 금액이 있는 경우 정산 후 해지가 가능합니다.</p>
+                            <p>단, 커피콩을 100개 미만 보유한 경우 정산 없이 서비스가 종료됩니다.</p>
+                            <div className="termination-passwordInput">
+                                <label style={{ fontSize: "20px" }}>비밀번호 확인</label>
+                                <input
+                                    type="password"
+                                    value={passwordInput}
+                                    onChange={(e) => setPasswordInput(e.target.value)}
+                                />
+                            </div>
+                            <div className="termination-button-container">
+                                <button className="cancelBtn" onClick={closeModal}>취소</button>
+                                <button className="withdrawBtn" onClick={handleTerminationRequest}>종료 신청</button>
+                            </div>
                         </div>
                     </div>
                 </div>
