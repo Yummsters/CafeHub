@@ -64,6 +64,7 @@ public class MemberServiceImpl implements MemberService{
         // 포인트 정보 생성
         Point point = Point.builder()
                 .pointCount(0)
+                .isRefund(false)
                 .member(member)
                 .build();
         memberRepository.save(member);

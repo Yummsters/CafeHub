@@ -57,6 +57,7 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
             // 포인트 정보 생성
             Point point = Point.builder()
                     .pointCount(0)
+                    .isRefund(false)
                     .member(member)
                     .build();
             pointRepository.save(point);

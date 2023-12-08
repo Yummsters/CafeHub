@@ -6,7 +6,7 @@ import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -40,7 +40,7 @@ public class Cafe {
     @Column
     private boolean isPaid;
     @Column
-    private Date paidDate;
+    private LocalDateTime paidDate;
     @Column
     private boolean isExisting;
     @Column

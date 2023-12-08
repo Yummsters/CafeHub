@@ -48,4 +48,16 @@ public class PointController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    // 사장 포인트 정산 신청
+    @PostMapping("/point/calculate/{memNo}")
+    public ResponseEntity<Object> requestPointCal(@PathVariable("memNo") Integer memNo){
+        try{
+            Integer resPoint = pointService.calPoint(memNo);
+            return new ResponseEntity<>(resPoint, HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
