@@ -51,11 +51,10 @@ const Header = () => {
         if(!isLogin){
             Toast.fire({
                 icon: 'error',
-                title: '로그인을 이용해 주세요'
-            })
-            setTimeout(() => {
+                title: '로그인 후 이용해 주세요'
+            }).then(() => {
                 navigate('/login');
-            }, 800);  
+            });  
         }else{
             console.log(memNo);
             axios.get(`http://localhost:8080/member/${memNo}`,{
@@ -97,6 +96,11 @@ const Header = () => {
     // 로그아웃
     const logout = (e) =>{
         e.preventDefault();
+
+        // 로컬 없애는 로직 추가
+        dispatch({type:"accessToken", payload:""});
+        dispatch({type:"isLogin", payload:false});
+        dispatch({type:"member", payload:""});
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         removeCookie("refreshToken");

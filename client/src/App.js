@@ -38,9 +38,11 @@ import store from './persist-store';
 import ChoicePoint from './storeMyPage/ChoicePoint';
 import UsePoint from './storeMyPage/UsePoint';
 import OAuth2 from './login/OAuth2';
+import OAuth2Err from './login/OAuth2Err';
 
 export const persistor = persistStore(store);
 function App() {
+
 
   // useEffect(()=>{
   //   window.onbeforeunload = () =>{ // 브라우저가 닫힐 때
@@ -106,6 +108,7 @@ function App() {
               <Route exact path='/choicePoint/:memNo' element={<NoHeaderFooterLayout><ChoicePoint/></NoHeaderFooterLayout>}/>
               <Route exact path='/usePoint/:memNo' element={<NoHeaderFooterLayout><UsePoint/></NoHeaderFooterLayout>}/>
               <Route exact path='/oauth2/redirect/:accessToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
+              <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
             </Routes>
        </BrowserRouter>
   );
