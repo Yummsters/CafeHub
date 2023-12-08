@@ -1,22 +1,43 @@
 import React, { useState } from 'react';
 import './UserInfoStyle.css';
 import UserSideTab from '../components/UserSideTab';
+import axios from 'axios';
+import {useSelector, useDispatch} from 'react-redux';
+import { useNavigate } from 'react-router';
+import { removeCookie} from '../components/Cookie';
+import Swal from 'sweetalert2';
+
 
 const UserInfo = () => {
-
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailMatch, setEmailMatch] = useState(true);
   const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
-  const [social, setSocial] = useState(true);
+  const social = useSelector(state=>state.persistedReducer.member.social);
   const [userInfo, setUserInfo] = useState({id:'sooba', name:'조수빈', email:'soobin@babo.com', nickname:'sooba', pw:'', newPw:''});
   const [editMode, setEditMode] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const checkPw = () => {
-    // 실제로는 서버에서 비밀번호를 확인하기
-    const userPw = 'user1234'; // 사용자의 실제 비밀번호
-    return pwInput === userPw;
-  }
+
+
+  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+
+  // swal
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top',
+    showConfirmButton: false,
+    timer: 1000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
 
   const openWithdrawalModal = () => {
     setIsWithdrawalModalOpen(true);
@@ -29,19 +50,79 @@ const UserInfo = () => {
     setIsWithdrawalModalOpen(false);
   };
 
-  const handleWithdrawal = () => {
-    // 비밀번호 확인 로직
-    const isPwCorrect = checkPw(); // 이 함수는 비밀번호 일치 여부를 반환하는 함수입니다.
+  const handleWithdrawal = (e) => {    
+    // 자체 로그인 회원 탈퇴
+    axios.post(`http://localhost:8080/member/delete/normal/${memNo}`,{
+      password : pwInput
+    },
+    {
+      headers : {
+        Authorization :accessToken,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res=>{
+      console.log(res.data);
+      const isPwCorrect =res.data;
 
-    if (isPwCorrect) {
-      // 탈퇴 처리 로직
-      setWithdrawalConfirmed(true);
-      // 여기에서 실제 탈퇴를 수행하거나 API 호출 등 수행
-    } else {
-      // 비밀번호가 일치하지 않을 때
-      setPwMatch(false);
-    }
+      if (isPwCorrect) {
+        removeCookie("accessToken");
+        dispatch({type:"isLogin", payload:false});
+        dispatch({type:"member", payload:''});
+        Toast.fire({
+          icon: 'success',
+          title: '회원탈퇴가 완료되었습니다'
+        }).then(()=>{
+          navigate("/");
+      })
+      } else {
+        // 비밀번호가 일치하지 않을 때
+        setPwMatch(false);
+      }
+    })
+    .catch(err=>{
+      console.log(err);
+      console.log(err.data);
+    })
   };
+
+  const handleSocialWithdrawal = (e) => {    
+    // 소셜 로그인 회원 탈퇴
+    axios.post(`http://localhost:8080/member/delete/social/${memNo}`,{
+      email : emailInput
+    },
+    {
+      headers : {
+        Authorization :accessToken,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res=>{
+      console.log(res.data);
+      const isEmailCorrect =res.data;
+
+      if (isEmailCorrect) {
+        removeCookie("accessToken");
+        dispatch({type:"isLogin", payload:false});
+        dispatch({type:"member", payload:''});
+        Toast.fire({
+          icon: 'success',
+          title: '회원탈퇴가 완료되었습니다'
+        }).then(()=>{
+          navigate("/");
+      })
+      } else {
+        // 비밀번호가 일치하지 않을 때
+        setEmailMatch(false);
+      }
+    })
+    .catch(err=>{
+      console.log(err);
+      console.log(err.data);
+    })
+  };
+
+  
 
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(!editMode);
@@ -56,7 +137,6 @@ const UserInfo = () => {
     const { name, value } = e.target;
     setUserInfo({ ...userInfo, [name]: value });
   }
-
 
   return (
     <div className='mypage'>
@@ -140,22 +220,42 @@ const UserInfo = () => {
               <p>정말 탈퇴를 하시겠습니까?</p>
               <p>탈퇴할 경우, 작성한 리뷰와 댓글은 삭제되지 않습니다.</p>
               <p>회원 정보는 삭제되고, 보유한 커피콩은 소멸됩니다.</p><br />
-              <div className='checkPw'>
-                <label>{social ? '비밀번호' : '이메일'} 확인</label><br />
-                <input
-                  type="password"
-                  value={pwInput}
-                  onChange={(e) => setPwInput(e.target.value)}
-                />
-              </div>
-              {!pwMatch && <p className="error-message">잘못된 {social ? '비밀번호' : '이메일'}입니다.</p>}
+             
+              { /* 자체 로그인 사용자 탈퇴 */
+              social==="NORMAL" ? 
+               <><div className='checkPw'>
+                  <label>비밀번호 확인</label><br />
+                  <input
+                    type="password"
+                    value={pwInput}
+                    onChange={(e) => setPwInput(e.target.value)}
+                  />
+                </div>
+                {!pwMatch && <p className="error-message">잘못된 비밀번호입니다.</p>}
 
-              <div className="buttonContainer">
-                <button className='cancelBtn' onClick={closeWithdrawalModal}>취소</button>
-                <button className='withdrawBtn' onClick={handleWithdrawal}>탈퇴 신청</button>
-              </div>
+                <div className="buttonContainer">
+                  <button className='cancelBtn' onClick={closeWithdrawalModal}>취소</button>
+                  <button className='withdrawBtn' onClick={handleWithdrawal}>탈퇴 신청</button>
+                  </div>
+                </>
+              :/* 소셜 로그인 사용자 탈퇴 */
+              <><div className='checkPw'>
+                  <label>이메일 확인</label><br />
+                  <input
+                    type="text"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                  />
+                </div>
+                {!emailMatch && <p className="error-message">잘못된 이메일입니다.</p>}
+
+                <div className="buttonContainer">
+                  <button className='cancelBtn' onClick={closeWithdrawalModal}>취소</button>
+                  <button className='withdrawBtn' onClick={handleSocialWithdrawal}>탈퇴 신청</button>
+                  </div>
+                </>
+            }
             </div>
-        
           </div>
         )}
       </div>

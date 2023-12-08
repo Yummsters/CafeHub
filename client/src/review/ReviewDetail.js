@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
+import { useSelector } from "react-redux";
 const { kakao } = window;
 
-const ReviewDetail = () => {
+const ReviewDetail = ({modalDetail}) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState(""); //댓글 내용 state
   const [replies, setReplies] = useState([]); //새로운 replies 상태 추가
   const reviewNo = 1;
+  const [like, setLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [wish, setWish] = useState(false);
+  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
   const showReplyClick = () => {
     setShowReply(!showReply);
@@ -107,12 +113,47 @@ const ReviewDetail = () => {
       });
   };
 
-  useEffect(() => {
+  const toggleLike = () => {
+    axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`, {
+      headers : {
+          Authorization : accessToken,
+          'Content-Type' : 'application/json'
+      }
+    })
+      .then((res) => {
+        setLike(res.data.toggleLike);
+        setLikeCount(res.data.likeCount);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.error("에러:" + error);
+      });
+  }
+  const toggleWish = () => {
+    axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`, {
+      headers : {
+          Authorization : accessToken,
+          'Content-Type' : 'application/json'
+      }
+    })
+    .then((res) => {
+      setWish(res.data);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.error("에러:" + error);
+    });
+  }
+
+  useEffect(() => { // 디테일 가져오기
     axios
       .get(`http://localhost:8080/review/${reviewNo}`)
       .then((res) => {
-        setReview(res.data);
-        console.log(res.data.tagName);
+        setReview(res.data.review);
+        setLike(res.data.isLike);
+        setWish(res.data.isWish);
+        setLikeCount(res.data.review.likeCount);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -121,7 +162,7 @@ const ReviewDetail = () => {
       fetchReplies();
   }, [reviewNo]);
 
-  useEffect(() => {
+  useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
       const mapContainer = document.getElementById("detailMap"),
         mapOption = {
@@ -151,11 +192,11 @@ const ReviewDetail = () => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                <p>{review.tagName}</p>
+                <p>{review.tagNames.map((tag, i) => <span key={i}>#{tag}&nbsp;</span>)}</p>
               </div>
               <div className="infoR">
                 <span>{review.nickname}</span>&nbsp;|&nbsp;
-                <span>추천 {review.likeCount}</span>
+                <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
             </div>
@@ -163,16 +204,15 @@ const ReviewDetail = () => {
 
             <div id="detailMap"></div>
 
-            <div className="starNheart">
-              <img src="/img/star.png" alt="star" />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <img src="/img/heart.png" alt="heart" />
-            </div>
-            <div className="detailBtnBox">
-              <div className="Gbtn">수정</div>
-              <div className="Obtn">삭제</div>
-            </div>
-            <div className="detailLine" />
+          {!modalDetail && (
+            <><div className="starNheart">
+                <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
+              </div><div className="detailBtnBox">
+                  <div className="Gbtn">수정</div>
+                  <div className="Obtn">삭제</div>
+                </div><div className="detailLine" /></>
+            )}
 
             {/* 댓글 */}
             <div className="reply">

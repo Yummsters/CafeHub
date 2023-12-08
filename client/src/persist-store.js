@@ -7,8 +7,9 @@ import storage from "redux-persist/lib/storage";  //localStorage에 저장
 //npm install --save redux-persist
 
 export const initialState = {
-    token:'',
-    member:{memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''}
+    isLogin:false,
+    member:{memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''},
+    accessToken:''
 }
 
 const reducer = (currentState,action) => {
@@ -17,8 +18,9 @@ const reducer = (currentState,action) => {
     }
     const newState = {...currentState};
     switch(action.type) {
-        case "token":  newState.token=action.payload; break;
+        case "isLogin":  newState.isLogin=action.payload; break;
         case "member": newState.member=action.payload; break;
+        case "accessToken": newState.accessToken=action.payload; break;
         default: 
     }
     return newState;
@@ -26,7 +28,7 @@ const reducer = (currentState,action) => {
 
 const persistConfig = {
     key:'root',
-    storage,
+    storage, // 기본으로 로컬 스토리지 사용
 }
 
 const persistedReducer = persistReducer(persistConfig, reducer);

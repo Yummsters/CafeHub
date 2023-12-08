@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Table } from 'reactstrap';
 import './User.css';
 import UserSideTab from '../components/UserSideTab';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const MyReivew = () => {
     return (

@@ -1,8 +1,27 @@
 import React, { useState } from 'react';
 import './UserPointStyle.css';
 import UserSideTab from '../components/UserSideTab';
+import { useHref } from 'react-router';
+import { Link } from 'react-router-dom';
+import { CheckoutPage } from '../payment/CheckoutPage';
 
 const UserPoint = () => {
+    const [selectPrice, setSelectPrice] = useState();
+    const [price, setPrice] = useState(0);
+    const coffeeData = [
+        { beansCount: 10, price: 1000 },
+        { beansCount: 30, price: 3000 },
+        { beansCount: 50, price: 5000 },
+        { beansCount: 100, price: 10000 },
+        { beansCount: 300, price: 30000 },
+    ];
+
+    const priceClick = (price, index) => {
+        setPrice(price);
+        setSelectPrice(index);
+        console.log(price); 
+    };
+
     return (
         <div className='mypage'>
             <UserSideTab />
@@ -16,34 +35,17 @@ const UserPoint = () => {
                 <div className='coffeebeanBox'>
                     <div className='infoTitle'>커피콩 충전</div>
                     <div className='pointContent'>
-                        <div className='coffeeBox'>
-                            <p><img src="/img/coffeebeans.png" alt="coffebeans" />
-                                <img src="/img/X.png" alt="X" width={"25px"} height={"25px"} />10</p>
-                            <div>1000원</div>
-                        </div>
-                        <div className='coffeeBox'>
-                            <p><img src="/img/coffeebeans.png" alt="coffebeans" />
-                                <img src="/img/X.png" alt="X" width={"25px"} height={"25px"} />30</p>
-                            <div>3000원</div>
-                        </div>
-                        <div className='coffeeBox'>
-                            <p><img src="/img/coffeebeans.png" alt="coffebeans" />
-                                <img src="/img/X.png" alt="X" width={"25px"} height={"25px"} />50</p>
-                            <div>5000원</div>
-                        </div>
-                        <div className='coffeeBox'>
-                            <p><img src="/img/coffeebeans.png" alt="coffebeans" />
-                                <img src="/img/X.png" alt="X" width={"25px"} height={"25px"} />100</p>
-                            <div>10000원</div>
-                        </div>
-                        <div className='coffeeBox'>
-                            <p><img src="/img/coffeebeans.png" alt="coffebeans" />
-                                <img src="/img/X.png" alt="X" width={"25px"} height={"25px"} />300</p>
-                            <div>30000원</div>
-                        </div>
+                        {coffeeData.map((coffee, index) => (
+                            <div className={`${selectPrice === index ? 'selectBox' : 'coffeeBox'}`} onClick={()=>priceClick(coffee.price, index)} key={index}>
+                                <p><img src="/img/coffeebeans.png" alt="coffebeans" />
+                                <img src="/img/X.png" alt="X" width={"25px"} height={"25px"} />{coffee.beansCount}</p>
+                                <div>{coffee.price}원</div>
+                            </div>
+                        ))}
                     </div>
-                    <div className='purchaseWrap'><button className='purchaseBtn'>결제</button></div>
+                    <div><CheckoutPage price={price}/></div>
                 </div>
+
 
                 <div className='badgeWrap'>
                     <div className='notOwnBadgeBox'>
