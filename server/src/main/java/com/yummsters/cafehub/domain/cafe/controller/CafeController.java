@@ -1,6 +1,6 @@
 package com.yummsters.cafehub.domain.cafe.controller;
 
-import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +26,9 @@ public class CafeController {
     }
 
     @GetMapping("/mapMarker")
-    public ResponseEntity<List<CafeDTO>> getAllCafes() {
+    public ResponseEntity<List<CafeDto>> getAllCafes() {
         try {
-            List<CafeDTO> cafes = service.getCafes(); // 서비스에서 DTO 목록을 가져옴
+            List<CafeDto> cafes = service.getCafes(); // 서비스에서 DTO 목록을 가져옴
             return new ResponseEntity<>(cafes, HttpStatus.OK); // 클라이언트에 반환
         } catch (Exception e) {
             e.printStackTrace();

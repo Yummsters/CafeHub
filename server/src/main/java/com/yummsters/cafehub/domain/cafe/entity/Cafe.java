@@ -1,6 +1,6 @@
 package com.yummsters.cafehub.domain.cafe.entity;
 
-import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 
@@ -48,8 +48,8 @@ public class Cafe {
     @OneToOne(mappedBy="cafe")
     private Member member;
 
-    public CafeDTO toDTO() {
-        return CafeDTO.builder()
+    public CafeDto toDTO() {
+        return CafeDto.builder()
                 .cafeNo(cafeNo)
                 .cafeName(cafeName)
                 .tel(tel)

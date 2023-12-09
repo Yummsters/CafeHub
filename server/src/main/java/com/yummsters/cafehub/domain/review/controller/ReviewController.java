@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
@@ -68,7 +68,7 @@ public class ReviewController {
 	public ResponseEntity<Object> getReviewDetail(@PathVariable Integer reviewNo) {
 		try {
 			Map<String, Object> res = new HashMap<>();
-			ReviewDetailDTO review = reviewService.reviewDetail(reviewNo);
+			ReviewDetailDto review = reviewService.reviewDetail(reviewNo);
 			res.put("review", review);
 			boolean isLike = reviewService.isLikeReview(2, reviewNo); // 수정 필요
 			res.put("isLike", isLike);

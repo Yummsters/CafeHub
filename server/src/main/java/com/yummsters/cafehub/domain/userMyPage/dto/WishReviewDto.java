@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WishReviewDTO {
+public class WishReviewDto {
     private Integer reviewNo;
     private String thumbImg;
     private Integer memNo;

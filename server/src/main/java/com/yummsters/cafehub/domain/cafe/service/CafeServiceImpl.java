@@ -1,6 +1,6 @@
 package com.yummsters.cafehub.domain.cafe.service;
 
-import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
@@ -84,11 +84,11 @@ public class CafeServiceImpl implements CafeService {
     }
 
     @Override
-    public List<CafeDTO> getCafes() throws Exception {
+    public List<CafeDto> getCafes() throws Exception {
         List<Cafe> cafeList = cafeRepository.findAll(); // Entity, DB의 모든 정보
-        List<CafeDTO> cafeDTOList = new ArrayList<>(); // DTO
+        List<CafeDto> cafeDTOList = new ArrayList<>(); // DTO
         for (Cafe cafe : cafeList) {
-            CafeDTO cafeDTO = cafe.toDTO(); // Entity -> DTO로 변환
+            CafeDto cafeDTO = cafe.toDTO(); // Entity -> DTO로 변환
             cafeDTOList.add(cafeDTO); // 내용 복사
         }
         return cafeDTOList;

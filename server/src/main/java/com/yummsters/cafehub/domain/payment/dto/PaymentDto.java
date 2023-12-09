@@ -1,18 +1,12 @@
 package com.yummsters.cafehub.domain.payment.dto;
 
-import com.yummsters.cafehub.domain.member.entity.Member;
-import com.yummsters.cafehub.domain.payment.entity.Method;
 import lombok.*;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PaymentDTO {
+public class PaymentDto {
     private Integer paymentNo;
     private String paymentKey; // toss paymentKey, 결제 키값
     private String orderId; // toss orderId, 주문 ID (주문 결제 식별)

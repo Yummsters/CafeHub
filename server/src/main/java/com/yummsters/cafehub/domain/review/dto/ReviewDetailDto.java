@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReviewDetailDTO {
+public class ReviewDetailDto {
     private Integer reviewNo;
     private String title;
     private String content;

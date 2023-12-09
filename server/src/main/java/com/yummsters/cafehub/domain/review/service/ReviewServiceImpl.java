@@ -14,7 +14,7 @@ import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
@@ -110,7 +110,7 @@ public class ReviewServiceImpl implements ReviewService {
   
       // 선진 part ----------------------------------------------------------------------
 	  @Override
-	  public ReviewDetailDTO reviewDetail(Integer reviewNo) throws Exception {
+	  public ReviewDetailDto reviewDetail(Integer reviewNo) throws Exception {
 		  return detailRepository.findReviewByReviewNo(reviewNo);
 	  }
 
