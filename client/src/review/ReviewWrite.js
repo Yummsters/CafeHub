@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 
 const ReviewWrite = () => {
     const [editorInstance, setEditorInstance] = useState(null);
-    const [review, setReview] = useState({ title: '', content: '', writer: '' });
+    const [review, setReview] = useState({ title: '', content: '', writer: '', reg_date: '',cafeNo:'' });
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
     const [selectTag, setSelectTag] = useState([]);
@@ -25,37 +25,40 @@ const ReviewWrite = () => {
     const token = useSelector(state => state.persistedReducer.accessToken);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
-    
-useEffect(() => {
-    if (token) {
-        console.log('현재 토큰:', token);
+    const [selectedCafe, setSelectedCafe] = useState('');
 
-        // 토큰을 이용한 사용자 정보 가져오기
-        axios.get(`http://localhost:8080/member`, {
-            headers: {
-                Authorization: accessToken,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            // 사용자 정보에서 원하는 값(review.writer)을 가져와 설정
-            const memNo = response?.data?.memNo;
-            if (memNo) {
-                setReview(prevReview => ({
-                    ...prevReview,
-                    writer: memNo,
-                }));
-                console.log('사용자 정보:', response.data);
-            } else {
-                console.error('사용자 정보에서 memNo를 찾을 수 없습니다.');
-            }
-        })
-        .catch(error => {
-            console.error('사용자 정보 가져오기 실패:', error);
-            // 실패 시에 대한 처리를 추가할 수 있습니다.
-        });
-    }
-}, [token, memNo]);
+    useEffect(() => {
+        if (token) {
+            console.log('현재 토큰:', token);
+
+            // 토큰을 이용한 사용자 정보 가져오기
+            axios.get(`http://localhost:8080/member`, {
+                headers: {
+                    Authorization: accessToken,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    // 사용자 정보에서 원하는 값(review.writer)을 가져와 설정
+                    const memNo = response?.data?.memNo;
+                    if (memNo) {
+                        setReview(prevReview => ({
+                            ...prevReview,
+                            writer: memNo,
+                        }));
+                        console.log('사용자 정보:', response.data);
+                        fetchCafeList();
+                    } else {
+                        console.error('사용자 정보에서 memNo를 찾을 수 없습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('사용자 정보 가져오기 실패:', error);
+                    // 실패 시에 대한 처리를 추가할 수 있습니다.
+                });
+        }
+    }, [token, memNo]);
+
     const uploadImages = (blob, callback) => {
         let formData = new FormData();
         formData.append('images', blob);
@@ -76,7 +79,7 @@ useEffect(() => {
             })
             .catch((error) => {
                 console.error('프론트 이미지 업로드 실패', error);
-                callback('image_load_fail');
+                callback('image_load_failfff');
             });
     };
 
@@ -84,8 +87,10 @@ useEffect(() => {
 
     const fetchCafeList = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/cafelist');
+            const response = await axios.get(`http://localhost:8080/reviewauth/${memNo}`);
+
             setCafes(response.data);
+            console.log('Cafes:', response.data);
         } catch (error) {
             console.error('Error fetching cafe list:', error);
         }
@@ -98,14 +103,23 @@ useEffect(() => {
     };
 
     const submit = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         const formData = new FormData();
+        //title보내기
         formData.append('title', review.title);
         const content = editorRef.current.getInstance().getMarkdown();
+
         console.log('FormData의 콘텐츠:', content);
-        console.log(review);
+        //content보내기
         formData.append('content', content);
+        //writer보내기
         formData.append('writer', review.writer);
+        //tag보내기
+        formData.append('tagName', JSON.stringify(selectedTags));
+        console.log('태그보내짐?', JSON.stringify(selectedTags));
+        //cafeno보내기
+        formData.append('cafeNo', selectedCafe);
+        console.log("카페no보내지냐",selectedCafe);
         if (selectedFile) {
             formData.append('file', selectedFile);
             // formData.append('thumb_img', selectedFile);
@@ -141,7 +155,7 @@ useEffect(() => {
             });
     };
 
-    const tags = [
+    const tagName = [
         '#카공',
         '#인스타 감성',
         '#고양이',
@@ -155,12 +169,13 @@ useEffect(() => {
         '#디저트',
         '#자연 친화적',
     ];
+    const [selectedTags, setSelectedTags] = useState([]);
 
     const tagClick = (i) => {
-        if (selectTag.includes(i)) {
-            setSelectTag(selectTag.filter((item) => item !== i));
+        if (selectedTags.includes(i)) {
+            setSelectedTags(selectedTags.filter((item) => item !== i));
         } else {
-            setSelectTag([...selectTag, i]);
+            setSelectedTags([...selectedTags, i]);
         }
     };
 
@@ -179,13 +194,31 @@ useEffect(() => {
         <div className='review-bgBox'>
             <div className='reviewBox'>
                 <div className='reviewTitle'>
-                    <select>
-                        <option value='' disabled selected>
+{/* 
+                    <select
+                        value={review.selectedCafe || ''}
+                        onChange={(e) => setReview(prevReview => ({ ...prevReview, selectedCafe: e.target.value }))}>
+                        <option value='' disabled>
                             카페 선택
                         </option>
-                        {cafes.map((cafe) => (
-                            <option key={cafe.reviewAuthNo} value={cafe.reviewAuthNo}>
-                                {cafe.cafeNo}
+                        {cafes.map((cafe, i) => (
+                            <option key={i} value={cafe.reviewAuthNo}>
+
+                                {cafe.cafeName}
+
+                            </option>
+                        ))}
+                    </select> */}
+                      <select
+                        value={selectedCafe}
+                        onChange={(e) => setSelectedCafe(e.target.value)}>
+                        <option value='' disabled>
+                            카페 선택
+                        </option>
+                        {cafes.map((cafe, i) => (
+                            <option key={i} value={cafe.cafeNo}>
+                                {cafe.cafeName}
+                                
                             </option>
                         ))}
                     </select>
@@ -249,10 +282,10 @@ useEffect(() => {
 
                 </div>
                 <div className='tagBox'>
-                    {tags.map((tag, i) => (
+                    {tagName.map((tag, i) => (
                         <div
                             key={i}
-                            className={selectTag.includes(i) ? 'selectTag' : 'tag'}
+                            className={selectedTags.includes(i) ? 'selectTag' : 'tag'}
                             onClick={() => tagClick(i)}>
                             {tag}
                         </div>
