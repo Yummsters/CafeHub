@@ -47,11 +47,6 @@ public class PaymentServiceImpl implements PaymentService{
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
 
-        StringBuilder urlBuilder = new StringBuilder("https://api.tosspayments.com/v1/payments/confirm");
-        urlBuilder.append("?orderId=" + paymentData.get("orderId"));
-        urlBuilder.append("&amount=" + paymentData.get("amount"));
-        urlBuilder.append("&paymentKey=" + paymentData.get("paymentKey"));
-
         try (OutputStream os = conn.getOutputStream()) {
             byte[] input = requestData.toJSONString().getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
