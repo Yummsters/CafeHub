@@ -16,6 +16,8 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @ToString(exclude = "reviews")
 public class Member {
@@ -67,26 +69,6 @@ public class Member {
     @OneToOne
     @JoinColumn(name="cafeNo")
     private Cafe cafe;
-
-    @Builder
-    public Member (String id, String password, String name, String nickname,
-                  Social social, boolean status, String phone, String email, MemberType memberType) {
-        this.id = id;
-        this.password = password;
-        this.name = name;
-        this.nickname = nickname;
-        this.social = social;
-        this.status = status;
-        this.phone = phone;
-        this.email = email;
-        this.memberType = memberType;
-    }
-    
-    @Builder(builderMethodName = "noBuilder")
-    public Member(Integer memNo, String nickname) {
-    	this.memNo = memNo;
-    	this.nickname = nickname;
-    }
 
     public void changeStatus(boolean status) {
         this.status = status;
