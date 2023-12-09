@@ -1,7 +1,7 @@
 package com.yummsters.cafehub.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;

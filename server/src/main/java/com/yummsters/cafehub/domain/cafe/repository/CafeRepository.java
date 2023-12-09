@@ -1,6 +1,6 @@
-package com.yummsters.cafehub.domain.map.repository;
+package com.yummsters.cafehub.domain.cafe.repository;
 
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

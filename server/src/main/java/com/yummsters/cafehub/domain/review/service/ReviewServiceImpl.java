@@ -1,16 +1,16 @@
 package com.yummsters.cafehub.domain.review.service;
 
 
-import com.yummsters.cafehub.domain.map.repository.CafeRepository;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.entity.*;
 import com.yummsters.cafehub.domain.review.repository.*;
-import com.yummsters.cafehub.domain.review.repository.WishReviewRepository;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishReview;
+import com.yummsters.cafehub.domain.userMyPage.repository.WishReviewRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -116,7 +116,7 @@ public class ReviewServiceImpl implements ReviewService {
   
       // 선진 part ----------------------------------------------------------------------
 	  @Override
-	  public ReviewDetailDTO reviewDetail(Integer reviewNo) throws Exception {
+	  public ReviewDetailDto reviewDetail(Integer reviewNo) throws Exception {
 		  return detailRepository.findReviewByReviewNo(reviewNo);
 	  }
 

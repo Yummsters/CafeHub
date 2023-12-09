@@ -1,7 +1,7 @@
-package com.yummsters.cafehub.domain.usermypage.service;
+package com.yummsters.cafehub.domain.userMyPage.service;
 
-import com.yummsters.cafehub.domain.usermypage.dto.WishCafeDTO;
-import com.yummsters.cafehub.domain.usermypage.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDTO;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDTO;
 
 import java.util.List;
 

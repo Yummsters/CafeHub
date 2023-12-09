@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
-import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,7 @@ public class ReviewController {
 	public ResponseEntity<Object> getReviewDetail(@PathVariable Integer reviewNo) {
 		try {
 			Map<String, Object> res = new HashMap<>();
-			ReviewDetailDTO review = reviewService.reviewDetail(reviewNo);
+			ReviewDetailDto review = reviewService.reviewDetail(reviewNo);
 			res.put("review", review);
 			boolean isLike = reviewService.isLikeReview(2, reviewNo); // 수정 필요
 			res.put("isLike", isLike);

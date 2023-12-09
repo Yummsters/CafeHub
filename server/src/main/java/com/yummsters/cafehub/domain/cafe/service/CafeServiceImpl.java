@@ -1,22 +1,18 @@
-package com.yummsters.cafehub.domain.map.service;
+package com.yummsters.cafehub.domain.cafe.service;
 
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
-import com.yummsters.cafehub.domain.map.entity.WishCafe;
-import com.yummsters.cafehub.domain.map.repository.CafeRepository;
-import com.yummsters.cafehub.domain.map.repository.WishCafeRepository;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
+import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
-import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.domain.review.entity.WishReview;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,11 +84,11 @@ public class CafeServiceImpl implements CafeService {
     }
 
     @Override
-    public List<CafeDTO> getCafes() throws Exception {
+    public List<CafeDto> getCafes() throws Exception {
         List<Cafe> cafeList = cafeRepository.findAll(); // Entity, DB의 모든 정보
-        List<CafeDTO> cafeDTOList = new ArrayList<>(); // DTO
+        List<CafeDto> cafeDTOList = new ArrayList<>(); // DTO
         for (Cafe cafe : cafeList) {
-            CafeDTO cafeDTO = cafe.toDTO(); // Entity -> DTO로 변환
+            CafeDto cafeDTO = cafe.toDTO(); // Entity -> DTO로 변환
             cafeDTOList.add(cafeDTO); // 내용 복사
         }
         return cafeDTOList;

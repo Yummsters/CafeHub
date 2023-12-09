@@ -1,6 +1,5 @@
-package com.yummsters.cafehub.domain.map.dto;
+package com.yummsters.cafehub.domain.cafe.dto;
 
-import com.yummsters.cafehub.domain.map.entity.Cafe;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CafeDTO {
+public class CafeDto {
     private Integer cafeNo;
     private String cafeName;
     private String tel;

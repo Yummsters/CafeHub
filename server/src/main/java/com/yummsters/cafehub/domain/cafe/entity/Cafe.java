@@ -1,7 +1,7 @@
-package com.yummsters.cafehub.domain.map.entity;
+package com.yummsters.cafehub.domain.cafe.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 
@@ -50,8 +50,8 @@ public class Cafe {
     private Member member;
 
     @OneToMany(mappedBy = "cafe") @JsonIgnore
-    public CafeDTO toDTO() {
-        return CafeDTO.builder()
+    public CafeDto toDTO() {
+        return CafeDto.builder()
                 .cafeNo(cafeNo)
                 .cafeName(cafeName)
                 .tel(tel)

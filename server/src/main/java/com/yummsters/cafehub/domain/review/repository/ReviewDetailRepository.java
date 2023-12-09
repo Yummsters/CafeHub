@@ -6,9 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yummsters.cafehub.domain.map.entity.QCafe;
+import com.yummsters.cafehub.domain.cafe.entity.QCafe;
 import com.yummsters.cafehub.domain.member.entity.QMember;
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.entity.QReview;
 import com.yummsters.cafehub.domain.tag.entity.QReviewToTag;
 
@@ -23,10 +23,10 @@ public class ReviewDetailRepository {
     private final QMember member = QMember.member;
     private final QReviewToTag tag = QReviewToTag.reviewToTag;
 
-    public ReviewDetailDTO findReviewByReviewNo(Integer reviewNo) { // reviewNo로 리뷰 상세
+    public ReviewDetailDto findReviewByReviewNo(Integer reviewNo) { // reviewNo로 리뷰 상세
         List<String> tagNames = this.findReviewTags(reviewNo);
-        ReviewDetailDTO reviewDetailDTO = jpaQueryFactory
-                .select(Projections.bean(ReviewDetailDTO.class,
+        ReviewDetailDto reviewDetailDTO = jpaQueryFactory
+                .select(Projections.bean(ReviewDetailDto.class,
                         review.reviewNo, review.title, review.content,
                         review.likeCount, review.regDate,
                         member.memNo, member.nickname,

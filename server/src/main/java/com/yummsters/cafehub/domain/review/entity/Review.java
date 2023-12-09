@@ -6,17 +6,12 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
-import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-
-import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 
 @Entity
 @Getter
