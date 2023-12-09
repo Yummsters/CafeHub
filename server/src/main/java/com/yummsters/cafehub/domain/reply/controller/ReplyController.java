@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.reply.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class ReplyController {
             replyService.replyWrite(reviewNo, content);
             return new ResponseEntity<Integer>(reviewNo, HttpStatus.CREATED);
         } catch (Exception e) {
+        	System.out.println(content);
             e.printStackTrace();
             return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
         }
@@ -63,10 +65,20 @@ public class ReplyController {
 	}
 	
 	@GetMapping("/reply/{reviewNo}/list")
-	public ResponseEntity<List<ReplyDto>> getRepliesByReviewNo(@PathVariable Integer reviewNo) {
+	public ResponseEntity<List<Map<String, Object>>> getRepliesByReviewNo(@PathVariable Integer reviewNo) {
 		try {
 			List<ReplyDto> replies = replyService.getRepliesByReviewNo(reviewNo);
-			return new ResponseEntity<>(replies, HttpStatus.OK);
+			List<Map<String, Object>> res = new ArrayList<>();
+			for(int i = 0; i < replies.size(); i++) {
+				ReplyDto data = replies.get(i);
+				Map<String, Object> reply = new HashMap<>();
+				reply.put("replyNo", data.getReplyNo());
+				reply.put("nickname", data.getNickname());
+				reply.put("content", data.getContent());
+				reply.put("likeCount", data.getLikeCount());
+				res.add(reply);
+			}
+			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

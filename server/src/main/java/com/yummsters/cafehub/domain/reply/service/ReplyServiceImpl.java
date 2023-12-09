@@ -47,7 +47,7 @@ public class ReplyServiceImpl implements ReplyService {
 	@Override
 	public void replyDelete(Integer replyNo) throws Exception {
 		Reply reply = replyRepository.findByReplyNo(replyNo);
-		if(reply != null) {
+		if(reply == null) {
 			throw new Exception("존재하지 않는 댓글입니다.");
 		}
 		replyRepository.delete(reply);

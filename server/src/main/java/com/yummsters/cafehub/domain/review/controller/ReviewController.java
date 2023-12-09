@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.review.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,14 +97,30 @@ public class ReviewController {
 	
 	//혜리 part ----------------------------------------------------------------
 	@GetMapping("/reviewList")
-	public ResponseEntity<List<Review>> getReviewList() {
+	public ResponseEntity<List<Map<String, Object>>> getReviewList() {
+		List<Map<String, Object>> res = new ArrayList<>();
 		List<Review> reviews;
 		try {
 			reviews = reviewService.getReviewList();
-			return new ResponseEntity<List<Review>>(reviews, HttpStatus.OK);
+			for (int i = 0; i < reviews.size(); i++) {
+				Review data = reviews.get(i);
+				Map<String, Object> review = new HashMap<>();
+
+				review.put("thumbImg", data.getThumbImg());
+				review.put("title", data.getTitle());
+				review.put("cafeName", data.getCafe().getCafeName());
+				review.put("likeCount", data.getLikeCount());
+//				review.put("member", data.getMember());
+				review.put("regDate", data.getRegDate());
+				review.put("nickname", data.getMember().getNickname());
+				review.put("reviewNo", data.getReviewNo());
+				
+				res.add(review);
+			}
+			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<Review>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 }
