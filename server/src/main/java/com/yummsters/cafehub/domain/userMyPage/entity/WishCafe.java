@@ -1,5 +1,6 @@
-package com.yummsters.cafehub.domain.cafe.entity;
+package com.yummsters.cafehub.domain.userMyPage.entity;
 
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 

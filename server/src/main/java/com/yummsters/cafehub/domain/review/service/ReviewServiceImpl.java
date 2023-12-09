@@ -20,13 +20,13 @@ import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
-import com.yummsters.cafehub.domain.review.entity.WishReview;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishReview;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 import com.yummsters.cafehub.domain.review.repository.LikeReviewRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewAuthRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewDetailRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
-import com.yummsters.cafehub.domain.review.repository.WishReviewRepository;
+import com.yummsters.cafehub.domain.userMyPage.repository.WishReviewRepository;
 
 import lombok.RequiredArgsConstructor;
 

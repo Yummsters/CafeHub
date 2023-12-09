@@ -2,9 +2,9 @@ package com.yummsters.cafehub.domain.cafe.service;
 
 import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-import com.yummsters.cafehub.domain.cafe.entity.WishCafe;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
-import com.yummsters.cafehub.domain.cafe.repository.WishCafeRepository;
+import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
