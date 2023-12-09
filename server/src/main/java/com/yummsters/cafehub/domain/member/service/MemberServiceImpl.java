@@ -61,13 +61,18 @@ public class MemberServiceImpl implements MemberService{
                     .social(Social.NORMAL)
                     .build();
 
+        memberRepository.save(member);
+
+        member = memberRepository.findById(member.getId());
+        System.out.println(member);
+
         // 포인트 정보 생성
         Point point = Point.builder()
                 .pointCount(0)
                 .isRefund(false)
                 .member(member)
                 .build();
-        memberRepository.save(member);
+
         pointRepository.save(point);
         return member;
     }
