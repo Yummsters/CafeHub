@@ -116,3 +116,31 @@ tbody td {
 .reviewList-pagination div {
   margin: 0 15px;
 }
+
+ul.pagination {
+  display: flex;
+  width: 436px;
+  height: 66px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.page-link {
+  color: inherit !important;
+  background-color: inherit !important;
+  border: none !important;
+}
+
+ul.pagination > li {
+  color: #000;
+  text-align: center;
+  font-family: NanumMyeongjo;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+ul.pagination > li.active {
+  color: #F59A23;
+}
