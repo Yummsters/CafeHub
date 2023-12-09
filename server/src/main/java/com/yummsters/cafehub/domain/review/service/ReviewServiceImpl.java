@@ -1,27 +1,33 @@
 package com.yummsters.cafehub.domain.review.service;
 
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.yummsters.cafehub.domain.map.entity.Cafe;
 import com.yummsters.cafehub.domain.map.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
-import com.yummsters.cafehub.domain.review.entity.*;
-import com.yummsters.cafehub.domain.review.repository.*;
-import com.yummsters.cafehub.domain.review.repository.WishReviewRepository;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-import java.io.File;
-import java.io.OutputStream;
-
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.entity.FileVo;
+import com.yummsters.cafehub.domain.review.entity.LikeReview;
+import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
+import com.yummsters.cafehub.domain.review.entity.WishReview;
+import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
+import com.yummsters.cafehub.domain.review.repository.LikeReviewRepository;
+import com.yummsters.cafehub.domain.review.repository.ReviewAuthRepository;
+import com.yummsters.cafehub.domain.review.repository.ReviewDetailRepository;
+import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
+import com.yummsters.cafehub.domain.review.repository.WishReviewRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +40,21 @@ public class ReviewServiceImpl implements ReviewService {
 	private final WishReviewRepository wishRepository;
 	private final ReviewAuthRepository reviewAuthRepository;
 	private final CafeRepository cafeRepository;
-
-	//리뷰작성
+	
+	@Override  
+	public List<Cafe> getReviewAuthList(Integer memNo) throws Exception {
+		 
+        List<ReviewAuth> reviewAuths = reviewAuthRepository.findByMember_memNo(memNo);
+        List<Cafe> cafes = new ArrayList<>();
+        for (ReviewAuth reviewAuth : reviewAuths) {
+            Cafe cafe = cafeRepository.findByCafeNo(reviewAuth.getCafe().getCafeNo());
+            if (cafe != null) {
+                cafes.add(cafe);
+            }
+        }
+        return cafes;  
+	}
+	//리뷰작성 
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 		
@@ -84,35 +103,9 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewEntity.getReviewNo();
 	}
 	
-	@Override
-	public void thumbImg(Integer reviewNo, OutputStream out) throws Exception {
-//		 Optional<Review> optionalReview = reviewRepository.findById(reviewNo);
-////		    
-//		    if (optionalReview.isPresent()) {
-//		        Review review = optionalReview.get();
-//		        
-//		        // DB에서 썸네일을 읽어옴
-//		        byte[] thumbImgBytes = review.getThumbImg();
-//		        
-//		        // 읽어온 썸네일을 출력
-//		        out.write(thumbImgBytes);
-//		    } else {
-//		        // 해당 리뷰 번호로 저장된 썸네일이 없는 경우 예외 처리
-//		        throw new FileNotFoundException("Thumbnail not found for reviewNo: " + reviewNo);
-//		    }
-		
-	}
-
-
 	
-//	@Override
-//	public ReviewDto cafeList(String writer) throws Exception {
-//		Optional<Review> cafel = reviewRepository.findById(writer);
-//		if(cafel.isEmpty())
-//			throw new Exception("작성할 리뷰가 없습니다.");
-//		ReviewDto reviewDto = modelMapper.map(cafel.get(), ReviewDto.class);
-//		return reviewDto;
-//	}
+
+
   
       // 선진 part ----------------------------------------------------------------------
 	  @Override

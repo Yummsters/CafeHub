@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+
 public class ReviewAuth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +29,7 @@ public class ReviewAuth {
     @JoinColumn(name = "memNo")
     private Member member;
 
+  
     @ManyToOne
     @JoinColumn(name = "cafeNo")
     private Cafe cafe;
