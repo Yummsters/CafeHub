@@ -1,12 +1,11 @@
 package com.yummsters.cafehub.domain.review.service;
 
 
+import com.yummsters.cafehub.domain.map.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
-import com.yummsters.cafehub.domain.review.entity.LikeReview;
-import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.domain.review.entity.WishReview;
+import com.yummsters.cafehub.domain.review.entity.*;
 import com.yummsters.cafehub.domain.review.repository.*;
 import com.yummsters.cafehub.domain.review.repository.WishReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
-import com.yummsters.cafehub.domain.review.entity.FileVo;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +32,8 @@ public class ReviewServiceImpl implements ReviewService {
 	private final MemberRepository memberRepository;
 	private final LikeReviewRepository likeRepository;
 	private final WishReviewRepository wishRepository;
+	private final ReviewAuthRepository reviewAuthRepository;
+	private final CafeRepository cafeRepository;
 
 	//리뷰작성
 	@Override
@@ -162,6 +162,20 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
-	// 선진 part ----------------------------------------------------------------------
+	// 희진 part ----------------------------------------------------------------------
+	// 리뷰 권한 부여
+	@Override
+	public void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception {
+		ReviewAuth reviewAuth = ReviewAuth.builder()
+				.member(memberRepository.findByMemNo(memNo))
+				.cafe(cafeRepository.findByCafeNo(cafeNo))
+				.build();
+		reviewAuthRepository.save(reviewAuth);
+	}
 
+	//혜리 part ----------------------------------------------------------------
+	@Override
+	public List<Review> getReviewList() throws Exception {
+		return reviewRepository.findAllByOrderByRegDateDesc();
+	}	
 }

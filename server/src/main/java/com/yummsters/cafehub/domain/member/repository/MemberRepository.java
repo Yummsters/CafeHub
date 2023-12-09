@@ -8,4 +8,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     Member findByEmail(String email);
     Member findByNickname(String nickname);
     Member findByMemNo(Integer memNo);
+    Member findByPhone(String phone);
+    Member findByCafe_CafeNo(Integer cafeNo);
 }

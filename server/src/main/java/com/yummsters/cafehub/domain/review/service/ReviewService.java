@@ -3,11 +3,11 @@ package com.yummsters.cafehub.domain.review.service;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.entity.Review;
 
 public interface ReviewService {
 
@@ -27,4 +27,10 @@ public interface ReviewService {
 	//카페리스트
 //	ReviewDto cafeList(String writer) throws Exception;
 
+	// 희진 part
+	// 리뷰 권한
+	void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
+	
+	//혜리 part ----------------------------------------------------------------
+	public List<Review> getReviewList() throws Exception;
 }

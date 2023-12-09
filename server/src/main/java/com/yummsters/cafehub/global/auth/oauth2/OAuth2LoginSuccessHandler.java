@@ -21,16 +21,30 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProvider.EXPIRATION_TIME))
-                .withClaim("id", principalDetails.getMember().getId())
-                .sign(Algorithm.HMAC256(JwtProvider.SECRET));
 
-        // 토큰을 가지고 리액트로 다시 리턴
-        response.setCharacterEncoding("UTF-8");
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect/" + JwtProvider.TOKEN_PREFIX + jwtToken)
-                .build().toUriString();
-        response.sendRedirect(targetUrl);
+        try{
+            // 탈퇴 회원인 경우
+            if(!principalDetails.getMember().isStatus()){
+                throw new Exception("탈퇴한 회원입니다.");
+            }else{
+                // 탈퇴 회원이 아닌 경우
+                String jwtToken = JWT.create()
+                        .withSubject(principalDetails.getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + JwtProvider.EXPIRATION_TIME))
+                        .withClaim("id", principalDetails.getMember().getId())
+                        .sign(Algorithm.HMAC256(JwtProvider.SECRET));
+
+                // 토큰을 가지고 리액트로 다시 리턴
+                response.setCharacterEncoding("UTF-8");
+                String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect/" + JwtProvider.TOKEN_PREFIX + jwtToken)
+                        .build().toUriString();
+                response.sendRedirect(targetUrl);
+            }
+        } catch (Exception e) {
+            response.sendRedirect("http://localhost:3000/oauth2Error");
+            /*response.setStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value());
+            response.getWriter().write("탈퇴한 회원입니다. 재가입을 원하실 경우 관리자에게 문의해 주세요");
+            response.getWriter().flush();*/
+        }
     }
 }
