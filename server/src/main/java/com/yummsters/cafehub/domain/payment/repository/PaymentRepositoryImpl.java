@@ -23,10 +23,9 @@ public class PaymentRepositoryImpl {
     public PaymentDTO payConfirmResult(Integer memNo) {
         PaymentDTO paymentDTO = jpaQueryFactory
                 .select(Projections.bean(PaymentDTO.class,
-                        payment.paymentKey, payment.type, payment.orderId,
-                        payment.method, payment.totalAmount, payment.status,
-                        payment.approvedAt, payment.lastTransactionKey,
-                        payment.cancles, member.memNo))
+                        payment.paymentKey, payment.orderId, payment.lastTransactionKey,
+                        payment.orderName, payment.paymentMethod, payment.amount, payment.status,
+                        payment.requestedAt, payment.approvedAt, member.memNo))
                 .from(payment)
                 .leftJoin(payment.member, member)
                 .where(payment.member.memNo.eq(memNo))

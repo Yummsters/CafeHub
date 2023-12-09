@@ -1,11 +1,13 @@
 package com.yummsters.cafehub.domain.payment.service;
 
-import com.yummsters.cafehub.domain.payment.entity.Method;
+import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.payment.repository.PaymentRepository;
-import com.yummsters.cafehub.domain.payment.repository.PaymentRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -18,48 +20,78 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService{
-    private final PaymentRepositoryImpl repository;
+    private final PaymentRepository repository;
+    private final MemberRepository memberRepository;
+    @Value("${toss-secret-key}")
+    private String secretKey;
     @Override
     public void paymentConfirm(Map<String, Object> paymentData) throws Exception {
-        try {
-            String secretKey = "";
-            String encodedSecretKey = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
-            String authorizations = "Basic " + encodedSecretKey;
+        Integer memNo = (Integer) paymentData.get("memNo");
+        Member member = memberRepository.findByMemNo(memNo);
 
-            URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
+        // secretKey Encoding
+        String encodedSecretKey = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
+        String authorizations = "Basic " + encodedSecretKey;
 
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("Authorization", authorizations);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
+        String apiUrl = "https://api.tosspayments.com/v1/payments/confirm";
 
-            // 데이터 준비
-            JSONObject tossRequestData = new JSONObject();
-            tossRequestData.put("orderId", paymentData.get("orderId"));
-            tossRequestData.put("amount", paymentData.get("amount"));
-            tossRequestData.put("paymentKey", paymentData.get("paymentKey"));
+        JSONObject requestData = new JSONObject();
+        requestData.put("orderId", paymentData.get("orderId"));
+        requestData.put("amount", paymentData.get("amount"));
+        requestData.put("paymentKey", paymentData.get("paymentKey"));
 
-            // 데이터 전송
-            OutputStream os = connection.getOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-            osw.write(tossRequestData.toJSONString());
-            osw.flush();
+        URL url = new URL(apiUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Authorization", authorizations);
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
 
-            int code = connection.getResponseCode();
-            boolean isSuccess = code == 200;
+        StringBuilder urlBuilder = new StringBuilder("https://api.tosspayments.com/v1/payments/confirm");
+        urlBuilder.append("?orderId=" + paymentData.get("orderId"));
+        urlBuilder.append("&amount=" + paymentData.get("amount"));
+        urlBuilder.append("&paymentKey=" + paymentData.get("paymentKey"));
 
-            InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
-
-            Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(reader);
-            responseStream.close();
-
-
-            System.out.println(jsonObject.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = requestData.toJSONString().getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
         }
+
+        int resCode = conn.getResponseCode();
+
+        StringBuilder response = new StringBuilder();
+        if (resCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+            }
+        } else {
+            try (BufferedReader errorIn = new BufferedReader(new InputStreamReader(conn.getErrorStream()))) {
+                String errorInputLine;
+                while ((errorInputLine = errorIn.readLine()) != null) {
+                    response.append(errorInputLine);
+                }
+            }
+        }
+
+        JSONParser parser = new JSONParser();
+        JSONObject paymentObj = (JSONObject) parser.parse(response.toString()); // jsonData 결과값
+
+        Payment payment = new Payment();
+        payment.setPaymentKey((String) paymentObj.get("paymentKey"));
+        payment.setOrderId((String) paymentObj.get("orderId"));
+        payment.setLastTransactionKey((String) paymentObj.get("lastTransactionKey"));
+        payment.setOrderName((String) paymentObj.get("orderName"));
+        payment.setAmount((Integer)((Long) paymentObj.get("totalAmount")).intValue());
+        payment.setStatus((String) paymentObj.get("paymentStatus"));
+        payment.setRequestedAt((String) paymentObj.get("requestedAt"));
+        payment.setApprovedAt((String) paymentObj.get("approvedAt"));
+        payment.setPaymentMethod((String) paymentObj.get("method"));
+        payment.setStatus((String) paymentObj.get("status"));
+        payment.setMember(member);
+
+        repository.save(payment);
     }
 }
