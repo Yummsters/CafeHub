@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router';
 
 const Keypad = () =>{
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    const memNo = useSelector(state => state.persistedReducer.member.memNo);
+    //const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const navigate = useNavigate();
     const [phone, setPhone] = useState('010'); 
 
@@ -44,7 +44,26 @@ const Keypad = () =>{
        e.preventDefault();
 
        setPhone('010');
-        navigate('/choicePoint/'+memNo);
+
+       axios.get(`http://localhost:8080/member/phone/${phone}`,{
+            headers : {
+                Authorization : accessToken
+            }
+       })
+       .then(res=>{
+            console.log(res);
+            console.log(res.data);
+            navigate('/choicePoint/'+res.data);
+       })
+       .catch(err=>{
+            console.log(err);
+            const error = err.response.data;
+            Toast.fire({
+                icon: 'error',
+                title: error
+            });
+       })
+        
     }
     return(
         <div className="keypad-container">
