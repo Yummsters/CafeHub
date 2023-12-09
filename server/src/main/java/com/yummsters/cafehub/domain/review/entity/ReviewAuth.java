@@ -1,6 +1,6 @@
 package com.yummsters.cafehub.domain.review.entity;
 
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.AccessLevel;
 import lombok.Builder;

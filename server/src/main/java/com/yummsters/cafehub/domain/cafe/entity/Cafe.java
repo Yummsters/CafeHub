@@ -1,7 +1,6 @@
-package com.yummsters.cafehub.domain.map.entity;
+package com.yummsters.cafehub.domain.cafe.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.*;
 

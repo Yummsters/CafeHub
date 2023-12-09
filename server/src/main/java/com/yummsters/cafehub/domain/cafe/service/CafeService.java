@@ -1,6 +1,6 @@
-package com.yummsters.cafehub.domain.map.service;
+package com.yummsters.cafehub.domain.cafe.service;
 
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
 
 import java.util.List;
 

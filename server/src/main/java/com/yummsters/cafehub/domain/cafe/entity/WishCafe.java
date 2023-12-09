@@ -1,7 +1,6 @@
-package com.yummsters.cafehub.domain.map.entity;
+package com.yummsters.cafehub.domain.cafe.entity;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
-import com.yummsters.cafehub.domain.review.entity.Review;
 import lombok.*;
 
 import javax.persistence.*;

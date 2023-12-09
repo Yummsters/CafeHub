@@ -1,6 +1,5 @@
-package com.yummsters.cafehub.domain.map.dto;
+package com.yummsters.cafehub.domain.cafe.dto;
 
-import com.yummsters.cafehub.domain.map.entity.Cafe;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

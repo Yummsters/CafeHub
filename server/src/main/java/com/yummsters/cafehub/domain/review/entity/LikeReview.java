@@ -1,16 +1,9 @@
 package com.yummsters.cafehub.domain.review.entity;
 
-import com.yummsters.cafehub.domain.map.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
-import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Entity

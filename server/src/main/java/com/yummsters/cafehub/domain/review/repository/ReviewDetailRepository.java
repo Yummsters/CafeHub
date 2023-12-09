@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yummsters.cafehub.domain.map.entity.QCafe;
+import com.yummsters.cafehub.domain.cafe.entity.QCafe;
 import com.yummsters.cafehub.domain.member.entity.QMember;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.entity.QReview;

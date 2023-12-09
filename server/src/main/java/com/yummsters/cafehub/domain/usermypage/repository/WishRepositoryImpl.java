@@ -2,8 +2,8 @@ package com.yummsters.cafehub.domain.usermypage.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yummsters.cafehub.domain.map.entity.QCafe;
-import com.yummsters.cafehub.domain.map.entity.QWishCafe;
+import com.yummsters.cafehub.domain.cafe.entity.QCafe;
+import com.yummsters.cafehub.domain.cafe.entity.QWishCafe;
 import com.yummsters.cafehub.domain.member.entity.QMember;
 import com.yummsters.cafehub.domain.review.entity.QReview;
 import com.yummsters.cafehub.domain.review.entity.QWishReview;

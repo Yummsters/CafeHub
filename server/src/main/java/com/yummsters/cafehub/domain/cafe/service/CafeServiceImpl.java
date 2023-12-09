@@ -1,22 +1,18 @@
-package com.yummsters.cafehub.domain.map.service;
+package com.yummsters.cafehub.domain.cafe.service;
 
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
-import com.yummsters.cafehub.domain.map.entity.WishCafe;
-import com.yummsters.cafehub.domain.map.repository.CafeRepository;
-import com.yummsters.cafehub.domain.map.repository.WishCafeRepository;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.WishCafe;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
+import com.yummsters.cafehub.domain.cafe.repository.WishCafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
-import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.domain.review.entity.WishReview;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

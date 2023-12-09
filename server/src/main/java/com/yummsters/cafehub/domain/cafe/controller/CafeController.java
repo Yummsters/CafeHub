@@ -1,7 +1,7 @@
-package com.yummsters.cafehub.domain.map.controller;
+package com.yummsters.cafehub.domain.cafe.controller;
 
-import com.yummsters.cafehub.domain.map.dto.CafeDTO;
-import com.yummsters.cafehub.domain.map.service.CafeServiceImpl;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDTO;
+import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

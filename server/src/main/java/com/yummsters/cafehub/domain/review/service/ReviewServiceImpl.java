@@ -3,16 +3,15 @@ package com.yummsters.cafehub.domain.review.service;
 
 import java.io.File;
 
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
-import com.yummsters.cafehub.domain.map.repository.CafeRepository;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;

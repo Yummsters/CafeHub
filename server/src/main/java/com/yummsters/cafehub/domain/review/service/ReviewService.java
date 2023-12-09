@@ -1,14 +1,12 @@
 package com.yummsters.cafehub.domain.review.service;
 
-import java.io.OutputStream;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
-import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
 
