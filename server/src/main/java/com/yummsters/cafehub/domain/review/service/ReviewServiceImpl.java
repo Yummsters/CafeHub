@@ -2,14 +2,16 @@ package com.yummsters.cafehub.domain.review.service;
 
 
 import java.io.File;
+
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.yummsters.cafehub.domain.map.entity.Cafe;
+
 import com.yummsters.cafehub.domain.map.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
@@ -164,5 +166,11 @@ public class ReviewServiceImpl implements ReviewService {
 				.cafe(cafeRepository.findByCafeNo(cafeNo))
 				.build();
 		reviewAuthRepository.save(reviewAuth);
+	}
+
+	//혜리 part ----------------------------------------------------------------
+	@Override
+	public List<Review> getReviewList() throws Exception {
+		return reviewRepository.findAllByOrderByReviewNoDesc();
 	}
 }

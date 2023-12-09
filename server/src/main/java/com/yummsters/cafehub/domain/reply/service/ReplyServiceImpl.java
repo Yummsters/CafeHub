@@ -1,5 +1,8 @@
 package com.yummsters.cafehub.domain.reply.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +47,7 @@ public class ReplyServiceImpl implements ReplyService {
 	@Override
 	public void replyDelete(Integer replyNo) throws Exception {
 		Reply reply = replyRepository.findByReplyNo(replyNo);
-		if(reply != null) {
+		if(reply == null) {
 			throw new Exception("존재하지 않는 댓글입니다.");
 		}
 		replyRepository.delete(reply);
@@ -99,5 +102,16 @@ public class ReplyServiceImpl implements ReplyService {
         } else {
             throw new IllegalArgumentException("원댓글을 찾을 수 없습니다.");
         }
+	}
+
+	@Override
+	public List<ReplyDto> getRepliesByReviewNo(Integer reveiwNo) throws Exception {
+		List<Reply> replies = replyRepository.findAllByReview_ReviewNo(reveiwNo);
+		List<ReplyDto> replyDtoList = new ArrayList<>();
+		
+		for(Reply reply : replies) {
+			replyDtoList.add(reply.toDto());
+		}
+		return replyDtoList;
 	}
 }

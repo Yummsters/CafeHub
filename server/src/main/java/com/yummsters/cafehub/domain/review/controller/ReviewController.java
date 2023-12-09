@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.review.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.yummsters.cafehub.domain.map.entity.Cafe;
+
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
 
 @RestController
@@ -99,6 +101,35 @@ public class ReviewController {
 		try {
 			Boolean toggleWish = reviewService.toggleWishReview(memNo, reviewNo);
 			return new ResponseEntity<>(toggleWish, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	//혜리 part ----------------------------------------------------------------
+	@GetMapping("/reviewList")
+	public ResponseEntity<List<Map<String, Object>>> getReviewList() {
+		List<Map<String, Object>> res = new ArrayList<>();
+		List<Review> reviews;
+		try {
+			reviews = reviewService.getReviewList();
+			for (int i = 0; i < reviews.size(); i++) {
+				Review data = reviews.get(i);
+				Map<String, Object> review = new HashMap<>();
+
+				review.put("thumbImg", data.getThumbImg());
+				review.put("title", data.getTitle());
+				review.put("cafeName", data.getCafe().getCafeName());
+				review.put("likeCount", data.getLikeCount());
+//				review.put("member", data.getMember());
+				review.put("regDate", data.getRegDate());
+				review.put("nickname", data.getMember().getNickname());
+				review.put("reviewNo", data.getReviewNo());
+				
+				res.add(review);
+			}
+			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

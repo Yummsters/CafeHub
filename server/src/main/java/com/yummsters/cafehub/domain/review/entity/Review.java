@@ -52,13 +52,9 @@ public class Review {
 	private LocalDateTime regDate;
 	@OneToMany(mappedBy = "review")
 	private List<ReviewToTag> reviewToTags = new ArrayList<>();
-
-
    @Override
    public String toString() {
        return String.format("[%d,%s,%s,%s,%s,%d,%d,%d,%s]",
                reviewNo, title, content, tagName, thumbImg, member.getMemNo(), cafe.getCafeNo(), likeCount, regDate);
    }
-   
-
 }

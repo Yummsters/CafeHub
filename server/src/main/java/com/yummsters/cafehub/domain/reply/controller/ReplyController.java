@@ -1,6 +1,8 @@
 package com.yummsters.cafehub.domain.reply.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +26,13 @@ public class ReplyController {
 	@Autowired
 	private ReplyService replyService;
 	
-	@PostMapping("/review/{reviewNo}")
+	@PostMapping("/replyWrite/{reviewNo}")
 	public ResponseEntity<Integer> replyWrite(@PathVariable Integer reviewNo, @RequestParam String content) {
         try {
             replyService.replyWrite(reviewNo, content);
             return new ResponseEntity<Integer>(reviewNo, HttpStatus.CREATED);
         } catch (Exception e) {
+        	System.out.println(content);
             e.printStackTrace();
             return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
         }
@@ -59,15 +63,36 @@ public class ReplyController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping("/reply/{reviewNo}/list")
+	public ResponseEntity<List<Map<String, Object>>> getRepliesByReviewNo(@PathVariable Integer reviewNo) {
+		try {
+			List<ReplyDto> replies = replyService.getRepliesByReviewNo(reviewNo);
+			List<Map<String, Object>> res = new ArrayList<>();
+			for(int i = 0; i < replies.size(); i++) {
+				ReplyDto data = replies.get(i);
+				Map<String, Object> reply = new HashMap<>();
+				reply.put("replyNo", data.getReplyNo());
+				reply.put("nickname", data.getNickname());
+				reply.put("content", data.getContent());
+				reply.put("likeCount", data.getLikeCount());
+				res.add(reply);
+			}
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 
 	@PostMapping("/reply/{replyNo}/reReply")
 	public ResponseEntity<String> addReReply(@PathVariable Integer replyNo, @RequestBody ReplyDto replyDto) {
-        try {
-            replyService.addReReply(replyNo, replyDto);
-            return new ResponseEntity<>("대댓글 추가 완료", HttpStatus.CREATED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("대댓글 추가 실패", HttpStatus.BAD_REQUEST);
-        }
-    }
+	    try {
+	        replyService.addReReply(replyNo, replyDto);
+	        return new ResponseEntity<>("대댓글 추가 완료", HttpStatus.CREATED);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>("대댓글 추가 실패", HttpStatus.BAD_REQUEST);
+	    }
+	}
 }

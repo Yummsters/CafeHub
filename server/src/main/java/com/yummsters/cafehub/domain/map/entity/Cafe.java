@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "reviews")
+@ToString(exclude = "member")
 public class Cafe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,7 +49,6 @@ public class Cafe {
     @OneToOne(mappedBy="cafe")
     private Member member;
 
-    @OneToMany(mappedBy = "cafe") @JsonIgnore
     public CafeDTO toDTO() {
         return CafeDTO.builder()
                 .cafeNo(cafeNo)

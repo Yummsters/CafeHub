@@ -40,7 +40,6 @@ public class ReviewDetailRepository {
         if (reviewDetailDTO != null) {
             reviewDetailDTO.setTagNames(tagNames); // tagNames를 ReviewDetailDTO에 매핑
         }
-
         return reviewDetailDTO;
     }
 
