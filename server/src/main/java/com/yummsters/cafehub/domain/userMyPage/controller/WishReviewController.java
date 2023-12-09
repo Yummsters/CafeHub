@@ -1,8 +1,8 @@
-package com.yummsters.cafehub.domain.usermypage.controller;
+package com.yummsters.cafehub.domain.userMyPage.controller;
 
-import com.yummsters.cafehub.domain.usermypage.dto.WishCafeDTO;
-import com.yummsters.cafehub.domain.usermypage.dto.WishReviewDTO;
-import com.yummsters.cafehub.domain.usermypage.service.WishService;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDTO;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.userMyPage.service.WishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
