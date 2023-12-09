@@ -1,6 +1,6 @@
-package com.yummsters.cafehub.domain.review.repository;
+package com.yummsters.cafehub.domain.userMyPage.repository;
 
-import com.yummsters.cafehub.domain.review.entity.WishReview;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishReview;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WishReviewRepository extends JpaRepository<WishReview, Integer> {

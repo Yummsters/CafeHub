@@ -1,6 +1,6 @@
-package com.yummsters.cafehub.domain.map.repository;
+package com.yummsters.cafehub.domain.userMyPage.repository;
 
-import com.yummsters.cafehub.domain.map.entity.WishCafe;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WishCafeRepository extends JpaRepository<WishCafe, Integer> {

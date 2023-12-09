@@ -1,8 +1,8 @@
-package com.yummsters.cafehub.domain.usermypage.controller;
+package com.yummsters.cafehub.domain.userMyPage.controller;
 
-import com.yummsters.cafehub.domain.usermypage.dto.WishCafeDTO;
-import com.yummsters.cafehub.domain.usermypage.dto.WishReviewDTO;
-import com.yummsters.cafehub.domain.usermypage.service.WishService;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
+import com.yummsters.cafehub.domain.userMyPage.service.WishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class WishReviewController {
     @GetMapping("member/wishReviewList/{memNo}")
     public ResponseEntity<Object> getWishReview(@PathVariable Integer memNo) {
         try {
-            List<WishReviewDTO> wishReviewList = wishReviewService.getWishReviewList(memNo);
+            List<WishReviewDto> wishReviewList = wishReviewService.getWishReviewList(memNo);
             return new ResponseEntity<>(wishReviewList, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,7 +30,7 @@ public class WishReviewController {
     @GetMapping("member/wishStoreList/{memNo}")
     public ResponseEntity<Object> getCafeReview(@PathVariable Integer memNo) {
         try {
-            List<WishCafeDTO> wishCafeList = wishReviewService.getWishCafeList(memNo);
+            List<WishCafeDto> wishCafeList = wishReviewService.getWishCafeList(memNo);
             return new ResponseEntity<>(wishCafeList, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

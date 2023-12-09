@@ -1,4 +1,4 @@
-package com.yummsters.cafehub.domain.usermypage.dto;
+package com.yummsters.cafehub.domain.userMyPage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WishCafeDTO {
-    private Integer cafeNo;
+public class WishReviewDto {
+    private Integer reviewNo;
     private String thumbImg;
+    private Integer memNo;
+    private String nickname;
     private String cafeName;
 }

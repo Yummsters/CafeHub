@@ -1,22 +1,13 @@
 package com.yummsters.cafehub.domain.review.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.querydsl.core.annotations.QueryProjection;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
 
-import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
-import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

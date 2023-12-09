@@ -1,14 +1,14 @@
-package com.yummsters.cafehub.domain.usermypage.repository;
+package com.yummsters.cafehub.domain.userMyPage.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yummsters.cafehub.domain.map.entity.QCafe;
-import com.yummsters.cafehub.domain.map.entity.QWishCafe;
+import com.yummsters.cafehub.domain.cafe.entity.QCafe;
+import com.yummsters.cafehub.domain.cafe.entity.QWishCafe;
 import com.yummsters.cafehub.domain.member.entity.QMember;
 import com.yummsters.cafehub.domain.review.entity.QReview;
 import com.yummsters.cafehub.domain.review.entity.QWishReview;
-import com.yummsters.cafehub.domain.usermypage.dto.WishCafeDTO;
-import com.yummsters.cafehub.domain.usermypage.dto.WishReviewDTO;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
+import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,9 +24,9 @@ public class WishRepositoryImpl {
     private final QMember member = QMember.member;
     private final QReview review = QReview.review;
 
-    public List<WishCafeDTO> findWishCafeList(Integer memNo) {
+    public List<WishCafeDto> findWishCafeList(Integer memNo) {
         return jpaQueryFactory
-                .select(Projections.constructor(WishCafeDTO.class,
+                .select(Projections.constructor(WishCafeDto.class,
                         cafe.cafeNo, cafe.thumbImg, cafe.cafeName))
                 .from(wishCafe)
                 .leftJoin(wishCafe.cafe, cafe)
@@ -34,9 +34,9 @@ public class WishRepositoryImpl {
                 .fetch();
     }
 
-    public List<WishReviewDTO> findWishReviewList(Integer memNo) {
+    public List<WishReviewDto> findWishReviewList(Integer memNo) {
         return jpaQueryFactory
-                .select(Projections.constructor(WishReviewDTO.class,
+                .select(Projections.constructor(WishReviewDto.class,
                         review.reviewNo, review.thumbImg,
                         member.memNo, member.nickname, review.cafe.cafeName))
                 .from(wishReview)
