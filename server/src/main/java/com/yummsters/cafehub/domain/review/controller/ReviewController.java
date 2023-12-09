@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.yummsters.cafehub.domain.map.entity.Cafe;
 
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
@@ -26,17 +27,28 @@ public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
 //	
-//	@GetMapping("/cafelist")
-//	public ResponseEntity<Object>cafelist(){
-//		try {
-//			Review cafel = reviewService.reviewInfo(writer);
-//			return new ResponseEntity<Object>(cafel, HttpStatus.OK );
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return new ResponseEntity<Object>(e.getMessage(),HttpStatus.BAD_REQUEST);
-//		}
+//	@GetMapping("/reviewauth/{memNo}")
+//	public ResponseEntity<Object> getReviewAuthList(@PathVariable Integer memNo) {
+//	    try {
+//	        List<ReviewAuth> reviewAuthList = reviewService.getReviewAuthList(memNo);
+//	        return new ResponseEntity<Object>(reviewAuthList, HttpStatus.OK);
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+//	    }
 //	}
+	@GetMapping("/reviewauth/{memNo}")
+    public ResponseEntity<List<Cafe>> getCafesByMemNo(@PathVariable Integer memNo) {
+        try {
+        	
+        	List<Cafe> cafes = reviewService.getReviewAuthList(memNo);
+        	return new ResponseEntity<List<Cafe>>(cafes, HttpStatus.OK);
+        }catch(Exception e) {
+        	e.printStackTrace();
+        	return new ResponseEntity<List<Cafe>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 	
 	@PostMapping("/reviewwrite")
 	public ResponseEntity<Integer> reviewWrite(@ModelAttribute ReviewDto review,

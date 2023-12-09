@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yummsters.cafehub.domain.map.entity.Cafe;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDTO;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import com.yummsters.cafehub.domain.review.entity.Review;
+
 
 public interface ReviewService {
 
@@ -23,10 +26,10 @@ public interface ReviewService {
 
 	Integer reviewWrite(ReviewDto review, List<MultipartFile> file) throws Exception;
 	//썸네일 이미지
-	void thumbImg(Integer reviewNo, OutputStream out) throws Exception;
+	//void thumbImg(Integer reviewNo, OutputStream out) throws Exception;
 	//카페리스트
-//	ReviewDto cafeList(String writer) throws Exception;
-
+	//ReviewDto cafeList(String writer) throws Exception;
+	List<Cafe> getReviewAuthList(Integer memNo) throws Exception;
 	// 희진 part
 	// 리뷰 권한
 	void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
