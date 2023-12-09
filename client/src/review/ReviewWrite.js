@@ -104,6 +104,17 @@ const ReviewWrite = () => {
 
     const submit = (e) => {
         e.preventDefault();
+        if (!selectedCafe) {
+            Swal.fire({
+                title: '카페를 선택하세요',
+               
+                icon: 'error',
+                confirmButtonText: '확인',
+            });
+           
+            return;
+        }
+     
         const formData = new FormData();
         //title보내기
         formData.append('title', review.title);
@@ -136,7 +147,7 @@ const ReviewWrite = () => {
 
                 Swal.fire({
                     title: '커피콩 1개 적립 성공!',
-                    text: '리뷰가 성공적으로 등록되었습니다.',
+                    text: '리뷰가 성공적으로 등록되었습니다',
                     icon: 'success',
                     confirmButtonText: '확인',
                 }).then(() => {
@@ -148,7 +159,7 @@ const ReviewWrite = () => {
 
                 Swal.fire({
                     title: 'error',
-                    text: '리뷰를 등록하는 중에 오류가 발생했습니다.',
+                    text: '리뷰를 등록하는 중에 오류가 발생했습니다',
                     icon: 'error',
                     confirmButtonText: '확인',
                 });
@@ -172,10 +183,22 @@ const ReviewWrite = () => {
     const [selectedTags, setSelectedTags] = useState([]);
 
     const tagClick = (i) => {
+        let updatedTags;
+
         if (selectedTags.includes(i)) {
-            setSelectedTags(selectedTags.filter((item) => item !== i));
+            updatedTags = selectedTags.filter((item) => item !== i);
         } else {
-            setSelectedTags([...selectedTags, i]);
+            updatedTags = [...selectedTags, i];
+        }
+        
+        if (updatedTags.length > 3) {
+            Swal.fire({
+                title: '3개까지 선택 가능합니다',
+                icon: 'error',
+                confirmButtonText: '확인',
+            });
+        } else {
+            setSelectedTags(updatedTags);
         }
     };
 
@@ -275,7 +298,7 @@ const ReviewWrite = () => {
                                         callback('image_load_fail');
                                     });
                             },
-                            // 다른 hooks도 필요한 경우 추가할 수 있습니다.
+                           
                         }}
                     />
 
