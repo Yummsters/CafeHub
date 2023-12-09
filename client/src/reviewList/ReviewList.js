@@ -49,7 +49,7 @@ const ReviewList = () => {
                     <img src='/img/searchIcon.png' alt='' />
                 </div>
                 <div className='reviewline' />
-                <a href='/reviewwrite'><button className='reviewBtn'>리뷰 등록</button></a>
+                <div><a href='/reviewwrite'><button className='reviewBtn'>리뷰 등록</button></a></div>
 
                 <div className='reviewtable'>
                     <Table hover >
@@ -57,18 +57,18 @@ const ReviewList = () => {
                             {reviews.map((review) => (
                                 <tr key={review.reviewNo}>
                                     <th scope='row'>
-                                        <img className='listImg' src={`/img/${review.thumbImg}.png`} alt='' />
+                                        <img className='listImg' src={review.thumbImg} alt='' />
                                     </th>
                                     <td colSpan={10}>
                                         <Link to={`/reviewDetail/${review.reviewNo}`}>
                                             <div className='listMiniTitle'>{review.title}</div>
                                         </Link>
-                                        <div className='description1'>{review.tagName}</div>
+                                        <div className='description1'>{review.cafeName}</div>
                                     </td>
                                     <td colSpan={2}>
                                         <div className='writeInfo'>
                                             <img src='/img/cookies.png' alt='' />
-                                            {`${review.member.nickname} | 추천 ${review.likeCount}`}
+                                            {`${review.nickname} | 추천 ${review.likeCount}`}
                                         </div>
                                         <div className='dateTime'>{review.regDate}</div>
                                     </td>

@@ -227,10 +227,10 @@ const ReviewDetail = ({modalDetail}) => {
               <div key={reply.replyNo} className="replyInfo">
                 <div className="infoT">
                   <p>
-                    <img src="/img/house.png" alt="house" /> 닉네임 (뱃지 임시)
+                    <img src="/img/house.png" alt="house" /> {reply.nickname}
                   </p>
                   <p>
-                    <span className="underline" onClick={() => handleReplyDelete}>삭제</span>&nbsp;&nbsp;
+                    <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
                     <span className="underline" onClick={showReplyClick}>
                       답글
                     </span>
@@ -240,14 +240,14 @@ const ReviewDetail = ({modalDetail}) => {
                 </div>
                 <div className="infoB">
                   <p>
-                    <img src="/img/best.png" alt="best" />
+                    {/* <img src="/img/best.png" alt="best" /> */}
                     {reply.content}
                   </p>
                   <p>{reply.regDate}</p>
                 </div>
+                <div className="detailLine" />
               </div>
             ))}
-            <div className="detailLine" />
 
             {/* 대댓글 */}
             {showReply && (
@@ -274,28 +274,6 @@ const ReviewDetail = ({modalDetail}) => {
                 )}
               </>
             )}
-
-
-            <div className="replyInfo">
-              <div className="infoT">
-                <p>
-                  <img src="/img/house.png" alt="house" /> 닉네임 (뱃지 임시)
-                </p>
-                <p>
-                  {/* <span className='underline'>삭제</span>&nbsp;&nbsp; */}
-                  <span className="underline" onClick={showReplyClick}>
-                    답글
-                  </span>
-                  &nbsp;&nbsp;
-                  <span>♡ nn</span>
-                </p>
-              </div>
-              <div className="infoB">
-                <p>댓글 내용 와라라라라랄ㄹㄹ</p>
-                <p>2023.11.15 13:32</p>
-              </div>
-              <div className="detailLine" />
-            </div>
 
             <div className="reviewDetail-pagination">
               <div className="reviewDetail-prevPage">&lt;</div>
