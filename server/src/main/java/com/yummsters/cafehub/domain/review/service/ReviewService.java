@@ -2,6 +2,8 @@ package com.yummsters.cafehub.domain.review.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
@@ -33,5 +35,5 @@ public interface ReviewService {
 	void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
 	
 	//혜리 part ----------------------------------------------------------------
-	public List<Review> getReviewList() throws Exception;
+	public Page<Review> getReviewList(Pageable pageable) throws Exception;
 }
