@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,41 +17,37 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
+import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
 
 @RestController
 public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
-//	
-//	@GetMapping("/reviewauth/{memNo}")
-//	public ResponseEntity<Object> getReviewAuthList(@PathVariable Integer memNo) {
-//	    try {
-//	        List<ReviewAuth> reviewAuthList = reviewService.getReviewAuthList(memNo);
-//	        return new ResponseEntity<Object>(reviewAuthList, HttpStatus.OK);
-//	    } catch (Exception e) {
-//	        e.printStackTrace();
-//	        return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-//	    }
-//	}
-	@GetMapping("/reviewauth/{memNo}")
-    public ResponseEntity<List<Cafe>> getCafesByMemNo(@PathVariable Integer memNo) {
-        try {
-        	
-        	List<Cafe> cafes = reviewService.getReviewAuthList(memNo);
-        	return new ResponseEntity<List<Cafe>>(cafes, HttpStatus.OK);
-        }catch(Exception e) {
-        	e.printStackTrace();
-        	return new ResponseEntity<List<Cafe>>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
 	
+	// 수빈 part ----------------------------------------------------------------------
+	
+	//리뷰 권한
+	@GetMapping("/reviewauth/{memNo}")
+	public ResponseEntity<List<ReviewAuthDto>> getReviewAuthByMemNo(@PathVariable Integer memNo) {
+		  try {
+		        List<ReviewAuth> reviewAuthList = reviewService.getReviewAuthList(memNo);
+		        List<ReviewAuthDto> reviewAuthDtoList = reviewAuthList.stream()
+		                .map(ReviewAuthDto::fromEntity)
+		                .collect(Collectors.toList());
+		        return new ResponseEntity<>(reviewAuthDtoList, HttpStatus.OK);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		    }
+	}
+
+	//리뷰 등록
 	@PostMapping("/reviewwrite")
 	public ResponseEntity<Integer> reviewWrite(@ModelAttribute ReviewDto review,
 	                                          @RequestParam("file") List<MultipartFile> files) {
@@ -61,6 +59,19 @@ public class ReviewController {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
+	// 리뷰 삭제
+	@DeleteMapping("/review/{reviewNo}/delete")
+	public ResponseEntity<Integer> reviewDelete(@PathVariable Integer reviewNo) {
+	    try {
+	        reviewService.deleteReview(reviewNo);
+	        return new ResponseEntity<>(reviewNo, HttpStatus.OK);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
+	}
+
+
 
 
 	// 선진 part ----------------------------------------------------------------------
