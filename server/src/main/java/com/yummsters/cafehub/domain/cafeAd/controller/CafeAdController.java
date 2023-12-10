@@ -1,11 +1,9 @@
 package com.yummsters.cafehub.domain.cafeAd.controller;
 
-import com.yummsters.cafehub.domain.cafeAd.dto.CafeAdReqDto;
+import com.yummsters.cafehub.domain.cafe.service.CafeService;
 import com.yummsters.cafehub.domain.cafeAd.dto.SearchResDto;
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.cafeAd.service.CafeAdService;
-import com.yummsters.cafehub.domain.map.entity.Cafe;
-import com.yummsters.cafehub.domain.map.service.CafeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
