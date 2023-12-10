@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapCafeInfo from "./MapCafeInfo";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const { kakao } = window;
 
 const MapLayout = ({ cafes }) => {
   const [selectCafe, setSelectCafe] = useState(null);
   const [wish, setWish] = useState(false);
+  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
 
   useEffect(() => {
     var mapContainer = document.getElementById("mapView"),
@@ -46,7 +48,7 @@ const MapLayout = ({ cafes }) => {
         console.log(cafe);
 
         // 클릭한 카페에 대해 현재 회원의 찜 여부
-        axios.get(`http://localhost:8080/cafeIsWish/2/${cafe.cafeNo}`) 
+        axios.get(`http://localhost:8080/cafeIsWish/${memNo}/${cafe.cafeNo}`) 
         .then((res) => {
             setWish(res.data);
           })
@@ -55,7 +57,6 @@ const MapLayout = ({ cafes }) => {
           });
       });
     });
-
     if (navigator.geolocation) {
       // GPS 기반
       navigator.geolocation.getCurrentPosition(function (position) {
