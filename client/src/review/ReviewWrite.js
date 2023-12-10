@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 
 const ReviewWrite = () => {
     const [editorInstance, setEditorInstance] = useState(null);
-    const [review, setReview] = useState({ title: '', content: '', writer: '', reg_date: '',cafeNo:'' });
+    const [review, setReview] = useState({ title: '', content: '', writer: '', reg_date: '', cafeNo: '' });
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
     const [selectTag, setSelectTag] = useState([]);
@@ -25,7 +25,9 @@ const ReviewWrite = () => {
     const token = useSelector(state => state.persistedReducer.accessToken);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
-    const [selectedCafe, setSelectedCafe] = useState('');
+    const [selectedReviewAuthNo, setSelectedReviewAuthNo] = useState('');
+    const [selectedCafeNo, setSelectedCafeNo] = useState('');
+
 
     useEffect(() => {
         if (token) {
@@ -104,17 +106,17 @@ const ReviewWrite = () => {
 
     const submit = (e) => {
         e.preventDefault();
-        if (!selectedCafe) {
+        if (!selectedReviewAuthNo) {
             Swal.fire({
                 title: '카페를 선택하세요',
-               
+
                 icon: 'error',
                 confirmButtonText: '확인',
             });
-           
+
             return;
         }
-     
+
         const formData = new FormData();
         //title보내기
         formData.append('title', review.title);
@@ -129,8 +131,10 @@ const ReviewWrite = () => {
         formData.append('tagName', JSON.stringify(selectedTags));
         console.log('태그보내짐?', JSON.stringify(selectedTags));
         //cafeno보내기
-        formData.append('cafeNo', selectedCafe);
-        console.log("카페no보내지냐",selectedCafe);
+        formData.append('ReviewAuthNo', selectedReviewAuthNo); // 리뷰 인증 번호
+        console.log("reviewauthno보내지나", selectedReviewAuthNo);
+        formData.append('cafeNo', selectedCafeNo);
+        console.log("카페번호", selectedCafeNo);
         if (selectedFile) {
             formData.append('file', selectedFile);
             // formData.append('thumb_img', selectedFile);
@@ -190,7 +194,7 @@ const ReviewWrite = () => {
         } else {
             updatedTags = [...selectedTags, i];
         }
-        
+
         if (updatedTags.length > 3) {
             Swal.fire({
                 title: '3개까지 선택 가능합니다',
@@ -217,34 +221,24 @@ const ReviewWrite = () => {
         <div className='review-bgBox'>
             <div className='reviewBox'>
                 <div className='reviewTitle'>
-{/* 
-                    <select
-                        value={review.selectedCafe || ''}
-                        onChange={(e) => setReview(prevReview => ({ ...prevReview, selectedCafe: e.target.value }))}>
-                        <option value='' disabled>
-                            카페 선택
-                        </option>
-                        {cafes.map((cafe, i) => (
-                            <option key={i} value={cafe.reviewAuthNo}>
 
-                                {cafe.cafeName}
+                <select
+    value={`${selectedReviewAuthNo},${selectedCafeNo}`}
+    onChange={(e) => {
+        const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
+        setSelectedReviewAuthNo(selectedReviewAuthNo);
+        setSelectedCafeNo(selectedCafeNo);
+    }}>
+    <option value='' disabled>
+        카페 선택
+    </option>
+    {cafes.map((reviewAuth, i) => (
+        <option key={i} value={`${reviewAuth.reviewAuthNo},${reviewAuth.cafeNo}`}>
+            {reviewAuth.reviewAuthNo}
+        </option>
+    ))}
+</select>
 
-                            </option>
-                        ))}
-                    </select> */}
-                      <select
-                        value={selectedCafe}
-                        onChange={(e) => setSelectedCafe(e.target.value)}>
-                        <option value='' disabled>
-                            카페 선택
-                        </option>
-                        {cafes.map((cafe, i) => (
-                            <option key={i} value={cafe.cafeNo}>
-                                {cafe.cafeName}
-                                
-                            </option>
-                        ))}
-                    </select>
                     <Input
                         className='title'
                         name='title'
@@ -298,7 +292,7 @@ const ReviewWrite = () => {
                                         callback('image_load_fail');
                                     });
                             },
-                           
+
                         }}
                     />
 
