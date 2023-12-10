@@ -3,12 +3,12 @@ package com.yummsters.cafehub.domain.userMyPage.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yummsters.cafehub.domain.cafe.entity.QCafe;
-import com.yummsters.cafehub.domain.cafe.entity.QWishCafe;
 import com.yummsters.cafehub.domain.member.entity.QMember;
 import com.yummsters.cafehub.domain.review.entity.QReview;
-import com.yummsters.cafehub.domain.review.entity.QWishReview;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
+import com.yummsters.cafehub.domain.userMyPage.entity.QWishCafe;
+import com.yummsters.cafehub.domain.userMyPage.entity.QWishReview;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
