@@ -13,9 +13,14 @@ const ReviewList = () => {
     const reviewsPerPage = 5; //페이지 당 리뷰 수
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/reviewList`)
+        axios.get(`http://localhost:8080/reviewList`, {
+            params: {
+                page: currentPage - 1,
+                size: reviewsPerPage,
+            },
+        })
             .then((response) => {
-                setReviews(response.data);
+                setReviews(response.data.content);
             })
             .catch((error) => {
                 console.error('리뷰 가져오기 오류:', error);
@@ -31,7 +36,7 @@ const ReviewList = () => {
         console.error('오류를 발생시키는 중에 문제 발생:', error.message);
     }
             });
-    }, []); // 빈 배열을 전달하여 컴포넌트가 처음 로드될 때만 useEffect가 실행되도록 설정
+    }, [currentPage]);
 
     const indexOfLastReview = currentPage * reviewsPerPage;
     const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
@@ -54,7 +59,7 @@ const ReviewList = () => {
                 <div className='reviewtable'>
                     <Table hover >
                         <tbody>
-                            {reviews.map((review) => (
+                            {currentReviews.map((review) => (
                                 <tr key={review.reviewNo}>
                                     <th scope='row'>
                                         <img className='listImg' src={review.thumbImg} alt='' />
