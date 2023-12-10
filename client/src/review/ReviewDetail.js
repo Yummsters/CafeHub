@@ -6,7 +6,7 @@ import { useLocation } from "react-router";
 import Swal from "sweetalert2";
 const { kakao } = window;
 
-const ReviewDetail = ({modalDetail}) => {
+const ReviewDetail = ({modalDetail, wishReviewNo}) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState(""); //댓글 내용 state
@@ -15,9 +15,10 @@ const ReviewDetail = ({modalDetail}) => {
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
-  const accessToken = useSelector(state => state.persistedReducer.accessToken);
-  const location = useLocation();
-  const reviewNo = location.state.reviewNo;
+  const { state } = useLocation();
+  const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
+  const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
+
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -173,7 +174,7 @@ const ReviewDetail = ({modalDetail}) => {
       });
 
       fetchReplies();
-  }, [memNo, reviewNo]);
+  }, []);
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -192,9 +193,9 @@ const ReviewDetail = ({modalDetail}) => {
   }, [review]);
 
   return (
-    <div className="reviewDetail-bgBox">
+    <div className={!modalDetail ? "reviewDetail-bgBox" : "modalBox"}>
       {review && (
-        <div className="reviewBox">
+        <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
             <p className="detailTitle">{review.title}</p>
             <div className="detailLine" />
@@ -217,21 +218,21 @@ const ReviewDetail = ({modalDetail}) => {
 
             <div id="detailMap"></div>
 
-          {!modalDetail && (
+          {!modalDetail && ( // wishReviewList 모달 띄울 때 차별화 위해!
             <><div className="starNheart">
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
               </div><div className="detailBtnBox">
                   <div className="Gbtn">수정</div>
                   <div className="Obtn">삭제</div>
-                </div><div className="detailLine" /></>
-            )}
+                </div><div className="detailLine" />
 
             {/* 댓글 */}
             <div className="reply">
               <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
               <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
-            </div>
+            </div></>
+            )}
 
             <div className="detailLine" />
 
