@@ -8,7 +8,7 @@ import { useLocation } from "react-router";
 
 const { kakao } = window;
 
-const ReviewDetail = ({modalDetail, wishReviewNo}) => {
+const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState(""); //댓글 내용 state
@@ -16,11 +16,17 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
-  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const memNo = useSelector(state => state.persistedReducer.member.memNo);
   const { state } = useLocation();
   const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
   const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
-
+  const [pageInfo, setPageInfo] = useState({
+    currentPage:1,
+    repliesPerPage:10,
+    startPage:1,
+    endPage:1,
+    totalPages:1
+})
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -34,12 +40,9 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
     })
   };
 
-
-
-  
   const ReviewDelete = () => {
     const navigate = useNavigate();
-  
+
     axios
       .delete(`http://localhost:8080/review/${reviewNo}/delete`)
       .then((res) => {
@@ -60,7 +63,7 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
         });
       });
   };
-  
+
   const showReplyClick = () => {
     setShowReply(!showReply);
   };
@@ -85,30 +88,56 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
         console.error("댓글 등록 에러", error);
 
         // 에러 응답이 있을 경우 출력
-      if (error.response) {
-        console.error("응답 데이터:", error.response.data);
-        console.error("응답 상태 코드:", error.response.status);
-        console.error("응답 헤더:", error.response.headers);
-      } else if (error.request) {
-        // 요청이 전송되었지만 응답을 받지 못한 경우
-        console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
-      } else {
-        // 요청을 설정하는 과정에서 에러가 발생한 경우
-        console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
-      }
+        if (error.response) {
+          console.error("응답 데이터:", error.response.data);
+          console.error("응답 상태 코드:", error.response.status);
+          console.error("응답 헤더:", error.response.headers);
+        } else if (error.request) {
+          // 요청이 전송되었지만 응답을 받지 못한 경우
+          console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
+        } else {
+          // 요청을 설정하는 과정에서 에러가 발생한 경우
+          console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
+        }
       });
   }
 
   const fetchReplies = () => {
     axios
-      .get(`http://localhost:8080/reply/${reviewNo}/list`)
+      .get(`http://localhost:8080/reply/${reviewNo}/list`, {
+        params: {
+          page: pageInfo.currentPage - 1,
+          size: pageInfo.repliesPerPage,
+        },
+      })
       .then((res) => {
-        setReplies(res.data);
+          setReplies(res.data.content);
+          let totalPages = res.data.totalPages;                ;
+          let startPage = Math.floor((pageInfo.currentPage-1)/pageInfo.repliesPerPage)+1;
+          let endPage = Math.min(startPage+pageInfo.repliesPerPage-1, totalPages);
+          console.log(totalPages)
+          console.log(startPage)
+          console.log(endPage)
+          setPageInfo({...pageInfo, startPage:startPage, endPage:endPage, totalPages:totalPages})
       })
       .catch((error) => {
-        console.error("댓글 목록 불러오기 에러", error);
+        if (error.response) {
+          // 서버 응답이 왔지만 에러 상태인 경우
+          console.error("Server responded with error status:", error.response.status);
+          console.error("Error response data:", error.response.data);
+        } else if (error.request) {
+          // 서버 응답을 받지 못한 경우
+          console.error("No response received from the server.");
+        } else {
+          // 요청을 보낼 때 에러가 발생한 경우
+          console.error("Error while sending the request:", error.message);
+        }
       });
   };
+
+  const handlePageChange = (pageNumber) => {
+    setPageInfo({...pageInfo, currentPage:pageNumber});
+  }
 
   const [reReplyContent, setReReplyContent] = useState("");
 
@@ -121,8 +150,8 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
       axios
         .post(`http://localhost:8080/reply/${selectedReply.replyNo}/reReply`, {
           content: reReplyContent,
-          writerNo: 123,
-          likeCount: 0,
+          writerNo: 123, //하드코딩. 수정 필요
+          likeCount: 0, //하드코딩. 수정 필요
         })
         .then((res) => {
           console.log("대댓글이 성공적으로 등록되었습니다.");
@@ -176,13 +205,13 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
   const toggleWish = () => {
     if (memNo !== undefined) {
       axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
-      .then((res) => {
-        setWish(res.data);
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.error("에러:" + error);
-      });
+        .then((res) => {
+          setWish(res.data);
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.error("에러:" + error);
+        });
     } else {
       showSwal()
     }
@@ -190,7 +219,7 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
 
   useEffect(() => { // 디테일 가져오기
     axios
-      .get(`http://localhost:8080/review/${reviewNo}`, { headers : {memNo}})
+      .get(`http://localhost:8080/review/${reviewNo}`, { headers: { memNo } })
       .then((res) => {
         setReview(res.data.review);
         setLike(res.data.isLike);
@@ -202,8 +231,8 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
         console.error("에러:" + error);
       });
 
-      fetchReplies();
-  }, []);
+    fetchReplies();
+  }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -227,7 +256,7 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
         <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
             <p className="detailTitle">{review.title}</p>
-            <div className="detailLine" />
+            {/* <div className="detailLine" /> */}
 
             <div className="detailInfo">
               <div className="infoL">
@@ -247,22 +276,22 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
 
             <div id="detailMap"></div>
 
-          {!modalDetail && ( // wishReviewList 모달 띄울 때 차별화 위해!
-            <><div className="starNheart">
+            {!modalDetail && ( // wishReviewList 모달 띄울 때 차별화 위해!
+              <><div className="starNheart">
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
               </div><div className="detailBtnBox">
                   <div className="Gbtn">수정</div>
 
-                  <div className="Obtn"  onClick={ReviewDelete}>삭제</div>
+                  <div className="Obtn" onClick={ReviewDelete}>삭제</div>
                 </div><div className="detailLine" />
 
 
-            // {/* 댓글 */}
-            <div className="reply">
-              <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
-              <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
-            </div></>
+            {/* 댓글 */}
+                <div className="reply">
+                  <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
+                  <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
+                </div></>
             )}
 
             <div className="detailLine" />
@@ -321,10 +350,21 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
             )}
 
             <div className="reviewDetail-pagination">
-              <div className="reviewDetail-prevPage">&lt;</div>
-              <div className="reviewDetail-page">1 2 3 맵사용해~</div>
-              <div className="reviewDetail-nextPage">&gt;</div>
+              <ul className="pagination">
+                <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
+                  <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
+                </li>
+                {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
+                  <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
+                    <button className="page-link" onClick={() => handlePageChange(index+pageInfo.startPage)}>{index+pageInfo.startPage}</button>
+                  </li>
+                ))}
+                <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
+                  <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
+                </li>
+              </ul>
             </div>
+
           </div>
         </div>
       )}
