@@ -2,9 +2,11 @@ package com.yummsters.cafehub.domain.review.service;
 
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.point.service.PointService;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
@@ -42,21 +45,17 @@ public class ReviewServiceImpl implements ReviewService {
 	private final WishReviewRepository wishRepository;
 	private final ReviewAuthRepository reviewAuthRepository;
 	private final CafeRepository cafeRepository;
+	//private final PointService pointService;
+
+	// 수빈 part ----------------------------------------------------------------------
 	
+	
+	//리뷰 권한 
 	@Override  
-	public List<Cafe> getReviewAuthList(Integer memNo) throws Exception {
-		 
-        List<ReviewAuth> reviewAuths = reviewAuthRepository.findByMember_memNo(memNo);
-        List<Cafe> cafes = new ArrayList<>();
-        for (ReviewAuth reviewAuth : reviewAuths) {
-            Cafe cafe = cafeRepository.findByCafeNo(reviewAuth.getCafe().getCafeNo());
-            if (cafe != null) {
-                cafes.add(cafe);
-            }
-        }
-        return cafes;  
+	public List<ReviewAuth> getReviewAuthList(Integer memNo) throws Exception {
+	    return reviewAuthRepository.findByMember_MemNo(memNo);
 	}
-	//리뷰작성 
+	//리뷰 등록 
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 		
@@ -76,11 +75,10 @@ public class ReviewServiceImpl implements ReviewService {
 				
 				fileVoRepository.save(fileVo);
 
-//	            // upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
+	            // upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
 	            String originalFilePath = dir + fileVo.getName();
 
-//	            // 리뷰에 썸네일 이미지를 직접 추가
-//				// upload 폴더에 upload
+	            // 리뷰에 썸네일 이미지를 직접 추가
 				File uploadFile = new File(dir + fileVo.getFileNum());
 				System.out.println("File Path: " + uploadFile.getAbsolutePath());
 
@@ -89,26 +87,43 @@ public class ReviewServiceImpl implements ReviewService {
 				// file번호 목록 만들기
 				if (!fileNums.equals(""))
 					fileNums += ",";
-				fileNums += fileVo.getFileNum();
-				
+				fileNums += fileVo.getFileNum();	
 				
 			}
 			// 파일 번호 목록을 썸네일 이미지로 사용
-			review.setThumbImg(fileNums);
-			
-
-		}
-		
-		// table에 insert
+			review.setThumbImg(fileNums);	
+			// 리뷰 작성 후 리뷰 권한 삭제
+			deleteReviewAuth(review.getReviewAuthNo());
+			 // 포인트 적립
+			 // pointService.pointUp(review.getMemNo());
+		}		
 		Review reviewEntity = review.toEntity();
 		reviewRepository.save(reviewEntity);
 		return reviewEntity.getReviewNo();
 	}
 	
+	//리뷰 권한 삭제
+	@Override
+	public void deleteReviewAuth(Integer reviewAuthNo) {
+	    ReviewAuth reviewAuth = reviewAuthRepository.findByReviewAuthNo(reviewAuthNo);
+	    if (reviewAuth != null) {
+	        reviewAuthRepository.delete(reviewAuth);
+	    }
+	}
+	// 리뷰 삭제
+	@Override
+	public void deleteReview(Integer reviewNo) throws Exception {
+	    Review reviewEntity = reviewRepository.findByReviewNo(reviewNo);
+
+	    if (reviewEntity != null) {
+	        reviewRepository.delete(reviewEntity);
+	    }
+	}
 	
 
 
-  
+	
+	
       // 선진 part ----------------------------------------------------------------------
 	  @Override
 	  public ReviewDetailDto reviewDetail(Integer reviewNo) throws Exception {
