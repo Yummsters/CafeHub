@@ -15,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WishServiceImpl implements WishService {
     private final WishRepositoryImpl wishRepository;
-    private final WishCafeRepository wishCafeRepository;
     @Override
     public Page<WishReviewDto> getWishReviewList(Integer memNo, Pageable pageable) throws Exception {
         return wishRepository.findWishReviewList(memNo, pageable);
