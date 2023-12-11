@@ -7,6 +7,8 @@ import com.yummsters.cafehub.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PointServiceImpl implements PointService{
@@ -66,5 +68,13 @@ public class PointServiceImpl implements PointService{
         pointRepository.save(storePoint);
 
         return storePoint.getPointCount();
+    }
+
+    // 정산 신청 목록 조회
+    @Override
+    public List<Point> reqPointCal() throws Exception{
+        List<Point> responseList = pointRepository.findAllByIsRefundTrue();
+        if(responseList == null || responseList.isEmpty()) throw new Exception("포인트 정산 신청 없음");
+        return responseList;
     }
 }
