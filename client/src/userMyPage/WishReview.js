@@ -63,11 +63,12 @@ const WishReview = () => {
         </div>
       </div>
 
-      {showModal && 
+      {showModal && (
         <div className="modalBox">
             <ReviewDetail modalDetail wishReviewNo = {wishReviewNo}/>
             <p className='closeBtn'><img src="/img/X.png" alt="x" onClick={closeModal}/></p>
-        </div>}
+        </div>
+        )}
     </div>
   );
 };

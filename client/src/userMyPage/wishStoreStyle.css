@@ -257,3 +257,43 @@
   .wishstsore-pagination div {
     margin: 0 10px;
   }
+
+  
+
+
+.modalMap {
+    width: 100%;
+    margin: 0 auto;
+}
+
+#mapView2 {
+    width: 100%;
+    height: 100%;
+}
+
+.cafeModalContent {
+    display: flex;
+    background-color: white;
+    width: 80%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+.modalCafe {
+    border-left: 3px solid #007355;
+    /* flex: 1; */
+}
+
+.modalstorebox {
+    display: flex;
+    font-size: 30px;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.modalstorebox > img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
