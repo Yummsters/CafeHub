@@ -5,12 +5,15 @@ import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 
 const StoreBanner = () => {
-    const [cafeAd, setCafeAd] = useState({thumbImg : null, description : '', menu : '', approved:false});
+    const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
+    const [thumbImg, setThumbImg] = useState(null);
+    const [fileUrl, setFileUrl] = useState(null);
+    const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
     // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
     const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
-    const [cafeNo, setCafeNo] = useState(2);
+    const [cafeNo, setCafeNo] = useState(1);
 
     const inputRef = useRef(null);
 
@@ -41,7 +44,9 @@ const StoreBanner = () => {
             } else{ // 광고가 존재하면서 승인이 안되어 있는 경우
                 setIsAdExist(true); 
                 setIsApprove(false);
-                setCafeAd(res.data);
+                setCafeAd(res.data); // 광고 내용 저장
+                setFileNum(res.data.fileVo.fileNum); // 파일 번호 저장
+                
                 descrInput.disabled = true;
                 menuInput.disabled = true;
             }
@@ -60,16 +65,17 @@ const StoreBanner = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setCafeAd(prevState => ({ ...prevState, thumbImg: reader.result }));
-            };
-            reader.readAsDataURL(file);
+            setThumbImg(file);
+            const thumbUrl = URL.createObjectURL(file);
+            setFileUrl(thumbUrl);
+
+            console.log(thumbImg);
+            console.log(fileUrl);
         }
     };
 
     const handleImageClick = () => {
-        inputRef.current.click();
+        if(!isAdExist) inputRef.current.click();
     };
 
     const handleCafeAdChange = (e) => {
@@ -81,20 +87,39 @@ const StoreBanner = () => {
 
     const handleReset = (e) => {
         e.preventDefault();
-        setCafeAd(prevState => ({ ...prevState, description: '', menu: '' , thumbIng:null}));
+        setCafeAd(prevState => ({ ...prevState, description: '', menu: ''}));
+        setThumbImg(null);
     };
 
     const submitAd = (e) =>{
         e.preventDefault();
-        axios.post(`http://localhst:8080/cafeAd/${cafeNo}`,{
-            cafeAd : cafeAd
-        },
+
+        var descrInput = document.getElementById("description");
+        var menuInput = document.getElementById("menu");
+
+        const formData = new FormData();
+        formData.append("description",cafeAd.description);
+        formData.append("menu", cafeAd.menu);
+        formData.append("thumbImg", thumbImg);
+
+        axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
         {
             headers : {
                 Authorization : accessToken,
-                'Content-Type': 'application/json'
-
+                'Content-Type': 'multipart/form-data'
             }
+        })
+        .then(res=>{
+            console.log(res);
+            console.log(res.data);
+            setIsAdExist(true); 
+                setIsApprove(false);
+                setCafeAd(res.data);
+                descrInput.disabled = true;
+                menuInput.disabled = true;
+        })
+        .catch(err=>{
+            console.log(err);
         })
     }
 
@@ -111,8 +136,9 @@ const StoreBanner = () => {
                             style={{ display: 'none' }}
                             ref={inputRef}
                         />
-                        <div className='storeBanner-img' id='thumbImg' style={{ backgroundImage: `url(${cafeAd.thumbImg || '/img/placeholder-image.jpg'})` }}>
-                            {cafeAd.thumbImg ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/upload/${fileNum}`})`}}>
+                            {<img src = {`http://localhost:8080/upload/${fileNum}`} />}
+                            {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
                             <div className='storeBanner-title'>{cafe.title},</div>
