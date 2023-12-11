@@ -1,19 +1,24 @@
 package com.yummsters.cafehub.domain.point.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
 import com.yummsters.cafehub.domain.member.service.MemberService;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.point.repository.PointRepository;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+
 public class PointServiceImpl implements PointService{
     private final PointRepository pointRepository;
     private final ReviewService reviewService;
     private final MemberService memberService;
-
+   
     // 포인트 조회
     @Override
     public Point checkPoint(Integer memNo) throws Exception{
@@ -67,4 +72,13 @@ public class PointServiceImpl implements PointService{
 
         return storePoint.getPointCount();
     }
+ // 회원 포인트 적립
+    @Override
+    public void pointUp(Integer memNo) throws Exception {
+    	 Point point = checkPoint(memNo);
+    	    point.plusPoint(1);
+    	    pointRepository.save(point);
+    }
+
+
 }

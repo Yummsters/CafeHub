@@ -13,4 +13,6 @@ public class WishCafeDto {
     private Integer cafeNo;
     private String thumbImg;
     private String cafeName;
+    private String lat;
+    private String lng;
 }

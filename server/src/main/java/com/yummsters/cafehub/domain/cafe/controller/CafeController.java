@@ -57,4 +57,15 @@ public class CafeController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("map/{cafeNo}")
+    public ResponseEntity<CafeDto> getCafeByCafeNo(@PathVariable Integer cafeNo) {
+        try {
+            CafeDto cafe = service.getCafeByCafeNo(cafeNo);
+            return new ResponseEntity<>(cafe, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

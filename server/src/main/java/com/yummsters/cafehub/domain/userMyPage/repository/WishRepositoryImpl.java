@@ -3,12 +3,12 @@ package com.yummsters.cafehub.domain.userMyPage.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yummsters.cafehub.domain.cafe.entity.QCafe;
-import com.yummsters.cafehub.domain.cafe.entity.QWishCafe;
 import com.yummsters.cafehub.domain.member.entity.QMember;
 import com.yummsters.cafehub.domain.review.entity.QReview;
-import com.yummsters.cafehub.domain.review.entity.QWishReview;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
+import com.yummsters.cafehub.domain.userMyPage.entity.QWishCafe;
+import com.yummsters.cafehub.domain.userMyPage.entity.QWishReview;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -27,7 +27,7 @@ public class WishRepositoryImpl {
     public List<WishCafeDto> findWishCafeList(Integer memNo) {
         return jpaQueryFactory
                 .select(Projections.constructor(WishCafeDto.class,
-                        cafe.cafeNo, cafe.thumbImg, cafe.cafeName))
+                        cafe.cafeNo, cafe.thumbImg, cafe.cafeName, cafe.lat, cafe.lng))
                 .from(wishCafe)
                 .leftJoin(wishCafe.cafe, cafe)
                 .where(wishCafe.member.memNo.eq(memNo))

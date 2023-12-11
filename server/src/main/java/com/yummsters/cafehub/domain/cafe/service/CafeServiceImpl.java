@@ -120,5 +120,9 @@ public class CafeServiceImpl implements CafeService {
         Cafe responseCafe = cafeRepository.findByCafeNo(cafeNo);
         if(responseCafe == null) throw new Exception("존재하지 않는 카페입니다");
         return responseCafe;
+
+      @Override
+    public CafeDto getCafeByCafeNo(Integer cafeNo) throws Exception {
+        return cafeRepository.findByCafeNo(cafeNo).toDTO();
     }
 }
