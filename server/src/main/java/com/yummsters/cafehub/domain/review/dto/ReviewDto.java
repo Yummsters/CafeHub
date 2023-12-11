@@ -29,6 +29,7 @@ public class ReviewDto {
 	private Member writer;
 	private Integer likeCount;
 	private LocalDateTime regDate;
+    private Integer reviewAuthNo;  // 리뷰 권한 번호
 
 	// Member 정보
 	private Integer memNo;  // Member의 PK 혹은 외래키
@@ -48,6 +49,12 @@ public class ReviewDto {
 	}
 	 public void setTagName(String tagName) {
 	        this.tagName = tagName;
+	    }
+	 public Integer getReviewAuthNo() {
+	        return reviewAuthNo;
+	    }
+	 public void setReviewAuthNo(Integer reviewAuthNo) {
+	        this.reviewAuthNo = reviewAuthNo;
 	    }
 	
 	public Review toEntity() {

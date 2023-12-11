@@ -10,4 +10,5 @@ public interface PointService {
     Integer usePoint(Integer memNo, Integer usePoint, Integer storeNo) throws Exception;
     Integer calPoint(Integer memNo) throws Exception;
     List<Point> reqPointCal() throws Exception;
+    void pointUp(Integer memNo) throws Exception;	//회원 포인트 적립      
 }

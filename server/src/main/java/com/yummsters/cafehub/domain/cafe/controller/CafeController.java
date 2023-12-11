@@ -50,6 +50,7 @@ public class CafeController {
     @PostMapping("/cafeWish/{memNo}/{cafeNo}")
     public ResponseEntity<Boolean> isWishCafe(@PathVariable Integer memNo, @PathVariable Integer cafeNo) {
         try {
+            System.out.println(memNo + " " + cafeNo);
             Boolean toggleWish = service.toggleWishCafe(memNo, cafeNo);
             return new ResponseEntity<>(toggleWish, HttpStatus.OK);
         } catch (Exception e) {
