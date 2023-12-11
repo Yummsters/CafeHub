@@ -113,4 +113,9 @@ public class CafeServiceImpl implements CafeService {
             return true;
         }
     }
+
+    @Override
+    public CafeDto getCafeByCafeNo(Integer cafeNo) throws Exception {
+        return cafeRepository.findByCafeNo(cafeNo).toDTO();
+    }
 }
