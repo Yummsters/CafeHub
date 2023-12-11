@@ -21,7 +21,7 @@ public class ReplyDto {
 
 	private Integer replyNo;
 	private String content;
-	private Review review;
+	private Integer reviewNo;
 	private Integer depth;
 	private Integer writerNo;
 	private String writer;
@@ -33,7 +33,7 @@ public class ReplyDto {
 		return Reply.builder()
 				.replyNo(replyNo)
 				.content(content)
-				.review(review)
+				.review(Review.builder().reviewNo(reviewNo).build())
 				.depth(depth)
 				.member(Member.builder().memNo(writerNo).nickname(nickname).build())
 				.likeCount(likeCount)
