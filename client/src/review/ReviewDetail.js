@@ -2,19 +2,35 @@ import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router";
+import Swal from "sweetalert2";
 const { kakao } = window;
 
-const ReviewDetail = ({modalDetail}) => {
+const ReviewDetail = ({modalDetail, wishReviewNo}) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState(""); //댓글 내용 state
   const [replies, setReplies] = useState([]); //새로운 replies 상태 추가
-  const reviewNo = 1;
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
-  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const { state } = useLocation();
+  const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
+  const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
+
+
+  const showSwal = (title) => {
+    Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 1500
+    }).fire({
+      icon: 'warning',
+      title: title || '로그인이 필요합니다'
+    })
+  };
 
   const showReplyClick = () => {
     setShowReply(!showReply);
@@ -114,53 +130,51 @@ const ReviewDetail = ({modalDetail}) => {
   };
 
   const toggleLike = () => {
-    axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`, {
-      headers : {
-          Authorization : accessToken,
-          'Content-Type' : 'application/json'
-      }
-    })
+    if (memNo !== undefined) {
+      axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
+        .then((res) => {
+          setLike(res.data.toggleLike);
+          setLikeCount(res.data.likeCount);
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.error("에러:" + error);
+        });
+    } else {
+      showSwal()
+    }
+  }
+  const toggleWish = () => {
+    if (memNo !== undefined) {
+      axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
       .then((res) => {
-        setLike(res.data.toggleLike);
-        setLikeCount(res.data.likeCount);
+        setWish(res.data);
         console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
-  }
-  const toggleWish = () => {
-    axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`, {
-      headers : {
-          Authorization : accessToken,
-          'Content-Type' : 'application/json'
-      }
-    })
-    .then((res) => {
-      setWish(res.data);
-      console.log(res.data);
-    })
-    .catch((error) => {
-      console.error("에러:" + error);
-    });
+    } else {
+      showSwal()
+    }
   }
 
   useEffect(() => { // 디테일 가져오기
     axios
-      .get(`http://localhost:8080/review/${reviewNo}`)
+      .get(`http://localhost:8080/review/${reviewNo}`, { headers : {memNo}})
       .then((res) => {
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
-        console.log(res.data);
+        // console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
 
       fetchReplies();
-  }, [reviewNo]);
+  }, []);
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -179,9 +193,9 @@ const ReviewDetail = ({modalDetail}) => {
   }, [review]);
 
   return (
-    <div className="reviewDetail-bgBox">
+    <div className={!modalDetail ? "reviewDetail-bgBox" : "modalBox"}>
       {review && (
-        <div className="reviewBox">
+        <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
             <p className="detailTitle">{review.title}</p>
             <div className="detailLine" />
@@ -204,21 +218,21 @@ const ReviewDetail = ({modalDetail}) => {
 
             <div id="detailMap"></div>
 
-          {!modalDetail && (
+          {!modalDetail && ( // wishReviewList 모달 띄울 때 차별화 위해!
             <><div className="starNheart">
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
               </div><div className="detailBtnBox">
                   <div className="Gbtn">수정</div>
                   <div className="Obtn">삭제</div>
-                </div><div className="detailLine" /></>
-            )}
+                </div><div className="detailLine" />
 
             {/* 댓글 */}
             <div className="reply">
               <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
               <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
-            </div>
+            </div></>
+            )}
 
             <div className="detailLine" />
 

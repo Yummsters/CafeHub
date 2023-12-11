@@ -1,10 +1,12 @@
 import axios from "axios";
 import React from "react";
-import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Table } from "reactstrap";
+import Swal from "sweetalert2";
 
 const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
-  const memNo = 2; // 임시
+  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  
   // null이 아닌 정보만 띄울 수 있게 만들기
   const cafeInfo = (name, src, col, text) => {
       return text !== null && text !== "" ? (
@@ -16,15 +18,27 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
     };
 
   const toggleWish = () => {
-    axios.post(`http://localhost:8080/cafeWish/${memNo}/${selectCafe.cafeNo}`)
-    .then((res) => {
-      setWish(res.data);
-      console.log(res.data);
-    })
-    .catch((error) => {
-      console.error("에러:" + error);
-    });
-  }
+    if (memNo !== undefined) {
+      axios.post(`http://localhost:8080/cafeWish/${memNo}/${selectCafe.cafeNo}`)
+      .then((res) => {
+        setWish(res.data);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.error("에러:" + error);
+      });
+    } else {
+        Swal.mixin({
+          toast: true,
+          position: 'top',
+          showConfirmButton: false,
+          timer: 1500
+        }).fire({
+          icon: 'warning',
+          title: '로그인이 필요합니다'
+        })
+      };
+    }
 
   return (
     <div style={{ flex: selectCafe ? 1 : 0 }}>

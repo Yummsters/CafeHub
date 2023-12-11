@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const ReviewList = () => {
-
     const [reviews, setReviews] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const reviewsPerPage = 5; //페이지 당 리뷰 수
@@ -60,7 +59,8 @@ const ReviewList = () => {
                                         <img className='listImg' src={review.thumbImg} alt='' />
                                     </th>
                                     <td colSpan={10}>
-                                        <Link to={`/reviewDetail/${review.reviewNo}`}>
+                                        <Link to={`/reviewDetail/${review.reviewNo}`} 
+                                                state={{ reviewNo: `${review.reviewNo}` }} >
                                             <div className='listMiniTitle'>{review.title}</div>
                                         </Link>
                                         <div className='description1'>{review.cafeName}</div>
