@@ -19,6 +19,7 @@ import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ import lombok.ToString;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @ToString
 public class Reply {
@@ -54,15 +57,15 @@ public class Reply {
     @CreatedDate
     private LocalDateTime regDate;
  
-    @Builder
-    public Reply(Integer replyNo, String content, Review review, Integer depth, Member member, int likeCount) {
-        this.replyNo = replyNo;
-    	this.content = content;
-        this.review = review;
-        this.depth = depth;
-        this.member = member;
-        this.likeCount = likeCount;
-    }
+//    @Builder
+//    public Reply(Integer replyNo, String content, Review review, Integer depth, Member member, int likeCount) {
+//        this.replyNo = replyNo;
+//    	this.content = content;
+//        this.review = review;
+//        this.depth = depth;
+//        this.member = member;
+//        this.likeCount = likeCount;
+//    }
     
     public void decreaseLikeCount() {
     	this.likeCount--;
@@ -76,7 +79,7 @@ public class Reply {
         return ReplyDto.builder()
                 .replyNo(this.replyNo)
                 .content(this.content)
-                .review(this.review)
+                .reviewNo(this.review.getReviewNo())
                 .depth(this.depth)
                 .writerNo(this.member.getMemNo())
                 .writer(this.member.getNickname())

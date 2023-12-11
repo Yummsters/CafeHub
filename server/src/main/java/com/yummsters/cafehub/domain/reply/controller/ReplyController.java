@@ -1,11 +1,12 @@
 package com.yummsters.cafehub.domain.reply.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,24 +66,19 @@ public class ReplyController {
 	}
 	
 	@GetMapping("/reply/{reviewNo}/list")
-	public ResponseEntity<List<Map<String, Object>>> getRepliesByReviewNo(@PathVariable Integer reviewNo) {
+	public ResponseEntity<Page<ReplyDto>> getRepliesByReviewNo(@PathVariable Integer reviewNo,
+	                                                           @RequestParam(name="page",defaultValue = "0") int page,
+	                                                           @RequestParam(name="size",defaultValue = "10") int size) {
+	   System.out.println(page);
 		try {
-			List<ReplyDto> replies = replyService.getRepliesByReviewNo(reviewNo);
-			List<Map<String, Object>> res = new ArrayList<>();
-			for(int i = 0; i < replies.size(); i++) {
-				ReplyDto data = replies.get(i);
-				Map<String, Object> reply = new HashMap<>();
-				reply.put("replyNo", data.getReplyNo());
-				reply.put("nickname", data.getNickname());
-				reply.put("content", data.getContent());
-				reply.put("likeCount", data.getLikeCount());
-				res.add(reply);
-			}
-			return new ResponseEntity<>(res, HttpStatus.OK);
-		} catch(Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+	        Pageable pageable = PageRequest.of(page, size);
+	        Page<ReplyDto> replyPage = replyService.getRepliesByReviewNo(reviewNo, pageable);
+	        //System.out.println(replyPage.getContent());
+	        return new ResponseEntity<>(replyPage, HttpStatus.OK);
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
 	}
 
 	@PostMapping("/reply/{replyNo}/reReply")

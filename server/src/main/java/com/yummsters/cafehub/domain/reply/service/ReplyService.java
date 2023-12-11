@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.reply.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
 
@@ -10,5 +11,5 @@ public interface ReplyService {
 	boolean toggleLikeReply(Integer memNo, Integer replyNo) throws Exception;
 	Integer getLikeCount(Integer replyNo) throws Exception;
 	void addReReply(Integer replyNo, ReplyDto replyDto) throws Exception;
-	List<ReplyDto> getRepliesByReviewNo(Integer reivewNo) throws Exception;
+	Page<ReplyDto> getRepliesByReviewNo(Integer reivewNo, Pageable pageable) throws Exception;
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.yummsters.cafehub.domain.likeReply.entity.LikeReply;
@@ -105,13 +107,15 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 
 	@Override
-	public List<ReplyDto> getRepliesByReviewNo(Integer reveiwNo) throws Exception {
-		List<Reply> replies = replyRepository.findAllByReview_ReviewNo(reveiwNo);
-		List<ReplyDto> replyDtoList = new ArrayList<>();
-		
-		for(Reply reply : replies) {
-			replyDtoList.add(reply.toDto());
-		}
-		return replyDtoList;
+	public Page<ReplyDto> getRepliesByReviewNo(Integer reviewNo, Pageable pageable) throws Exception {
+	    try {
+	        Page<Reply> replyPage = replyRepository.findAllByReview_ReviewNo(reviewNo, pageable);
+	        System.out.println(replyPage.getContent());
+	        
+	        return replyPage.map((reply)->reply.toDto());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new Exception("댓글 목록을 가져오는 중에 오류가 발생했습니다.");
+	    }
 	}
 }
