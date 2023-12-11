@@ -1,17 +1,19 @@
 package com.yummsters.cafehub.domain.review.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -105,26 +107,24 @@ public class ReviewController {
 	
 	//혜리 part ----------------------------------------------------------------
 	@GetMapping("/reviewList")
-	public ResponseEntity<List<Map<String, Object>>> getReviewList() {
-		List<Map<String, Object>> res = new ArrayList<>();
-		List<Review> reviews;
+	public ResponseEntity<Page<Map<String, Object>>> getReviewList(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
 		try {
-			reviews = reviewService.getReviewList();
-			for (int i = 0; i < reviews.size(); i++) {
-				Review data = reviews.get(i);
-				Map<String, Object> review = new HashMap<>();
-
-				review.put("thumbImg", data.getThumbImg());
-				review.put("title", data.getTitle());
-				review.put("cafeName", data.getCafe().getCafeName());
-				review.put("likeCount", data.getLikeCount());
-//				review.put("member", data.getMember());
-				review.put("regDate", data.getRegDate());
-				review.put("nickname", data.getMember().getNickname());
-				review.put("reviewNo", data.getReviewNo());
-				
-				res.add(review);
-			}
+			Page<Review> reviewsPage = reviewService.getReviewList(PageRequest.of(page, size));
+	        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
+	            @Override
+	            public Map<String, Object> apply(Review review) {
+	                Map<String, Object> reviewData = new HashMap<>();
+	                reviewData.put("thumbImg", review.getThumbImg());
+	                reviewData.put("title", review.getTitle());
+	                reviewData.put("cafeName", review.getCafe().getCafeName());
+	                reviewData.put("likeCount", review.getLikeCount());
+	                reviewData.put("regDate", review.getRegDate());
+	                reviewData.put("nickname", review.getMember().getNickname());
+	                reviewData.put("reviewNo", review.getReviewNo());
+	                return reviewData;
+	            }
+	        });
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

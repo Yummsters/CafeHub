@@ -2,15 +2,16 @@ package com.yummsters.cafehub.domain.review.service;
 
 
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
@@ -20,12 +21,12 @@ import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
-import com.yummsters.cafehub.domain.userMyPage.entity.WishReview;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 import com.yummsters.cafehub.domain.review.repository.LikeReviewRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewAuthRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewDetailRepository;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishReview;
 import com.yummsters.cafehub.domain.userMyPage.repository.WishReviewRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -169,7 +170,8 @@ public class ReviewServiceImpl implements ReviewService {
 
 	//혜리 part ----------------------------------------------------------------
 	@Override
-	public List<Review> getReviewList() throws Exception {
-		return reviewRepository.findAllByOrderByReviewNoDesc();
+	public Page<Review> getReviewList(Pageable pageable) throws Exception {
+		return reviewRepository.findAllByOrderByReviewNoDesc(pageable);
 	}
+	
 }
