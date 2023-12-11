@@ -2,8 +2,11 @@ package com.yummsters.cafehub.domain.userMyPage.service;
 
 import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
+import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
 import com.yummsters.cafehub.domain.userMyPage.repository.WishRepositoryImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,13 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WishServiceImpl implements WishService {
     private final WishRepositoryImpl wishRepository;
+    private final WishCafeRepository wishCafeRepository;
     @Override
-    public List<WishReviewDto> getWishReviewList(Integer memNo) throws Exception {
-        return wishRepository.findWishReviewList(memNo);
+    public Page<WishReviewDto> getWishReviewList(Integer memNo, Pageable pageable) throws Exception {
+        return wishRepository.findWishReviewList(memNo, pageable);
     }
 
     @Override
-    public List<WishCafeDto> getWishCafeList(Integer memNo) throws Exception {
-        return wishRepository.findWishCafeList(memNo);
+    public Page<WishCafeDto> getWishCafeList(Integer memNo, Pageable pageable) throws Exception {
+        return wishRepository.findWishCafeList(memNo, pageable);
     }
 }
