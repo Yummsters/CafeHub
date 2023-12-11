@@ -27,7 +27,7 @@ public class WishRepositoryImpl {
     public List<WishCafeDto> findWishCafeList(Integer memNo) {
         return jpaQueryFactory
                 .select(Projections.constructor(WishCafeDto.class,
-                        cafe.cafeNo, cafe.thumbImg, cafe.cafeName))
+                        cafe.cafeNo, cafe.thumbImg, cafe.cafeName, cafe.lat, cafe.lng))
                 .from(wishCafe)
                 .leftJoin(wishCafe.cafe, cafe)
                 .where(wishCafe.member.memNo.eq(memNo))
