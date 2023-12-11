@@ -255,11 +255,10 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
                   <div className="Gbtn">수정</div>
 
                   <div className="Obtn"  onClick={ReviewDelete}>삭제</div>
-                </div><div className="detailLine" /></>
-            )}
+                </div><div className="detailLine" />
 
 
-            {/* 댓글 */}
+            // {/* 댓글 */}
             <div className="reply">
               <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
               <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
