@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router";
+
 const { kakao } = window;
 
 const ReviewDetail = ({modalDetail, wishReviewNo}) => {
@@ -32,6 +34,33 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
     })
   };
 
+
+
+  
+  const ReviewDelete = () => {
+    const navigate = useNavigate();
+  
+    axios
+      .delete(`http://localhost:8080/review/${reviewNo}/delete`)
+      .then((res) => {
+        Swal.fire({
+          text: '리뷰가 삭제되었습니다',
+          icon: 'success',
+          confirmButtonText: '확인',
+        }).then(() => {
+          navigate("/reviewList"); // 페이지 이동
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: 'error',
+          text: '리뷰를 삭제하는 중에 오류가 발생했습니다',
+          icon: 'error',
+          confirmButtonText: '확인',
+        });
+      });
+  };
+  
   const showReplyClick = () => {
     setShowReply(!showReply);
   };
@@ -48,7 +77,7 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
       })
       .then((res) => {
         //댓글 등록 성공 시 추가 작업
-        console.log("댓글이 성공적으로 등록되었습니다.");
+        console.log("댓글이 성공적으로 등록되었습니다");
         setReplyContent("");
         fetchReplies();
       })
@@ -224,8 +253,11 @@ const ReviewDetail = ({modalDetail, wishReviewNo}) => {
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
               </div><div className="detailBtnBox">
                   <div className="Gbtn">수정</div>
-                  <div className="Obtn">삭제</div>
-                </div><div className="detailLine" />
+
+                  <div className="Obtn"  onClick={ReviewDelete}>삭제</div>
+                </div><div className="detailLine" /></>
+            )}
+
 
             {/* 댓글 */}
             <div className="reply">
