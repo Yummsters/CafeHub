@@ -33,12 +33,13 @@ public class ReviewAuth {
     @ManyToOne
     @JoinColumn(name = "cafeNo")
     private Cafe cafe;
-
+   
     @Builder
     public ReviewAuth(Integer reviewAuthNo, LocalDateTime regDate, Member member, Cafe cafe) {
         this.reviewAuthNo = reviewAuthNo;
         this.regDate = regDate;
         this.member = member;
         this.cafe = cafe;
+        
     }
 }

@@ -45,7 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final WishReviewRepository wishRepository;
 	private final ReviewAuthRepository reviewAuthRepository;
 	private final CafeRepository cafeRepository;
-	//private final PointService pointService;
+	private final PointService pointService;
 
 	// 수빈 part ----------------------------------------------------------------------
 	
@@ -95,7 +95,8 @@ public class ReviewServiceImpl implements ReviewService {
 			// 리뷰 작성 후 리뷰 권한 삭제
 			deleteReviewAuth(review.getReviewAuthNo());
 			 // 포인트 적립
-			 // pointService.pointUp(review.getMemNo());
+			pointService.pointUp(review.getMemNo());
+			System.out.println("getMemNo" + review.getMemNo());
 		}		
 		Review reviewEntity = review.toEntity();
 		reviewRepository.save(reviewEntity);
@@ -174,14 +175,14 @@ public class ReviewServiceImpl implements ReviewService {
 
 	// 희진 part ----------------------------------------------------------------------
 	// 리뷰 권한 부여
-	@Override
-	public void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception {
-		ReviewAuth reviewAuth = ReviewAuth.builder()
-				.member(memberRepository.findByMemNo(memNo))
-				.cafe(cafeRepository.findByCafeNo(cafeNo))
-				.build();
-		reviewAuthRepository.save(reviewAuth);
-	}
+//	@Override
+//	public void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception {
+//		ReviewAuth reviewAuth = ReviewAuth.builder()
+//				.member(memberRepository.findByMemNo(memNo))
+//				.cafe(cafeRepository.findByCafeNo(cafeNo))
+//				.build();
+//		reviewAuthRepository.save(reviewAuth);
+//	}
 
 	//혜리 part ----------------------------------------------------------------
 	@Override
