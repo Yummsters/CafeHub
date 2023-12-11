@@ -25,29 +25,29 @@ public class PointController {
     }
 
     // 회원 포인트 적립 & 리뷰 권한
-    @PostMapping ("/point/save/{memNo}/cafe/{cafeNo}")
-    public ResponseEntity<Object> savePointNReview(@PathVariable("memNo") Integer memNo, @PathVariable("cafeNo") Integer cafeNo){
-        try{
-            Integer pointCountResponse =  pointService.savePoint(memNo, cafeNo);
-            return new ResponseEntity<>(pointCountResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PostMapping ("/point/save/{memNo}/cafe/{cafeNo}")
+//    public ResponseEntity<Object> savePointNReview(@PathVariable("memNo") Integer memNo, @PathVariable("cafeNo") Integer cafeNo){
+//        try{
+//            Integer pointCountResponse =  pointService.savePoint(memNo, cafeNo);
+//            return new ResponseEntity<>(pointCountResponse, HttpStatus.OK);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     // 회원 포인트 사용 & 리뷰 권한 & 사장 포인트 적립
-    @PostMapping ("/point/use/{memNo}/cafe/{cafeNo}/{point}")
-    public ResponseEntity<Object> savePointNReview(@PathVariable("memNo") Integer memNo,
-                                                   @PathVariable("cafeNo") Integer cafeNo, @PathVariable("point") Integer point){
-        try{
-            Integer pointCountResponse =  pointService.usePoint(memNo, point, cafeNo);
-            return new ResponseEntity<>(pointCountResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PostMapping ("/point/use/{memNo}/cafe/{cafeNo}/{point}")
+//    public ResponseEntity<Object> savePointNReview(@PathVariable("memNo") Integer memNo,
+//                                                   @PathVariable("cafeNo") Integer cafeNo, @PathVariable("point") Integer point){
+//        try{
+//            Integer pointCountResponse =  pointService.usePoint(memNo, point, cafeNo);
+//            return new ResponseEntity<>(pointCountResponse, HttpStatus.OK);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     // 사장 포인트 정산 신청
     @PostMapping("/point/calculate/{memNo}")

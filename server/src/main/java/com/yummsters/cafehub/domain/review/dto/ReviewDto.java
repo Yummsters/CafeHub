@@ -2,11 +2,10 @@ package com.yummsters.cafehub.domain.review.dto;
 
 import java.time.LocalDateTime;
 
-
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.review.entity.Review;
-
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +42,8 @@ public class ReviewDto {
   
 	private String fileurl;
 	
+	private Point pointNo;
+	private Integer pointCount;
 	
 	public void setFileurl(String fileurl) {
 		this.fileurl = fileurl;
@@ -56,8 +57,11 @@ public class ReviewDto {
 	 public void setReviewAuthNo(Integer reviewAuthNo) {
 	        this.reviewAuthNo = reviewAuthNo;
 	    }
-	
+	 public void setPointCount(Integer pointCount) {
+	        this.pointCount = pointCount;
+	    }
 	public Review toEntity() {
+
 		 return Review.builder()
 				 .reviewNo(reviewNo)
 		            .title(title)

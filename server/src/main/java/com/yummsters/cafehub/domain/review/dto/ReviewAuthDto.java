@@ -23,15 +23,19 @@ public class ReviewAuthDto {
 	    private LocalDateTime regDate;
 	    private Integer memNo;
 	    private Integer cafeNo;
-	  //  private String cafeName;
+	    private String cafeName;
 	   
+	    public void setCafeName(String cafeName) {
+	        this.cafeName = cafeName;
+	    }
+	    
 	    public static ReviewAuthDto fromEntity(ReviewAuth reviewAuth) {
 	        return ReviewAuthDto.builder()
 	                .reviewAuthNo(reviewAuth.getReviewAuthNo())
 	                .regDate(reviewAuth.getRegDate())
 	                .memNo(reviewAuth.getMember().getMemNo())
 	                .cafeNo(reviewAuth.getCafe().getCafeNo())
-	               // .cafeName(reviewAuth.getCafe().getCafeName())
+	                .cafeName(reviewAuth.getCafe().getCafeName())
 	                .build();
 	    }
 }
