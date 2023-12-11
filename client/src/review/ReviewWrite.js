@@ -8,6 +8,7 @@ import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
 import 'prismjs/themes/prism.css';
 import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 
@@ -103,6 +104,9 @@ const ReviewWrite = () => {
         const value = e.target.value;
         setReview({ ...review, [name]: value });
     };
+    const handleEditorChange = (content) => {
+        console.log(content);
+      };
 
     const submit = (e) => {
         e.preventDefault();
@@ -120,12 +124,12 @@ const ReviewWrite = () => {
         const formData = new FormData();
         //title보내기
         formData.append('title', review.title);
-        const content = editorRef.current.getInstance().getMarkdown();
-
+        const content = editorRef.current.getInstance().getHTML();
         console.log('FormData의 콘텐츠:', content);
         //content보내기
         formData.append('content', content);
         //writer보내기
+        formData.append('memNo', review.writer);
         formData.append('writer', review.writer);
         //tag보내기
         formData.append('tagName', JSON.stringify(selectedTags));
@@ -222,22 +226,22 @@ const ReviewWrite = () => {
             <div className='reviewBox'>
                 <div className='reviewTitle'>
 
-                <select
-    value={`${selectedReviewAuthNo},${selectedCafeNo}`}
-    onChange={(e) => {
-        const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
-        setSelectedReviewAuthNo(selectedReviewAuthNo);
-        setSelectedCafeNo(selectedCafeNo);
-    }}>
-    <option value='' disabled>
-        카페 선택
-    </option>
-    {cafes.map((reviewAuth, i) => (
-        <option key={i} value={`${reviewAuth.reviewAuthNo},${reviewAuth.cafeNo}`}>
-            {reviewAuth.reviewAuthNo}
-        </option>
-    ))}
-</select>
+                    <select
+                        value={`${selectedReviewAuthNo},${selectedCafeNo}`}
+                        onChange={(e) => {
+                            const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
+                            setSelectedReviewAuthNo(selectedReviewAuthNo);
+                            setSelectedCafeNo(selectedCafeNo);
+                        }}>
+                        <option value='' disabled>
+                            카페 선택
+                        </option>
+                        {cafes.map((reviewAuth, i) => (
+                            <option key={i} value={`${reviewAuth.reviewAuthNo},${reviewAuth.cafeNo}`}>
+                                {reviewAuth.cafeName}
+                            </option>
+                        ))}
+                    </select>
 
                     <Input
                         className='title'
@@ -263,6 +267,7 @@ const ReviewWrite = () => {
                 </div>
                 <div className='editor'>
                     <Editor
+                     onChange={handleEditorChange}
                         className='custom-editor'
                         ref={editorRef}
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}

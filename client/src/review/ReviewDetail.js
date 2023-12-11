@@ -20,6 +20,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const { state } = useLocation();
   const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
   const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
+
   const [pageInfo, setPageInfo] = useState({
     currentPage:1,
     repliesPerPage:10,
@@ -27,6 +28,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     endPage:1,
     totalPages:1
 })
+  const navigate = useNavigate();
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -40,28 +42,43 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     })
   };
 
-  const ReviewDelete = () => {
-    const navigate = useNavigate();
-
-    axios
-      .delete(`http://localhost:8080/review/${reviewNo}/delete`)
-      .then((res) => {
-        Swal.fire({
-          text: '리뷰가 삭제되었습니다',
-          icon: 'success',
-          confirmButtonText: '확인',
-        }).then(() => {
-          navigate("/reviewList"); // 페이지 이동
-        });
-      })
-      .catch((error) => {
-        Swal.fire({
-          title: 'error',
-          text: '리뷰를 삭제하는 중에 오류가 발생했습니다',
-          icon: 'error',
-          confirmButtonText: '확인',
-        });
+  const ReviewDelete = async (reviewNo) => {
+   try{
+   await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
+   console.log("리뷰 삭제 성공");
+     Swal.fire({
+        text: '리뷰가 삭제되었습니다',
+        icon: 'success',
+        confirmButtonText: '확인',
       });
+      navigate("/reviewList"); // 페이지 이동
+    } catch (error) {
+      console.log("리뷰 삭제 에러");
+      Swal.fire({
+        title: 'error',
+        text: '리뷰를 삭제하는 중에 오류가 발생했습니다',
+        icon: 'error',
+        confirmButtonText: '확인',
+      });
+    }
+  };
+   
+
+  const handleReviewDelete = () => {
+    Swal.fire({
+      title: "리뷰 삭제",
+      text: "리뷰를 삭제하시겠습니까?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        ReviewDelete(reviewNo);
+      }
+    });
   };
 
   const showReplyClick = () => {
@@ -283,7 +300,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               </div><div className="detailBtnBox">
                   <div className="Gbtn">수정</div>
 
-                  <div className="Obtn" onClick={ReviewDelete}>삭제</div>
+                  <div className="Obtn"  onClick={handleReviewDelete}>삭제</div>
                 </div><div className="detailLine" />
 
 
