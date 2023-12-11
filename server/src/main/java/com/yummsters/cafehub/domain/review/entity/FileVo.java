@@ -37,7 +37,7 @@ public class FileVo {
 	private String name;
 	@Column
 	private Long size;
-	@Column
+	@Column(name = "contenttype")
 	private String contenttype;
 	@Column
 	private Date uploaddate;

@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -33,7 +34,7 @@ public class Review {
    private String content;
    @Column
    private String tagName;
-   @Column(name = "thumb_img", nullable = false)
+   @Column(name = "thumb_img", nullable = false,columnDefinition = "TEXT")
    private String thumbImg;
    @ManyToOne (fetch = FetchType.LAZY)
    @JoinColumn(name = "writer") // 외래키
@@ -47,6 +48,10 @@ public class Review {
 	private LocalDateTime regDate;
 	@OneToMany(mappedBy = "review")
 	private List<ReviewToTag> reviewToTags = new ArrayList<>();
+	@ManyToOne
+	@JoinColumn(name="pointNo")
+	private Point point;
+
    @Override
    public String toString() {
        return String.format("[%d,%s,%s,%s,%s,%d,%d,%d,%s]",
