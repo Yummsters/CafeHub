@@ -63,8 +63,8 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<ReviewAuth> reviewAuths;
 
-    @OneToOne(mappedBy="member")
-    private Point point;
+   /* @OneToOne(mappedBy="member")
+    private Point point;*/
 
     @OneToOne
     @JoinColumn(name="cafeNo")

@@ -1,21 +1,24 @@
 package com.yummsters.cafehub.domain.review.controller;
 
+import com.yummsters.cafehub.domain.file.service.FileService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/common")
+@RequiredArgsConstructor
 public class FileUploadController {
+    private final FileService fileService;
 
     // 기본 URL 정의
     private static final String BASE_URL = "http://localhost:8080/common/";
@@ -61,4 +64,15 @@ public class FileUploadController {
         return ResponseEntity.ok(imageUrl);
     }
 
+    // 업로드 이미지 조회
+    @GetMapping("/upload/{fileNum}")
+    public void searchThumbImg(@PathVariable("fileNum") Integer fileNum, HttpServletResponse response){
+        try {
+            System.out.println("파일 출력");
+            fileService.readThumbImg(fileNum, response.getOutputStream());
+            System.out.println(response.getOutputStream());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,13 +1,14 @@
 package com.yummsters.cafehub.domain.cafeAd.dto;
 
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
+import com.yummsters.cafehub.domain.review.entity.FileVo;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class SearchResDto {
-    private String thumbImg;
+    private FileVo fileVo;
     private String description;
     private String menu;
     private boolean isApproved;
@@ -17,10 +18,10 @@ public class SearchResDto {
             return null;
         }else {
             SearchResDto.SearchResDtoBuilder searchResDto = SearchResDto.builder();
-            searchResDto.thumbImg(cafeAd.getThumbImg());
             searchResDto.description(cafeAd.getDescription());
             searchResDto.menu(cafeAd.getMenu());
             searchResDto.isApproved(cafeAd.isApproved());
+            searchResDto.fileVo(cafeAd.getFileVo());
             return searchResDto.build();
         }
     }
