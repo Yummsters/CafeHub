@@ -5,11 +5,16 @@ import UserSideTab from "../components/UserSideTab";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import axios from "axios";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
 const WishReview = () => {
   const [wishReviewList, setWishReviewList] = useState([]);
   const [wishReviewNo, setWishReviewNo] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const memNo = useSelector((state) => state.persistedReducer.member.memNo);
+  const accessToken = useSelector((state) => state.persistedReducer.accessToken);
 
   const openModal = (reviewNo) => { 
     setWishReviewNo(reviewNo);
@@ -20,12 +25,21 @@ const WishReview = () => {
     setShowModal(false);
   };
 
-  const memNo = useSelector((state) => state.persistedReducer.member.memNo);
-  const accessToken = useSelector((state) => state.persistedReducer.accessToken);
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/member/wishReviewList/${memNo}`, {
+      .get(`http://localhost:8080/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
@@ -33,12 +47,14 @@ const WishReview = () => {
       })
       .then((res) => {
         console.log(res.data);
-        setWishReviewList(res.data);
+        console.log(res.data.content);
+        setWishReviewList(res.data.content);
+        setTotalPages(res.data.totalPages);
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
-  }, [memNo]);
+  }, [memNo, currentPage]);
 
   return (
     <div className="wishReview-container">
@@ -56,11 +72,21 @@ const WishReview = () => {
               {index % 4 === 3 ? (<><br /></>) : ("")}
             </span>
           ))}
-        <div className="wishreview-pagination">
-          <div className="wishreview-prevPage">&lt;</div>
-          <div className="wishreview-page">1 2 3 맵사용해~</div>
-          <div className="wishreview-nextPage">&gt;</div>
-        </div>
+          <Pagination>
+            <PaginationItem disabled={currentPage === 1}>
+              <PaginationLink previous onClick={prevPage} />
+            </PaginationItem>
+            {[...Array(totalPages)].map((_, index) => (
+              <PaginationItem key={index} active={currentPage === index + 1}>
+                <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem disabled={currentPage === totalPages}>
+              <PaginationLink next onClick={nextPage} />
+            </PaginationItem>
+          </Pagination>
       </div>
 
       {showModal && (
