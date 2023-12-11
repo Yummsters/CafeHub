@@ -3,7 +3,7 @@
 }
 
 .storeBanner-wrapper {
-    margin-top: 100px;
+    margin-top: 50px;
     margin-bottom: 100px;
     width: 100%;
     display: flex;
@@ -68,21 +68,34 @@
 .storeBanner-input-description-box,
 .storeBanner-input-menu-box {
     display: flex;
-    align-items: center;justify-content: flex-end; /* 가로 방향으로 끝에 정렬 */
+    align-items: center; /* 가로 방향으로 끝에 정렬 */
 
 }
 
+
 .storeBanner-input-description-title,
 .storeBanner-input-menu-title {
+    width: 150px;
     margin: 20px 20px 20px 0;
 }
 
 .storeBanner-input-description,
 .storeBanner-input-menu {
-    margin-right: 20px;
-    width: 680px;
+    margin-right: 80px;
+    width: 580px;
     border: none;
     outline: none;
+    float: right;
+}
+
+.storeBanner-input-description:disabled,
+.storeBanner-input-menu:disabled {
+    margin-right: 80px;
+    width: 580px;
+    border: none;
+    outline: none;
+    float: right;
+    background-color: white;
 }
 
 .hl {

@@ -1,21 +1,68 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import {useSelector} from 'react-redux';
 import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
+import axios from 'axios';
 
 const StoreBanner = () => {
+    const [cafeAd, setCafeAd] = useState({thumbImg : null, description : '', menu : '', approved:false});
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
-    const [image, setImage] = useState(null);
-    const [description, setDescription] = useState('');
-    const [menu, setMenu] = useState('');
+    // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
+    const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
+    const [cafeNo, setCafeNo] = useState(2);
 
     const inputRef = useRef(null);
+
+    // 광고 승인 여부도 같이 확인해서 T/F 결정
+    const [isAdExist, setIsAdExist] = useState(false); // 광고 신청 여부 조회
+    const [isApprove, setIsApprove] = useState(false); // 광고 승인 여부 조회
+
+    // 초기화 버튼, 광고 신청 / 취소 버튼 등 현재 isApprove와 isAdExist에 따른 결과 산출이 잘 되고 있는지 확인 필요
+    useEffect(()=>{
+        var descrInput = document.getElementById("description");
+        var menuInput = document.getElementById("menu");
+        // 사진 선택도 안되도록 막는 로직 추가 필요
+
+        axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
+            headers : {
+                Authorization : accessToken
+            }
+        })
+        .then(res=>{
+            console.log(res);
+            if(res.data.approved){ // 광고가 존재하면서 승인이 되어 있는 경우
+                setIsAdExist(true);
+                setIsApprove(true);
+                setCafeAd(res.data);
+                descrInput.disabled = true;
+                menuInput.disabled = true;
+
+            } else{ // 광고가 존재하면서 승인이 안되어 있는 경우
+                setIsAdExist(true); 
+                setIsApprove(false);
+                setCafeAd(res.data);
+                descrInput.disabled = true;
+                menuInput.disabled = true;
+            }
+        })
+        .catch(err=>{ // 광고가 존재하지 않거나, 이미 광고 기간이 끝난 경우
+            console.log(err);
+            console.log(err.data);
+            setIsAdExist(false);
+            setIsApprove(false);
+            descrInput.disabled = false;
+            menuInput.disabled = false;
+            setCafeAd({thumbImg : null, description : '', menu : '', approved:false});
+        })
+    },[])
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImage(reader.result);
+                setCafeAd(prevState => ({ ...prevState, thumbImg: reader.result }));
             };
             reader.readAsDataURL(file);
         }
@@ -25,25 +72,31 @@ const StoreBanner = () => {
         inputRef.current.click();
     };
 
-    const handleDescriptionChange = (e) => {
+    const handleCafeAdChange = (e) => {
+        const id = e.target.id;
         const value = e.target.value;
-        if (value.length <= 30) {
-            setDescription(value);
-        }
+        setCafeAd(prevState => ({ ...prevState, [id]: value }));
+    };
+    
+
+    const handleReset = (e) => {
+        e.preventDefault();
+        setCafeAd(prevState => ({ ...prevState, description: '', menu: '' , thumbIng:null}));
     };
 
-    const handleMenuChange = (e) => {
-        const value = e.target.value;
-        const words = value.split(',').map((word) => word.trim());
-        if (words.length <= 3) {
-            setMenu(value);
-        }
-    };
+    const submitAd = (e) =>{
+        e.preventDefault();
+        axios.post(`http://localhst:8080/cafeAd/${cafeNo}`,{
+            cafeAd : cafeAd
+        },
+        {
+            headers : {
+                Authorization : accessToken,
+                'Content-Type': 'application/json'
 
-    const handleReset = () => {
-        setDescription('');
-        setMenu('');
-    };
+            }
+        })
+    }
 
     return (
         <div className='storeBanner-container'>
@@ -58,25 +111,26 @@ const StoreBanner = () => {
                             style={{ display: 'none' }}
                             ref={inputRef}
                         />
-                        <div className='storeBanner-img' style={{ backgroundImage: `url(${image || '/img/placeholder-image.jpg'})` }}>
-                            {image ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+                        <div className='storeBanner-img' id='thumbImg' style={{ backgroundImage: `url(${cafeAd.thumbImg || '/img/placeholder-image.jpg'})` }}>
+                            {cafeAd.thumbImg ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
-                            <div className='storeBanner-title'>우드슬랩,</div>
+                            <div className='storeBanner-title'>{cafe.title},</div>
                             <div className='storeBanner-description'>
-                                <br />{description}
+                                <br />{cafeAd.description}
                             </div>
                             <div className='storeBanner-menu'>
-                                <br />대표메뉴: {menu}
+                                <br />대표메뉴: {cafeAd.menu}
                             </div>
                             <div className='storeBanner-address'>
-                                서울 금천구 가산디지털1로 58  에이스한솔타워 제 101호
+                                {cafe.address}
                             </div>
                         </div>
                     </div>
 
                     <div className='storeBanner-input-description-wrap'>
                         <div className='storeBanner-input-description-box'>
+                            <label style={{display:"flex"}}>
                             <div className='storeBanner-input-description-title'>
                                 <div style={{ fontSize: "20px" }}>카페 설명 입력</div>
                                 <div style={{ fontSize: "15px" }}>(최대 30자)</div>
@@ -84,29 +138,36 @@ const StoreBanner = () => {
                             <input
                                 type='text'
                                 className='storeBanner-input-description'
-                                value={description}
-                                onChange={handleDescriptionChange}
-                            />
+                                id = 'description'
+                                value={cafeAd.description}
+                                onChange={handleCafeAdChange}
+                                style={{ fontSize: "20px" }}
+                                maxLength="30"
+                            /></label>
                         </div>
-                        <button className='storeBanner-cancelBtn' onClick={handleReset}>초기화</button>
+                        {!(isAdExist || isApprove) && <button className='storeBanner-cancelBtn' onClick={handleReset}>초기화</button>}
                     </div>
 
                     <div className='hl' />
 
                     <div className='storeBanner-input-menu-wrap'>
                         <div className='storeBanner-input-menu-box'>
+                            <label style={{display:"flex"}}>
                             <div className='storeBanner-input-menu-title'>
                                 <div style={{ fontSize: "20px" }}>대표 메뉴 입력</div>
-                                <div style={{ fontSize: "15px" }}>(최대 3가지)</div>
+                                <div style={{ fontSize: "15px" }}>(최대 3가지 권장)</div>
                             </div>
                             <input
                                 type='text'
                                 className='storeBanner-input-menu'
-                                value={menu}
-                                onChange={handleMenuChange}
+                                id='menu'
+                                value={cafeAd.menu}
+                                onChange={handleCafeAdChange}
+                                style={{ fontSize: "20px" }}
                             />
+                            </label>
                         </div>
-                        <button className='storeBanner-regBtn'>광고 신청</button>
+                        {!isAdExist ? <button className='storeBanner-regBtn' onClick={submitAd}>광고 신청</button> :  (!isApprove ? <button className='storeBanner-regBtn'>광고 취소</button> : '')}
                     </div>
 
                     <div className='hl' />
