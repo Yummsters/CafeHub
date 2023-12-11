@@ -45,8 +45,8 @@ public class Cafe {
     @Column
     private String cafeInfo;
 
-    @OneToOne(mappedBy="cafe")
-    private Member member;
+    /*@OneToOne(mappedBy="cafe")
+    private Member member;*/
 
     public CafeDto toDTO() {
         return CafeDto.builder()

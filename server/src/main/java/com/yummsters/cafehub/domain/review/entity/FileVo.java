@@ -1,21 +1,17 @@
 package com.yummsters.cafehub.domain.review.entity;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 @Entity(name="FILE")
@@ -24,6 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class FileVo {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "fileNum" , insertable = false, updatable = false)
@@ -39,8 +36,8 @@ public class FileVo {
 	private Long size;
 	@Column
 	private String contenttype;
-	@Column
-	private Date uploaddate;
+	@CreatedDate
+	private LocalDateTime uploaddate;
 	 @Lob
 	 @Column(name = "data", columnDefinition = "LONGBLOB")
 	private byte[] data;
@@ -49,4 +46,6 @@ public class FileVo {
         return review != null ? review.getReviewNo() : null;
     }
 
+	/*@OneToOne(mappedBy = "fileVo")
+	private CafeAd cafeAd;*/
 }

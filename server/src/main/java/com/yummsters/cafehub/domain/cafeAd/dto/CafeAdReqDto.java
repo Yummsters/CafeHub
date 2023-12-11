@@ -10,7 +10,6 @@ import lombok.Getter;
 public class CafeAdReqDto {
     private String description;
     private String menu;
-    private String thumbImg;
 
     public static CafeAd cafeAdReqDto(CafeAdReqDto cafeAdReqDto, Cafe cafe){
         if(cafeAdReqDto == null){
@@ -19,7 +18,6 @@ public class CafeAdReqDto {
             CafeAd.CafeAdBuilder cafeAd = CafeAd.builder();
             cafeAd.description(cafeAdReqDto.getDescription());
             cafeAd.menu(cafeAdReqDto.getMenu());
-            cafeAd.thumbImg(cafeAdReqDto.getThumbImg());
             cafeAd.cafe(cafe);
             return cafeAd.build();
         }
