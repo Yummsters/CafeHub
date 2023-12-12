@@ -7,13 +7,24 @@ import Swal from 'sweetalert2';
 const SearchId = () => {
     const [data, setData] = useState({ name: '', phone: '' });
     const navigate = useNavigate();
+    const [warning, setWarnings] = useState('');
 
     const handleChange = (e) => {
       const { name, value } = e.target;
+      if(name === 'phone' && !/^[0-9]+$/.test(value)) {
+        setWarnings('하이픈(-) 제외 숫자로 작성하세요');
+        e.preventDefault();
+      } else {
+        setWarnings('');
+      }
       setData({ ...data, [name]: value });
     };
 
     const handleSubmit = (e) => {
+        if (!data.phone.trim()) {
+            setWarnings('휴대폰 번호를 입력하세요');
+            return;
+        }
         e.preventDefault();
         axios.get('http://localhost:8080/searchId', { 
             params: {
@@ -46,7 +57,8 @@ const SearchId = () => {
             </div>
               <br/><br/>
             <div className='searchIdInputDiv'>
-              <label> 휴대폰 번호  <span className='searchId-AuthPhone'>휴대폰 번호를 확인해주세요</span><br/>
+              <label> 휴대폰 번호  
+              {warning && <span className='searchId-AuthPhone'>{warning}</span>}<br/>
               <input type="text" id="phone" name="phone" onChange={handleChange} /></label>
             </div>
             <div className='searchId-button'>
@@ -60,3 +72,4 @@ const SearchId = () => {
 }
 
 export default SearchId;
+

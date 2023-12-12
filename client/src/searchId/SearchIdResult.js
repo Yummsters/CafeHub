@@ -1,7 +1,6 @@
 import { useLocation } from 'react-router';
 import searchId from './searchIdStyle.css';
 
-
 const SearchIdResult = () => {
     const location = useLocation();
     const result = location.state.result;
