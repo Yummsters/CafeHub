@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.review.service;
 
-
 import java.io.File;
 import java.util.List;
 
@@ -47,40 +46,39 @@ public class ReviewServiceImpl implements ReviewService {
 	private final CafeRepository cafeRepository;
 	private final PointService pointService;
 
-	// 수빈 part ----------------------------------------------------------------------
-	
-	
-	//리뷰 권한 
-	@Override  
+	// 수빈 part
+	// ----------------------------------------------------------------------
+
+	// 리뷰 권한
+	@Override
 	public List<ReviewAuth> getReviewAuthList(Integer memNo) throws Exception {
-	    return reviewAuthRepository.findByMember_MemNo(memNo);
+		return reviewAuthRepository.findByMember_MemNo(memNo);
 	}
-	//리뷰 등록 
+
+	// 리뷰 등록
 	@Override
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
+
+		if (files != null && files.size() != 0) {
+			String dir = "c:/soobin/upload/";
 		
 		if (files != null && files.size()!= 0) {
 			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
 			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
 
 			String fileNums = "";
-			
+
 			for (MultipartFile file : files) {
-				
-				FileVo fileVo = FileVo.builder()
-						.directory(dir)
-						.name(file.getOriginalFilename())
-						.size(file.getSize())
-						.contenttype(file.getContentType())
-						.data(file.getBytes())
-						.build();
-				
+
+				FileVo fileVo = FileVo.builder().directory(dir).name(file.getOriginalFilename()).size(file.getSize())
+						.contenttype(file.getContentType()).data(file.getBytes()).build();
+
 				fileVoRepository.save(fileVo);
 
-	            // upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
-	            String originalFilePath = dir + fileVo.getName();
+				// upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
+				String originalFilePath = dir + fileVo.getName();
 
-	            // 리뷰에 썸네일 이미지를 직접 추가
+				// 리뷰에 썸네일 이미지를 직접 추가
 				File uploadFile = new File(dir + fileVo.getFileNum());
 				System.out.println("File Path: " + uploadFile.getAbsolutePath());
 
@@ -89,49 +87,97 @@ public class ReviewServiceImpl implements ReviewService {
 				// file번호 목록 만들기
 				if (!fileNums.equals(""))
 					fileNums += ",";
-				fileNums += fileVo.getFileNum();	
-				
+				fileNums += fileVo.getFileNum();
+
 			}
 			// 파일 번호 목록을 썸네일 이미지로 사용
-			review.setThumbImg(fileNums);	
+			review.setThumbImg(fileNums);
 			// 리뷰 작성 후 리뷰 권한 삭제
 			deleteReviewAuth(review.getReviewAuthNo());
-			 // 포인트 적립
+			// 포인트 적립
 			pointService.pointUp(review.getMemNo());
 			System.out.println("getMemNo" + review.getMemNo());
-		}		
+		}
 		Review reviewEntity = review.toEntity();
 		reviewRepository.save(reviewEntity);
 		return reviewEntity.getReviewNo();
 	}
-	
-	//리뷰 권한 삭제
+
+	// 리뷰 권한 삭제
 	@Override
 	public void deleteReviewAuth(Integer reviewAuthNo) {
-	    ReviewAuth reviewAuth = reviewAuthRepository.findByReviewAuthNo(reviewAuthNo);
-	    if (reviewAuth != null) {
-	        reviewAuthRepository.delete(reviewAuth);
-	    }
+		ReviewAuth reviewAuth = reviewAuthRepository.findByReviewAuthNo(reviewAuthNo);
+		if (reviewAuth != null) {
+			reviewAuthRepository.delete(reviewAuth);
+		}
 	}
+
 	// 리뷰 삭제
 	@Override
 	public void deleteReview(Integer reviewNo) throws Exception {
-	    Review reviewEntity = reviewRepository.findByReviewNo(reviewNo);
+		Review reviewEntity = reviewRepository.findByReviewNo(reviewNo);
 
-	    if (reviewEntity != null) {
-	        reviewRepository.delete(reviewEntity);
-	    }
+		if (reviewEntity != null) {
+			reviewRepository.delete(reviewEntity);
+		}
 	}
-	
+
+	// 리뷰 수정
+	@Override
+	public Integer modifyReview(Integer reviewNo, ReviewDto reviewDto, List<MultipartFile> files) throws Exception {
+		// 기존 리뷰 정보 가져오기
+		Review review = reviewRepository.findByReviewNo(reviewNo);
+
+		// 리뷰 정보 업데이트
+		review.setThumbImg(reviewDto.getThumbImg());
+		review.setTitle(reviewDto.getTitle());
+
+		if (files != null && !files.isEmpty()) {
+			String dir = "c:/soobin/upload/";
+			String fileNums = "";
+
+			for (MultipartFile file : files) {
+				if (file.isEmpty()) {
+					fileNums += (fileNums.isEmpty() ? "" : ",") + file.getOriginalFilename();
+				} else {
+					FileVo fileVo = FileVo.builder().directory(dir).name(file.getOriginalFilename())
+							.size(file.getSize()).contenttype(file.getContentType()).data(file.getBytes()).build();
+
+					fileVoRepository.save(fileVo);
+
+					// upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
+					String originalFilePath = dir + fileVo.getName();
+
+					File uploadFile = new File(dir + fileVo.getFileNum());
+					System.out.println("File Path: " + uploadFile.getAbsolutePath());
+
+					file.transferTo(uploadFile);
+
+					// file 번호 목록 만들기
+					if (!fileNums.isEmpty()) {
+						fileNums += ",";
+					}
+					fileNums += fileVo.getFileNum();
+				}
+			}
+			// 파일 번호 목록을 썸네일 이미지로 사용
+			review.setThumbImg(fileNums);
+		}
+
+		// 리뷰 정보 저장
+		reviewRepository.save(review);
+
+		return review.getReviewNo();
+	}
 
 
-	
-	
-      // 선진 part ----------------------------------------------------------------------
-	  @Override
-	  public ReviewDetailDto reviewDetail(Integer reviewNo) throws Exception {
-		  return detailRepository.findReviewByReviewNo(reviewNo);
-	  }
+
+	// 선진 part
+	// ----------------------------------------------------------------------
+	@Override
+	public ReviewDetailDto reviewDetail(Integer reviewNo) throws Exception {
+		return detailRepository.findReviewByReviewNo(reviewNo);
+	}
 
 	@Override
 	public boolean isLikeReview(Integer memNo, Integer reviewNo) throws Exception {
@@ -144,7 +190,7 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findByReviewNo(reviewNo);
 		Member member = memberRepository.findByMemNo(memNo);
 		boolean isLike = likeRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
-		if(isLike) {
+		if (isLike) {
 			likeRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
 			review.setLikeCount(review.getLikeCount() - 1); // 추천 수 증가
 			return false; // 추천 취소
@@ -166,7 +212,7 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findByReviewNo(reviewNo);
 		Member member = memberRepository.findByMemNo(memNo);
 		boolean isWish = wishRepository.existsByMember_memNoAndReview_reviewNo(memNo, reviewNo);
-		if(isWish) {
+		if (isWish) {
 			wishRepository.deleteByMember_memNoAndReview_reviewNo(memNo, reviewNo);
 			return false;
 		} else {
@@ -175,10 +221,24 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
-	//혜리 part ----------------------------------------------------------------
+
+	// 희진 part
+	// ----------------------------------------------------------------------
+	// 리뷰 권한 부여
+//	@Override
+//	public void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception {
+//		ReviewAuth reviewAuth = ReviewAuth.builder()
+//				.member(memberRepository.findByMemNo(memNo))
+//				.cafe(cafeRepository.findByCafeNo(cafeNo))
+//				.build();
+//		reviewAuthRepository.save(reviewAuth);
+//	}
+
+	// 혜리 part ----------------------------------------------------------------
+
 	@Override
 	public Page<Review> getReviewList(Pageable pageable) throws Exception {
 		return reviewRepository.findAllByOrderByReviewNoDesc(pageable);
 	}
-	
+
 }
