@@ -1,9 +1,11 @@
 package com.yummsters.cafehub.domain.point.controller;
 
+import com.yummsters.cafehub.global.response.MultiResponseDto;
 import com.yummsters.cafehub.domain.point.dto.PointCalRes;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.point.service.PointService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,21 +68,34 @@ public class PointController {
         }
     }
 
-    // 포인트 정산 신청 리스트 조회
+    // 포인트 정산 신청 리스트 조회 (페이지네이션)
     @GetMapping("/list")
-    public ResponseEntity<Object> pointPermitList(){
+    public ResponseEntity<Object> pointPermitList(@RequestParam("page") Integer page,
+                                                  @RequestParam("size") Integer size){
         try{
-            List<Point> responseList = pointService.reqPointCal();
+            Page<Point> responsePage = pointService.reqPointCal(page-1,size);
+            List<Point> responseList = responsePage.getContent();
             List<PointCalRes> responseLists = new ArrayList<>();
 
             for(Point point : responseList){
                 responseLists.add(PointCalRes.pointToPointCalRes(point));
             }
 
-            return new ResponseEntity<>(responseLists, HttpStatus.OK);
+            return new ResponseEntity<>(new MultiResponseDto<>(responseLists, responsePage), HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 포인트 정산 승인
+    @PostMapping("/{memNo}")
+    public ResponseEntity<Object> permitPoint(@PathVariable("memNo") Integer memNo){
+        try{
+            boolean resPermit = pointService.permitPoint(memNo);
+            return new ResponseEntity<>(resPermit, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
