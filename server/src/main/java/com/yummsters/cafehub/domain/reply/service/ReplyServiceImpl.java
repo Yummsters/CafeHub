@@ -9,12 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.yummsters.cafehub.domain.likeReply.entity.LikeReply;
-import com.yummsters.cafehub.domain.likeReply.repository.LikeReplyRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
+import com.yummsters.cafehub.domain.reply.entity.LikeReply;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
+import com.yummsters.cafehub.domain.reply.repository.LikeReplyRepository;
 import com.yummsters.cafehub.domain.reply.repository.ReplyRepository;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
