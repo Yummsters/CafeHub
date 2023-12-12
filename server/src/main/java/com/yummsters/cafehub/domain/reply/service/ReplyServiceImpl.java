@@ -32,10 +32,11 @@ public class ReplyServiceImpl implements ReplyService {
 	private LikeReplyRepository likeReplyRepository;
 
 	@Override
-	public void replyWrite(Integer reviewNo, String content) throws Exception {
+	public void replyWrite(Integer memNo, Integer reviewNo, String content) throws Exception {
+		Member member = memberRepository.findByMemNo(memNo);
 		Review review = reviewRepository.findByReviewNo(reviewNo);
-		if (review != null) {
-			Reply newReply = Reply.builder().content(content).review(review).build();
+		if (member != null && review != null) {
+			Reply newReply = Reply.builder().depth(0).member(member).content(content).review(review).build();
 			replyRepository.save(newReply);
 		} else {
 			throw new Exception("존재하지 않는 리뷰입니다.");
@@ -101,7 +102,7 @@ public class ReplyServiceImpl implements ReplyService {
 	@Override
 	public Page<ReplyDto> getRepliesByReviewNo(Integer reviewNo, Pageable pageable) throws Exception {
 		try {
-			Page<Reply> replyPage = replyRepository.findAllByReview_ReviewNo(reviewNo, pageable);
+			Page<Reply> replyPage = replyRepository.findAllByReview_ReviewNoOrderByReplyNoDesc(reviewNo, pageable);
 			System.out.println(replyPage.getContent());
 
 			return replyPage.map((reply) -> reply.toDto());
