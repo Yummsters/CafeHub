@@ -1,15 +1,20 @@
+import { useLocation } from 'react-router';
 import searchId from './searchIdStyle.css';
-import { useState} from 'react';
 
-const SearchIdResult = () =>{
+
+const SearchIdResult = () => {
+    const location = useLocation();
+    const result = location.state.result;
+
     return(
         <div className='searchId-container'>
         <div className='searchId-section'>
-            <div className='searchId-title'>아아디 찾기</div> <br/>
+            <div className='searchId-title'>아이디 찾기</div> <br/>
             <div className='searchIdResult-text'>
             
             당신의 아이디는 <br/>
-            '수빈이 바보' 입니다.
+            <b>{result}</b> <br/>
+            입니다
 
             
             </div>
