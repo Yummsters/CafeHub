@@ -82,7 +82,7 @@ public class PointServiceImpl implements PointService{
         if(storePoint.getPointCount() < 100) throw new Exception("포인트 정산은 100개 이상부터 가능합니다");
 
         // 전체 포인트 정산 및 신청일 업데이트
-        storePoint.calPoint();
+        storePoint.calPoint(storePoint.getPointCount());
         pointRepository.save(storePoint);
 
         return storePoint.getPointCount();

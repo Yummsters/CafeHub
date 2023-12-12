@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.point.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,8 @@ public class PointCalRes {
     private Integer memNo;
 
     // 포인트 정보
-    private Integer pointCount;
+    private Integer refPointCount;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime refDate;
 
     // 가게 정보
@@ -26,7 +28,7 @@ public class PointCalRes {
         }else {
             PointCalRes.PointCalResBuilder pointResponse = PointCalRes.builder();
             pointResponse.memNo(point.getMember().getMemNo());
-            pointResponse.pointCount(point.getPointCount());
+            pointResponse.refPointCount(point.getRefPointCount());
             pointResponse.refDate(point.getRefDate());
             pointResponse.cafeName(point.getMember().getCafe().getCafeName());
             pointResponse.thumbImg(point.getMember().getCafe().getThumbImg());
