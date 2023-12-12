@@ -11,7 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
-@RequiredArgsConstructor
 public class BusinessServiceImpl implements BusinessService {
     @Value("${businessKey}")
     private String secretKey;
