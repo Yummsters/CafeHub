@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.naming.InsufficientResourcesException;
@@ -28,6 +27,9 @@ public class Point {
     private boolean isRefund;
 
     @Column
+    private Integer refPointCount;
+
+    @Column
     private LocalDateTime refDate;
 
     @OneToOne
@@ -35,10 +37,11 @@ public class Point {
     private Member member;
 
     @Builder
-    public Point(Integer pointCount, boolean isRefund, Member member) {
-        this.pointCount = pointCount;
-        this.isRefund = isRefund;
+    public Point(Member member) {
+        this.pointCount = 0;
+        this.isRefund = false;
         this.member = member;
+        this.refPointCount = 0;
     }
 
     // 포인트 적립
@@ -60,15 +63,17 @@ public class Point {
     }
 
     // 사장 포인트 정산 신청
-    public void calPoint() {
+    public void calPoint(Integer refPointCount) {
         this.pointCount = 0;
         this.refDate = LocalDateTime.now();
         this.isRefund = true;
+        this.refPointCount = refPointCount;
     }
 
     // 포인트 정산 신청 승인
     public void permitPoint(){
         this.refDate = null;
         this.isRefund = false;
+        this.refPointCount = 0;
     }
 }

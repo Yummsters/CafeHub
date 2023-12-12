@@ -1,11 +1,11 @@
-package com.yummsters.cafehub.domain.likeReply.repository;
+package com.yummsters.cafehub.domain.reply.repository;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.yummsters.cafehub.domain.likeReply.entity.LikeReply;
+import com.yummsters.cafehub.domain.reply.entity.LikeReply;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
 
 @Repository

@@ -1,4 +1,4 @@
-package com.yummsters.cafehub.domain.likeReply.service;
+package com.yummsters.cafehub.domain.reply.service;
 
 import org.springframework.stereotype.Service;
 
