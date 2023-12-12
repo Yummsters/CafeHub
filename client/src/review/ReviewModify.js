@@ -73,8 +73,8 @@ const ReviewModify = () => {
             </div>
 
             <div className='btnBox'>
-                <div className='btn'>초기화</div>
-                <div className='btn'>리뷰 수정</div>
+                <div className='review-btn'>초기화</div>
+                <div className='review-btn'>리뷰 수정</div>
             </div>
 
 
