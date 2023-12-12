@@ -30,7 +30,7 @@ public class ReviewDetailRepository {
                         review.reviewNo, review.title, review.content,
                         review.likeCount, review.regDate,
                         member.memNo, member.nickname,
-                        cafe.cafeNo, cafe.cafeName, cafe.lat, cafe.lng))
+                        cafe.cafeNo, cafe.cafeName, cafe.lat, cafe.lng,review.thumbImg))
                 .from(review)
                 .leftJoin(review.member, member)
                 .leftJoin(review.cafe, cafe)

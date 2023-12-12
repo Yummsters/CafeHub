@@ -1,12 +1,16 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
@@ -112,6 +116,7 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewRepository.delete(reviewEntity);
 		}
 	}
+	
 
 	// 리뷰 수정
 	@Override
@@ -160,8 +165,14 @@ public class ReviewServiceImpl implements ReviewService {
 
 		return review.getReviewNo();
 	}
-
-
+	
+	@Override
+	public void readImage(Integer fileNum, OutputStream out) throws Exception {
+        String dir = "c:/soobin/upload/";
+        FileInputStream fis = new FileInputStream(new File(dir + fileNum));
+        FileCopyUtils.copy(fis, out);
+        fis.close();
+    }
 
 	// 선진 part
 	// ----------------------------------------------------------------------
