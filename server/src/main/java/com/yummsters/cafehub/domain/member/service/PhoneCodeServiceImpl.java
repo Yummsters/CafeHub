@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import net.nurigo.sdk.NurigoApp;
 
+import javax.annotation.PostConstruct;
+
 @Service
-@RequiredArgsConstructor
 public class PhoneCodeServiceImpl implements PhoneCodeService {
     @Value("${send-phone-key}")
     private String apiKey;
@@ -18,12 +19,15 @@ public class PhoneCodeServiceImpl implements PhoneCodeService {
     private String secretKey;
     @Value("${soobin-phone-number}")
     private String fromNumber;
+    private DefaultMessageService messageService;
 
-    final DefaultMessageService messageService;
+    public PhoneCodeServiceImpl() {}
 
-    public PhoneCodeServiceImpl() {
+    @PostConstruct
+    public void init() {
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, secretKey, "https://api.coolsms.co.kr");
     }
+
     @Override
     public SingleMessageSentResponse sendPhoneCode(String phone, String code) throws Exception {
         Message message = new Message();
