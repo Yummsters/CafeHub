@@ -12,4 +12,5 @@ public interface MemberService {
     Boolean deleteSocialMember(Integer memNo, String email) throws  Exception;
     Member phoneSearch(String phone) throws Exception;
     Member storeSearch(Integer cafeNo) throws Exception;
+    String searchId(String name, String phone) throws Exception;
 }

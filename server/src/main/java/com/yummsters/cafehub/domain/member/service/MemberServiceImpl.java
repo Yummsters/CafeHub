@@ -130,4 +130,13 @@ public class MemberServiceImpl implements MemberService{
         if(member == null) throw new Exception("존재하지 않는 회원입니다.");
         return member;
     }
+
+    // 선진 part ----------------------------------------------------------
+    // 아이디 찾기
+    @Override
+    public String searchId(String name, String phone) throws Exception {
+        Member member = memberRepository.findByNameAndPhone(name, phone);
+        if(member == null) throw new Exception("회원정보가 일치하지 않습니다.");
+        return member.getId();
+    }
 }
