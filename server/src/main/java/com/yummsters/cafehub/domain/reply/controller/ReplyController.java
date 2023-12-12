@@ -53,6 +53,9 @@ public class ReplyController {
 	@PostMapping("/replyLike/{memNo}/{replyNo}")
 	public ResponseEntity<Object> isLikeReply(@PathVariable Integer memNo, @PathVariable Integer replyNo) {
 		try {
+			if (memNo == null || replyNo == null) {
+	            return new ResponseEntity<>("memNo 또는 replyNo가 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
+	        }
 			Map<String, Object> res = new HashMap<>();
 			boolean isToggleLike = replyService.toggleLikeReply(memNo, replyNo);
 			res.put("isToggleLike", isToggleLike);

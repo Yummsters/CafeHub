@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-@ToString(exclude = "reviews")
+//@ToString(exclude = "reviews")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
