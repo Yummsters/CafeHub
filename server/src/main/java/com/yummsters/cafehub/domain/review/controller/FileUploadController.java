@@ -22,7 +22,8 @@ public class FileUploadController {
 
     // 기본 URL 정의
     private static final String BASE_URL = "http://localhost:8080/common/";
-    private static final String UPLOAD_DIRECTORY = "c:/soobin/uploads/";
+    private static final String UPLOAD_DIRECTORY = "c:/soobin/uploads/"; // 수빈 업로드 경로
+    //private static final String UPLOAD_DIRECTORY = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
 
     @PostMapping("/fileUpload")
     public ResponseEntity<String> handleFileUpload(@RequestParam("images") MultipartFile file) {

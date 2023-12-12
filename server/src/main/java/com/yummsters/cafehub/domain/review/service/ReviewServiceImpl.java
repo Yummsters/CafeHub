@@ -60,7 +60,9 @@ public class ReviewServiceImpl implements ReviewService {
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 		
 		if (files != null && files.size()!= 0) {
-			String dir = "c:/soobin/upload/";
+			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
+			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+
 			String fileNums = "";
 			
 			for (MultipartFile file : files) {
@@ -172,17 +174,6 @@ public class ReviewServiceImpl implements ReviewService {
 			return true;
 		}
 	}
-
-	// 희진 part ----------------------------------------------------------------------
-	// 리뷰 권한 부여
-//	@Override
-//	public void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception {
-//		ReviewAuth reviewAuth = ReviewAuth.builder()
-//				.member(memberRepository.findByMemNo(memNo))
-//				.cafe(cafeRepository.findByCafeNo(cafeNo))
-//				.build();
-//		reviewAuthRepository.save(reviewAuth);
-//	}
 
 	//혜리 part ----------------------------------------------------------------
 	@Override

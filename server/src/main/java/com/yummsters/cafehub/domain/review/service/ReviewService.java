@@ -28,10 +28,7 @@ public interface ReviewService {
 	List<ReviewAuth> getReviewAuthList(Integer memNo) throws Exception; //리뷰 권한
 	void deleteReviewAuth(Integer reviewAuthNo) throws Exception; //리뷰 권한 삭제
 	void deleteReview(Integer reviewNo) throws Exception; //리뷰 삭제
-	 
-	// 희진 part
-	// 리뷰 권한
-	//void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
+
 	//혜리 part ----------------------------------------------------------------
 	public Page<Review> getReviewList(Pageable pageable) throws Exception;
 }
