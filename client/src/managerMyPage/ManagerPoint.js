@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { Table, Pagination, Button, ButtonGroup } from "reactstrap";
 import {useSelector} from 'react-redux';
-import { Table } from 'reactstrap';
 import './Manager.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import ManagerSideTab from '../components/ManagerSideTab';
 
+
 const Manager2 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    
+
     const [pointList, setPointList] = useState([]);
-    const [pageInfo, setPageInfo] = useState([]);
-    const [curPage, setCurPage] = useState(1);
+    const [pageInfo, setPageInfo] = useState({page : 1, size : 5, totalElements : 1, totalPages : 1});
+    const [page, setPage] = useState(sessionStorage.getItem('page') || 1);
+    const [curPage, setCurPage] = useState(page);
+
+    let firstNum = curPage - (curPage % 5) + 1;
+    let lastNum = curPage - (curPage % 5) + 5;
+
+    
 
     // swal
     const Toast = Swal.mixin({
@@ -27,11 +34,15 @@ const Manager2 = () => {
     })
 
     useEffect(()=>{
-        getPage(curPage);
-    },[])
+        getPage(page);
+        setPage(sessionStorage.getItem('page') || 1);
+    },[page])
+    
 
     // 페이지 조회
     const getPage = (page) => {
+        setPage(page);
+        sessionStorage.setItem('page', page);
         axios.get(`http://localhost:8080/point/list?page=${page}&&size=5`,
         {
             headers : {
@@ -42,10 +53,18 @@ const Manager2 = () => {
             console.log(res);
             console.log(res.data);
             const list = res.data.data;
-            const pageInfo = res.data.pageInfo;
+            const resPageInfo = res.data.pageInfo;
+            console.log(resPageInfo);
 
             setPointList([...list]);
-            setPageInfo([...pageInfo]);
+            setPageInfo({
+                page: resPageInfo.page,
+                size: resPageInfo.size,
+                totalElements: resPageInfo.totalElements,
+                totalPages: resPageInfo.totalPages
+              });
+
+            console.log(pageInfo.totalPages);
         })
         .catch(err=>{
             console.log(err);
@@ -59,7 +78,6 @@ const Manager2 = () => {
     const permitPoint = (e) => {
         console.log("들어감");
         const memNo = e.target.id;
-        console.log(memNo);
 
         axios.post(`http://localhost:8080/point/${memNo}`,{
             headers : {
@@ -67,8 +85,6 @@ const Manager2 = () => {
             }
         })
         .then(res=>{
-            console.log(res);
-            console.log(res.data);
             Toast.fire({
                 icon: 'success',
                 title: '포인트 정산이 완료되었습니다'
@@ -103,11 +119,53 @@ const Manager2 = () => {
                         })}
                     </tbody>
                 </Table>
-                <div className='manager-pagination'>
-                    <div className='manager-prevPage'>&lt;</div>
-                    <div className='manager-page'>1 2 3 맵사용해~</div>
-                    <div className='manager-nextPage'>&gt;</div>
-                </div>
+
+                <Pagination className="managerPoint-Page">
+                    <ButtonGroup>
+                    <Button 
+                    className='managerPoint-Button'
+                        onClick={() => {getPage(page-1); setCurPage(page-2);}} 
+                        disabled={page===1}>
+                        &lt;
+                    </Button>  
+                    <Button 
+                     className='managerPoint-Button'
+                        onClick={() => getPage(firstNum)}
+                        aria-current={page === firstNum ? "page" : null}>
+                        {firstNum}
+                    </Button>
+                    {Array(Math.min(4, pageInfo.totalPages - firstNum)).fill().map((_, i) =>{
+                    if(i <=2){
+                        return (
+                            <Button
+                            className='managerPoint-Button'
+                                key={i+1} 
+                                onClick={() => {getPage(firstNum+1+i)}}
+                                aria-current={page === firstNum+1+i ? "page" : null}>
+                                {firstNum+1+i}
+                            </Button>
+                        )
+                    }else if(i>=3){
+                         return (
+                            <Button
+                            className='managerPoint-Button'
+                                key ={i+1}
+                                onClick={() => getPage(lastNum)}
+                                aria-current={page === lastNum ? "page" : null}>
+                                {lastNum}
+                            </Button>
+                         )  
+                        }
+                    })}
+                    <Button 
+                      className='managerPoint-Button'
+                        onClick={() => {getPage(page+1); setCurPage(page);}} 
+                        disabled={page >=pageInfo.totalPages}>
+                        &gt;
+                    </Button>
+                </ButtonGroup>
+                </Pagination>
+
             </div>
         </div>
     );
