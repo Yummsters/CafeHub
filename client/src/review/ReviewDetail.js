@@ -16,18 +16,19 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
+  const [bestReply, setBestReply] = useState(null);
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
   const { state } = useLocation();
   const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
   const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
 
   const [pageInfo, setPageInfo] = useState({
-    currentPage:1,
-    repliesPerPage:10,
-    startPage:1,
-    endPage:1,
-    totalPages:1
-})
+    currentPage: 1,
+    repliesPerPage: 10,
+    startPage: 1,
+    endPage: 1,
+    totalPages: 1
+  })
   const navigate = useNavigate();
 
   const showSwal = (title) => {
@@ -43,10 +44,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const ReviewDelete = async (reviewNo) => {
-   try{
-   await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
-   console.log("리뷰 삭제 성공");
-     Swal.fire({
+    try {
+      await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
+      console.log("리뷰 삭제 성공");
+      Swal.fire({
         text: '리뷰가 삭제되었습니다',
         icon: 'success',
         confirmButtonText: '확인',
@@ -62,7 +63,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
     }
   };
-   
+
 
   const handleReviewDelete = () => {
     Swal.fire({
@@ -128,14 +129,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         },
       })
       .then((res) => {
-          setReplies(res.data.content);
-          let totalPages = res.data.totalPages;                ;
-          let startPage = Math.floor((pageInfo.currentPage-1)/pageInfo.repliesPerPage)+1;
-          let endPage = Math.min(startPage+pageInfo.repliesPerPage-1, totalPages);
-          console.log(totalPages)
-          console.log(startPage)
-          console.log(endPage)
-          setPageInfo({...pageInfo, startPage:startPage, endPage:endPage, totalPages:totalPages})
+        setReplies(res.data.content);
+        let totalPages = res.data.totalPages;;
+        let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.repliesPerPage) + 1;
+        let endPage = Math.min(startPage + pageInfo.repliesPerPage - 1, totalPages);
+        console.log(totalPages)
+        console.log(startPage)
+        console.log(endPage)
+        setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages })
       })
       .catch((error) => {
         if (error.response) {
@@ -153,7 +154,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const handlePageChange = (pageNumber) => {
-    setPageInfo({...pageInfo, currentPage:pageNumber});
+    setPageInfo({ ...pageInfo, currentPage: pageNumber });
   }
 
   const [reReplyContent, setReReplyContent] = useState("");
@@ -249,6 +250,16 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
 
     fetchReplies();
+
+    //베스트 댓글 가져오기
+    axios
+      .get(`http://localhost:8080/reply/${reviewNo}/best`)
+      .then((res) => {
+        setBestReply(res.data);
+      })
+      .catch((error) => {
+        console.error("베스트 댓글 가져오기 에러", error);
+      });
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
 
   useEffect(() => { // 디테일 지도
@@ -300,11 +311,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               </div><div className="detailBtnBox">
                   <div className="Gbtn">수정</div>
 
-                  <div className="Obtn"  onClick={handleReviewDelete}>삭제</div>
+                  <div className="Obtn" onClick={handleReviewDelete}>삭제</div>
                 </div><div className="detailLine" />
 
 
-            {/* 댓글 */}
+                {/* 댓글 */}
                 <div className="reply">
                   <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
                   <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
@@ -312,6 +323,32 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             )}
 
             <div className="detailLine" />
+
+            {bestReply && (
+              <div key={bestReply.replyNo} className="replyInfo">
+                <div className="infoT">
+                  <p>
+                    <img src="/img/house.png" alt="house" /> {bestReply.nickname}
+                  </p>
+                  <p>
+                    <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
+                    <span className="underline" onClick={showReplyClick}>
+                      답글
+                    </span>
+                    &nbsp;&nbsp;
+                    <span>♡ nn</span>
+                  </p>
+                </div>
+                <div className="infoB">
+                  <p>
+                    <img src="/img/best.png" alt="best" />
+                    {bestReply.content}
+                  </p>
+                  <p>{bestReply.regDate}</p>
+                </div>
+                <div className="detailLine" />
+              </div>
+            )}
 
             {/* 댓글 목록 출력 */}
             {replies.map((reply) => (
@@ -331,7 +368,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 </div>
                 <div className="infoB">
                   <p>
-                    {/* <img src="/img/best.png" alt="best" /> */}
                     {reply.content}
                   </p>
                   <p>{reply.regDate}</p>
@@ -373,7 +409,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 </li>
                 {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
                   <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => handlePageChange(index+pageInfo.startPage)}>{index+pageInfo.startPage}</button>
+                    <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
                   </li>
                 ))}
                 <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
