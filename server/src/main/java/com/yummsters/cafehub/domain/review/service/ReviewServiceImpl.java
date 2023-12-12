@@ -3,17 +3,12 @@ package com.yummsters.cafehub.domain.review.service;
 import java.io.File;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.service.PointService;
@@ -43,7 +38,6 @@ public class ReviewServiceImpl implements ReviewService {
 	private final LikeReviewRepository likeRepository;
 	private final WishReviewRepository wishRepository;
 	private final ReviewAuthRepository reviewAuthRepository;
-	private final CafeRepository cafeRepository;
 	private final PointService pointService;
 
 	// 수빈 part
@@ -60,23 +54,16 @@ public class ReviewServiceImpl implements ReviewService {
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 
 		if (files != null && files.size() != 0) {
-			String dir = "c:/soobin/upload/";
-		
-		if (files != null && files.size()!= 0) {
 			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
 			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
 
 			String fileNums = "";
 
 			for (MultipartFile file : files) {
-
 				FileVo fileVo = FileVo.builder().directory(dir).name(file.getOriginalFilename()).size(file.getSize())
 						.contenttype(file.getContentType()).data(file.getBytes()).build();
 
 				fileVoRepository.save(fileVo);
-
-				// upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
-				String originalFilePath = dir + fileVo.getName();
 
 				// 리뷰에 썸네일 이미지를 직접 추가
 				File uploadFile = new File(dir + fileVo.getFileNum());
@@ -90,10 +77,13 @@ public class ReviewServiceImpl implements ReviewService {
 				fileNums += fileVo.getFileNum();
 
 			}
+
 			// 파일 번호 목록을 썸네일 이미지로 사용
 			review.setThumbImg(fileNums);
+
 			// 리뷰 작성 후 리뷰 권한 삭제
 			deleteReviewAuth(review.getReviewAuthNo());
+
 			// 포인트 적립
 			pointService.pointUp(review.getMemNo());
 			System.out.println("getMemNo" + review.getMemNo());
@@ -102,6 +92,7 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewRepository.save(reviewEntity);
 		return reviewEntity.getReviewNo();
 	}
+
 
 	// 리뷰 권한 삭제
 	@Override
