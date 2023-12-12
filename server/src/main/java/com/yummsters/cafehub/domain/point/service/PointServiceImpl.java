@@ -91,7 +91,7 @@ public class PointServiceImpl implements PointService{
     // 정산 신청 목록 조회
     @Override
     public Page<Point> reqPointCal(Integer page, Integer size) throws Exception{
-        return pointRepository.findAllByIsRefundTrue(PageRequest.of(page, size, Sort.by("refDate").ascending()));
+        return pointRepository.findAllByIsRefundTrue(PageRequest.of(page, size, Sort.by("refDate").descending()));
     }
 
   // 회원 포인트 적립
