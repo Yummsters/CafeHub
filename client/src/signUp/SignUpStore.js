@@ -5,9 +5,9 @@ import Swal from 'sweetalert2';
 const {daum} = window;
 
 const SignUpStore = () =>{
-    const [store, setStore] = useState({name:"", nickName:"", id:"", password:"", passwordCk:"", phone:"", email:"",
-    storeName:"", storePhone:"", businessNo:"", location:"", time:""});
+    const [store, setStore] = useState({name:"", nickName:"", id:"", password:"", passwordCk:"", phone:"", email:"", storeName:"", storePhone:"", businessNo:"", location:"", time:""});
     const [picture, setPicture] = useState("");
+    const [randomCode, setRandomCode] = useState(0);
     const [tagList, setTagList] = useState([
         '#카공',
         '#애견동반',
@@ -109,9 +109,49 @@ const SignUpStore = () =>{
             console.log(error);
         })
     }
-    
-    console.log(store.location);
 
+    const sendPhoneCode = () => {
+        const random = Math.floor(Math.random() * 9000) + 1000;
+        setRandomCode(random, () => {
+            axios.get(`http://localhost:8080/check/sendSMS?phone=${store.phone}&code=${randomCode}`)
+            .then((res) => {
+                console.log(res.data);
+                toast.fire({
+                    title: '인증번호가 발송되었습니다',
+                    icon: 'success',
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        });
+    }
+
+    const test = () => {
+        const random = Math.floor(Math.random() * 9000) + 1000;
+        console.log('Random code set:', random); 
+        setRandomCode(random); 
+        console.log(store.phone);
+    }
+    // console.log("?" +typeof store.authNum)
+    const phoneCodeCheck = () => {
+        // console.log('랜덤번호'+randomCode);
+        // console.log(store.authNum)
+        if (store.authNum == randomCode) {
+            toast.fire({
+                title: '휴대폰 번호 인증 성공!',
+                icon: 'success',
+            });
+        } else {
+            toast.fire({
+                title: '인증번호가 틀렸습니다',
+                text: '확인 후 다시 입력해주세요',
+                icon: 'error',
+            });
+        }
+    }
+    
+    
     return (
         <div className='signUpStore-container'>
           <div className='signUpStore-left-section'>
@@ -142,11 +182,14 @@ const SignUpStore = () =>{
               <input type="text" id="phone" name="phone" onChange={change}/></label>
             </div>
             <div className='searchStoreAuthNum'>
-                <button type="button" > 휴대폰 <br/>인증 </button>
+                <button type="button" onClick={test}> 휴대폰 <br/>인증 </button> {/* onClick={sendPhoneCode} */}
             </div> <br/>
-            <div className='signUpStoreInputDiv'>
+            <div className='signUpStoreInputDiv-other'>
                 <label>인증번호<span className='signUpStore-auth'>인증번호를 확인하세요</span><br/>
                 <input type="text" id="authNum" name="authNum" onChange={change}/></label>
+            </div> <br/>
+            <div className='searchStoreAuthNum'>
+                <button type="button" onClick={phoneCodeCheck}> 확인 </button>
             </div> <br/>
             <div className='signUpStoreInputDiv'>
                 <label>이메일<span className='signUpStore-auth'>이메일을 확인하세요</span><br/>
@@ -162,8 +205,6 @@ const SignUpStore = () =>{
                 <input type="text" id="storePhone" name="storePhone" onChange={change}/></label>
             </div> <br/>
 
-
-
             <div className='signUpStoreInputDiv-other'>
               <label> 사업자 번호 <span className='signUpStore-auth'> 하이픈(-)을 제외하고 입력하세요</span><br/>
               <input type="text" id="businessNo" name="businessNo" onChange={change}/></label>
@@ -171,11 +212,6 @@ const SignUpStore = () =>{
             <div className='searchStoreAuthNum'>
                 <button type="button" onClick={businessNo}> 사업자 <br/> 인증 </button>
             </div> <br/>
-
-
-
-
-
             <div className='signUpStoreInputDiv-other'>
               <label> 위치 <br/>
               <input type="text" id="location" name="location" onChange={change}/></label>
