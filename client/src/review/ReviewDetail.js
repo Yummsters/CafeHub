@@ -84,8 +84,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     });
   };
 
-  const showReplyClick = () => {
+  const showReplyClick = (reply) => {
     setShowReply(!showReply);
+    setSelectedReply(reply);
   };
 
   const handleReplyChange = (e) => {
@@ -224,15 +225,15 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const replyToggleLike = (replyNo) => {
-    if(memNo !== undefined) {
+    if (memNo !== undefined) {
       axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
         .then((res) => {
-          setReplyLike(res.data.isReplyLike); 
+          setReplyLike(res.data.isReplyLike);
           setReplyLikeCount(res.data.replyLikeCount);
           console.log(res.data);
         })
         .catch((error) => {
-          console.error("에러:"+error);
+          console.error("에러:" + error);
         });
     } else {
       console.error('memNo 또는 replyNo가 유효하지 않습니다.');
@@ -351,11 +352,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                    <span className="underline" onClick={showReplyClick}>
+                    <span className="underline" onClick={() => showReplyClick(bestReply)}>
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <img src={bestReply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={replyToggleLike}/>
+                    <img src={bestReply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
                     <span>{bestReply.likeCount}</span>
                   </p>
                 </div>
@@ -367,6 +368,33 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <p>{bestReply.regDate}</p>
                 </div>
                 <div className="detailLine" />
+
+                {/* 베스트 댓글에 대한 답글 창 */}
+                {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
+                  <>
+                    <div className="reply comment">
+                      <img src="/img/reply.png" alt="reReply" />
+                      <input type="text" name="reply" onChange={handleReReplyChange} />
+                      <div className="Gbtn" onClick={() => handleReReplySubmit(bestReply.replyNo)}>
+                        등록
+                      </div>
+                    </div>
+                    <div className="detailLine" />
+
+                    {/* 베스트 댓글에 대한 답글 목록 */}
+                    {selectedReply.replies && selectedReply.replies.length > 0 && (
+                      <div className="reReplyInfo">
+                        {selectedReply.replies.map((reReply) => (
+                          <div key={reReply.replyNo} className="infoB comment">
+                            <p>{reReply.content}</p>
+                            <p>{reReply.regDate}</p>
+                          </div>
+                        ))}
+                        <div className="detailLine" />
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             )}
 
@@ -379,11 +407,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                    <span className="underline" onClick={showReplyClick}>
+                    <span className="underline" onClick={() => showReplyClick(reply)}>
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={replyToggleLike}/>
+                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={replyToggleLike} />
                     <span>{reply.likeCount}</span>
                   </p>
                 </div>
@@ -394,34 +422,36 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <p>{reply.regDate}</p>
                 </div>
                 <div className="detailLine" />
+
+                {/* 대댓글 */}
+                {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
+                  <>
+                    <div className="reply comment">
+                      <img src="/img/reply.png" alt="reReply" />
+                      <input type="text" name="reply" onChange={handleReReplyChange} />
+                      <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
+                        등록
+                      </div>
+                    </div>
+                    <div className="detailLine" />
+
+                    {/* 대댓글 목록 */}
+                    {selectedReply.replies && selectedReply.replies.length > 0 && (
+                      <div className="reReplyInfo">
+                        {selectedReply.replies.map((reReply) => (
+                          <div key={reReply.replyNo} className="infoB comment">
+                            <p>{reReply.content}</p>
+                            <p>{reReply.regDate}</p>
+                          </div>
+                        ))}
+                        <div className="detailLine" />
+                      </div>
+                    )}
+                  </>
+                )}
+
               </div>
             ))}
-
-            {/* 대댓글 */}
-            {showReply && (
-              <>
-                <div className="reply comment">
-                  <img src="/img/reply.png" alt="reReply" />
-                  <input type="text" name="reply" onChange={handleReReplyChange} />
-                  <div className="Gbtn" onClick={() => selectedReply && handleReReplySubmit(selectedReply.replyNo)}>
-                    등록
-                  </div>
-                </div>
-
-                {/* 대댓글 목록 */}
-                {selectedReply && selectedReply.replies && selectedReply.replies.length > 0 && (
-                  <div className="reReplyInfo">
-                    {selectedReply.replies.map((reReply) => (
-                      <div key={reReply.replyNo} className="infoB comment">
-                        <p>{reReply.content}</p>
-                        <p>{reReply.regDate}</p>
-                      </div>
-                    ))}
-                    <div className="detailLine" />
-                  </div>
-                )}
-              </>
-            )}
 
             <div className="reviewDetail-pagination">
               <ul className="pagination">
