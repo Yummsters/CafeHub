@@ -59,8 +59,8 @@ body, button, input{
 
 .signUpStoreInputDiv-other input{
     border: 0px;
-    width: 250px;;
-    font-size:20px;
+    width: 100%;
+    font-size:18px;
 }
 
 /* 인증 버튼 */
