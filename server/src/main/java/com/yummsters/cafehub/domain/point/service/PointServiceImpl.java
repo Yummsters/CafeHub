@@ -82,7 +82,7 @@ public class PointServiceImpl implements PointService{
         if(storePoint.getPointCount() < 100) throw new Exception("포인트 정산은 100개 이상부터 가능합니다");
 
         // 전체 포인트 정산 및 신청일 업데이트
-        storePoint.calPoint();
+        storePoint.calPoint(storePoint.getPointCount());
         pointRepository.save(storePoint);
 
         return storePoint.getPointCount();
@@ -91,7 +91,7 @@ public class PointServiceImpl implements PointService{
     // 정산 신청 목록 조회
     @Override
     public Page<Point> reqPointCal(Integer page, Integer size) throws Exception{
-        return pointRepository.findAllByIsRefundTrue(PageRequest.of(page, size, Sort.by("refDate").ascending()));
+        return pointRepository.findAllByIsRefundTrue(PageRequest.of(page, size, Sort.by("refDate").descending()));
     }
 
   // 회원 포인트 적립
