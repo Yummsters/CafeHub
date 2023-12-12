@@ -79,7 +79,19 @@ public class ReviewController {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
-
+	//리뷰 수정
+		@PutMapping("/reviewmodify/{revewNo}")
+	    public ResponseEntity<Integer> modifyReview(@PathVariable Integer reviewNo,
+	                                                @ModelAttribute ReviewDto review,
+	                                                @RequestParam("files") List<MultipartFile> files) {
+	        try {
+	            Integer updatedReviewNo = reviewService.modifyReview(reviewNo, review, files);
+	            return ResponseEntity.ok(updatedReviewNo);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return ResponseEntity.badRequest().build();
+	        }
+	    }
 
 
 
