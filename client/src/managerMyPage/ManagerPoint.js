@@ -16,6 +16,7 @@ const Manager2 = () => {
 
     let firstNum = curPage - (curPage % 5) + 1;
     let lastNum = curPage - (curPage % 5) + 5;
+    let total =  Math.min(4, (pageInfo.totalPages ===0 ? 1 : pageInfo.totalPages) - firstNum);
 
     // swal
     const Toast = Swal.mixin({
@@ -45,11 +46,8 @@ const Manager2 = () => {
             }
         })
         .then(res=>{
-            console.log(res);
-            console.log(res.data);
             const list = res.data.data;
             const resPageInfo = res.data.pageInfo;
-            console.log(resPageInfo);
 
             setPointList([...list]);
             setPageInfo({
@@ -58,16 +56,11 @@ const Manager2 = () => {
                 totalElements: resPageInfo.totalElements,
                 totalPages: resPageInfo.totalPages
               });
-
-            console.log(pageInfo.totalPages);
         })
         .catch(err=>{
             console.log(err);
         })
     }
-
-    // totalPage를 이용해 페이지 버튼 생성
-    // 해당 버튼 클릭 시 page의 값을 받아와 페이지 리스트 변환 진행
 
     // 포인트 정산
     const permitPoint = (e) => {
@@ -129,7 +122,7 @@ const Manager2 = () => {
                         aria-current={page === firstNum ? "page" : null}>
                         {firstNum}
                     </Button>
-                    {Array(Math.min(4, pageInfo.totalPages - firstNum)).fill().map((_, i) =>{
+                    {Array(total).fill().map((_, i) =>{
                     if(i <=2){
                         return (
                             <Button
