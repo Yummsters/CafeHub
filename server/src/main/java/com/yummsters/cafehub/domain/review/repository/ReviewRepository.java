@@ -14,5 +14,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	//수빈 part ----------------------------------------------------------------
 	Review findByReviewNo(Integer reviewNo);
     //혜리 part ----------------------------------------------------------------
-    Page<Review> findAllByOrderByReviewNoDesc(Pageable pageable);
+    Page<Review> findAllByTitleContainsOrderByReviewNoDesc(String title, Pageable pageable);
 }

@@ -143,9 +143,9 @@ public class ReviewController {
 	//혜리 part ----------------------------------------------------------------
 	@GetMapping("/reviewList")
 	public ResponseEntity<Page<Map<String, Object>>> getReviewList(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "") String search) {
 		try {
-			Page<Review> reviewsPage = reviewService.getReviewList(PageRequest.of(page, size));
+			Page<Review> reviewsPage = reviewService.getReviewList(search, PageRequest.of(page, size));
 	        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
 	            @Override
 	            public Map<String, Object> apply(Review review) {

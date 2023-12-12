@@ -36,5 +36,5 @@ public interface ReviewService {
 	//void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
 
 	//혜리 part ----------------------------------------------------------------
-	public Page<Review> getReviewList(Pageable pageable) throws Exception;
+	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
 }

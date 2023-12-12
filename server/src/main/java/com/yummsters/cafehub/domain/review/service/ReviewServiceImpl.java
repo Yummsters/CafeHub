@@ -228,8 +228,8 @@ public class ReviewServiceImpl implements ReviewService {
 	// 혜리 part ----------------------------------------------------------------
 
 	@Override
-	public Page<Review> getReviewList(Pageable pageable) throws Exception {
-		return reviewRepository.findAllByOrderByReviewNoDesc(pageable);
+	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception {
+		return reviewRepository.findAllByTitleContainsOrderByReviewNoDesc(search, pageable);
 	}
 
 }
