@@ -107,4 +107,14 @@ public class PointServiceImpl implements PointService{
     	        e.printStackTrace(); 
     	    }
     }
+
+    // 포인트 정산 신청 승인
+    @Override
+    public boolean permitPoint(Integer memNo) throws Exception {
+        Point point = pointRepository.findByMember_MemNo(memNo);
+        if(point == null) return false;
+        point.permitPoint();
+        pointRepository.save(point);
+        return true;
+    }
 }

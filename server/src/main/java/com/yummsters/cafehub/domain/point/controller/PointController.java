@@ -87,4 +87,15 @@ public class PointController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    // 포인트 정산 승인
+    @PostMapping("/{memNo}")
+    public ResponseEntity<Object> permitPoint(@PathVariable("memNo") Integer memNo){
+        try{
+            boolean resPermit = pointService.permitPoint(memNo);
+            return new ResponseEntity<>(resPermit, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

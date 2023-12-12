@@ -12,5 +12,6 @@ public interface PointService {
     void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception; //
     Integer calPoint(Integer memNo) throws Exception;
     Page<Point> reqPointCal(Integer page, Integer size) throws Exception;
-    void pointUp(Integer memNo) throws Exception;	//회원 포인트 적립      
+    void pointUp(Integer memNo) throws Exception;	//회원 포인트 적립
+    boolean permitPoint(Integer memNo) throws Exception;
 }
