@@ -14,12 +14,23 @@ const Main1 = () => {
         dots: true,
         initialSlide:2,
       });
+
+      const [searchKeyword, setSearchKeyword] = useState('');
+
+      const handleSearchChange = (e) => {
+        setSearchKeyword(e.target.value);
+      };
+
+      const handleSearch = () => {
+        //검색 아이콘 클릭 시 reveiwList 페이지로 이동
+        window.location.href = `/reviewList?search=${encodeURIComponent(searchKeyword)}`;
+      };
+
     useEffect(() => {
         const handleResize = () => {
         
         };
     
-       
         window.addEventListener('resize', handleResize);
         handleResize(); 
     
@@ -27,12 +38,13 @@ const Main1 = () => {
           window.removeEventListener('resize', handleResize);
         };
       }, []);
+
     return (
         <div className='Main'>
          
                 <div className='searchbox'>
-                    <Input type="text" name="search" id="search" />
-                    < img className="searchImg" src='/img/search.png' />
+                    <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange}/>
+                    < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색"/>
                 </div>
               <Slider {...setting}>
             <div className='banner'>
