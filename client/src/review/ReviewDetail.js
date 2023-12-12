@@ -17,6 +17,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const [bestReply, setBestReply] = useState(null);
+  const [replyLike, setReplyLike] = useState(false);
+  const [replyLikeCount, setReplyLikeCount] = useState(0);
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
   const { state } = useLocation();
   const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
@@ -219,7 +221,24 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     } else {
       showSwal()
     }
+  };
+
+  const replyToggleLike = (replyNo) => {
+    if(memNo !== undefined) {
+      axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
+        .then((res) => {
+          setReplyLike(res.data.isReplyLike); 
+          setReplyLikeCount(res.data.replyLikeCount);
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.error("에러:"+error);
+        });
+    } else {
+      console.error('memNo 또는 replyNo가 유효하지 않습니다.');
+    }
   }
+
   const toggleWish = () => {
     if (memNo !== undefined) {
       axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
@@ -336,7 +355,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <span>♡ nn</span>
+                    <img src={bestReply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={replyToggleLike}/>
+                    <span>{bestReply.likeCount}</span>
                   </p>
                 </div>
                 <div className="infoB">
@@ -363,7 +383,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <span>♡ nn</span>
+                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={replyToggleLike}/>
+                    <span>{reply.likeCount}</span>
                   </p>
                 </div>
                 <div className="infoB">
