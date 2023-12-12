@@ -12,6 +12,7 @@ tbody tr {
     height: 700px;
     border: 3px solid #007355;
     border-radius: 10px;
+    position : relative;
   }
 
   .manager-listBox table{
@@ -84,6 +85,45 @@ tbody tr {
 
 .manager-pagination div {
     margin: 0 10px;
+    font-weight: bo
 }
 
+.managerPoint-Button {
+  margin: 10px;
+  border: none;
+  color: #F59A23;
+  background: none;
+  font-weight: bolder;
+  cursor: pointer;    /* 커서를 포인터로 변경하여 클릭 가능함을 나타냄 */
+  transition: background-color 0.3s ease;  /* hover 효과를 부드럽게 만듦 */
+}
+
+.managerPoint-Button:hover {
+  color :#007355;
+  background: none;
+}
+
+.managerPoint-Button:active {
+  margin: 10px;
+  border: none;
+  color: #007355 !important;
+  background: none !important;
+  background-color: none !important;
+}
+
+.managerPoint-Button:disabled {
+  margin: 10px;
+  border: none;
+  color: #D9D9D9;
+  background: none;
+  font-weight: bolder;
+}
+
+.managerPoint-Page{
+  position : absolute;
+  bottom : 10px;
+  transform: translateX(-50%);
+  left: 50%;
+
+}
   

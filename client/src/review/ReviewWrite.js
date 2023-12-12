@@ -314,8 +314,8 @@ const ReviewWrite = () => {
                     ))}
                 </div>
                 <div className='btnBox'>
-                    <div className='btn'>초기화</div>
-                    <div className='btn' onClick={submit}>
+                    <div className='review-btn'>초기화</div>
+                    <div className='review-btn' onClick={submit}>
                         리뷰 등록
                     </div>
                 </div>
