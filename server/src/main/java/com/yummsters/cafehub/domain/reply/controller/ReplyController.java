@@ -91,4 +91,15 @@ public class ReplyController {
 	        return new ResponseEntity<>("대댓글 추가 실패", HttpStatus.BAD_REQUEST);
 	    }
 	}
+	
+	@GetMapping("/reply/{reviewNo}/best")
+    public ResponseEntity<ReplyDto> getBestReplyByReviewNo(@PathVariable Integer reviewNo) {
+        try {
+            ReplyDto bestReply = replyService.getBestReplyByReviewNo(reviewNo);
+            return new ResponseEntity<>(bestReply, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
