@@ -195,18 +195,68 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     setShowReply(!showReply);
   }
 
-  const handleReplyDelete = (replyNo) => {
-    axios
-      .delete(`http://localhost:8080/replyDelete/${replyNo}`)
-      .then((res) => {
-        console.log("댓글이 성공적으로 삭제되었습니다.");
-        const updateReplies = replies.filter(reply => reply.replyNo !== replyNo);
-        setReplies(updateReplies);
-      })
-      .catch((error) => {
-        console.log("댓글 삭제 에러", error);
+  const ReplyDelete = async (replyNo) => {
+    try {
+      await axios.delete(`http://localhost:8080/replyDelete/${replyNo}`);
+      console.log("댓글 삭제 성공");
+      Swal.fire({
+        text: '댓글이 삭제되었습니다',
+        icon: 'success',
+        confirmButtonText: '확인',
       });
+
+    } catch (error) {
+      console.log("댓글 삭제 에러");
+      Swal.fire({
+        title: 'error',
+        text: '댓글을 삭제하는 중에 오류가 발생했습니다',
+        icon: 'error',
+        confirmButtonText: '확인',
+      });
+    }
   };
+
+  const handleReplyDelete = (replyNo) => {
+    Swal.fire({
+      title: '댓글 삭제',
+      text: '댓글을 삭제하시겠습니까?',
+      icon: 'warning',
+
+      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
+      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+
+    }).then(result => {
+      if (result.isConfirmed) {
+        ReplyDelete(replyNo);
+      }
+    });
+  }
+
+  const deleteSwal = () => {
+    Swal.fire({
+      title: '정말로 댓글을 삭제하시겠습니까?',
+      text: '댓글이 삭제되면 복구할 수 없습니다..',
+      icon: 'warning',
+
+      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
+      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+
+      reverseButtons: true, // 버튼 순서 거꾸로
+
+    }).then(result => {
+      // 만약 Promise리턴을 받으면,
+      if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+
+        Swal.fire('댓글이 삭제되었습니다.', 'success');
+      }
+    });
+  }
 
   const toggleLike = () => {
     if (memNo !== undefined) {
@@ -236,6 +286,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("에러:" + error);
         });
     } else {
+      showSwal()
       console.error('memNo 또는 replyNo가 유효하지 않습니다.');
     }
   }
