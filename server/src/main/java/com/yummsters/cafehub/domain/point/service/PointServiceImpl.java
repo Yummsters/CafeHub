@@ -4,6 +4,9 @@ import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import com.yummsters.cafehub.domain.review.repository.ReviewAuthRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.yummsters.cafehub.domain.member.service.MemberService;
@@ -11,8 +14,6 @@ import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.point.repository.PointRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -89,10 +90,8 @@ public class PointServiceImpl implements PointService{
   
     // 정산 신청 목록 조회
     @Override
-    public List<Point> reqPointCal() throws Exception{
-        List<Point> responseList = pointRepository.findAllByIsRefundTrue();
-        if(responseList == null || responseList.isEmpty()) throw new Exception("포인트 정산 신청 없음");
-        return responseList;
+    public Page<Point> reqPointCal(Integer page, Integer size) throws Exception{
+        return pointRepository.findAllByIsRefundTrue(PageRequest.of(page, size, Sort.by("refDate").ascending()));
     }
 
   // 회원 포인트 적립
