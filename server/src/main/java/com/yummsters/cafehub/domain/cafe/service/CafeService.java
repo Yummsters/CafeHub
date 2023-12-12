@@ -6,6 +6,7 @@ import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import java.util.List;
 
 public interface CafeService {
+    // 선진 part---------------------------------------------------------------------------
     void saveCafe() throws Exception; // 카페 정보 저장
     List<CafeDto> getCafes() throws Exception; // 카페 리스트 불러오기
     CafeDto getCafeByCafeNo(Integer cafeNo) throws Exception; // 카페 하나의 정보 불러오기

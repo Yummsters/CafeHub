@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class PointCalRes {
+    // 회원 정보
+    private Integer memNo;
+
     // 포인트 정보
     private Integer pointCount;
     private LocalDateTime refDate;
@@ -22,6 +25,7 @@ public class PointCalRes {
             return null;
         }else {
             PointCalRes.PointCalResBuilder pointResponse = PointCalRes.builder();
+            pointResponse.memNo(point.getMember().getMemNo());
             pointResponse.pointCount(point.getPointCount());
             pointResponse.refDate(point.getRefDate());
             pointResponse.cafeName(point.getMember().getCafe().getCafeName());

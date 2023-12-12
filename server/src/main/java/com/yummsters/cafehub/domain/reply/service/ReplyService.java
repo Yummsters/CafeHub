@@ -12,4 +12,5 @@ public interface ReplyService {
 	Integer getLikeCount(Integer replyNo) throws Exception;
 	void addReReply(Integer replyNo, ReplyDto replyDto) throws Exception;
 	Page<ReplyDto> getRepliesByReviewNo(Integer reivewNo, Pageable pageable) throws Exception;
+	ReplyDto getBestReplyByReviewNo(Integer reviewNo) throws Exception;
 }

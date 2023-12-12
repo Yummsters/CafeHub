@@ -59,10 +59,16 @@ public class Point {
         return pointCount;
     }
 
-    // 사장 포인트 정산
+    // 사장 포인트 정산 신청
     public void calPoint() {
         this.pointCount = 0;
         this.refDate = LocalDateTime.now();
         this.isRefund = true;
+    }
+
+    // 포인트 정산 신청 승인
+    public void permitPoint(){
+        this.refDate = null;
+        this.isRefund = false;
     }
 }

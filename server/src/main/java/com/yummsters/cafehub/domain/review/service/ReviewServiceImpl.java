@@ -61,6 +61,11 @@ public class ReviewServiceImpl implements ReviewService {
 
 		if (files != null && files.size() != 0) {
 			String dir = "c:/soobin/upload/";
+		
+		if (files != null && files.size()!= 0) {
+			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
+			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+
 			String fileNums = "";
 
 			for (MultipartFile file : files) {
@@ -216,6 +221,7 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
+
 	// 희진 part
 	// ----------------------------------------------------------------------
 	// 리뷰 권한 부여
@@ -229,6 +235,7 @@ public class ReviewServiceImpl implements ReviewService {
 //	}
 
 	// 혜리 part ----------------------------------------------------------------
+
 	@Override
 	public Page<Review> getReviewList(Pageable pageable) throws Exception {
 		return reviewRepository.findAllByOrderByReviewNoDesc(pageable);
