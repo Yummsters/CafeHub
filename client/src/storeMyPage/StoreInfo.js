@@ -82,12 +82,14 @@ const StoreInfo= () =>{
         })
         .then(res=>{
             const resPoint = res.data;
+            console.log(resPoint);
+            console.log(res);
             setPoint(resPoint);
         })
         .catch(err=>{
             console.log(err);
         })
-    })
+    },[])
     
     const pointCalReq = () =>{
         if(point < 100){
