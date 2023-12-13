@@ -4,7 +4,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
@@ -23,12 +23,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [replyLikeCount, setReplyLikeCount] = useState(0);
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
 
-  const { state } = useLocation();
-  const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
-  const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
+  const location = useLocation();
+  const listReviewNo = location.state?.reviewNo
+  const reviewNo = wishReviewNo || listReviewNo;
+
 
   const [pageInfo, setPageInfo] = useState({
-
     currentPage:1,
     repliesPerPage:10,
     startPage:1,
