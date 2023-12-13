@@ -8,8 +8,9 @@ import storage from "redux-persist/lib/storage";  //localStorage에 저장
 
 export const initialState = {
     isLogin:false,
-    member:{memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''},
-    accessToken:''
+    member:{memNo:'', name : '', nickname : '', email:'', social : null, status : true, memberType:null},
+    accessToken:'',
+    cafe:{cafeNo:'', cafeName:'', thumbImg: null, address:'', isPaid:false, paidDate : null}
 }
 
 const reducer = (currentState,action) => {
@@ -21,6 +22,7 @@ const reducer = (currentState,action) => {
         case "isLogin":  newState.isLogin=action.payload; break;
         case "member": newState.member=action.payload; break;
         case "accessToken": newState.accessToken=action.payload; break;
+        case "cafe" : newState.cafe=action.payload; break;
         default: 
     }
     return newState;
