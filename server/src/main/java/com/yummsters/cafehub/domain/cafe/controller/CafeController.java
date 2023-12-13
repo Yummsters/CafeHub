@@ -1,13 +1,21 @@
 package com.yummsters.cafehub.domain.cafe.controller;
 
-import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
-import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
+import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
 
 @RestController
 public class CafeController {
@@ -63,6 +71,20 @@ public class CafeController {
         try {
             CafeDto cafe = service.getCafeByCafeNo(cafeNo);
             return new ResponseEntity<>(cafe, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    // 혜리 part---------------------------------------------------------------------------
+    @GetMapping("/managerConfirm")
+    public ResponseEntity<Page<CafeDto>> getUnpaidCafes(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<CafeDto> unpaidCafes = service.getUnpaidCafes(pageable);
+            return new ResponseEntity<>(unpaidCafes, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

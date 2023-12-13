@@ -49,6 +49,11 @@ public class Point {
         this.pointCount = calculatePoint(getPointCount()+pointCount);
     }
 
+    // 사장 포인트 적립
+    public void plusStorePoint(Integer pointCount) throws InsufficientResourcesException {
+        this.pointCount = calculatePoint(getRefPointCount()+pointCount);
+    }
+
     // 포인트 사용
     public void usePoint(Integer pointCount) throws InsufficientResourcesException {
          this.pointCount = calculatePoint(getPointCount()-pointCount);

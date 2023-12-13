@@ -13,6 +13,8 @@ import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,4 +128,12 @@ public class CafeServiceImpl implements CafeService {
     public CafeDto getCafeByCafeNo(Integer cafeNo) throws Exception {
         return cafeRepository.findByCafeNo(cafeNo).toDTO();
     }
+
+    // 혜리 part---------------------------------------------------------------------------
+	@Override
+	public Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception {
+		Page<Cafe> unpaidCafesPage = cafeRepository.findByIsPaidFalseOrderByPaidDate(pageable);
+		Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
+		return unpaidCafesDtoPage;
+	}
 }
