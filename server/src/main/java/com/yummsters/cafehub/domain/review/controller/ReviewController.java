@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.review.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
-
+import com.yummsters.cafehub.domain.review.dto.ReviewListRes;
+import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
+
+import org.springframework.web.bind.annotation.*;
+
 
 import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
@@ -150,9 +156,9 @@ public class ReviewController {
 	//혜리 part ----------------------------------------------------------------
 	@GetMapping("/reviewList")
 	public ResponseEntity<Page<Map<String, Object>>> getReviewList(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "") String search) {
 		try {
-			Page<Review> reviewsPage = reviewService.getReviewList(PageRequest.of(page, size));
+			Page<Review> reviewsPage = reviewService.getReviewList(search, PageRequest.of(page, size));
 	        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
 	            @Override
 	            public Map<String, Object> apply(Review review) {
@@ -171,6 +177,25 @@ public class ReviewController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// 가게 리뷰 리스트 조회
+	@GetMapping("/review/storeList/{cafeNo}")
+	public ResponseEntity<Object> storeList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
+								  @PathVariable("cafeNo") Integer cafeNo){
+		try{
+			Page<Review> reviewPage = reviewService.storeReviewPage(page-1, size, cafeNo);
+			List<Review> responseList = reviewPage.getContent();
+			List<ReviewListRes> responseLists = new ArrayList<>();
+
+			for(Review review : responseList){
+				responseLists.add(ReviewListRes.reviewToReviewListRes(review));
+			}
+			return new ResponseEntity<>(new MultiResponseDto<>(responseLists, reviewPage), HttpStatus.OK);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
 	}
 }

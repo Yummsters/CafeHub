@@ -15,6 +15,6 @@ import com.yummsters.cafehub.domain.reply.entity.Reply;
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 	Reply findByReplyNo(Integer replyNo);
-	Page<Reply> findAllByReview_ReviewNo(Integer reviewNo, Pageable pageable);
+	Page<Reply> findAllByReview_ReviewNoOrderByReplyNoDesc(Integer reviewNo, Pageable pageable);
 	Optional<Reply> findTopByReview_ReviewNoOrderByLikeCountDesc(Integer reviewNo);
 }

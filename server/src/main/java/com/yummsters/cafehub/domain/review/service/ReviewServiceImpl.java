@@ -7,7 +7,9 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -225,22 +227,17 @@ public class ReviewServiceImpl implements ReviewService {
 
 
 	// 희진 part
-	// ----------------------------------------------------------------------
-	// 리뷰 권한 부여
-//	@Override
-//	public void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception {
-//		ReviewAuth reviewAuth = ReviewAuth.builder()
-//				.member(memberRepository.findByMemNo(memNo))
-//				.cafe(cafeRepository.findByCafeNo(cafeNo))
-//				.build();
-//		reviewAuthRepository.save(reviewAuth);
-//	}
+	// 가게 리뷰 리스트 조회
+	@Override
+	public Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo) {
+		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").ascending()), cafeNo);
+	}
 
 	// 혜리 part ----------------------------------------------------------------
 
 	@Override
-	public Page<Review> getReviewList(Pageable pageable) throws Exception {
-		return reviewRepository.findAllByOrderByReviewNoDesc(pageable);
+	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception {
+		return reviewRepository.findAllByTitleContainsOrderByReviewNoDesc(search, pageable);
 	}
 
 }
