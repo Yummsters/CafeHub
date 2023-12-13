@@ -15,6 +15,7 @@ const WishReview = () => {
   const [totalPages, setTotalPages] = useState(1);
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
   const accessToken = useSelector((state) => state.persistedReducer.accessToken);
+  console.log(currentPage)
 
   useEffect(() => {
     if (wishReviewNo !== null) {
@@ -54,9 +55,8 @@ const WishReview = () => {
       })
       .then((res) => {
         console.log(res.data);
-        console.log(res.data.content);
-        setWishReviewList(res.data.content);
-        setTotalPages(res.data.totalPages);
+        setWishReviewList(res.data.data);
+        setTotalPages(res.data.pageInfo.totalPages);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -86,22 +86,24 @@ const WishReview = () => {
                 <p className='closeBtn'><img src="/img/X.png" alt="x" onClick={closeModal}/></p>
             </div>
             )}
-
-          <Pagination>
-            <PaginationItem disabled={currentPage === 1}>
-              <PaginationLink previous onClick={prevPage} />
-            </PaginationItem>
-            {[...Array(totalPages)].map((_, index) => (
-              <PaginationItem key={index} active={currentPage === index + 1}>
-                <PaginationLink onClick={() => setCurrentPage(index + 1)}>
-                  {index + 1}
-                </PaginationLink>
+            
+          <div className="pagination-container">
+            <Pagination>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink previous onClick={prevPage} />
               </PaginationItem>
-            ))}
-            <PaginationItem disabled={currentPage === totalPages}>
-              <PaginationLink next onClick={nextPage} />
-            </PaginationItem>
-          </Pagination>
+              {[...Array(totalPages)].map((_, index) => (
+                  <PaginationItem key={index} active={currentPage === index + 1}>
+                    <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink next onClick={nextPage} />
+              </PaginationItem>
+            </Pagination>
+          </div>
       </div>
     </div>
   );

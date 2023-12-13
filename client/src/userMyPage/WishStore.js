@@ -42,9 +42,7 @@ const WishStore = () => {
     }
   };
 
-
   useEffect(() => {
-    // axios.get(`http://localhost:8080/member/wishStoreList/${memNo}`,{
       axios.get(`http://localhost:8080/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
         headers: {
             Authorization: accessToken,
@@ -52,10 +50,8 @@ const WishStore = () => {
         },
       })
       .then((res) => {
-        console.log(res.data);
-        console.log(res.data.content);
-        setWishStoreList(res.data.content);
-        setTotalPages(res.data.totalPages);
+        setWishStoreList(res.data.data);
+        setTotalPages(res.data.pageInfo.totalPages);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -117,21 +113,6 @@ const WishStore = () => {
                 </span>
             ))}
           </div>
-                  <Pagination>
-                    <PaginationItem disabled={currentPage === 1}>
-                      <PaginationLink previous onClick={prevPage} />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <PaginationItem key={index} active={currentPage === index + 1}>
-                        <PaginationLink onClick={() => setCurrentPage(index + 1)}>
-                          {index + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem disabled={currentPage === totalPages}>
-                      <PaginationLink next onClick={nextPage} />
-                    </PaginationItem>
-                  </Pagination>
 
         {showModal && selectCafe && (
           <div className="modalBox">
@@ -165,8 +146,25 @@ const WishStore = () => {
                 </div>
               </div>
             </div>
-              </div>
+          </div>
         )}
+          <div className="pagination-container">
+            <Pagination>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink previous onClick={prevPage} />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, index) => (
+                <PaginationItem key={index} active={currentPage === index + 1}>
+                  <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink next onClick={nextPage} />
+              </PaginationItem>
+            </Pagination>
+          </div>
       </div>
     </div>
   );
