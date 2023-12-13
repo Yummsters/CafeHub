@@ -11,7 +11,9 @@ public class TokenResDto {
     private Integer memNo;
     private String name;
     private String nickname;
+    private String id;
     private String email;
+    private String phone;
     private Social social;
     private boolean status;
     private MemberType memberType;
