@@ -19,6 +19,10 @@ const ManagerConfirm = () => {
     const [unpaidCafes, setUnpaidCafes] = useState([]);
 
     useEffect(() => {
+        setPageInfo({...pageInfo, currentPage: parseInt(searchParams.get('page'))});
+    }, [searchParams]);
+
+    useEffect(() => {
         axios.get(`http://localhost:8080/managerConfirm`, {
             params: {
                 page: pageInfo.currentPage - 1,
@@ -36,7 +40,7 @@ const ManagerConfirm = () => {
             .catch(error => {
                 console.error('미결제 카페 목록 가져오기 오류:', error);
             });
-    }, [searchParams, pageInfo.currentPage, pageInfo.cafesPerPage])
+    }, [pageInfo.currentPage]);
 
     const handlePageChange = (pageNumber) => {
         setSearchParams((prev) => {
