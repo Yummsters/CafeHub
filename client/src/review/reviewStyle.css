@@ -135,7 +135,7 @@ input[type="file"]{
     cursor: pointer;
 }
 
-.btn {
+.review-btn {
     margin: 0 20px 50px 20px;
     background: #007355;
     color: #FFF;

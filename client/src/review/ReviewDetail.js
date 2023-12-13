@@ -16,6 +16,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
+  const [bestReply, setBestReply] = useState(null);
+  const [replyLike, setReplyLike] = useState(false);
+  const [replyLikeCount, setReplyLikeCount] = useState(0);
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
 
   const { state } = useLocation();
@@ -23,12 +26,16 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
 
   const [pageInfo, setPageInfo] = useState({
+
     currentPage:1,
     repliesPerPage:10,
     startPage:1,
     endPage:1,
     totalPages:1
 })
+
+  const navigate = useNavigate();
+
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -48,10 +55,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   const ReviewDelete = async (reviewNo) => {
-   try{
-   await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
-   console.log("리뷰 삭제 성공");
-     Swal.fire({
+    try {
+      await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
+      console.log("리뷰 삭제 성공");
+      Swal.fire({
         text: '리뷰가 삭제되었습니다',
         icon: 'success',
         confirmButtonText: '확인',
@@ -67,7 +74,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
     }
   };
-  
+
 
   const handleReviewDelete = () => {
     Swal.fire({
@@ -86,8 +93,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     });
   };
 
-  const showReplyClick = () => {
+  const showReplyClick = (reply) => {
     setShowReply(!showReply);
+    setSelectedReply(reply);
   };
 
   const handleReplyChange = (e) => {
@@ -97,7 +105,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const handleReplySubmit = () => {
     //등록 버튼 클릭 시 댓글 등록 요청
     axios
-      .post(`http://localhost:8080/replyWrite/${reviewNo}`, {
+      .post(`http://localhost:8080/replyWrite/${memNo}/${reviewNo}`, {
         content: replyContent,
       })
       .then((res) => {
@@ -133,14 +141,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         },
       })
       .then((res) => {
-          setReplies(res.data.content);
-          let totalPages = res.data.totalPages;                ;
-          let startPage = Math.floor((pageInfo.currentPage-1)/pageInfo.repliesPerPage)+1;
-          let endPage = Math.min(startPage+pageInfo.repliesPerPage-1, totalPages);
-          console.log(totalPages)
-          console.log(startPage)
-          console.log(endPage)
-          setPageInfo({...pageInfo, startPage:startPage, endPage:endPage, totalPages:totalPages})
+        setReplies(res.data.content);
+        let totalPages = res.data.totalPages;;
+        let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.repliesPerPage) + 1;
+        let endPage = Math.min(startPage + pageInfo.repliesPerPage - 1, totalPages);
+        console.log(totalPages)
+        console.log(startPage)
+        console.log(endPage)
+        setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages })
       })
       .catch((error) => {
         if (error.response) {
@@ -158,7 +166,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const handlePageChange = (pageNumber) => {
-    setPageInfo({...pageInfo, currentPage:pageNumber});
+    setPageInfo({ ...pageInfo, currentPage: pageNumber });
   }
 
   const [reReplyContent, setReReplyContent] = useState("");
@@ -197,18 +205,68 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
   
 
-  const handleReplyDelete = (replyNo) => {
-    axios
-      .delete(`http://localhost:8080/replyDelete/${replyNo}`)
-      .then((res) => {
-        console.log("댓글이 성공적으로 삭제되었습니다.");
-        const updateReplies = replies.filter(reply => reply.replyNo !== replyNo);
-        setReplies(updateReplies);
-      })
-      .catch((error) => {
-        console.log("댓글 삭제 에러", error);
+  const ReplyDelete = async (replyNo) => {
+    try {
+      await axios.delete(`http://localhost:8080/replyDelete/${replyNo}`);
+      console.log("댓글 삭제 성공");
+      Swal.fire({
+        text: '댓글이 삭제되었습니다',
+        icon: 'success',
+        confirmButtonText: '확인',
       });
+
+    } catch (error) {
+      console.log("댓글 삭제 에러");
+      Swal.fire({
+        title: 'error',
+        text: '댓글을 삭제하는 중에 오류가 발생했습니다',
+        icon: 'error',
+        confirmButtonText: '확인',
+      });
+    }
   };
+
+  const handleReplyDelete = (replyNo) => {
+    Swal.fire({
+      title: '댓글 삭제',
+      text: '댓글을 삭제하시겠습니까?',
+      icon: 'warning',
+
+      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
+      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+
+    }).then(result => {
+      if (result.isConfirmed) {
+        ReplyDelete(replyNo);
+      }
+    });
+  }
+
+  const deleteSwal = () => {
+    Swal.fire({
+      title: '정말로 댓글을 삭제하시겠습니까?',
+      text: '댓글이 삭제되면 복구할 수 없습니다..',
+      icon: 'warning',
+
+      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
+      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+
+      reverseButtons: true, // 버튼 순서 거꾸로
+
+    }).then(result => {
+      // 만약 Promise리턴을 받으면,
+      if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+
+        Swal.fire('댓글이 삭제되었습니다.', 'success');
+      }
+    });
+  }
 
   const toggleLike = () => {
     if (memNo !== undefined) {
@@ -225,7 +283,30 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     } else {
       showSwal()
     }
+  };
+
+  console.log(replies);
+
+  const replyToggleLike = (replyNo) => {
+    if (memNo !== undefined) {
+      axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
+        .then((res) => {
+          const index = replies.findIndex((reply) => reply.replyNo == replyNo);
+          const reply = {...replies[index]};
+          reply.replyLike = res.data.isToggleLike;
+          reply.likeCount = res.data.likeCount;
+          setReplies([...replies.slice(0, index), reply, ...replies.slice(index + 1)]);
+          getBestReply();
+        })
+        .catch((error) => {
+          console.error("에러:" + error);
+        });
+    } else {
+      showSwal()
+      console.error('memNo 또는 replyNo가 유효하지 않습니다.');
+    }
   }
+
   const toggleWish = () => {
     if (memNo !== undefined) {
       axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
@@ -239,6 +320,18 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     } else {
       showSwal()
     }
+  }
+
+  const getBestReply = () => {
+    //베스트 댓글 가져오기
+    axios
+      .get(`http://localhost:8080/reply/${reviewNo}/best`)
+      .then((res) => {
+        setBestReply(res.data);
+      })
+      .catch((error) => {
+        console.error("베스트 댓글 가져오기 에러", error);
+      });
   }
 
   useEffect(() => { // 디테일 가져오기
@@ -258,6 +351,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
 
     fetchReplies();
+
+    getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
 
   useEffect(() => { // 디테일 지도
@@ -314,6 +409,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 
                   <div className="Gbtn" onClick={ReviewModify}>수정</div>
 
+
                   <div className="Obtn"  onClick={handleReviewDelete}>삭제</div>
                 </div>
                 
@@ -321,7 +417,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <div className="detailLine" />
 
 
-            {/* 댓글 */}
+
+                {/* 댓글 */}
                 <div className="reply">
                   <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
                   <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
@@ -329,6 +426,60 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             )}
 
             <div className="detailLine" />
+
+            {bestReply && (
+              <div key={bestReply.replyNo} className="replyInfo">
+                <div className="infoT">
+                  <p>
+                    <img src="/img/house.png" alt="house" /> {bestReply.nickname}
+                  </p>
+                  <p>
+                    <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
+                    <span className="underline" onClick={() => showReplyClick(bestReply)}>
+                      답글
+                    </span>
+                    &nbsp;&nbsp;
+                    <img src={bestReply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
+                    <span>{bestReply.likeCount}</span>
+                  </p>
+                </div>
+                <div className="infoB">
+                  <p>
+                    <img src="/img/best.png" alt="best" />
+                    {bestReply.content}
+                  </p>
+                  <p>{bestReply.regDate}</p>
+                </div>
+                <div className="detailLine" />
+
+                {/* 베스트 댓글에 대한 답글 창 */}
+                {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
+                  <>
+                    <div className="reply comment">
+                      <img src="/img/reply.png" alt="reReply" />
+                      <input type="text" name="reply" onChange={handleReReplyChange} />
+                      <div className="Gbtn" onClick={() => handleReReplySubmit(bestReply.replyNo)}>
+                        등록
+                      </div>
+                    </div>
+                    <div className="detailLine" />
+
+                    {/* 베스트 댓글에 대한 답글 목록 */}
+                    {selectedReply.replies && selectedReply.replies.length > 0 && (
+                      <div className="reReplyInfo">
+                        {selectedReply.replies.map((reReply) => (
+                          <div key={reReply.replyNo} className="infoB comment">
+                            <p>{reReply.content}</p>
+                            <p>{reReply.regDate}</p>
+                          </div>
+                        ))}
+                        <div className="detailLine" />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
 
             {/* 댓글 목록 출력 */}
             {replies.map((reply) => (
@@ -339,49 +490,51 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                    <span className="underline" onClick={showReplyClick}>
+                    <span className="underline" onClick={() => showReplyClick(reply)}>
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <span>♡ nn</span>
+                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
+                    <span>{reply.likeCount}</span>
                   </p>
                 </div>
                 <div className="infoB">
                   <p>
-                    {/* <img src="/img/best.png" alt="best" /> */}
                     {reply.content}
                   </p>
                   <p>{reply.regDate}</p>
                 </div>
                 <div className="detailLine" />
+
+                {/* 대댓글 */}
+                {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
+                  <>
+                    <div className="reply comment">
+                      <img src="/img/reply.png" alt="reReply" />
+                      <input type="text" name="reply" onChange={handleReReplyChange} />
+                      <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
+                        등록
+                      </div>
+                    </div>
+                    <div className="detailLine" />
+
+                    {/* 대댓글 목록 */}
+                    {selectedReply.replies && selectedReply.replies.length > 0 && (
+                      <div className="reReplyInfo">
+                        {selectedReply.replies.map((reReply) => (
+                          <div key={reReply.replyNo} className="infoB comment">
+                            <p>{reReply.content}</p>
+                            <p>{reReply.regDate}</p>
+                          </div>
+                        ))}
+                        <div className="detailLine" />
+                      </div>
+                    )}
+                  </>
+                )}
+
               </div>
             ))}
-
-            {/* 대댓글 */}
-            {showReply && (
-              <>
-                <div className="reply comment">
-                  <img src="/img/reply.png" alt="reReply" />
-                  <input type="text" name="reply" onChange={handleReReplyChange} />
-                  <div className="Gbtn" onClick={() => selectedReply && handleReReplySubmit(selectedReply.replyNo)}>
-                    등록
-                  </div>
-                </div>
-
-                {/* 대댓글 목록 */}
-                {selectedReply && selectedReply.replies && selectedReply.replies.length > 0 && (
-                  <div className="reReplyInfo">
-                    {selectedReply.replies.map((reReply) => (
-                      <div key={reReply.replyNo} className="infoB comment">
-                        <p>{reReply.content}</p>
-                        <p>{reReply.regDate}</p>
-                      </div>
-                    ))}
-                    <div className="detailLine" />
-                  </div>
-                )}
-              </>
-            )}
 
             <div className="reviewDetail-pagination">
               <ul className="pagination">
@@ -390,7 +543,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 </li>
                 {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
                   <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => handlePageChange(index+pageInfo.startPage)}>{index+pageInfo.startPage}</button>
+                    <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
                   </li>
                 ))}
                 <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>

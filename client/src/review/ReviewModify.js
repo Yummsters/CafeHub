@@ -220,6 +220,11 @@ const ReviewModify = () => {
 
 
 
+            <div className='btnBox'>
+                <div className='review-btn'>초기화</div>
+                <div className='review-btn'>리뷰 수정</div>
+            </div>
+
 
 
                 <div className="editor">

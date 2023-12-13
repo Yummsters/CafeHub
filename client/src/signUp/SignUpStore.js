@@ -1,25 +1,28 @@
 import { useState, useRef, useEffect} from 'react';
 import signUpStoreStyle from './signUpStoreStyle.css';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+const {daum} = window;
 
 const SignUpStore = () =>{
-    const [store, setStore] = useState({name:"", nickName:"", id:"", password:"", passwordCk:"", phone:"", email:"",
-    storeName:"", storePhone:"", storeNum:"", location:"", time:""});
+    const [store, setStore] = useState({name:"", nickName:"", id:"", password:"", passwordCk:"", phone:"", email:"", storeName:"", storePhone:"", businessNo:"", location:"", time:""});
     const [picture, setPicture] = useState("");
+    const [randomCode, setRandomCode] = useState(0);
     const [tagList, setTagList] = useState([
         '#카공',
-        '#애견 동반',
+        '#애견동반',
         '#TakoOut',
         '#노키즈존',
         '#베이커리',
         '#이색',
-        '#커피 전문',
-        '#주류 판매',
+        '#커피전문',
+        '#주류판매',
+        '#감성'
     ]);
 
     const change = (e) =>{
         let name = e.target.name;
         let value = e.target.value;
-        
         setStore({...store, [name] : value});
     }
 
@@ -48,8 +51,107 @@ const SignUpStore = () =>{
             console.error("Element with class 'signUpStore' not found.");
         }
     }, [])
-    
 
+    const searchAddr = () => { // 주소 입력
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // var roadAddr = data.roadAddress; // 도로명 주소 변수
+                document.getElementById('location').value = data.address;
+                Promise.resolve(data).then(o => {
+                    const { address } = data;
+                    return new Promise((resolve, reject) => {
+                        const geocoder = new daum.maps.services.Geocoder();
+                        geocoder.addressSearch(address, (result, status) =>{
+                            if(status === daum.maps.services.Status.OK){
+                                const { x, y } = result[0];
+                                resolve({ lat: y, lon: x })
+                            }else{
+                                reject();
+                            }
+                        });
+                    })
+                }).then(result => {
+                    console.log(result)
+                    console.log(result.lat)
+                    console.log(result.lon)
+                });    
+    
+            }
+        }).open();
+    }
+
+      // swal
+    const toast = Swal.mixin({
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 1500
+    })
+
+    const businessNo = () => { // 사업자번호 확인
+        axios.post(`http://localhost:8080/business/${store.businessNo}`)
+        .then((res) => {
+            if(res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
+                toast.fire({
+                    title: '사업자 인증 실패!',
+                    text: '다시 입력해주세요',
+                    icon: 'error',
+                })
+            } else {
+                toast.fire({
+                    title: '사업자 인증 성공!',
+                    text: '성공적으로 등록되었습니다',
+                    icon: 'success',
+                })
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+    }
+
+    const sendPhoneCode = () => {
+        const random = Math.floor(Math.random() * 9000) + 1000;
+        setRandomCode(random, () => {
+            axios.get(`http://localhost:8080/check/sendSMS?phone=${store.phone}&code=${randomCode}`)
+            .then((res) => {
+                console.log(res.data);
+                toast.fire({
+                    title: '인증번호가 발송되었습니다',
+                    icon: 'success',
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        });
+    }
+
+    const test = () => {
+        const random = Math.floor(Math.random() * 9000) + 1000;
+        console.log('Random code set:', random); 
+        setRandomCode(random); 
+        console.log(store.phone);
+    }
+    // console.log("?" +typeof store.authNum)
+    const phoneCodeCheck = () => {
+        // console.log('랜덤번호'+randomCode);
+        // console.log(store.authNum)
+        if (store.authNum == randomCode) {
+            toast.fire({
+                title: '휴대폰 번호 인증 성공!',
+                icon: 'success',
+            });
+        } else {
+            toast.fire({
+                title: '인증번호가 틀렸습니다',
+                text: '확인 후 다시 입력해주세요',
+                icon: 'error',
+            });
+        }
+    }
+    
+    
     return (
         <div className='signUpStore-container'>
           <div className='signUpStore-left-section'>
@@ -80,11 +182,14 @@ const SignUpStore = () =>{
               <input type="text" id="phone" name="phone" onChange={change}/></label>
             </div>
             <div className='searchStoreAuthNum'>
-                <button type="button" > 휴대폰 <br/>인증 </button>
+                <button type="button" onClick={test}> 휴대폰 <br/>인증 </button> {/* onClick={sendPhoneCode} */}
             </div> <br/>
-            <div className='signUpStoreInputDiv'>
+            <div className='signUpStoreInputDiv-other'>
                 <label>인증번호<span className='signUpStore-auth'>인증번호를 확인하세요</span><br/>
                 <input type="text" id="authNum" name="authNum" onChange={change}/></label>
+            </div> <br/>
+            <div className='searchStoreAuthNum'>
+                <button type="button" onClick={phoneCodeCheck}> 확인 </button>
             </div> <br/>
             <div className='signUpStoreInputDiv'>
                 <label>이메일<span className='signUpStore-auth'>이메일을 확인하세요</span><br/>
@@ -99,19 +204,20 @@ const SignUpStore = () =>{
                 <label>가게 전화번호 <br/>
                 <input type="text" id="storePhone" name="storePhone" onChange={change}/></label>
             </div> <br/>
+
             <div className='signUpStoreInputDiv-other'>
               <label> 사업자 번호 <span className='signUpStore-auth'> 하이픈(-)을 제외하고 입력하세요</span><br/>
-              <input type="text" id="storeNum" name="storeNum" onChange={change}/></label>
+              <input type="text" id="businessNo" name="businessNo" onChange={change}/></label>
             </div>
             <div className='searchStoreAuthNum'>
-                <button type="button"> 사업자 <br/> 인증 </button>
+                <button type="button" onClick={businessNo}> 사업자 <br/> 인증 </button>
             </div> <br/>
             <div className='signUpStoreInputDiv-other'>
               <label> 위치 <br/>
               <input type="text" id="location" name="location" onChange={change}/></label>
             </div>
             <div className='searchStoreAuthNum'>
-                <button type="button"> 위치 <br/>검색 </button>
+                <button type="button" onClick={searchAddr}> 위치 <br/>검색 </button>
             </div> <br/>
             <div className='signUpStoreInputDiv'>
                 <label>운영시간 <br/>

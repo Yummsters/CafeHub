@@ -14,6 +14,8 @@ const WishStore = () => {
   const [cafeNo, setCafeNo] = useState(0);
   const [selectCafe, setSelectCafe] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
   const accessToken = useSelector(
     (state) => state.persistedReducer.accessToken
@@ -28,22 +30,37 @@ const WishStore = () => {
     setShowModal(false);
   };
 
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/member/wishStoreList/${memNo}`, {
+    // axios.get(`http://localhost:8080/member/wishStoreList/${memNo}`,{
+      axios.get(`http://localhost:8080/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
         headers: {
-          Authorization: accessToken,
-          "Content-Type": "application/json",
+            Authorization: accessToken,
+            "Content-Type": "application/json",
         },
       })
       .then((res) => {
         console.log(res.data);
-        setWishStoreList(res.data);
+        console.log(res.data.content);
+        setWishStoreList(res.data.content);
+        setTotalPages(res.data.totalPages);
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
-  }, [cafeNo]);
+  }, [cafeNo, currentPage]);
   
   useEffect(() => { // 디테일 지도
     if (showModal && cafeNo !== 0) {
@@ -99,8 +116,22 @@ const WishStore = () => {
                 {index % 4 === 3 ? (<><br /></>) : ("")}
                 </span>
             ))}
-            
           </div>
+                  <Pagination>
+                    <PaginationItem disabled={currentPage === 1}>
+                      <PaginationLink previous onClick={prevPage} />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, index) => (
+                      <PaginationItem key={index} active={currentPage === index + 1}>
+                        <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                          {index + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem disabled={currentPage === totalPages}>
+                      <PaginationLink next onClick={nextPage} />
+                    </PaginationItem>
+                  </Pagination>
 
         {showModal && selectCafe && (
           <div className="modalBox">
