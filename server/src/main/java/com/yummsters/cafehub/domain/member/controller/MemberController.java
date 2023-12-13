@@ -131,19 +131,6 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
-
-    // 수빈 part ----------------------------------------------------------------
-    // 사용자 회원가입
-    @PostMapping("/signUpStore")
-    public ResponseEntity<Object> signUpStore(@RequestBody SignUpStoreDto requestDto){
-        Member member = mapper.signUpReqDtoToMember(requestDto);
-        try{
-            member = memberService.existStoreMember(member);
-            SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);
-            return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
-        }catch (Exception e){
-
     @PostMapping("/searchPw")
     public ResponseEntity<Object> pwSearch(@RequestBody SearchPwDto searchPwDto) {
         String id = searchPwDto.getId();
@@ -177,6 +164,22 @@ public class MemberController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    // 수빈 part ----------------------------------------------------------------
+    // 사용자 회원가입
+    @PostMapping("/signUpStore")
+    public ResponseEntity<Object> signUpStore(@RequestBody SignUpReqDto requestDto){
+        Member member = mapper.signUpReqDtoToMember(requestDto);
+        try{
+            member = memberService.existStoreMember(member);
+            SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);
+            return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
+        }catch (Exception e){
+        	e.printStackTrace();
+        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

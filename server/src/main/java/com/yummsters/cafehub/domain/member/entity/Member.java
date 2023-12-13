@@ -95,10 +95,6 @@ public class Member {
     public void changeStatus(boolean status) {
         this.status = status;
     }
-       
-    public void changeStatus(boolean status) {
-        this.status = status;
-    }
 
     public void setCafeno(Integer cafeno) {
         this.cafeno = cafeno;
