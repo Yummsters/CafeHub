@@ -1,5 +1,10 @@
 package com.yummsters.cafehub.domain.member.service;
 
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.dto.SearchPwDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
@@ -7,9 +12,8 @@ import com.yummsters.cafehub.domain.member.entity.Social;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.point.repository.PointRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +21,9 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PointRepository pointRepository;
+    
+    private final CafeRepository cafeRepository;
+
 
     // 아이디 중복 체크
     @Override
@@ -162,4 +169,62 @@ public class MemberServiceImpl implements MemberService{
             throw new Exception("회원정보가 일치하지 않습니다.");
         }
     }
+    
+
+    // 수빈 part ----------------------------------------------------------
+    // 사용자 회원가입
+    @Override
+    public Member existStoreMember(Member member) throws Exception {
+        Member checkMember = memberRepository.findByEmail(member.getEmail());
+        if(checkMember != null){
+            throw new Exception("중복된 회원입니다");
+        }
+        // Cafe 정보 생성
+        Cafe cafe = Cafe.builder()
+                .cafeName(member.getCafe().getCafeName())
+                .tel(member.getCafe().getTel())
+                .businessNo(member.getCafe().getBusinessNo())
+                .address(member.getCafe().getAddress())
+                .operTime(member.getCafe().getOperTime())
+               // .thumbImg(member.getCafe().getThumbImg())
+                .build();
+
+        // Cafe 정보 저장
+        cafeRepository.save(cafe);
+        //cafeNo를 가져오기
+        System.out.println("카페번호:"+cafe.getCafeNo());
+        Integer cafeno = cafe.getCafeNo();
+        
+
+        // 회원 정보 생성
+        member = Member.builder()
+                .id(member.getId())
+                .password(bCryptPasswordEncoder.encode(member.getPassword()))
+                .name(member.getName())
+                .nickname(member.getNickname())
+                .memberType(MemberType.STORE)
+                .status(true)
+                .email(member.getEmail())
+                .phone(member.getPhone())
+                .social(Social.NORMAL)
+                .build();
+
+        memberRepository.save(member);
+
+      
+
+      
+        // Member에 cafeNo 저장
+        member.setCafeno(cafeno);
+        memberRepository.save(member);
+
+        // 포인트 정보 생성
+        Point point = Point.builder()
+                .member(member)
+                .build();
+
+        pointRepository.save(point);
+        return member;
+    }
+    
 }

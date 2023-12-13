@@ -167,6 +167,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 		return review.getReviewNo();
 	}
+
 	
 	@Override
 	public void readImage(Integer fileNum, OutputStream out) throws Exception {

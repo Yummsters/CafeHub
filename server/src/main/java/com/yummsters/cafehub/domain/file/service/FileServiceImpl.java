@@ -47,4 +47,11 @@ public class FileServiceImpl implements FileService{
         FileCopyUtils.copy(fis, out);
         fis.close();
     }
+    @Override
+	public void readImage(Integer fileNum, OutputStream out) throws Exception {
+        String dir = "c:/soobin/upload/";
+        FileInputStream fis = new FileInputStream(new File(dir + fileNum));
+        FileCopyUtils.copy(fis, out);
+        fis.close();
+    }
 }
