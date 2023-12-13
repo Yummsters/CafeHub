@@ -167,14 +167,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 		return review.getReviewNo();
 	}
-	
-	@Override
-	public void readImage(Integer fileNum, OutputStream out) throws Exception {
-        String dir = "c:/soobin/upload/";
-        FileInputStream fis = new FileInputStream(new File(dir + fileNum));
-        FileCopyUtils.copy(fis, out);
-        fis.close();
-    }
 
 	// 선진 part
 	// ----------------------------------------------------------------------

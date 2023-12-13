@@ -132,4 +132,19 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    // 수빈 part ----------------------------------------------------------------
+    // 사용자 회원가입
+    @PostMapping("/signUpStore")
+    public ResponseEntity<Object> signUpStore(@RequestBody SignUpStoreDto requestDto){
+        Member member = mapper.signUpReqDtoToMember(requestDto);
+        try{
+            member = memberService.existStoreMember(member);
+            SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);
+            return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

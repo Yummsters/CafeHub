@@ -66,11 +66,19 @@ public class Member {
     private Point point;*/
 
     @OneToOne
-    @JoinColumn(name="cafeNo")
+    @JoinColumn(name="cafe_no")
     private Cafe cafe;
+    @Column
+    private Integer cafeno;
 
+       
     public void changeStatus(boolean status) {
         this.status = status;
+    }
+    
+
+    public void setCafeno(Integer cafeno) {
+        this.cafeno = cafeno;
     }
 
 }
