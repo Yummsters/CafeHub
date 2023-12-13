@@ -118,9 +118,8 @@ const SearchPw = () => { // 휴대폰 인증과 인증번호 일치 확인 후 �
           <div className="searchPw-button">
             <button type="button" onClick={handleSubmit}>확인</button>
           </div>
-          <div className="searchInfo">
-            <a href="/login">로그인/회원가입</a>
-          </div>
+          <div className='searchInfo'> <a href="/login">회원가입/로그인</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchId">아이디 찾기</a></div>
+
         </form>
       </div>
     </div>

@@ -9,11 +9,18 @@ const SearchId = () => {
     const navigate = useNavigate();
     const [warning, setWarnings] = useState('');
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+      })
+
     const handleChange = (e) => {
       const { name, value } = e.target;
-      if(name === 'phone' && !/^[0-9]+$/.test(value)) {
+      if (name === 'phone' && !/^[0-9]+$/.test(value) && value.trim() !== '') {
         setWarnings('하이픈(-) 제외 숫자로 작성하세요');
-        e.preventDefault();
       } else {
         setWarnings('');
       }
@@ -21,11 +28,19 @@ const SearchId = () => {
     };
 
     const handleSubmit = (e) => {
-        if (!data.phone.trim()) {
-            setWarnings('휴대폰 번호를 입력하세요');
-            return;
-        }
         e.preventDefault();
+        if (!data.phone.trim() || !data.name.trim()) { 
+            Toast.fire({
+                title: '회원 정보를 입력하세요',
+                icon: 'error',
+            });
+            return; 
+        }
+      
+        if (!/^[0-9]+$/.test(data.phone)) {
+          setWarnings('하이픈(-) 제외 숫자로 작성하세요');
+          return;
+        }
         axios.get('http://localhost:8080/searchId', { 
             params: {
                 name: data.name,
@@ -38,10 +53,9 @@ const SearchId = () => {
         })
         .catch((error) => {
             console.log(error);
-            Swal.fire({
+            Toast.fire({
                 title: '회원정보가 일치하지 않습니다',
                 icon: 'error',
-                confirmButtonText: '확인',
             });
         })
     }
