@@ -156,7 +156,6 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
     @PutMapping("/resetPw/{id}")
     public ResponseEntity<String> changePassword(@PathVariable String id, @RequestBody SearchPwDto searchPwDto) {
         try {
@@ -168,6 +167,17 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+    @PutMapping("/member/modifyInfo")
+    public ResponseEntity<Object> userInfoModify(@RequestBody ModifyReqDto modifyReqDto) {
+        Member member = mapper.modifyReqDtoToMember(modifyReqDto);
+        try {
+            member = memberService.modifyMember(member);
+            ModifyResDto modifyResDto = mapper.memberToModifyResDto(member);
+            return new ResponseEntity<>(modifyResDto, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
 

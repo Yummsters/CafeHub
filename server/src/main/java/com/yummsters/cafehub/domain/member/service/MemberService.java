@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.member.service;
 
-
+import com.yummsters.cafehub.domain.member.dto.ModifyReqDto;
+import com.yummsters.cafehub.domain.member.dto.ModifyResDto;
 import java.io.File;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.dto.SearchPwDto;
@@ -17,10 +18,9 @@ public interface MemberService {
     Member storeSearch(Integer cafeNo) throws Exception;
 
     String searchId(String name, String phone) throws Exception;
+    Member modifyMember(Member member) throws Exception;
     Member existStoreMember(Member member) throws Exception;
-
     Member searchId(String name, String phone) throws Exception;
     Member searchPw(String id, String phone) throws Exception;
     void changePw(String id, String newPassword) throws Exception;
-
 }
