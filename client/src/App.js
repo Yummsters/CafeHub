@@ -42,6 +42,7 @@ import { CheckoutPage } from './payment/CheckoutPage';
 import Success from './payment/Success';
 import Fail from './payment/Fail';
 import OAuth2Err from './login/OAuth2Err';
+import SearchPwResult from './searchPw/SearchPwResult';
 
 export const persistor = persistStore(store);
 function App() {
@@ -86,6 +87,7 @@ function App() {
               <Route exact path='/searchId' element={<DefaultLayout><SearchId/></DefaultLayout>}/>
               <Route exact path='/searchIdResult' element={<DefaultLayout><SearchIdResult/></DefaultLayout>}/>
               <Route exact path='/searchPw' element={<DefaultLayout><SearchPw/></DefaultLayout>}/>
+              <Route exact path='/searchPwResult' element={<DefaultLayout><SearchPwResult/></DefaultLayout>}/>
               <Route exact path='/wishStore' element={<DefaultLayout><WishStore/></DefaultLayout>}/>
               <Route exact path='/wishReview' element={<DefaultLayout><WishReview/></DefaultLayout>}/>
               <Route exact path='/signUpUser' element={<DefaultLayout><SignUpUser/></DefaultLayout>}/>
