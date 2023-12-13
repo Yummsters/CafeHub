@@ -5,11 +5,7 @@ import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
@@ -121,6 +117,19 @@ public class MemberController {
             e.printStackTrace();
             System.out.println(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 선진 part ----------------------------------------------------------------
+    @GetMapping("/searchId")
+    public ResponseEntity<String> idSearch(@RequestParam String name,
+                                           @RequestParam String phone) {
+        try {
+            String memberId = memberService.searchId(name, phone);
+            return new ResponseEntity<>(memberId, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
