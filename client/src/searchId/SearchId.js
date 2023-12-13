@@ -31,16 +31,12 @@ const SearchId = () => {
         e.preventDefault();
         if (!data.phone.trim() || !data.name.trim()) { 
             Toast.fire({
-                title: '회원 정보를 입력하세요',
+                title: '입력한 정보를 확인하세요',
                 icon: 'error',
             });
             return; 
         }
-      
-        if (!/^[0-9]+$/.test(data.phone)) {
-          setWarnings('하이픈(-) 제외 숫자로 작성하세요');
-          return;
-        }
+
         axios.get('http://localhost:8080/searchId', { 
             params: {
                 name: data.name,

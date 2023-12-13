@@ -4,84 +4,118 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { Navigate, useNavigate } from "react-router";
 
-const SearchPw = () => { // 휴대폰 인증과 인증번호 일치 확인 후 폼 제출하여 id,phone 일치 확인
+const SearchPw = () => {
   const [data, setData] = useState({});
-  const [valid, setValid] = useState({ id: false, phone: false });
-  const [warnings, setWarnings] = useState({
-    id: false,
-    phone: false,
-    phoneConfirm: false,
-  });
+  const [warnings, setWarnings] = useState('');
   const [randomCode, setRandomCode] = useState(0);
+  const [phoneAuth, setPhoneAuth] = useState(false); // 인증번호 발송 여부
+  const [phoneCheck, setPhoneCheck] = useState(false); // 인증번호 일치 여부
+
   const navigate = useNavigate();
 
-  // swal
-  const toast = Swal.mixin({
+  const Toast = Swal.mixin({
     toast: true,
-    position: "top-right",
+    position: 'top',
     showConfirmButton: false,
     timer: 1500,
-  });
+    timerProgressBar: true,
+  })
 
   // input 값 저장
   const handleChange = (e) => {
     const { name, value } = e.target;
+      if (name === 'phone' && !/^[0-9]+$/.test(value) && value.trim() !== '') {
+        setWarnings('하이픈(-) 없이 작성하세요');
+      } else {
+        setWarnings('');
+      }
     setData({ ...data, [name]: value });
   };
 
-  // 휴대폰 번호 인증
+  // 회원 정보 확인 후 휴대폰 인증번호 발송
   const sendPhoneCode = () => {
-    const random = Math.floor(Math.random() * 9000) + 1000;
-    setRandomCode(random);
-    console.log("Random code set:", random);
-    console.log(data.phone);
-    // axios.get(`http://localhost:8080/check/sendSMS?phone=${data.phone}&code=${randomCode}`)
-    // .then((res) => {
-    //     console.log(res.data);
-    //     toast.fire({
-    //         title: '인증번호가 발송되었습니다',
-    //         icon: 'success',
-    //     });
-    // })
-    // .catch((error) => {
-    //     console.log(error);
-    // });
+    // 회원정보 확인
+    axios.post("http://localhost:8080/searchPw", {
+      id: data.id,
+      phone: data.phone,
+    })
+    .then((res) => {
+      console.log(res.data + "ok");
+      // 회원정보 일치하는 경우 휴대폰 인증번호 발송
+      const random = Math.floor(Math.random() * 9000) + 1000;
+      setRandomCode(random);
+      console.log("Random code set:", random);
+      console.log(data.phone);
+      // axios.get(`http://localhost:8080/check/sendSMS?phone=${data.phone}&code=${random}`)
+      // .then((res) => {
+      //     console.log(res.data);
+      //     Toast.fire({
+      //         title: '인증번호가 발송되었습니다',
+      //         icon: 'success',
+      //     });
+          setPhoneAuth(true);
+      // })
+      // .catch((error) => {
+      //     console.log(error);
+      // });
+    })
+    .catch((error) => {
+      console.log(error);
+      Toast.fire({
+        title: "회원 정보가 없습니다",
+        icon: "error",
+        confirmButtonText: "확인",
+      });
+    });
   };
 
   // 인증번호 일치여부
   const phoneCodeCheck = () => {
     if (data.authNum == randomCode) {
-      toast.fire({
+      Toast.fire({
         title: "휴대폰 번호 인증 성공!",
         icon: "success",
       });
+      setPhoneCheck(true);
     } else {
-      toast.fire({
-        title: "인증번호가 틀렸습니다",
-        text: "확인 후 다시 입력해주세요",
+      Toast.fire({
+        title: "인증번호가 일치하지 않습니다",
         icon: "error",
       });
     }
   };
 
+  console.log('인증버튼' + phoneAuth)
+  console.log('확인버튼' + phoneCheck)
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post("http://localhost:8080/searchPw", {
-          id: data.id,
-          phone: data.phone,
-      })
-      .then((res) => {
-        console.log(res.data + "ok");
-        navigate("/searchPwResult", { state: { result: res.data } });
-      })
-      .catch((error) => {
-        console.log(error);
-        Swal.fire({
-          title: "회원정보가 일치하지 않습니다",
-          icon: "error",
-          confirmButtonText: "확인",
-        });
+    if (!data.id || !data.phone) {
+      Toast.fire({
+        title: "회원 정보를 입력해주세요",
+        icon: "error",
+        confirmButtonText: "확인",
       });
+      return;
+    }
+
+    if (!phoneAuth || (!phoneAuth && !phoneCheck)) {
+      Toast.fire({
+        title: "휴대폰 인증이 필요합니다",
+        icon: "error",
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+  
+    if (phoneAuth && !phoneCheck) {
+      Toast.fire({
+        title: "인증번호를 확인해주세요",
+        icon: "error",
+        confirmButtonText: "확인",
+      });
+      return;
+    }
+    navigate("/searchPwResult", { state: { result: data.id } });
   };
 
   return (
@@ -97,8 +131,7 @@ const SearchPw = () => { // 휴대폰 인증과 인증번호 일치 확인 후 �
           <br />
           <div className="searchPwInputDiv-phone">
             <label>휴대폰 번호
-              <span className="searchPw-AuthPhone">
-                휴대폰 번호를 확인해주세요</span><br />
+              <span className="searchPw-AuthPhone">{warnings}</span><br />
               <input type="text" id="phone" name="phone" onChange={handleChange}/>
             </label>
           </div>
@@ -108,7 +141,6 @@ const SearchPw = () => { // 휴대폰 인증과 인증번호 일치 확인 후 �
           <br />
           <div className="searchPwInputDiv-phone">
             <label>인증번호
-              <span className="searchPw-Auth">인증번호를 확인해주세요</span><br />
               <input type="text" id="authNum" name="authNum" onChange={handleChange} />
             </label>
           </div>
