@@ -96,7 +96,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const handleReplySubmit = () => {
     //등록 버튼 클릭 시 댓글 등록 요청
     axios
-      .post(`http://localhost:8080/replyWrite/${reviewNo}`, {
+      .post(`http://localhost:8080/replyWrite/${memNo}/${reviewNo}`, {
         content: replyContent,
       })
       .then((res) => {
@@ -274,13 +274,18 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   };
 
+  console.log(replies);
+
   const replyToggleLike = (replyNo) => {
     if (memNo !== undefined) {
       axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
         .then((res) => {
-          setReplyLike(res.data.isReplyLike);
-          setReplyLikeCount(res.data.replyLikeCount);
-          console.log(res.data);
+          const index = replies.findIndex((reply) => reply.replyNo == replyNo);
+          const reply = {...replies[index]};
+          reply.replyLike = res.data.isToggleLike;
+          reply.likeCount = res.data.likeCount;
+          setReplies([...replies.slice(0, index), reply, ...replies.slice(index + 1)]);
+          getBestReply();
         })
         .catch((error) => {
           console.error("에러:" + error);
@@ -306,6 +311,18 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   }
 
+  const getBestReply = () => {
+    //베스트 댓글 가져오기
+    axios
+      .get(`http://localhost:8080/reply/${reviewNo}/best`)
+      .then((res) => {
+        setBestReply(res.data);
+      })
+      .catch((error) => {
+        console.error("베스트 댓글 가져오기 에러", error);
+      });
+  }
+
   useEffect(() => { // 디테일 가져오기
     axios
       .get(`http://localhost:8080/review/${reviewNo}`, { headers: { memNo } })
@@ -322,15 +339,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
     fetchReplies();
 
-    //베스트 댓글 가져오기
-    axios
-      .get(`http://localhost:8080/reply/${reviewNo}/best`)
-      .then((res) => {
-        setBestReply(res.data);
-      })
-      .catch((error) => {
-        console.error("베스트 댓글 가져오기 에러", error);
-      });
+    getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
 
   useEffect(() => { // 디테일 지도
@@ -462,7 +471,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={replyToggleLike} />
+                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
                     <span>{reply.likeCount}</span>
                   </p>
                 </div>
