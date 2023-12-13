@@ -34,9 +34,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     totalPages:1
 })
 
-  const navigate = useNavigate();
-
-
   const showSwal = (title) => {
     Swal.mixin({
       toast: true,
