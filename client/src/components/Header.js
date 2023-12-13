@@ -101,6 +101,7 @@ const Header = () => {
         dispatch({type:"accessToken", payload:""});
         dispatch({type:"isLogin", payload:false});
         dispatch({type:"member", payload:""});
+        dispatch({type:"cafe", payload:""});
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         removeCookie("refreshToken");

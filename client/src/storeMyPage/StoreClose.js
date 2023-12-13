@@ -58,6 +58,8 @@ const StoreClose = () => {
                 removeCookie("accessToken");
                 dispatch({type:"isLogin", payload:false});
                 dispatch({type:"member", payload:''});
+                dispatch({type:"accessToken", payload:""});
+                dispatch({type:"cafe", payload:""});
                 Toast.fire({
                 icon: 'success',
                 title: '회원탈퇴가 완료되었습니다'

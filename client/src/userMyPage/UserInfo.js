@@ -66,8 +66,9 @@ const UserInfo = () => {
       const isPwCorrect =res.data;
 
       if (isPwCorrect) {
-        removeCookie("accessToken");
+        removeCookie("refreshToken");
         dispatch({type:"isLogin", payload:false});
+        dispatch({type:"accessToken", payload:""});
         dispatch({type:"member", payload:''});
         Toast.fire({
           icon: 'success',
