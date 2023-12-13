@@ -9,7 +9,6 @@ tbody tr {
 .manager-listBox {
     margin:50px auto;
     width: 1000px;
-    height: 700px;
     border: 3px solid #007355;
     border-radius: 10px;
     position : relative;
@@ -68,7 +67,7 @@ tbody tr {
     border: none;
     margin-bottom: 5px;
     margin-left: 50px;
-
+    button: disabled;
   }
 
   .permission-button{
@@ -127,3 +126,6 @@ tbody tr {
 
 }
   
+.manager-container .manager-listBox .listTitle th {
+  width: 100px;
+}
