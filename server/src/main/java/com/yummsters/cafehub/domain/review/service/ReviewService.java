@@ -32,8 +32,7 @@ public interface ReviewService {
 	Integer modifyReview(Integer reviewNo, ReviewDto review, List<MultipartFile> file) throws Exception; //리뷰 수정
 	 
 	// 희진 part
-	// 리뷰 권한
-	//void reviewAuthPermmit(Integer memNo, Integer cafeNo) throws Exception;
+	Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo);
 
 	//혜리 part ----------------------------------------------------------------
 	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
