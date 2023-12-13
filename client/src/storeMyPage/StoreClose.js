@@ -61,19 +61,32 @@ const StoreClose = () => {
                 dispatch({type:"accessToken", payload:""});
                 dispatch({type:"cafe", payload:""});
                 Toast.fire({
-                icon: 'success',
-                title: '회원탈퇴가 완료되었습니다'
+                    icon: 'success',
+                    title: '회원탈퇴가 완료되었습니다'
                 }).then(()=>{
-                navigate("/");
-            })
+                    navigate("/");
+                })
             } else {
                 // 비밀번호가 일치하지 않을 때
                 setPwMatch(false);
             }
         })
         .catch(err=>{
-          console.log(err);
-          console.log(err.data);
+            console.log(err);
+            console.log(err.data);
+
+            if(err.data === '포인트 정산 후 탈퇴가 가능합니다'){
+                Toast.fire({
+                    icon: 'success',
+                    title: '포인트 정산 후 탈퇴가 가능합니다'
+                })
+            }else{
+                Toast.fire({
+                    icon: 'success',
+                    title: "정산 대기중인 포인트가 있습니다. 포인트 정산 후 탈퇴가 가능합니다."
+                })
+            }
+           
         })
       };
 

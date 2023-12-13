@@ -56,7 +56,7 @@ const Toast = Swal.mixin({
       .then(res=>{  
         // 토큰과 회원정보 저장
         dispatch({type:"isLogin", payload:true});
-        dispatch({type:"member", payload:res.data});
+        dispatch({type:"member", payload:res.data.member});
         dispatch({type:"accessToken", payload:res.headers.authorization});
 
         // refreshtoken을 쿠키에 담아서 저장
