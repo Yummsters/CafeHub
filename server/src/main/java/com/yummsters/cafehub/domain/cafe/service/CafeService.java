@@ -1,9 +1,12 @@
 package com.yummsters.cafehub.domain.cafe.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-
-import java.util.List;
 
 public interface CafeService {
     // 선진 part---------------------------------------------------------------------------
@@ -13,4 +16,6 @@ public interface CafeService {
     boolean isWishCafe(Integer memNo, Integer cafeNo) throws Exception; // 회원의 리뷰 찜 여부
     boolean toggleWishCafe(Integer memNo, Integer cafeNo) throws Exception; // 찜, 찜 취소
     Cafe searchCafe(Integer cafeNo) throws Exception;
+    // 혜리 part---------------------------------------------------------------------------
+    Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception;
 }
