@@ -1,5 +1,7 @@
 package com.yummsters.cafehub.domain.member.service;
 
+import com.yummsters.cafehub.domain.member.dto.ModifyReqDto;
+import com.yummsters.cafehub.domain.member.dto.ModifyResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 
@@ -13,4 +15,5 @@ public interface MemberService {
     Member phoneSearch(String phone) throws Exception;
     Member storeSearch(Integer cafeNo) throws Exception;
     String searchId(String name, String phone) throws Exception;
+    Member modifyMember(Member member) throws Exception;
 }

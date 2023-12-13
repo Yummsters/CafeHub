@@ -132,4 +132,16 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+    @PutMapping("/member/modifyInfo")
+    public ResponseEntity<Object> userInfoModify(@RequestBody ModifyReqDto modifyReqDto) {
+        Member member = mapper.modifyReqDtoToMember(modifyReqDto);
+        try {
+            member = memberService.modifyMember(member);
+            ModifyResDto modifyResDto = mapper.memberToModifyResDto(member);
+            return new ResponseEntity<>(modifyResDto, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
