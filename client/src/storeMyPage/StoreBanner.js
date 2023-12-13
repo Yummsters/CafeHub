@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import {useSelector} from 'react-redux';
-import { useLocation } from 'react-router';
 import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
@@ -12,7 +11,6 @@ const StoreBanner = () => {
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    const location = useLocation();
 
     // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
     const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
@@ -138,7 +136,7 @@ const StoreBanner = () => {
                 icon: 'success',
                 title: '광고 신청이 완료되었습니다'
             }).then(()=>{
-                location.reload();
+                window.location.reload();
             })
             
         })
