@@ -27,10 +27,11 @@ public class ReplyController {
 	@Autowired
 	private ReplyService replyService;
 	
-	@PostMapping("/replyWrite/{reviewNo}")
-	public ResponseEntity<Integer> replyWrite(@PathVariable Integer reviewNo, @RequestParam String content) {
+	@PostMapping("/replyWrite/{memNo}/{reviewNo}")
+	public ResponseEntity<Integer> replyWrite(@PathVariable Integer memNo, @PathVariable Integer reviewNo, @RequestBody Map<String, String> data) {
+		String content = data.get("content");
         try {
-            replyService.replyWrite(reviewNo, content);
+            replyService.replyWrite(memNo, reviewNo, content);
             return new ResponseEntity<Integer>(reviewNo, HttpStatus.CREATED);
         } catch (Exception e) {
         	System.out.println(content);

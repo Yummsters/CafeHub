@@ -51,7 +51,7 @@ public class Reply {
     @JoinColumn(name = "writer", nullable = false)
     private Member member;
     
-    @Column(nullable = false)
+    @Column
     private int likeCount;
     
     @CreatedDate

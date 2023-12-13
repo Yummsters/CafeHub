@@ -35,5 +35,5 @@ public interface ReviewService {
 	Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo);
 
 	//혜리 part ----------------------------------------------------------------
-	public Page<Review> getReviewList(Pageable pageable) throws Exception;
+	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
 }
