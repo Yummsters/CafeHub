@@ -20,11 +20,11 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 	Page<Reply> findAllByReview_ReviewNoOrderByReplyNoDesc(Integer reviewNo, Pageable pageable);
 	Optional<Reply> findTopByReview_ReviewNoOrderByLikeCountDesc(Integer reviewNo);
 	
-	@Query("select r, (select count(*)>0 from likeReply lr where lr.memNo=:memNo and lr.replyNo=r.replyNo) as isReplyLike"
-			+ " from reply r where :reviewNo=r.reviewNo order by likeCount desc limit 1")
-	Reply findBestReply(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo);
-	
-	@Query("select r, (select count(*)>0 from likeReply lr where lr.memNo=:memNo and lr.replyNo=r.replyNo) as isReplyLike"
-			+ " from reply r where :reviewNo=r.reviewNo order by replyNo desc")
-	Page<Reply> findReplyList(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo);
+//	@Query("select r, (select count(*)>0 from likeReply lr where lr.memNo=:memNo and lr.replyNo=r.replyNo) as isReplyLike"
+//			+ " from reply r where :reviewNo=r.reviewNo order by likeCount desc limit 1")
+//	Reply findBestReply(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo);
+//	
+//	@Query("select r, (select count(*)>0 from likeReply lr where lr.memNo=:memNo and lr.replyNo=r.replyNo) as isReplyLike"
+//			+ " from reply r where :reviewNo=r.reviewNo order by replyNo desc")
+//	Page<Reply> findReplyList(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo);
 }
