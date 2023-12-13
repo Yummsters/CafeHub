@@ -161,3 +161,7 @@
     margin-bottom: 50px;
     border-radius: 10px;
 }
+
+.toastui-editor-contents img {
+    width: 300px;
+}

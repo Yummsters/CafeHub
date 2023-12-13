@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router";
+import { Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
 const { kakao } = window;
 
@@ -390,7 +392,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <p>{review.regDate}</p>
               </div>
             </div>
-            <div className="detailContent">{review.content}</div>
+            <div className="detailContent"><Viewer initialValue={review.content || ''} /></div>
+            
 
             <div id="detailMap"></div>
 
