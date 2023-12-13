@@ -1,11 +1,15 @@
 import axios from "axios";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Table } from "reactstrap";
+import { Link } from "react-router-dom";
+import { Pagination, PaginationItem, PaginationLink, Table } from "reactstrap";
 import Swal from "sweetalert2";
 
 const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const [reviewList, setReviewList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   
   // null이 아닌 정보만 띄울 수 있게 만들기
   const cafeInfo = (name, src, col, text) => {
@@ -16,6 +20,32 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
         </div>
       ) : null;
     };
+    
+    const nextPage = () => {
+      if (currentPage < totalPages) {
+        setCurrentPage(currentPage + 1);
+      }
+    };
+  
+    const prevPage = () => {
+      if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    };
+
+   useEffect(() => { 
+    if(selectCafe !== null) {
+      axios.get(`http://localhost:8080/review/storeList/${selectCafe.cafeNo}?page=${currentPage}&size=5`)
+      .then((res) => {
+        console.log(res.data);
+        setReviewList(res.data.data);
+        setTotalPages(res.data.pageInfo.totalPages);
+      })
+      .catch((error) => {
+        console.error("에러:" + error);
+      }); 
+    }
+   }, [selectCafe, currentPage])
 
   const toggleWish = () => {
     if (memNo !== undefined) {
@@ -58,7 +88,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
 
         {selectCafe.thumbImg !== null ? ( 
             <div className="storeImag">
-              <img src="/img/{selectCafe.thumbImg}" alt="" />
+              <img src={selectCafe.thumbImg} alt="" />
             </div>
           ) : null}
         <div className="storeLine" />
@@ -66,83 +96,60 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
         {cafeInfo('store_call', '/img/phone.png', 'call', selectCafe.tel)}
         {cafeInfo('store_time', '/img/clock.png', 'time', selectCafe.operTime)}
         {cafeInfo('store_type', '/img/store.png', 'type', selectCafe.tagName)}
-        {cafeInfo('store_info', '/img/bean.png', 'info', "가게 정보 넣을 곳")}
+        {cafeInfo('store_info', '/img/bean.png', 'info', selectCafe.cafeInfo)}
         <div className="store_review">
             <img src="/img/review.png" alt=""/>
             <div className="review">리뷰</div>
+            {reviewList.length > 0 ? (
+            <Table hover>
+              <div className="maplistbox">
+                <tbody>
+                  <br />
+                  {reviewList.map((review, index) => (
+
+                  <tr key={index}>
+                    <Link to={`/reviewDetail/${review.reviewNo}`} state={{ reviewNo: `${review.reviewNo}` }} >
+                    <div className="map-list">
+                      <img className="map-listImg" src={review.imageUrl} alt="" />
+                      <div className="map-listTitle">
+                      {review.title}
+                        <div className="map-writeInfo">{review.writer}</div>
+                      </div>
+
+                      <div className="map-dateTime">{review.datetime}</div>
+                    </div>
+                    </Link>
+                  </tr>
+                  ))}
+                  <tr></tr>
+                </tbody>
+              </div>
+              <div className="pagination-container">
+                  <Pagination>
+                    <PaginationItem disabled={currentPage === 1}>
+                      <PaginationLink previous onClick={prevPage} />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, index) => (
+                        <PaginationItem key={index} active={currentPage === index + 1}>
+                          <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                            {index + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                    <PaginationItem disabled={currentPage === totalPages}>
+                      <PaginationLink next onClick={nextPage} />
+                    </PaginationItem>
+                  </Pagination>
+              </div>
+            </Table>
+             ) : (
+              <div>등록된 리뷰가 없습니다.</div>
+            )}
         </div>
       </div>
     )}
   </div>
   )};
         
-      {/* <Table hover>
-        <div className="maplistbox">
-          <tbody>
-            <br />
-            <tr>
-              <div className="map-list">
-                <img className="map-listImg" src="/img/우드슬랩2.png" alt="" />
-                <div className="map-listTitle">
-                  따뜻한 느낌의 책 읽기 좋은 카페
-                  <div className="map-writeInfo">선진언니바보</div>
-                </div>
-
-                <div className="map-dateTime">2023.11.15 11:01</div>
-              </div>
-            </tr>
-            <tr>
-              <div className="map-list">
-                <img className="map-listImg" src="/img/우드슬랩2.png" alt="" />
-                <div className="map-listTitle">
-                  따뜻한 느낌의 책 읽기 좋은 카페
-                  <div className="map-writeInfo">선진언니바보</div>
-                </div>
-
-                <div className="map-dateTime">2023.11.15 11:01</div>
-              </div>
-            </tr>
-            <tr>
-              <div className="map-list">
-                <img className="map-listImg" src="/img/우드슬랩2.png" alt="" />
-                <div className="map-listTitle">
-                  따뜻한 느낌의 책 읽기 좋은 카페
-                  <div className="map-writeInfo">선진언니바보</div>
-                </div>
-
-                <div className="map-dateTime">2023.11.15 11:01</div>
-              </div>
-            </tr>
-            <tr>
-              <div className="map-list">
-                <img className="map-listImg" src="/img/우드슬랩2.png" alt="" />
-                <div className="map-listTitle">
-                  따뜻한 느낌의 책 읽기 좋은 카페
-                  <div className="map-writeInfo">선진언니바보</div>
-                </div>
-
-                <div className="map-dateTime">2023.11.15 11:01</div>
-              </div>
-            </tr>
-            <tr>
-              <div className="map-list">
-                <img className="map-listImg" src="/img/우드슬랩2.png" alt="" />
-                <div className="map-listTitle">
-                  따뜻한 느낌의 책 읽기 좋은 카페
-                  <div className="map-writeInfo">선진언니바보</div>
-                </div>
-
-                <div className="map-dateTime">2023.11.15 11:01</div>
-              </div>
-            </tr>
-            <tr></tr>
-          </tbody>
-        </div>
-        <div className="pagination">
-          <div className="prevPage">&lt;</div>
-          <div className="page">1 2 3 맵사용해~</div>
-          <div className="nextPage">&gt;</div>
-        </div>
-      </Table> */}
 
 export default MapCafeInfo;
