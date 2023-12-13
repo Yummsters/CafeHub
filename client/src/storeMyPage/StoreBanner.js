@@ -3,6 +3,7 @@ import {useSelector} from 'react-redux';
 import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
@@ -20,6 +21,19 @@ const StoreBanner = () => {
     // 광고 승인 여부도 같이 확인해서 T/F 결정
     const [isAdExist, setIsAdExist] = useState(false); // 광고 신청 여부 조회
     const [isApprove, setIsApprove] = useState(false); // 광고 승인 여부 조회
+
+    // swal
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 900,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
 
     // 초기화 버튼, 광고 신청 / 취소 버튼 등 현재 isApprove와 isAdExist에 따른 결과 산출이 잘 되고 있는지 확인 필요
     useEffect(()=>{
@@ -113,13 +127,25 @@ const StoreBanner = () => {
             console.log(res);
             console.log(res.data);
             setIsAdExist(true); 
-                setIsApprove(false);
-                setCafeAd(res.data);
-                descrInput.disabled = true;
-                menuInput.disabled = true;
+            setIsApprove(false);
+            setCafeAd(res.data);
+            descrInput.disabled = true;
+            menuInput.disabled = true;
+
+            Toast.fire({
+                icon: 'success',
+                title: '광고 신청이 완료되었습니다'
+            }).then(()=>{
+                location.reload();
+            })
+            
         })
         .catch(err=>{
             console.log(err);
+            Toast.fire({
+                icon: 'error',
+                title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
+            })
         })
     }
 
