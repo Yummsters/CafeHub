@@ -1,10 +1,11 @@
 package com.yummsters.cafehub.domain.member.service;
 
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
+import com.yummsters.cafehub.domain.member.dto.SearchPwDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
 import com.yummsters.cafehub.domain.member.entity.Social;
@@ -141,10 +142,32 @@ public class MemberServiceImpl implements MemberService{
     // 선진 part ----------------------------------------------------------
     // 아이디 찾기
     @Override
-    public String searchId(String name, String phone) throws Exception {
+    public Member searchId(String name, String phone) throws Exception {
         Member member = memberRepository.findByNameAndPhone(name, phone);
         if(member == null) throw new Exception("회원정보가 일치하지 않습니다.");
-        return member.getId();
+        return member;
+    }
+
+    // 비밀번호 찾기
+    @Override
+    public Member searchPw(String id, String phone) throws Exception {
+        Member member = memberRepository.findById(id);
+        if (member != null && member.getPhone().equals(phone)) {
+            return member;
+        } else {
+            throw new Exception("회원정보가 일치하지 않습니다.");
+        }
+    }
+    // 비밀번호 재설정
+    @Override
+    public void changePw(String id, String newPassword) throws Exception {
+        Member member = memberRepository.findById(id);
+        if(member != null) {
+            member.changePassword(bCryptPasswordEncoder.encode(newPassword));
+            memberRepository.save(member);
+        } else {
+            throw new Exception("회원정보가 일치하지 않습니다.");
+        }
     }
     
 

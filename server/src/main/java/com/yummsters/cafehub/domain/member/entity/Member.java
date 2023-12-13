@@ -56,10 +56,10 @@ public class Member {
     @CreatedDate
     private LocalDateTime regDate;
 
-    @OneToMany(mappedBy = "member")  @JsonIgnore
+    @OneToMany(mappedBy = "member") @JsonIgnore
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member") @JsonIgnore
     private List<ReviewAuth> reviewAuths;
 
    /* @OneToOne(mappedBy="member")
@@ -75,10 +75,12 @@ public class Member {
     public void changeStatus(boolean status) {
         this.status = status;
     }
-    
 
     public void setCafeno(Integer cafeno) {
         this.cafeno = cafeno;
     }
+
+    public void changePassword(String newPassword) { this.password = newPassword; }
+
 
 }
