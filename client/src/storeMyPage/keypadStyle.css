@@ -45,7 +45,7 @@
     background-color: #007355;
     color:white;
 }
-.keypad:hover{
+.keypad-confirm:hover{
     background-color: #007355;
     color:white;
 }
@@ -60,6 +60,16 @@
     width: 35%;
     height: 13vh;
     font-size: 60px;
+    background-color: #007355;
+    border-radius: 20px;
+    border : none;
+  }
+
+  .choiceButton-container button:hover {
+    background-color: #F59A23;
+    border-radius: 20px;
+    border : none;
+
   }
 
   .choicePoint-title{
@@ -92,4 +102,3 @@
     text-align: center;
     border: none;
   }
-    

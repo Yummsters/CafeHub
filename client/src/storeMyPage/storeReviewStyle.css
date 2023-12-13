@@ -37,6 +37,8 @@ tbody td {
     margin-left: 0px;
     vertical-align: middle;
     border-radius: 10px;
+    width: 80px;
+    height: 80px;
   }
   
   .listMiniTitle {
@@ -48,7 +50,7 @@ tbody td {
 
   .reviewLikeCount {
     text-align: right;
-    margin-right: 30px;
+    margin-right: 10px;
   }
   
   .reviewUser, .reviewLikeCount, .dateTime {
@@ -87,36 +89,30 @@ tbody td {
 
 .storeReview-pagination div {
     margin: 0 10px;
-    font-weight: bo
 }
 
 .storeReview-Button {
-  margin: 10px;
   border: none;
-  color: #F59A23;
-  background: none;
-  font-weight: bolder;
   cursor: pointer;    /* 커서를 포인터로 변경하여 클릭 가능함을 나타냄 */
   transition: background-color 0.3s ease;  /* hover 효과를 부드럽게 만듦 */
+  height: 33px;
+  color :black !important;
 }
 
-.storeReview-Button:hover {
-  color :#007355;
-  background: none;
+.storeReview-Button.current-page {
+  color: #F59A23 !important;
 }
 
 .storeReview-Button:active {
-  margin: 10px;
   border: none;
-  color: #007355 !important;
-  background: none !important;
   background-color: none !important;
+  color :#F59A23  !important;
+  height: 33px;
 }
 
 .storeReview-Button:disabled {
-  margin: 10px;
   border: none;
-  color: #D9D9D9;
+  color: #D9D9D9 !important;
   background: none;
   font-weight: bolder;
 }
@@ -126,7 +122,6 @@ tbody td {
   bottom : 10px;
   transform: translateX(-50%);
   left: 50%;
-
 }
 
 

@@ -37,6 +37,7 @@ const ChoicePoint = () => {
             }
         })
         .then(res=>{
+            console.log(res);
             Toast.fire({
                 icon: 'success',
                 title: '보유 커피콩 : '+res.data
@@ -45,6 +46,7 @@ const ChoicePoint = () => {
             })
         })
         .catch(err=>{
+            console.log(err);
             Toast.fire({
                 icon: 'error',
                 title: err.name
@@ -55,11 +57,46 @@ const ChoicePoint = () => {
     // 포인트 사용 >> 사용 포인트 입력페이지 이동
     const pointUse = (e) =>{
         e.preventDefault();
-        navigate("/usePoint/"+memNo);
+
+       // 회원 포인트 조회 후 저장
+       axios.get(`http://localhost:8080/point/${memNo}`,
+       {
+           headers : {
+               Authorization : accessToken
+           }
+       })
+       .then(res=>{
+           const point = res.data;
+
+            if(point === 0){
+                Toast.fire({
+                    icon: 'error',
+                    title: '사용가능한 포인트가 없습니다'
+                })
+            }else{
+                navigate("/usePoint/"+memNo);
+            }
+       })
+       .catch(err =>{
+           console.log(err);
+           Toast.fire({
+            icon: 'error',
+            title: '현재 포인트 사용이 불가능합니다 관리자에게 문의하세요'
+        })
+       })
+
+       
+    }
+
+    const backPoint = () =>{
+        window.location.href="/storeInfo"
     }
 
     return(
         <div className="choicePoint-container">
+            <div className="closeBtn">
+                <img onClick={backPoint} src='/img/X.png' />
+             </div>
             <div className="choicePoint-title">커피콩 적립/사용</div>
             <div className="choiceButton-container">
                 <Button className="choicePoint-save" onClick={pointSave}> 적립 </Button>

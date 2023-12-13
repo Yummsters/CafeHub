@@ -120,7 +120,6 @@
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    align-items: center;
   }
   
   .modalContent {
@@ -145,14 +144,19 @@
   
   .error-message {
     color: red;
-    margin-top: 10px;
+    margin-top: 20px;
+  }
+
+  .error-message-blank{
+    color: white;
+    margin-top: 20px;
   }
   
   /* 추가 버튼 컨테이너 스타일 */
   .buttonContainer {
     display: flex;
     justify-content: space-between;
-    margin-top: 50px;
+    margin-top: 10px;
     width: 500px;
   }
   
@@ -175,15 +179,19 @@
     font-size: 15px;
   }
 
+
   .checkPw input {
     float: left;
-    margin-left: 20px;
     margin-bottom: 10px;
     width: 460px;
     border: none;
     background-color: #D3D3D3;
     outline: none;
-    font-size: 15px;
+    font-size: 20px;
+  }
+
+  .checkPw-text{
+    float: left;
   }
 
   .cancelBtn {

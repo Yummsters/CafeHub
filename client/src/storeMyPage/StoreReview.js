@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Pagination, Button, ButtonGroup } from "reactstrap";
+import { Table, Pagination, Button, ButtonGroup,PaginationLink } from "reactstrap";
 import {useSelector} from 'react-redux';
 import './storeReviewStyle.css';
 import axios from 'axios';
@@ -27,6 +27,7 @@ const StoreReview = () => {
     // 페이지 조회
     const getPage = (page) => {
         setPage(page);
+        setCurPage(page);
         axios.get(`http://localhost:8080/review/storeList/${cafeNo}?page=${page}&&size=5`,
         {
             headers : {
@@ -34,7 +35,6 @@ const StoreReview = () => {
             }
         })
         .then(res=>{
-
             const list = res.data.data;
             const resPageInfo = res.data.pageInfo;
 
@@ -51,6 +51,10 @@ const StoreReview = () => {
         })
     }
 
+    const reviewDetail = (reviewNo) =>{
+        window.location.href = '/reviewDetail/'+reviewNo;
+    }
+
     return (
         <div className='storeReview-container'>
             <StoreSideTab/>
@@ -61,8 +65,8 @@ const StoreReview = () => {
                         <tbody>
                             {reviewList.length != 0 && reviewList.map(list=>{
                                 return(
-                                    <tr  key={list.reviewNo}>
-                                        <th scope="row" style={{width : "150px"}}> <img className='listImg' src='/img/Ad1.png' alt=''/></th>
+                                    <tr  key={list.reviewNo} onClick={()=>{reviewDetail(list.reviewNo)}}>
+                                        <th scope="row" style={{width : "150px"}}> <img className='listImg' src = {`http://localhost:8080/thumbImg/${list.thumbImg}`}  alt=''/></th>
                                         <td colSpan={8}><div className='listMiniTitle'>{list.title}</div>
                                             <div className='reviewUser'>{list.nickName}</div></td>
                                         <td colSpan={4}><div className='reviewLikeCount'>추천 {list.likeCount}</div>
@@ -74,49 +78,50 @@ const StoreReview = () => {
                     </Table>
                 </div>
                 <Pagination className="storeReview-Page">
-                    <ButtonGroup>
-                    <Button 
+                    <PaginationLink 
                     className='storeReview-Button'
                         onClick={() => {getPage(page-1); setCurPage(page-2);}} 
                         disabled={page===1}>
                         &lt;
-                    </Button>  
-                    <Button 
-                     className='storeReview-Button'
+                    </PaginationLink>  
+                    <PaginationLink 
+                         className={`storeReview-Button ${firstNum === page ? 'current-page' : ''}`}
                         onClick={() => getPage(firstNum)}
                         aria-current={page === firstNum ? "page" : null}>
                         {firstNum}
-                    </Button>
+                    </PaginationLink>
                     {Array(total).fill().map((_, i) =>{
+                        
                     if(i <=2){
+                        let pageNum = firstNum+1+i;
                         return (
-                            <Button
-                            className='storeReview-Button'
-                                key={i+1} 
+                            <PaginationLink
+                            className={`storeReview-Button ${pageNum === page ? 'current-page' : ''}`}
+                            key={i+1} 
                                 onClick={() => {getPage(firstNum+1+i)}}
                                 aria-current={page === firstNum+1+i ? "page" : null}>
                                 {firstNum+1+i}
-                            </Button>
+                            </PaginationLink>
                         )
                     }else if(i>=3){
+                        let pageNum = lastNum;
                          return (
-                            <Button
-                            className='storeReview-Button'
-                                key ={i+1}
+                            <PaginationLink
+                            className={`storeReview-Button ${pageNum === page ? 'current-page' : ''}`}
+                            key ={i+1}
                                 onClick={() => getPage(lastNum)}
                                 aria-current={page === lastNum ? "page" : null}>
                                 {lastNum}
-                            </Button>
+                            </PaginationLink>
                          )  
                         }
                     })}
-                    <Button 
+                    <PaginationLink 
                       className='storeReview-Button'
                         onClick={() => {getPage(page+1); setCurPage(page);}} 
                         disabled={page >=pageInfo.totalPages}>
                         &gt;
-                    </Button>
-                    </ButtonGroup>  
+                    </PaginationLink>
                 </Pagination>
             </div>
         </div>

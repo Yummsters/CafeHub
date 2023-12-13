@@ -22,6 +22,8 @@ const StoreBanner = () => {
     const [isAdExist, setIsAdExist] = useState(false); // 광고 신청 여부 조회
     const [isApprove, setIsApprove] = useState(false); // 광고 승인 여부 조회
 
+    const submitCheck = thumbImg && cafeAd.description !=='' && cafeAd.menu !==''; 
+
     // swal
     const Toast = Swal.mixin({
         toast: true,
@@ -82,9 +84,6 @@ const StoreBanner = () => {
             setThumbImg(file);
             const thumbUrl = URL.createObjectURL(file);
             setFileUrl(thumbUrl);
-
-            console.log(thumbImg);
-            console.log(fileUrl);
         }
     };
 
@@ -103,50 +102,58 @@ const StoreBanner = () => {
         e.preventDefault();
         setCafeAd(prevState => ({ ...prevState, description: '', menu: ''}));
         setThumbImg(null);
+        setFileUrl(null);
     };
 
     const submitAd = (e) =>{
         e.preventDefault();
 
-        var descrInput = document.getElementById("description");
-        var menuInput = document.getElementById("menu");
+        if(submitCheck){
+            var descrInput = document.getElementById("description");
+            var menuInput = document.getElementById("menu");
 
-        const formData = new FormData();
-        formData.append("description",cafeAd.description);
-        formData.append("menu", cafeAd.menu);
-        formData.append("thumbImg", thumbImg);
+            const formData = new FormData();
+            formData.append("description",cafeAd.description);
+            formData.append("menu", cafeAd.menu);
+            formData.append("thumbImg", thumbImg);
 
-        axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
-        {
-            headers : {
-                Authorization : accessToken,
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-        .then(res=>{
-            console.log(res);
-            console.log(res.data);
-            setIsAdExist(true); 
-            setIsApprove(false);
-            setCafeAd(res.data);
-            descrInput.disabled = true;
-            menuInput.disabled = true;
-
-            Toast.fire({
-                icon: 'success',
-                title: '광고 신청이 완료되었습니다'
-            }).then(()=>{
-                window.location.reload();
+            axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
+            {
+                headers : {
+                    Authorization : accessToken,
+                    'Content-Type': 'multipart/form-data'
+                }
             })
-            
-        })
-        .catch(err=>{
-            console.log(err);
+            .then(res=>{
+                console.log(res);
+                console.log(res.data);
+                setIsAdExist(true); 
+                setIsApprove(false);
+                setCafeAd(res.data);
+                descrInput.disabled = true;
+                menuInput.disabled = true;
+
+                Toast.fire({
+                    icon: 'success',
+                    title: '광고 신청이 완료되었습니다'
+                }).then(()=>{
+                    window.location.reload();
+                })
+                
+            })
+            .catch(err=>{
+                console.log(err);
+                Toast.fire({
+                    icon: 'error',
+                    title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
+                })
+            })
+        }else{
             Toast.fire({
                 icon: 'error',
-                title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
+                title: '이미지 / 설명 / 메뉴를 모두 입력하세요'
             })
-        })
+        }
     }
 
     return (
@@ -162,9 +169,7 @@ const StoreBanner = () => {
                             style={{ display: 'none' }}
                             ref={inputRef}
                         />
-                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/upload/${fileNum}`})`}}>
-                            {<img src = {`http://localhost:8080/upload/${fileNum}`} />}
-                            {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}>                            {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
                             <div className='storeBanner-title'>{cafe.title},</div>
