@@ -1,5 +1,7 @@
 package com.yummsters.cafehub.domain.member.service;
 
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
 import com.yummsters.cafehub.domain.member.entity.Social;
@@ -16,6 +18,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PointRepository pointRepository;
+    private final CafeRepository cafeRepository;
 
     // 아이디 중복 체크
     @Override
@@ -89,10 +92,45 @@ public class MemberServiceImpl implements MemberService{
         if(!match){
             return false;
         }
-        // 추후 사장 회원의 경우 커피콩 개수에 따른 Exception 발생 필요
-        member.changeStatus(false);
+
+        // 사용자 회원(포인트 삭제 및 회원 정보 삭제)
+        if(member.getMemberType().equals(MemberType.USER)){
+            deleteUser(member);
+        }
+
+        // 사장 회원(포인트 확인 후 삭제, 카페 상태 변경, 회원 정보 삭제)
+        if(member.getMemberType().equals(MemberType.STORE)){
+            deleteStore(member);
+        }
+
+        member.deleteMember();
         memberRepository.save(member);
         return true;
+    }
+
+    // 사용자 회원 탈퇴 로직
+    public void deleteUser(Member member){
+        Point point = pointRepository.findByMember_MemNo(member.getMemNo());
+        point.deletePoint();
+        pointRepository.save(point);
+    }
+
+    // 사장 회원 탈퇴 로직
+    public void deleteStore(Member member) throws Exception{
+        Point point = pointRepository.findByMember_MemNo(member.getMemNo());
+        if(point.getPointCount() >= 100){
+            throw new Exception("포인트 정산 후 탈퇴가 가능합니다.");
+        }else{
+            if(point.getRefPointCount() != 0){
+                throw new Exception("정산 대기중인 포인트가 있습니다. 포인트 정산 후 탈퇴가 가능합니다.");
+            }
+            point.deletePoint();
+            pointRepository.save(point);
+        }
+
+        Cafe cafe = cafeRepository.findByCafeNo(member.getCafe().getCafeNo());
+        cafe.deleteCafe();
+        cafeRepository.save(cafe);
     }
 
     // 소셜 회원탈퇴
@@ -110,7 +148,9 @@ public class MemberServiceImpl implements MemberService{
         if(!match){
             return false;
         }
-        member.changeStatus(false);
+
+        deleteUser(member);
+        member.deleteMember();
         memberRepository.save(member);
         return true;
     }
