@@ -6,19 +6,16 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import ManagerSideTab from '../components/ManagerSideTab';
 
-
 const Manager2 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
     const [pointList, setPointList] = useState([]);
     const [pageInfo, setPageInfo] = useState({page : 1, size : 5, totalElements : 1, totalPages : 1});
-    const [page, setPage] = useState(sessionStorage.getItem('page') || 1);
+    const [page, setPage] = useState(1);
     const [curPage, setCurPage] = useState(page);
 
     let firstNum = curPage - (curPage % 5) + 1;
     let lastNum = curPage - (curPage % 5) + 5;
-
-    
 
     // swal
     const Toast = Swal.mixin({
@@ -35,14 +32,12 @@ const Manager2 = () => {
 
     useEffect(()=>{
         getPage(page);
-        setPage(sessionStorage.getItem('page') || 1);
-    },[page])
+    },[])
     
 
     // 페이지 조회
     const getPage = (page) => {
         setPage(page);
-        sessionStorage.setItem('page', page);
         axios.get(`http://localhost:8080/point/list?page=${page}&&size=5`,
         {
             headers : {
