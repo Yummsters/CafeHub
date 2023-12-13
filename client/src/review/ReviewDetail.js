@@ -20,18 +20,22 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [replyLike, setReplyLike] = useState(false);
   const [replyLikeCount, setReplyLikeCount] = useState(0);
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
+
   const { state } = useLocation();
   const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
   const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
 
   const [pageInfo, setPageInfo] = useState({
-    currentPage: 1,
-    repliesPerPage: 10,
-    startPage: 1,
-    endPage: 1,
-    totalPages: 1
-  })
+
+    currentPage:1,
+    repliesPerPage:10,
+    startPage:1,
+    endPage:1,
+    totalPages:1
+})
+
   const navigate = useNavigate();
+
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -44,6 +48,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       title: title || '로그인이 필요합니다'
     })
   };
+
+  const navigate = useNavigate();
+  const ReviewModify = () => {
+    navigate(`/reviewmodify/${review.reviewNo}`);
+  }
 
   const ReviewDelete = async (reviewNo) => {
     try {
@@ -194,6 +203,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     setSelectedReply(reply);
     setShowReply(!showReply);
   }
+  
 
   const ReplyDelete = async (replyNo) => {
     try {
@@ -262,6 +272,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     if (memNo !== undefined) {
       axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
         .then((res) => {
+          
           setLike(res.data.toggleLike);
           setLikeCount(res.data.likeCount);
           console.log(res.data);
@@ -327,11 +338,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     axios
       .get(`http://localhost:8080/review/${reviewNo}`, { headers: { memNo } })
       .then((res) => {
+        
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
-        // console.log(res.data);
+       
+         console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -388,11 +401,21 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               <><div className="starNheart">
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
-              </div><div className="detailBtnBox">
-                  <div className="Gbtn">수정</div>
+              </div>
+              
+              {memNo == review.memNo && (
+                
+              <div className="detailBtnBox">
+                
+                  <div className="Gbtn" onClick={ReviewModify}>수정</div>
 
-                  <div className="Obtn" onClick={handleReviewDelete}>삭제</div>
-                </div><div className="detailLine" />
+
+                  <div className="Obtn"  onClick={handleReviewDelete}>삭제</div>
+                </div>
+                
+                )}
+                <div className="detailLine" />
+
 
 
                 {/* 댓글 */}

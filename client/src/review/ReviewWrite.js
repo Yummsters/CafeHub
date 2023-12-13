@@ -271,7 +271,7 @@ const ReviewWrite = () => {
                         className='custom-editor'
                         ref={editorRef}
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
-                        placeholder='Please Enter Text.'
+                       // placeholder='Please Enter Text.'
                         previewStyle='vertical'
                         height='500px'
                         initialEditType='wysiwyg'
