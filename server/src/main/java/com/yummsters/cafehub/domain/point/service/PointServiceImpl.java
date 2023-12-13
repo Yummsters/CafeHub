@@ -67,11 +67,11 @@ public class PointServiceImpl implements PointService{
         // 사장 포인트로 전환
         Integer cafeMemNo = memberService.storeSearch(cafeNo).getMemNo();
         Point storePoint = checkPoint(cafeMemNo);
-        storePoint.plusPoint(usePoint/100);
+        storePoint.plusStorePoint(usePoint/100);
 
         // 리뷰 권한 - 테이블 생성 후 로직 작성 예정
         reviewAuthPermmit(memNo, cafeNo);
-        return storePoint.getPointCount();
+        return memberPoint.getPointCount();
     }
 
     // 사장 포인트 정산
