@@ -40,6 +40,6 @@ public class CafeAdServiceImpl implements CafeAdService{
         }else{
             throw new Exception("광고 신청에 실패하였습니다");
         }
-        return searchCafeAd(cafeAd.getCafeAdNo());
+        return cafeAdRepository.findByCafe_CafeNo(cafeAd.getCafeAdNo());
     }
 }
