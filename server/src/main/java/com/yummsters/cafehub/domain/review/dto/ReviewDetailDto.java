@@ -17,6 +17,7 @@ public class ReviewDetailDto {
     private List<String> tagNames;
     private Integer likeCount;
     private LocalDateTime regDate;
+    private String thumbImg;
 
     // Member 정보
     private Integer memNo;
@@ -27,4 +28,10 @@ public class ReviewDetailDto {
     private String cafeName;  // Cafe의 이름
     private String lat;
     private String lng;
+    
+    public void setThumbImg(String thumbImg) {
+        this.thumbImg = thumbImg;
+    }
+   
+   
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import java.util.stream.Collectors;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
 import com.yummsters.cafehub.domain.review.dto.ReviewListRes;
 import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,8 @@ import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 
 import org.springframework.web.bind.annotation.*;
 
+
+import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -91,7 +95,17 @@ public class ReviewController {
 	            return ResponseEntity.badRequest().build();
 	        }
 	    }
-
+		
+		@GetMapping("/thumbImg/{thumbImg}")
+		public void thumbImgView(@PathVariable String thumbImg, HttpServletResponse response) {
+		    try {
+		       
+		        Integer fileNum = Integer.parseInt(thumbImg);
+		        reviewService.readImage(fileNum, response.getOutputStream());
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
 
 
 	// 선진 part ----------------------------------------------------------------------
