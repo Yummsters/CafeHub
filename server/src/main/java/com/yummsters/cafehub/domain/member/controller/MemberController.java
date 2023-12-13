@@ -2,14 +2,20 @@ package com.yummsters.cafehub.domain.member.controller;
 
 import com.yummsters.cafehub.domain.member.dto.*;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.domain.member.service.MemberService;
+import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -169,14 +175,26 @@ public class MemberController {
 
 
     // 수빈 part ----------------------------------------------------------------
-    // 사용자 회원가입
+    // 사장님 회원가입
+    
     @PostMapping("/signUpStore")
-    public ResponseEntity<Object> signUpStore(@RequestBody SignUpReqDto requestDto){
+    public ResponseEntity<Object> existStoreMember(@RequestBody SignUpReqDto requestDto) {
         Member member = mapper.signUpReqDtoToMember(requestDto);
-        try{
+        try {
             member = memberService.existStoreMember(member);
             SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);
             return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PostMapping("/cafe/store")
+    public ResponseEntity<Object> signUpStore(@ModelAttribute SignUpStoreDto signUpStore, @RequestParam("file") List<MultipartFile> files){       
+    	try{
+            Integer cafeNo = memberService.existStore(signUpStore, files);
+            return new ResponseEntity<>(cafeNo, HttpStatus.OK);
         }catch (Exception e){
         	e.printStackTrace();
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
