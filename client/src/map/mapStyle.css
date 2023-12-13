@@ -1,193 +1,136 @@
-
 .Map {
-    width: 100%;
-    margin: 0 auto;
+  width: 100%;
+  margin: 0 auto;
 }
-
 #mapView {
-    width:100%;
-    /* height: 550px; */
-    height: 800px;
-    /* flex: 3; */
+  width: 100%;
+  height: 800px;
 }
 .map_box {
-    flex: 1;
-    border-radius: 0 10px 10px 0;
-    border: 3px solid #007355;
-    width: 600px;
-    height: 800px;
-    /* height: 550px; */
-    overflow-y: scroll;
+  flex: 1;
+  border-radius: 0 10px 10px 0;
+  border: 3px solid #007355;
+  width: 600px;
+  height: 800px;
+  overflow-y: scroll;
 }
 
 .x {
-    margin-top: 2%;
-    width: 30px;
-    height: 30px;
-    margin-left: 93%;
+  margin-top: 2%;
+  width: 30px;
+  height: 30px;
+  margin-left: 93%;
 }
 
 .storebox {
-    display: flex;
-    font-size: 30px;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  font-size: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
+
 .storebox > img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
 }
 
-.store_name{
-    position:absolute;
-    bottom: 5px;
+.storeImg {
+  margin: 30px auto;
+  border: 3px solid #007355;
+  border-radius: 10px;
+  width: 250px;
+  height: auto;
+  overflow: hidden;
 }
 
-.storeImag {
-    margin-top: 5%;
-    margin-left: 25%;
-    width: 294px;
-    height: 267px;
-    border-radius: 10px;
-    border: 3px solid #007355;
+.storeImg img {
+  width: 100%;
+  height: 100%;
 }
 
 .storeLine {
-    margin-top:5%;
-    margin-left:20%;
-    width: 370px;
-    height: 3px;
-    background-color: #007355;
-}
-.store_address{
-    position: relative;
-    margin-left: 20%;
-    margin-top: 5%;
-    font-size: 20px;
-}
-.address{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.store_call{
-    position: relative;
-    margin-left: 20%;
-    margin-top: 3%;
-    font-size: 20px; 
-    
-}
-.call{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.store_time{
-    position: relative;
-    margin-left: 20%;
-    margin-top: 3%;
-    font-size: 20px; 
+  margin: 20px auto;
+  width: 400px;
+  height: 3px;
+  background-color: #007355;
 }
 
-.time{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.store_type{
-    position: relative;
-    margin-left: 20%;
-    margin-top: 3%;
-    font-size: 20px; 
+.store_content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 25%;
+  margin-top: 30px;
 }
 
-.type{
-    position:absolute;
-    top:10px;
-    left:50px;
+.store_content .infoContentBox {
+  display: flex;
+  align-items: center;
+  justify-content: left;
 }
 
-.store_info{
-    position:relative;
-    margin-top: 4%;
-    margin-left: 20%;
-    font-size: 20px; 
+.store_content img {
+  display: flex;
+  flex-direction: column;
+  margin: 5px 20px 0 0;
+  padding: 5px 0;
 }
 
-.info{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.map_storemap{
-    margin-top: 5%;
-    margin-left: 11%;
-    width: 490px;
-    height: 490px;
-    border-radius: 10px;
-    border: 3px solid #F59A23;
+.store_content .infoName {
+  font-size: 20px;
 }
 
-.store_review{
-    position: relative;
-    margin-left: 12%;
-    margin-top: 10%;
-    font-size: 20px; 
-  
-}
-.review{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.maplistbox{
-    margin-left: 10%;
-    width: 490px;
+.store_review {
+    margin: 10%;
 }
 
+.store_review .review img {
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+}
 
- .map-list{
+.store_review .review {
+    font-size: 25px;
+}
+
+  .map-list {
+    display: flex;
+    align-items: center;    
     height: 90px;
     width: 490px;
-    display: flex;
- }
+  }
 
-    .map-listImg {
-       
-        margin-right: 30px;
-        margin-top:10px;
-      margin-left: 0px;
-      vertical-align: middle;
-      border-radius: 10px;
-      width:65px;
-      height: 65px;
-    }
-    .map-listTitle
-    {  margin-top: 2%;
-        font-size: 17px;
-        font-weight: bold;
-       width: 60%;
-     
-      }
-
-    .map-writeInfo {
-    
-      align-items: center;
-      font-size: 12px; /* 원하는 텍스트 크기로 설정 */
-     margin-top: 9%;
+  .map-listImg {
+    border-radius: 10px;
+    width: 70px;
+    height: 70px;
   }
   
-  .map-dateTime {
-     margin-top: 13%;
-       width: 20%;
-      text-align: right; /* 우측 정렬 설정 */
-      font-size: 10px; /* 원하는 텍스트 크기로 설정 */
-      
+  .map-listTitle {
+    margin-top: 2%;
+    font-size: 17px;
+    font-weight: bold;
+    flex: 1;
   }
-  
-  /* .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: -20px;
-  } */
+
+.map-writeInfo {
+  align-items: center;
+  font-size: 15px; 
+  margin-top: 5%;
+}
+
+.map-dateTime {
+  margin-top: 6%;
+  margin-right: 10px;
+  width: 25%;
+  text-align: right;
+  font-size: 15px;
+}
+
+.noReviewList {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 50px;
+}

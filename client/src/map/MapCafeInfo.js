@@ -12,11 +12,11 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
   const [totalPages, setTotalPages] = useState(1);
   
   // null이 아닌 정보만 띄울 수 있게 만들기
-  const cafeInfo = (name, src, col, text) => {
+  const cafeInfo = (src, text) => {
       return text !== null && text !== "" ? (
-        <div className={name}>
+        <div className="infoContentBox">
           <img src={src} alt="" />
-          <div className={col}>{text}</div>
+          <div className="infoName">{text}</div>
         </div>
       ) : null;
     };
@@ -85,38 +85,40 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
           <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} />
           <span>{selectCafe.cafeName}</span>
         </div>
-
+        
         {selectCafe.thumbImg !== null ? ( 
-            <div className="storeImag">
-              <img src={selectCafe.thumbImg} alt="" />
-            </div>
-          ) : null}
+          <div className="storeImg">
+            <img src={selectCafe.thumbImg} alt="" />
+          </div>
+        ) : null}
         <div className="storeLine" />
-        {cafeInfo('store_address', '/img/pin.png', 'address', selectCafe.address)}
-        {cafeInfo('store_call', '/img/phone.png', 'call', selectCafe.tel)}
-        {cafeInfo('store_time', '/img/clock.png', 'time', selectCafe.operTime)}
-        {cafeInfo('store_type', '/img/store.png', 'type', selectCafe.tagName)}
-        {cafeInfo('store_info', '/img/bean.png', 'info', selectCafe.cafeInfo)}
+        <div className="store_content">
+          {cafeInfo('/img/pin.png', selectCafe.address)}
+          {cafeInfo('/img/phone.png', selectCafe.tel)}
+          {cafeInfo('/img/clock.png', selectCafe.operTime)}
+          {cafeInfo('/img/store.png',selectCafe.tagName)}
+          {cafeInfo('/img/bean.png',selectCafe.cafeInfo)}
+        </div>
+
         <div className="store_review">
-            <img src="/img/review.png" alt=""/>
-            <div className="review">리뷰</div>
+            <div className="review"><img src="/img/review.png" alt=""/>리뷰</div>
+            
             {reviewList.length > 0 ? (
             <Table hover>
               <div className="maplistbox">
                 <tbody>
                   <br />
                   {reviewList.map((review, index) => (
-
                   <tr key={index}>
                     <Link to={`/reviewDetail/${review.reviewNo}`} state={{ reviewNo: `${review.reviewNo}` }} >
                     <div className="map-list">
-                      <img className="map-listImg" src={review.imageUrl} alt="" />
+                      <img className="map-listImg" src={review.thumbImg} alt="" />
                       <div className="map-listTitle">
                       {review.title}
-                        <div className="map-writeInfo">{review.writer}</div>
+                        <div className="map-writeInfo">{review.nickName}</div>
                       </div>
 
-                      <div className="map-dateTime">{review.datetime}</div>
+                      <div className="map-dateTime">{review.regDate}</div>
                     </div>
                     </Link>
                   </tr>
@@ -143,7 +145,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
               </div>
             </Table>
              ) : (
-              <div>등록된 리뷰가 없습니다.</div>
+              <div className="noReviewList">등록된 리뷰가 없습니다.</div>
             )}
         </div>
       </div>
