@@ -4,43 +4,12 @@ import StoreSideTab from '../components/StoreSideTab';
 
 const StoreUserInfo = () => {
 
-  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [pwInput, setPwInput] = useState('');
-  const [pwMatch, setPwMatch] = useState(true);
-  const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
-  const [social, setSocial] = useState(true);
   const [userInfo, setUserInfo] = useState({id:'sooba', name:'조수빈', email:'soobin@babo.com', nickname:'sooba', pw:'', newPw:''});
   const [editMode, setEditMode] = useState(false);
 
-  const checkPw = () => {
-    // 실제로는 서버에서 비밀번호를 확인하기
-    const userPw = 'user1234'; // 사용자의 실제 비밀번호
-    return pwInput === userPw;
-  }
-
-  const openWithdrawalModal = () => {
-    setIsWithdrawalModalOpen(true);
-    setPwInput('');
-    setPwMatch(true);
-    setWithdrawalConfirmed(false);
-  };
-
-  const closeWithdrawalModal = () => {
-    setIsWithdrawalModalOpen(false);
-  };
-
   const handleWithdrawal = () => {
-    // 비밀번호 확인 로직
-    const isPwCorrect = checkPw(); // 이 함수는 비밀번호 일치 여부를 반환하는 함수입니다.
-
-    if (isPwCorrect) {
-      // 탈퇴 처리 로직
-      setWithdrawalConfirmed(true);
-      // 여기에서 실제 탈퇴를 수행하거나 API 호출 등 수행
-    } else {
-      // 비밀번호가 일치하지 않을 때
-      setPwMatch(false);
-    }
+    window.location.href = '/storeClose';
   };
 
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
@@ -51,12 +20,10 @@ const StoreUserInfo = () => {
     setEditMode(false);
   };
 
-
   const inputChange = (e) => {
     const { name, value } = e.target;
     setUserInfo({ ...userInfo, [name]: value });
   }
-
 
   return (
     <div className='mypage'>
@@ -126,38 +93,8 @@ const StoreUserInfo = () => {
                     </div>
                 </div>
             </div>
-            <div className='resign'  onClick={openWithdrawalModal}>탈퇴</div>
+            <div className='resign'  onClick={handleWithdrawal}>탈퇴</div>
 
-            
-
-
-        {/* 탈퇴 모달 */}
-        {isWithdrawalModalOpen && (
-          <div className="modal-overlay" onClick={openWithdrawalModal}>
-            <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-              <img className="close-button" onClick={closeWithdrawalModal} src='/img/X.png' />
-
-              <p>정말 탈퇴를 하시겠습니까?</p>
-              <p>탈퇴할 경우, 작성한 리뷰와 댓글은 삭제되지 않습니다.</p>
-              <p>회원 정보는 삭제되고, 보유한 커피콩은 소멸됩니다.</p><br />
-              <div className='checkPw'>
-                <label>{social ? '비밀번호' : '이메일'} 확인</label><br />
-                <input
-                  type="password"
-                  value={pwInput}
-                  onChange={(e) => setPwInput(e.target.value)}
-                />
-              </div>
-              {!pwMatch && <p className="error-message">잘못된 {social ? '비밀번호' : '이메일'}입니다.</p>}
-
-              <div className="buttonContainer">
-                <button className='cancelBtn' onClick={closeWithdrawalModal}>취소</button>
-                <button className='withdrawBtn' onClick={handleWithdrawal}>탈퇴 신청</button>
-              </div>
-            </div>
-        
-          </div>
-        )}
       </div>
     </div>
   );

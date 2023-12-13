@@ -65,8 +65,16 @@ const Keypad = () =>{
        })
         
     }
+
+    const backPoint = () =>{
+        window.location.href="/storeInfo"
+    }
+    
     return(
         <div className="keypad-container">
+            <div className="closeBtn">
+                <img onClick={backPoint} src='/img/X.png' />
+             </div>
             <input className="keypadInput" type="text" id="phoneNum" name="phoneNum" style={{ height: '20vh' }} value={phone}/>
             <div className="keypadNum-section">
             <Container>

@@ -22,6 +22,7 @@ body, button, input{
     flex: 1;
     background: url(/public/img/SignUpUserImage.png);
     border-radius: 0 20px 20px 0;
+    background-size: cover;
 }
 
 .signUpUser-left-section{
@@ -57,15 +58,15 @@ body, button, input{
 
 /* 아이디/비밀번호 입력창 */
 .signUpUserInputDiv input{
-    border-radius: 4px;
-    border: 0px;
+    outline-style: none;
+    border : none;
     width:300px;
     font-size:20px;
 }
 
 .signUpUserInputDiv-phone input{
-    border-radius: 10px;
-    border: 0px;
+    outline-style: none;
+    border : none;
     width: 300px;
     font-size:20px;
 }

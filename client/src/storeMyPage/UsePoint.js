@@ -31,7 +31,7 @@ const UsePoint = () =>{
         .catch(err =>{
             console.log(err);
         })
-    })
+    },[])
 
     // swal
     const Toast = Swal.mixin({
@@ -84,6 +84,7 @@ const UsePoint = () =>{
                 }
             })
             .then(res=>{
+                console.log(res);
                 Toast.fire({
                     icon: 'success',
                     title: '보유 커피콩 : '+res.data
@@ -101,9 +102,16 @@ const UsePoint = () =>{
             })
         }
     }
+
+    const backPoint = () =>{
+        window.location.href="/storeInfo"
+    }
   
     return (
       <div className="useKeypad-container" style={{ height: '80vh' }}>
+        <div className="closeBtn">
+                <img onClick={backPoint} src='/img/X.png' />
+        </div>
         <p className='usePoint-public'>사용 가능 커피콩 : {myPoint*100}원 / {myPoint}개</p>
         <input className="keypadInput-usePoint" type="text" id="phone" name="phone" style={{ height: '20vh' }} value={point + "원"}/>
             <div className="keypadNum-section" style={{ height: '80vh' }}>

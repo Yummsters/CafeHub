@@ -8,7 +8,7 @@ import storage from "redux-persist/lib/storage";  //localStorage에 저장
 
 export const initialState = {
     isLogin:false,
-    member:{memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''},
+    member:{memNo:'', name : '', nickname : '', id : '', email:'', phone : '', social : '', status : true, memberType:''},
     accessToken:''
 }
 

@@ -215,7 +215,6 @@ const UserInfo = () => {
         {isWithdrawalModalOpen && (
           <div className="modal-overlay" onClick={openWithdrawalModal}>
             <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-              <img className="close-button" onClick={closeWithdrawalModal} src='/img/X.png' />
 
               <p>정말 탈퇴를 하시겠습니까?</p>
               <p>탈퇴할 경우, 작성한 리뷰와 댓글은 삭제되지 않습니다.</p>
@@ -224,14 +223,14 @@ const UserInfo = () => {
               { /* 자체 로그인 사용자 탈퇴 */
               social==="NORMAL" ? 
                <><div className='checkPw'>
-                  <label>비밀번호 확인</label><br />
+                  <label> <span className='checkPw-text'> 비밀번호 확인</span>
                   <input
                     type="password"
                     value={pwInput}
                     onChange={(e) => setPwInput(e.target.value)}
-                  />
+                  /></label>
                 </div>
-                {!pwMatch && <p className="error-message">잘못된 비밀번호입니다.</p>}
+                {!pwMatch ? <p className="error-message">잘못된 비밀번호입니다.</p> : <p className='error-message-blank'> &nbsp; </p>}
 
                 <div className="buttonContainer">
                   <button className='cancelBtn' onClick={closeWithdrawalModal}>취소</button>
@@ -240,14 +239,14 @@ const UserInfo = () => {
                 </>
               :/* 소셜 로그인 사용자 탈퇴 */
               <><div className='checkPw'>
-                  <label>이메일 확인</label><br />
+                  <label> <span className='checkPw-text'> 이메일 확인</span>
                   <input
                     type="text"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                  />
+                  /></label>
                 </div>
-                {!emailMatch && <p className="error-message">잘못된 이메일입니다.</p>}
+                {!emailMatch ? <p className="error-message">잘못된 이메일입니다.</p> : <p className='error-message-blank'> &nbsp; </p>}
 
                 <div className="buttonContainer">
                   <button className='cancelBtn' onClick={closeWithdrawalModal}>취소</button>
