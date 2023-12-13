@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.member.service;
 
+import com.yummsters.cafehub.domain.member.dto.SearchPwDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 
@@ -12,5 +13,7 @@ public interface MemberService {
     Boolean deleteSocialMember(Integer memNo, String email) throws  Exception;
     Member phoneSearch(String phone) throws Exception;
     Member storeSearch(Integer cafeNo) throws Exception;
-    String searchId(String name, String phone) throws Exception;
+    Member searchId(String name, String phone) throws Exception;
+    Member searchPw(String id, String phone) throws Exception;
+    void changePw(String id, String newPassword) throws Exception;
 }
