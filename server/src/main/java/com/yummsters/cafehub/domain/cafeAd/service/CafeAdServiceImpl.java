@@ -1,14 +1,18 @@
 package com.yummsters.cafehub.domain.cafeAd.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.cafeAd.repository.CafeAdRepository;
 import com.yummsters.cafehub.domain.file.service.FileService;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -42,4 +46,12 @@ public class CafeAdServiceImpl implements CafeAdService{
         }
         return cafeAdRepository.findByCafe_CafeNo(cafeAd.getCafeAdNo());
     }
+
+  //혜리 part-------------------------------------------------------
+	@Override
+	public List<CafeAd> getApprovedAds() throws Exception {
+		LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7); // 7일 이전까지의 승인된 광고
+	    return cafeAdRepository.findByIsApprovedAndAuthDateBefore(true, cutoffDate);
+
+	}
 }
