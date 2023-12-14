@@ -112,3 +112,13 @@
     font-size: 20px;
   }
   
+  .wishPagination {
+    background-color: #007355;
+    width: 100%;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+  }
