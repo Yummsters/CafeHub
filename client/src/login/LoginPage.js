@@ -56,7 +56,7 @@ const Toast = Swal.mixin({
       .then(res=>{  
         // 토큰과 회원정보 저장
         dispatch({type:"isLogin", payload:true});
-        dispatch({type:"member", payload:res.data});
+        dispatch({type:"member", payload:res.data.member});
         dispatch({type:"accessToken", payload:res.headers.authorization});
 
         // refreshtoken을 쿠키에 담아서 저장
@@ -155,10 +155,13 @@ const Toast = Swal.mixin({
     if(submitStoreCheck){
       axios.post(`http://localhost:8080/login`, storeLogin)
       .then(res=>{
+        console.log(res);
+
          // 토큰과 회원정보 저장
          dispatch({type:"isLogin", payload:true});
-         dispatch({type:"member", payload:res.data});
+         dispatch({type:"member", payload:res.data.member});
          dispatch({type:"accessToken", payload:res.headers.authorization});
+         dispatch({type:"cafe", payload : res.data.cafe});
  
           // refreshtoken을 쿠키에 담아서 저장
          const refreshToken = res.headers.refresh;
@@ -175,7 +178,7 @@ const Toast = Swal.mixin({
       });
     })
       .catch(err=>{
-        console.log(err.response.data.status);
+        console.log(err);
         const errStatus = err.response.data.status;
         // 로그인 에러
         if(errStatus === 401){
