@@ -2,6 +2,8 @@ package com.yummsters.cafehub.domain.cafe.controller;
 
 import java.util.List;
 
+import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +24,7 @@ public class CafeController {
     @Autowired
     private CafeServiceImpl service;
 
-    @GetMapping("/mapData")
+    @GetMapping("/mapData") // 카페 데이터 저장
     public ResponseEntity<String> saveCafe() {
         try {
             service.saveCafe();
@@ -33,8 +35,8 @@ public class CafeController {
         }
     }
 
-    @GetMapping("/mapMarker")
-    public ResponseEntity<List<CafeDto>> getAllCafes() {
+    @GetMapping("/mapMarker") // 카페 리스트 지도에 뿌리기
+    public ResponseEntity<Object> getAllCafes() {
         try {
             List<CafeDto> cafes = service.getCafes(); // 서비스에서 DTO 목록을 가져옴
             return new ResponseEntity<>(cafes, HttpStatus.OK); // 클라이언트에 반환
@@ -44,7 +46,7 @@ public class CafeController {
         }
     }
 
-    @GetMapping("/cafeIsWish/{memNo}/{cafeNo}")
+    @GetMapping("/cafeIsWish/{memNo}/{cafeNo}") // 특정 카페의 찜 여부
     public ResponseEntity<Boolean> isWish(@PathVariable Integer memNo, @PathVariable Integer cafeNo) {
         try {
             Boolean isWish = service.isWishCafe(memNo, cafeNo);
@@ -55,7 +57,7 @@ public class CafeController {
         }
     }
 
-    @PostMapping("/cafeWish/{memNo}/{cafeNo}")
+    @PostMapping("/cafeWish/{memNo}/{cafeNo}") // 특정 카페 찜하기
     public ResponseEntity<Boolean> isWishCafe(@PathVariable Integer memNo, @PathVariable Integer cafeNo) {
         try {
             Boolean toggleWish = service.toggleWishCafe(memNo, cafeNo);
@@ -66,8 +68,8 @@ public class CafeController {
         }
     }
 
-    @GetMapping("map/{cafeNo}")
-    public ResponseEntity<CafeDto> getCafeByCafeNo(@PathVariable Integer cafeNo) {
+    @GetMapping("map/{cafeNo}") // 찜한 카페 위치(하나만)
+    public ResponseEntity<Object> getCafeByCafeNo(@PathVariable Integer cafeNo) {
         try {
             CafeDto cafe = service.getCafeByCafeNo(cafeNo);
             return new ResponseEntity<>(cafe, HttpStatus.OK);
@@ -76,7 +78,7 @@ public class CafeController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     // 혜리 part---------------------------------------------------------------------------
     @GetMapping("/managerConfirm")
     public ResponseEntity<Page<CafeDto>> getUnpaidCafes(@RequestParam(defaultValue = "0") int page,

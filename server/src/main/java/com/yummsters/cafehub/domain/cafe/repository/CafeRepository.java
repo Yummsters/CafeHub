@@ -9,6 +9,7 @@ import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
 @Repository
 public interface CafeRepository extends JpaRepository<Cafe, Integer> {
+    // 선진 part -----------------------------------------------------------
     Cafe findByCafeNo(Integer cafeNo);
     //혜리 작성 부분
     Page<Cafe> findByIsPaidFalseOrderByPaidDate(Pageable pageable);
