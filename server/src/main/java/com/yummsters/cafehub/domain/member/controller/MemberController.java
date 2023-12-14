@@ -155,7 +155,6 @@ public class MemberController {
             memberService.changePw(id, searchPwDto.getPassword());
             return new ResponseEntity<>("ok", HttpStatus.OK);
         } catch (Exception e) {
-
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -172,7 +171,18 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
+    @PostMapping("/member/password") // userinfo 현재 비밀번호 일치 확인
+    public ResponseEntity<Object> matchPassword(@RequestBody SearchPwDto searchPwDto) {
+        String id = searchPwDto.getId();
+        String phone = searchPwDto.getPassword();
+        try {
+            boolean result = memberService.matchPw(id, phone);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
     // 수빈 part ----------------------------------------------------------------
     // 사장님 회원가입
