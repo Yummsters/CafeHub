@@ -76,4 +76,15 @@ public class FileUploadController {
             e.printStackTrace();
         }
     }
+    
+	@GetMapping("/thumbImg/{thumbImg}")
+	public void thumbImgView(@PathVariable String thumbImg, HttpServletResponse response) {
+	    try {
+	       
+	        Integer fileNum = Integer.parseInt(thumbImg);
+	        fileService.readImage(fileNum, response.getOutputStream());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 }

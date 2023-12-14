@@ -13,4 +13,6 @@ public interface FileService {
 
     FileVo oneFileUpload(MultipartFile file, CafeAd cafeAd) throws Exception;
     void readThumbImg(Integer fileNum, OutputStream out) throws Exception;
+    
+    void readImage(Integer fileNum, OutputStream out) throws Exception;
 }

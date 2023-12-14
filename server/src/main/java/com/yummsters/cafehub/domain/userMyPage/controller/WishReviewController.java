@@ -3,6 +3,7 @@ package com.yummsters.cafehub.domain.userMyPage.controller;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
 import com.yummsters.cafehub.domain.userMyPage.service.WishService;
+import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,28 +22,28 @@ import java.util.List;
 public class WishReviewController {
     @Autowired
     private WishService wishReviewService;
-
-    @GetMapping("member/wishReviewList/{memNo}")
-    public ResponseEntity<Object> getWishReview(@PathVariable Integer memNo,
+    @GetMapping("member/wishStoreList/{memNo}")
+    public ResponseEntity<Object> getCafeReview(@PathVariable Integer memNo,
                                                 @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "2") int size) {
+                                                @RequestParam(defaultValue = "12") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<WishReviewDto> wishReviewList = wishReviewService.getWishReviewList(memNo, pageable);
-            return new ResponseEntity<>(wishReviewList, HttpStatus.OK);
+            MultiResponseDto<WishCafeDto> wishCafeList = wishReviewService.getWishCafeList(memNo, pageable);
+            return new ResponseEntity<>(wishCafeList, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("member/wishStoreList/{memNo}")
-    public ResponseEntity<Object> getCafeReview(@PathVariable Integer memNo,
+
+    @GetMapping("member/wishReviewList/{memNo}")
+    public ResponseEntity<Object> getWishReview(@PathVariable Integer memNo,
                                                 @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "2") int size) {
+                                                @RequestParam(defaultValue = "12") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<WishCafeDto> wishCafeList = wishReviewService.getWishCafeList(memNo, pageable);
-            return new ResponseEntity<>(wishCafeList, HttpStatus.OK);
+            MultiResponseDto<WishReviewDto> wishReviewList = wishReviewService.getWishReviewList(memNo, pageable);
+            return new ResponseEntity<>(wishReviewList, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -19,4 +19,8 @@ public interface MemberMapper {
     Member deleteSocialReqDtoToMember(DeleteSocialDto deleteSocialDto);
 
     TokenResDto memberToTokenResDto(Member member);
+
+    Member modifyReqDtoToMember(ModifyReqDto modifyReqDto);
+
+    ModifyResDto memberToModifyResDto(Member member);
 }

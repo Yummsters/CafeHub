@@ -95,17 +95,6 @@ public class ReviewController {
 	            return ResponseEntity.badRequest().build();
 	        }
 	    }
-		
-		@GetMapping("/thumbImg/{thumbImg}")
-		public void thumbImgView(@PathVariable String thumbImg, HttpServletResponse response) {
-		    try {
-		       
-		        Integer fileNum = Integer.parseInt(thumbImg);
-		        reviewService.readImage(fileNum, response.getOutputStream());
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
-		}
 
 
 	// 선진 part ----------------------------------------------------------------------

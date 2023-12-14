@@ -18,7 +18,7 @@ public class Cafe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cafeNo;
-    @Column
+    @Column(name = "cafe_name")
     private String cafeName;
     @Column
     private String tel;
@@ -45,8 +45,12 @@ public class Cafe {
     @Column
     private String cafeInfo;
 
-    /*@OneToOne(mappedBy="cafe")
-    private Member member;*/
+    @OneToOne(mappedBy="cafe")
+    private Member member;
+    
+    public Integer getCafeNo() {
+        return cafeNo;
+    }
 
     public CafeDto toDTO() {
         return CafeDto.builder()
