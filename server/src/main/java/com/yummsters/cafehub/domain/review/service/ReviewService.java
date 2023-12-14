@@ -1,13 +1,12 @@
 package com.yummsters.cafehub.domain.review.service;
 
-import java.io.OutputStream;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -34,5 +33,6 @@ public interface ReviewService {
 	Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo);
 
 	//혜리 part ----------------------------------------------------------------
-	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
+	Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
+	Page<Review> getReviewsByMember(Member member, Pageable pageable) throws Exception;
 }

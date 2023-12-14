@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.review.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,12 +8,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-import com.yummsters.cafehub.domain.review.dto.ReviewListRes;
-import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,17 +24,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 
-import org.springframework.web.bind.annotation.*;
-
-
+import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.dto.ReviewListRes;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
+import com.yummsters.cafehub.global.response.MultiResponseDto;
 
 @RestController
 public class ReviewController {
@@ -168,7 +166,25 @@ public class ReviewController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping("/userReview")
+	public ResponseEntity<Page<Review>> getReviewsByMember(Principal principal, Pageable pageable) {
+	    try {
+	        // Assuming the member's username is the same as the nickname
+	        Member member = new Member();
+	        member.setNickname(principal.getName());
 
+	        Page<Review> reviews = reviewService.getReviewsByMember(member, pageable);
+
+	        return new ResponseEntity<>(reviews, HttpStatus.OK);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        // 예외가 발생한 경우 500 Internal Server Error 응답을 반환합니다.
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
+	//희진 part ----------------------------------------------------------------
 	// 가게 리뷰 리스트 조회
 	@GetMapping("/review/storeList/{cafeNo}")
 	public ResponseEntity<Object> storeList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
