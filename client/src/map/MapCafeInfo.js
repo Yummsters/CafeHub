@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Pagination, PaginationItem, PaginationLink, Table } from "reactstrap";
 import Swal from "sweetalert2";
 
-const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
+const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal }) => {
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
   const [reviewList, setReviewList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,13 +73,15 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish }) => {
   return (
     <div style={{ flex: selectCafe ? 1 : 0 }}>
     {selectCafe && (
-      <div className="map_box">
-        <img
-          className="x"
-          src="/img/X.png"
-          alt="close"
-          onClick={() => setSelectCafe(null)}
-        />
+      <div className={!wishModal ? "map_box" : "modalCafe"}>
+        {!wishModal && (
+          <img
+            className="x"
+            src="/img/X.png"
+            alt="close"
+            onClick={() => setSelectCafe(null)}
+          />
+        )}
 
         <div className="storebox">
           <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} />

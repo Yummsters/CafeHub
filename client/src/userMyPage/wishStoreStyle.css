@@ -58,215 +58,15 @@
     font-size:30px;
     border:2px solid #000000;
 }
-/* 모달css*/
-/* 모달 스타일 */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .modal-content-map {
-    position: relative;
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 1200px;
-    max-height: 80%;
-    overflow: auto;
-  }
-  
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-  }
-.wishmap_box{
-    width: 40%;
-    height: 100%;
-    margin-right: 3%;
-    margin-top: 2%;
-    border-radius: 10px;
-    border: 3px solid #007355;
-    background: #FFF;
-    
-    float:right;
-}  
-
-.wishstore {
-    position:relative;
-    margin-top: 5%;
-    margin-left: 18%;
-    font-size: 30px;
-    
-}
-
-.wishstoreImag {
-    margin-top: 5%;
-    margin-left: 18%;
-    width: 294px;
-    height: 267px;
-    border-radius: 10px;
-    border: 3px solid #007355;
-}
-
-.wishstoreLine {
-    margin-top:5%;
-    margin-left:9%;
-    width: 370px;
-    height: 3px;
-    background-color: #007355;
-}
-.wishstore_address{
-    position: relative;
-    margin-left: 10%;
-    margin-top: 5%;
-    font-size: 20px;
-}
-.address{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.wishstore_call{
-    position: relative;
-    margin-left: 10%;
-    margin-top: 3%;
-    font-size: 20px; 
-    
-}
-.call{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.wishstore_time{
-    position: relative;
-    margin-left: 10%;
-    margin-top: 3%;
-    font-size: 20px; 
-    
-}
-.time{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.wishstore_type{
-    position: relative;
-    margin-left: 10%;
-    margin-top: 3%;
-    font-size: 20px; 
-    
-}
-.type{
-    position:absolute;
-    top:10px;
-    left:50px;
-}
-.wishstore_info{
-
-    position:relative;
-    margin-top: 10%;
-    margin-left: 28%;
-    font-size: 30px;
-    
-    
-}
-.info{
-    position:absolute;
-    top:5px;
-    left:50px;
-}
-.wishmap_storemap{
-    margin-top: 5%;
-    margin-left: 6%;
-    width: 400px;
-    height: 400px;
-    border-radius: 10px;
-    border: 3px solid #F59A23;
-}
-
-.wishstore_review{
-    position: relative;
-    margin-left: 8%;
-    margin-top: 10%;
-    font-size: 20px; 
-  
-}
-/* .review{
-    position:absolute;
-    top:5px;
-    left:50px;
-} */
-
- 
- .maplist{
-    height: 90px;
-    width: 450px;
-    display: flex;
- }
-
-    .map-listImg {
-        margin-right: 30px;
-        margin-top:10px;
-      margin-left: 22px;
-      vertical-align: middle;
-      border-radius: 10px;
-      width:65px;
-      height: 65px;
-    }
-    .wishmap-listTitle
-    {  margin-top: 2%;;
-        font-size: 17px;
-        font-weight: bold;
-       width: 60%;
-     
-      }
-
-    .wishmap-writeInfo {
-    
-      align-items: center;
-      font-size: 12px; /* 원하는 텍스트 크기로 설정 */
-     margin-top: 8%;
-  }
-  
-  .wishmap-dateTime {
-     margin-top: 13%;
-       width: 20%;
-      text-align: right; /* 우측 정렬 설정 */
-      font-size: 10px; /* 원하는 텍스트 크기로 설정 */
-      
-  }
-  
-  .wishstsore-pagination {
-    padding : 20px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color :#F59A23;
-  }
-  
-  .wishstsore-pagination div {
-    margin: 0 10px;
-  }
-
-  
-
 
 .modalMap {
     width: 100%;
     margin: 0 auto;
+    display: flex;
 }
 
 #mapView2 {
+    flex: 1;
     width: 100%;
     height: 100%;
 }
@@ -276,12 +76,14 @@
     background-color: white;
     width: 80%;
     height: 90%;
-    overflow-y: scroll;
 }
 
 .modalCafe {
     border-left: 3px solid #007355;
-    /* flex: 1; */
+    flex: 1;
+    height: 100%;
+    overflow-y: scroll;
+
 }
 
 .modalstorebox {
