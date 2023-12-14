@@ -1,0 +1,128 @@
+.userReview-container{
+  display: flex;
+}
+
+tbody tr {
+  vertical-align: middle;
+  border-top:2px solid #555555;
+  border-bottom:2px solid #555555;
+}
+
+tbody td {
+  border-top:2px solid #555555;
+  border-bottom:2px solid #555555;
+}
+
+.userReview-table{
+  width: 750px;
+  margin: 0 auto;
+}
+
+.userReviewListBox {
+    margin:50px auto;
+    width: 1000px;
+    height: 700px;
+    border: 3px solid #007355;
+    border-radius: 10px;
+    position : relative;
+  }
+
+  .listTitle {
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 12%;
+  }
+
+  .listImg {
+    margin-left: 0px;
+    vertical-align: middle;
+    border-radius: 10px;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .listMiniTitle {
+    font-size: 20px;
+    font-weight: bold;
+    vertical-align: middle;
+    
+  }
+
+  .reviewLikeCount {
+    text-align: right;
+    margin-right: 10px;
+  }
+  
+  .reviewUser, .reviewLikeCount, .dateTime {
+    font-size: 15px;
+    vertical-align: middle;
+  }
+  
+  .permission {
+    font-size: 20px;
+    width: 115px;
+    height: 50px;
+    border-radius: 30px;
+    background-color: #F59A23;
+    color: white;
+    border: none;
+    margin-bottom: 5px;
+  }
+
+  .unpermission {
+    font-size: 20px;
+    width: 115px;
+    height: 50px;
+    border-radius: 30px;
+    background-color: #D9D9D9;
+    border: none;
+    margin-bottom: 5px;
+  }
+
+.userReview-pagination {
+    padding: 30px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color :#F59A23;
+}
+
+.userReview-pagination div {
+    margin: 0 10px;
+}
+
+.userReview-Button {
+  border: none;
+  cursor: pointer;    /* 커서를 포인터로 변경하여 클릭 가능함을 나타냄 */
+  transition: background-color 0.3s ease;  /* hover 효과를 부드럽게 만듦 */
+  height: 33px;
+  color :black !important;
+}
+
+.userReview-Button.current-page {
+  color: #F59A23 !important;
+}
+
+.userReview-Button:active {
+  border: none;
+  background-color: none !important;
+  color :#F59A23  !important;
+  height: 33px;
+}
+
+.userReview-Button:disabled {
+  border: none;
+  color: #D9D9D9 !important;
+  background: none;
+  font-weight: bolder;
+}
+
+.userReview-Page{
+  position : absolute;
+  bottom : 10px;
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+
+  
