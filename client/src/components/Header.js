@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import './headerStyle.css';
-import axios from 'axios';
 import {useSelector} from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import {persistor} from '../App';
-import { getCookie, removeCookie, setCookie } from './Cookie';
+import { removeCookie} from './Cookie';
 import Swal from 'sweetalert2';
-
+import { checkLogin } from '../login/TokenCheck';
 
 const Header = () => {
     const memberType = useSelector(state=>state.persistedReducer.member.memberType);
-    const memNo = useSelector(state=>state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const isLogin = useSelector(state=>state.persistedReducer.isLogin);
     const navigate = useNavigate();
@@ -34,63 +31,10 @@ const Header = () => {
     // 마이페이지
     const mypage = (e) =>{
         e.preventDefault();
-
-        axios.get(`http://localhost:8080/member`,{
-            headers : {
-                Authorization : accessToken
-            }
+        checkLogin(dispatch, accessToken, isLogin, navigate)
+        .then(()=>{
+             navigate('/userInfo');
         })
-        .then(res=>{
-            console.log(res);
-            navigate("/");
-        })
-        .catch(err =>{
-            console.log(err);
-        })
-
-        if(!isLogin){
-            Toast.fire({
-                icon: 'error',
-                title: '로그인 후 이용해 주세요'
-            }).then(() => {
-                navigate('/login');
-            });  
-        }else{
-            console.log(memNo);
-            axios.get(`http://localhost:8080/member/${memNo}`,{
-                headers : {
-                    Authorization :accessToken,
-                }
-            })
-            .then(res => {
-                // 토큰이 유효한지 확인하고 유효하다면
-                navigate('/userInfo');
-            })
-            .catch(err=>{
-                console.log(err.data);
-                console.log(err);
-                if(err.response.data.status === 401){
-                    // accessToken
-                    removeCookie("accessToken");
-                    dispatch({type:"isLogin", payload:false});
-                    dispatch({type:"member", payload:''});
-                    Toast.fire({
-                        icon: 'error',
-                        title: '로그인 후 이용해주세요.'
-                    });
-                }else if(err.response.data.status === 403){
-                    Toast.fire({
-                    icon: 'error',
-                    title: '이용 불가능한 회원입니다.'
-                })
-                }else{
-                    Toast.fire({
-                        icon: 'error',
-                        title: '관리자에게 문의해주세요'
-                })
-                }
-            })
-        }
     }
 
     // 로그아웃
