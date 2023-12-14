@@ -219,3 +219,7 @@
 .infoTitle p, .infoContent p, .pwTitle p, .pwContent p{
     margin-bottom: 0;
 }
+
+.userInfoMsg {
+  color: #F59A23;
+}

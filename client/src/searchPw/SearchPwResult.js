@@ -54,7 +54,7 @@ const SearchPwResult = () => {
         .then((res) => {
             console.log(res);
             Toast.fire({
-                title: "비밀번호 재설정이 완료!",
+                title: "비밀번호 재설정 완료!",
                 text: "로그인 페이지로 이동합니다",
                 icon: "success",
             });
