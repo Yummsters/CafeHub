@@ -81,4 +81,9 @@ public class Point {
         this.isRefund = false;
         this.refPointCount = 0;
     }
+
+    // 회원 탈퇴를 위한 포인트 삭제
+    public void deletePoint(){
+        this.pointCount = 0;
+    }
 }

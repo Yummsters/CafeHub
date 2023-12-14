@@ -69,4 +69,8 @@ public class Cafe {
                 .isExisting(isExisting)
                 .build();
     }
+
+    public void deleteCafe(){
+        this.isExisting = false;
+    }
 }

@@ -3,6 +3,8 @@ package com.yummsters.cafehub.global.auth.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.member.dto.CafeTokenResDto;
 import com.yummsters.cafehub.domain.member.dto.TokenResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
@@ -22,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -90,14 +94,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(JwtProvider.HEADER_STRING, JwtProvider.TOKEN_PREFIX+accessToken);
         response.addHeader(JwtProvider.REFRESH_STRING, JwtProvider.TOKEN_PREFIX+refreshToken);
 
-
-        // member를 가지고 와서 바디에 넣어줌
+        // member
         Member member = principalDetails.getMember();
         TokenResDto responseMember = mapper.memberToTokenResDto(member);
+
+        // cafe
+        Cafe cafe = principalDetails.getMember().getCafe();
+        CafeTokenResDto responseCafe = CafeTokenResDto.cafeToCafeTokenResDto(cafe);
+
         // ResponseEntity로 응답
         ObjectMapper objectMapper = new ObjectMapper();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseMember));
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("member", responseMember);
+        responseData.put("cafe", responseCafe);
+        response.getWriter().write(objectMapper.writeValueAsString(responseData));
+
     }
 }
