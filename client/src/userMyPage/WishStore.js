@@ -124,52 +124,6 @@ const WishStore = () => {
                 <div id="mapView2"></div>
                 <MapCafeInfo wishModal={true} selectCafe={selectCafe}/>
               </div>
-
-
-
-
-
-              {/* <div className="modalCafe">
-                <div className="modalstorebox">
-                  <img src="/img/y_star.png" alt="star"/>
-                  <span>{selectCafe.cafeName}</span>
-                </div>
-
-                {selectCafe.thumbImg !== null ? ( 
-                    <div className="storeImag">
-                      <img src="/img/{selectCafe.thumbImg}" alt="" />
-                    </div>
-                  ) : null}
-                
-                <div className="storeLine" />
-
-                {cafeInfo('/img/pin.png', selectCafe.address)}
-                {cafeInfo('/img/phone.png', selectCafe.tel)}
-                {cafeInfo('/img/clock.png', selectCafe.operTime)}
-                {cafeInfo('/img/store.png',selectCafe.tagName)}
-                {cafeInfo('/img/bean.png',selectCafe.cafeInfo)}
-                <div className="store_review">
-                    <img src="/img/review.png" alt=""/>
-                    <div className="review">리뷰</div>
-                </div>
-              </div>
-              <div className="pagination-container">
-                  <Pagination>
-                    <PaginationItem disabled={currentPage === 1}>
-                      <PaginationLink previous onClick={prevPage} />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <PaginationItem key={index} active={currentPage === index + 1}>
-                        <PaginationLink onClick={() => setCurrentPage(index + 1)}>
-                          {index + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem disabled={currentPage === totalPages}>
-                      <PaginationLink next onClick={nextPage} />
-                    </PaginationItem>
-                  </Pagination>
-                  </div> */}
             </div>
           </div>
         )}
