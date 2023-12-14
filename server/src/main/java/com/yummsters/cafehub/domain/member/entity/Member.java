@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+//@ToString(exclude = "reviews")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,8 +93,15 @@ public class Member {
         this.password = password;
     }
 
-    public void changeStatus(boolean status) {
-        this.status = status;
+    // 회원 탈퇴 시 회원 정보 삭제
+    public void deleteMember(){
+        this.name = "탈퇴";
+        this.nickname=getNickname()+"(탈퇴회원)";
+        this.status = false;
+        this.phone = "탈퇴";
+        this.email = getMemNo()+"탈퇴";
+        this.memberType = MemberType.GUEST;
+        this.regDate = null;
     }
 
     public void setCafeno(Integer cafeno) {
