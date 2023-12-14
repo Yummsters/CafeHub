@@ -5,9 +5,9 @@ import Swal from 'sweetalert2';
 const { daum } = window;
 
 const SignUpStore = () => {
-    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "" });
+    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "",cafeName: "" });
 
-    const [store, setStore] = useState({ name: "", nickName: "", id: "", password: "", passwordCk: "", phone: "", email: "", storeName: "", storePhone: "", businessNo: "", location: "", time: "" });
+    const [store, setStore] = useState({ cafeName: ""});
     const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false })
     const [check, setCheck] = useState({ nickname: false, id: false, email: false })
     const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false });
@@ -36,6 +36,8 @@ const SignUpStore = () => {
         '#주류판매',
         '#감성'
     ]);
+
+   
     // 유효성 정규표현식
     const inputRegexs = {
         idRegex: /^[a-z0-9]{5,12}$/,
@@ -46,9 +48,10 @@ const SignUpStore = () => {
 
 
     const change = (e) => {
-        let name = e.target.name;
-        let value = e.target.value;
+        const name = e.target.name;
+        const value = e.target.value;
         setMember({ ...member, [name]: value });
+        setStore({...store,[name]: value});
     }
 
     const fileChange = (e) => {
@@ -254,7 +257,7 @@ const SignUpStore = () => {
     // 회원가입 제출 가능 여부 확인
     const submitSignUP =
         member.name !== '' && member.nickname !== '' && member.id !== '' && member.password !== '' && member.passwordConfirm !== '' && member.phone !== '' && member.email !== '' &&
-        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email;
+        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email&&store.cafeName;
 
         
 
@@ -262,7 +265,19 @@ const SignUpStore = () => {
     const handleClick = (e) => {
         e.preventDefault();
         console.log(submitSignUP);
-
+        const formData = new FormData();
+        formData.append('cafeName', store.cafeName);
+        console.log("카페이름", store.cafeName);
+        axios
+            .post('http://localhost:8080/cafe/store', formData)
+            .then((res)=> {
+                console.log('성공'+res.data);
+            })
+            .catch((err)=> {
+                console.log('error입니다', err.response ? err.response.data : err.message);
+                console.log('error입니다'+err.data);
+            });
+            
 
         // 빈값에 대한 warning 체크
         setWarnings((prevWarnings) => ({
@@ -506,7 +521,7 @@ const SignUpStore = () => {
 
                     <div className='signUpStoreInputDiv'>
                         <label>가게명 <br />
-                            <input type="text" id="cafeName" name="cafeName" onChange={changeMember} /></label>
+                            <input type="text" id="cafeName" name="cafeName" onChange={change} value={store.cafeName}/></label>
                     </div> <br />
                     <div className='signUpStoreInputDiv'>
                         <label>가게 전화번호 <br />
