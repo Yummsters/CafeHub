@@ -31,18 +31,6 @@ const WishStore = () => {
     setShowModal(false);
   };
 
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
   useEffect(() => {
       axios.get(`http://localhost:8080/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
         headers: {
@@ -87,15 +75,6 @@ const WishStore = () => {
       marker.setMap(map);
     }
   }, [showModal, cafeNo, selectCafe]);
-  
-  const cafeInfo = (src, text) => {
-    return text !== null && text !== "" ? (
-      <div className="infoContentBox">
-        <img src={src} alt="" />
-        <div className="infoName">{text}</div>
-      </div>
-    ) : null;
-  };
 
   return (
     <div className="wishStore-container">
@@ -122,7 +101,7 @@ const WishStore = () => {
 
               <div className='modalMap'>
                 <div id="mapView2"></div>
-                <MapCafeInfo wishModal={true} selectCafe={selectCafe}/>
+                <MapCafeInfo wishModal={true} selectCafe={selectCafe} wishCafeNo = {cafeNo}/>
               </div>
             </div>
           </div>

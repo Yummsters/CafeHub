@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import { Pagination, PaginationItem, PaginationLink, Table } from "reactstrap";
 import Swal from "sweetalert2";
 
-const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal }) => {
+const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wishCafeNo }) => {
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
   const [reviewList, setReviewList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const cafeNo = selectCafe?.cafeNo || wishCafeNo;
   
   // null이 아닌 정보만 띄울 수 있게 만들기
   const cafeInfo = (src, text) => {
@@ -35,7 +37,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal }) =>
 
    useEffect(() => { 
     if(selectCafe !== null) {
-      axios.get(`http://localhost:8080/review/storeList/${selectCafe.cafeNo}?page=${currentPage}&size=5`)
+      axios.get(`http://localhost:8080/review/storeList/${cafeNo}?page=${currentPage}&size=5`)
       .then((res) => {
         console.log(res.data);
         setReviewList(res.data.data);
