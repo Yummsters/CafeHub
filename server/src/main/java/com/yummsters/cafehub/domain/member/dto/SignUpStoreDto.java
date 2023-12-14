@@ -9,28 +9,27 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpStoreDto {
-	private Integer cafeNo;
+	
 	private String cafeName;
     private String tel;
     private String businessNo;
     private String address;
     private String operTime;
-    private String thumbImg;
-    private Integer fileNum;
-   
-//    private String fileurl;
-//    public void setFileurl(String fileurl) {
-//		this.fileurl = fileurl;
-//	}
-    public SignUpStoreDto(Integer cafeNo, String cafeName, String tel, String businessNo, String address, String operTime, String thumbImg, Integer fileNum, String fileurl) {
-        this.cafeNo = cafeNo;
+    private String lat;
+    private String lng;
+    private String tagName;
+    
+    public SignUpStoreDto( String cafeName, String tel, String businessNo, String address, String operTime, String thumbImg, Integer fileNum, String fileurl, String lat, String lng, String tagName) {
+     
         this.cafeName = cafeName;
         this.tel = tel;
         this.businessNo = businessNo;
         this.address = address;
         this.operTime = operTime;
-        this.thumbImg = thumbImg;
-        this.fileNum = fileNum;
+        this.lat = lat;
+        this.lng = lng;
+        this.tagName = tagName;
+    
         
     }
 	 

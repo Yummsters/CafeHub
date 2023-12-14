@@ -286,7 +286,11 @@ public class MemberServiceImpl implements MemberService{
                         .businessNo(signUpStore.getBusinessNo())
                         .address(signUpStore.getAddress())
                         .operTime(signUpStore.getOperTime())
+                        .lat(signUpStore.getLat())
+                        .lng(signUpStore.getLng())
+                        .isExisting(true)
                         .thumbImg(fileNums)
+                        .tagName(signUpStore.getTagName())
                         .build();
 
                 System.out.println("카페 엔터티: " + cafeEntity);
@@ -308,14 +312,13 @@ public class MemberServiceImpl implements MemberService{
 
     //사장님 회원가입
     @Override
-    public Member existStoreMember(Member member) throws Exception {
+    public Member existStoreMember(Member member, Integer cafeNo) throws Exception {
         Member checkMember = memberRepository.findByEmail(member.getEmail());
         if(checkMember != null){
             throw new Exception("중복된 회원입니다");
         }
 
-        Cafe cafe = member.getCafe();
-        // 회원 정보 생성
+       
         member = Member.builder()
                 .id(member.getId())
                 .password(bCryptPasswordEncoder.encode(member.getPassword()))
@@ -325,13 +328,11 @@ public class MemberServiceImpl implements MemberService{
                 .status(true)
                 .email(member.getEmail())
                 .phone(member.getPhone())
+                .cafeno(cafeNo)
                 .social(Social.NORMAL)
                 .build();
 
-        memberRepository.save(member);
-        Integer cafeno = cafe.getCafeNo();
-        // Member에 cafeNo 저장
-        member.setCafeno(cafeno);
+ 
         memberRepository.save(member);
 
         // 포인트 정보 생성
