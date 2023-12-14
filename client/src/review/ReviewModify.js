@@ -27,7 +27,7 @@ const ReviewModify = () => {
     const [selectedCafeNo, setSelectedCafeNo] = useState('');
     const [cafes, setCafes] = useState([]);
 
-    const thumbnailUrl = thumbImg ? `http://localhost:8080/thumbImg/${thumbImg}` : '';
+    const thumbnailUrl = thumbImg ? `http://localhost:8080/common/thumbImg/${thumbImg}` : '';
     console.log("썸" + thumbnailUrl);
 
     const [review, setReview] = useState({
@@ -219,14 +219,6 @@ const ReviewModify = () => {
                 </div>
 
 
-
-            <div className='btnBox'>
-                <div className='review-btn'>초기화</div>
-                <div className='review-btn'>리뷰 수정</div>
-            </div>
-
-
-
                 <div className="editor">
                     <Editor
                         //value={decodeURIComponent(editorInitialValue)} // 디코딩된 값을 사용
@@ -278,8 +270,8 @@ const ReviewModify = () => {
                 </div>
 
                 <div className="btnBox">
-                    <div className="btn">초기화</div>
-                    <div className="btn">리뷰 수정</div>
+                    <div className="review-btn">초기화</div>
+                    <div className="review-btn">리뷰 수정</div>
                 </div>
             </div>
         </div>

@@ -4,7 +4,9 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
+import { Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
 const { kakao } = window;
 
@@ -21,21 +23,18 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [replyLikeCount, setReplyLikeCount] = useState(0);
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
 
-  const { state } = useLocation();
-  const listReviewNo = state && state.reviewNo ? state.reviewNo : null;
-  const reviewNo = (wishReviewNo !== null && wishReviewNo !== undefined) ? wishReviewNo : listReviewNo;
+  const location = useLocation();
+  const listReviewNo = location.state?.reviewNo
+  const reviewNo = wishReviewNo || listReviewNo;
+
 
   const [pageInfo, setPageInfo] = useState({
-
     currentPage:1,
     repliesPerPage:10,
     startPage:1,
     endPage:1,
     totalPages:1
 })
-
-  const navigate = useNavigate();
-
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -393,7 +392,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <p>{review.regDate}</p>
               </div>
             </div>
-            <div className="detailContent">{review.content}</div>
+            <div className="detailContent"><Viewer initialValue={review.content || ''} /></div>
+            
 
             <div id="detailMap"></div>
 

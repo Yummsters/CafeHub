@@ -15,13 +15,21 @@ const WishReview = () => {
   const [totalPages, setTotalPages] = useState(1);
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
   const accessToken = useSelector((state) => state.persistedReducer.accessToken);
+  console.log(currentPage)
 
+  useEffect(() => {
+    if (wishReviewNo !== null) {
+      console.log(wishReviewNo);
+      setShowModal(true);
+    }
+  }, [wishReviewNo]);
+  
   const openModal = (reviewNo) => { 
     setWishReviewNo(reviewNo);
-    setShowModal(!showModal);
   };
 
   const closeModal = () => {
+    setWishReviewNo(null);
     setShowModal(false);
   };
 
@@ -47,9 +55,8 @@ const WishReview = () => {
       })
       .then((res) => {
         console.log(res.data);
-        console.log(res.data.content);
-        setWishReviewList(res.data.content);
-        setTotalPages(res.data.totalPages);
+        setWishReviewList(res.data.data);
+        setTotalPages(res.data.pageInfo.totalPages);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -65,36 +72,39 @@ const WishReview = () => {
         </div>
         {wishReviewList.length !== 0 &&
           wishReviewList.map((review, index) => (
-            <span className="wishReview-reviews" key={index} onClick={() => openModal(review.reviewNo)}>
+            <span className="wishReview-reviews" key={review.reviewNo} onClick={() => openModal(review.reviewNo)}>
               <img src={review.thumbImg} alt=""/>
               <div className="image-text">{review.cafeName}
                 <p className="ReviewWriter">{review.nickname}</p></div>
               {index % 4 === 3 ? (<><br /></>) : ("")}
             </span>
           ))}
-          <Pagination>
-            <PaginationItem disabled={currentPage === 1}>
-              <PaginationLink previous onClick={prevPage} />
-            </PaginationItem>
-            {[...Array(totalPages)].map((_, index) => (
-              <PaginationItem key={index} active={currentPage === index + 1}>
-                <PaginationLink onClick={() => setCurrentPage(index + 1)}>
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem disabled={currentPage === totalPages}>
-              <PaginationLink next onClick={nextPage} />
-            </PaginationItem>
-          </Pagination>
-      </div>
 
-      {showModal && (
-        <div className="modalBox">
-            <ReviewDetail modalDetail wishReviewNo = {wishReviewNo}/>
-            <p className='closeBtn'><img src="/img/X.png" alt="x" onClick={closeModal}/></p>
-        </div>
-        )}
+          {showModal && (
+            <div className="modalBox">
+                <ReviewDetail modalDetail wishReviewNo = {wishReviewNo}/>
+                <p className='closeBtn'><img src="/img/X.png" alt="x" onClick={closeModal}/></p>
+            </div>
+            )}
+            
+          <div className="pagination-container">
+            <Pagination>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink previous onClick={prevPage} />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, index) => (
+                  <PaginationItem key={index} active={currentPage === index + 1}>
+                    <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink next onClick={nextPage} />
+              </PaginationItem>
+            </Pagination>
+          </div>
+      </div>
     </div>
   );
 };

@@ -9,22 +9,20 @@ import Swal from 'sweetalert2';
 
 
 const UserInfo = () => {
-  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const member = useSelector(state=>state.persistedReducer.member);
+  const social = useSelector(state=>state.persistedReducer.member.social);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
+
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
   const [emailInput, setEmailInput] = useState('');
   const [emailMatch, setEmailMatch] = useState(true);
-  const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
-  const social = useSelector(state=>state.persistedReducer.member.social);
-  const [userInfo, setUserInfo] = useState({id:'sooba', name:'조수빈', email:'soobin@babo.com', nickname:'sooba', pw:'', newPw:''});
   const [editMode, setEditMode] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-
-
-  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
-  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
+  const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
 
   // swal
   const Toast = Swal.mixin({
@@ -39,6 +37,30 @@ const UserInfo = () => {
     }
   })
 
+  // 수정 관련
+  const edit = () => { // 수정버튼 클릭 시 input 입력 가능
+    setEditMode(true);
+  }
+  const save = () => { // 저장버튼 클릭 시 input readOnly
+    axios.put("http://localhost:8080/member/modifyInfo", updateUser)
+    .then((res) => {
+      console.log(res.data);
+      dispatch({type:"member", payload: updateUser}); // redux 상태 업데이트
+      setEditMode(false);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  };
+
+  const inputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateUser({ ...updateUser, [name]: value });
+  }
+
+  console.log(updateUser);
+
+  // 모달 관련
   const openWithdrawalModal = () => {
     setIsWithdrawalModalOpen(true);
     setPwInput('');
@@ -52,7 +74,7 @@ const UserInfo = () => {
 
   const handleWithdrawal = (e) => {    
     // 자체 로그인 회원 탈퇴
-    axios.post(`http://localhost:8080/member/delete/normal/${memNo}`,{
+    axios.post(`http://localhost:8080/member/delete/normal/${member.memNo}`,{
       password : pwInput
     },
     {
@@ -89,7 +111,7 @@ const UserInfo = () => {
 
   const handleSocialWithdrawal = (e) => {    
     // 소셜 로그인 회원 탈퇴
-    axios.post(`http://localhost:8080/member/delete/social/${memNo}`,{
+    axios.post(`http://localhost:8080/member/delete/social/${member.memNo}`,{
       email : emailInput
     },
     {
@@ -123,67 +145,46 @@ const UserInfo = () => {
     })
   };
 
-  
-
-  const edit = () => { // 수정버튼 클릭 시 input 입력 가능
-    setEditMode(!editMode);
-  }
-
-  const save = () => { // 저장버튼 클릭 시 input readOnly
-    setEditMode(false);
-  };
-
-
-  const inputChange = (e) => {
-    const { name, value } = e.target;
-    setUserInfo({ ...userInfo, [name]: value });
-  }
-
   return (
     <div className='mypage'>
       <UserSideTab />
       <div className='userInfoBox'>
         <div className='nicknameBox'>
-          <p><img src="/img/house.png" alt="house" />조수빈 바보 님</p>
+          <p><img src="/img/house.png" alt="house" />{member.nickname} 님</p>
         </div>
         <div className='infoBox'>
           <div className='infoTitle'>
             <p>회원정보</p>
             {editMode ? (
-              <p>
-                <span onClick={save}>저장</span>
-              </p>
-            ) : (
-              <p>
-                <span onClick={edit}>수정</span>
-              </p>
+              <p><span onClick={save}>저장</span></p>
+              ) : (
+              <p><span onClick={edit}>수정</span></p>
             )}
           </div>
           <div className='infoContent' style={{ flexDirection: "column", alignItems: "stretch" }}>
             <div>
               <p>아이디</p>
-              <input type="text" name="id" value={userInfo.id} readOnly={!editMode} className="inputN" />
+              <input type="text" name="id" value={updateUser.id} readOnly={!editMode} className="inputN" />
               <span></span>
             </div>
             <div>
               <p>이름</p>
-              <input type="text" name="name" value={userInfo.name} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
               <span>이름유효성 넣을 부분</span>
             </div>
             <div>
               <p>이메일</p>
-              <input type="text" name="email" value={userInfo.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
               <span>이메일유효성 넣을 부분</span>
-
             </div>
             <div>
               <p>닉네임</p>
-              <input type="text" name="nickname" value={userInfo.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
               <span>닉네임유효성 넣을 부분</span>
             </div>
             <div>
               <p>전화번호</p>
-              <input type="text" name="phone" value={userInfo.phone} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
               <span></span>
             </div>
           </div>
@@ -197,12 +198,12 @@ const UserInfo = () => {
                 <div className='pwContent'>
                     <div>
                         <p>현재 비밀번호</p>
-                        <input type="password" name="pw" value={userInfo.pw} onChange={inputChange} />
+                        <input type="password" name="pw" value={member.pw} onChange={inputChange} />
                         <span>비밀번호 유효성 넣을 부분</span>
                     </div>
                     <div>
                         <p>변경할 비밀번호</p>
-                        <input type="password" name="newPw" value={userInfo.newPw} onChange={inputChange} />
+                        <input type="password" name="newPw" value={member.newPw} onChange={inputChange} />
                         <span>비밀번호 유효성 넣을 부분</span>
                     </div>
                 </div>
