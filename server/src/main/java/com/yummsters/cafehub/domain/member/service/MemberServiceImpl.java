@@ -244,6 +244,15 @@ public class MemberServiceImpl implements MemberService{
         memberRepository.save(modifyMember);
         return modifyMember;
     }
+    // userinfo 현재 비밀번호 일치 여부
+    @Override
+    public boolean matchPw(String id, String password) throws Exception {
+        Member member = memberRepository.findById(id);
+        if(member == null) throw new Exception("존재하지 않는 회원입니다.");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(password, member.getPassword());
+    }
+
     // 수빈 part ----------------------------------------------------------
     //카페정보생성
     @Override
