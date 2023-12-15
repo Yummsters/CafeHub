@@ -15,8 +15,9 @@ const UserInfo = () => {
   const social = useSelector(state=>state.persistedReducer.member.social);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
-  const [randomCodeMatch, setRandomCodeMatch] = useState(false);
-  
+  const [userInputMsg, setUserInputMsg] = useState({email:'', nickname:'', phone:''});
+  const [saveCheck, setSaveCheck] = useState({name: false, email: false, nickname: false, phone: false})
+
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
   const [emailInput, setEmailInput] = useState('');
@@ -43,10 +44,30 @@ const UserInfo = () => {
     setEditMode(true);
   }
   const save = () => { // 저장버튼 클릭 시 input readOnly
+    const isUnchanged = Object.keys(updateUser).every((key) => updateUser[key] === member[key]);
+    if (isUnchanged) {
+      Toast.fire({
+        icon: 'warning',
+        title: '변경된 정보가 없습니다.',
+      });
+      setEditMode(false);
+      return;
+    }
+
+    // 모든 saveCheck 값이 true인지 확인
+    const allCheck = Object.values(saveCheck).every((value) => value === true);
+    if (!allCheck) {
+      Toast.fire({
+        icon: 'error',
+        title: '입력값을 확인해주세요.',
+      });
+      return;
+    }
+
     axios.put("http://localhost:8080/member/modifyInfo", updateUser)
     .then((res) => {
       console.log(res.data);
-      dispatch({type:"member", payload: updateUser}); // redux 상태 업데이트
+      // dispatch({type:"member", payload: updateUser}); // redux 상태 업데이트 확인 후 주석 풀기
       setEditMode(false);
     })
     .catch((error) => {
@@ -54,16 +75,69 @@ const UserInfo = () => {
     })
   };
 
+  console.log("이름" + saveCheck.name);
+  console.log("이메일" + saveCheck.email);
+  console.log("닉네임" + saveCheck.nickname);
+  console.log("폰" + saveCheck.phone);
+
   const inputChange = (e) => {
     const { name, value } = e.target;
-    setUpdateUser({ ...updateUser, [name]: value });
-    if (name === 'phone') {
-      setRandomCodeMatch(false); // 휴대폰 입력값 바뀌면 false
+
+    // 이메일 중복확인
+    if (name === 'email' && value.trim() !== '') {
+      axios.get(`http://localhost:8080/email/${value}`)
+      .then(res =>{
+          console.log(res.data);
+          if(res.data){
+            setUserInputMsg({...userInputMsg, [name]: "사용불가능한 이메일입니다"});
+            setSaveCheck({...saveCheck, [name]: false})
+          } else { 
+            setUserInputMsg({...userInputMsg, [name]: ""}); 
+            setSaveCheck({...saveCheck, [name]: true})
+          }
+      })
+      .catch(err => {console.log(err);})
+    } else {
+      setUserInputMsg({...userInputMsg, [name]: ""})
     }
+
+    // 닉네임 중복확인
+    if (name === 'nickname' && value.trim() !== '') {
+      axios.get(`http://localhost:8080/nickname/${value}`)
+      .then(res =>{
+        console.log(res.data);
+        if(res.data){
+          setUserInputMsg({...userInputMsg, [name]: "사용불가능한 닉네임입니다"});
+          setSaveCheck({...saveCheck, [name]: false})
+        } else { 
+          setUserInputMsg({...userInputMsg, [name]: ""}); 
+          setSaveCheck({...saveCheck, [name]: true})
+        }
+      })
+      .catch(err => {console.log(err);})
+    }
+
+    // 휴대폰 번호 유효성
+    if (name === 'phone' && !/^[0-9]+$/.test(value) && value.trim() !== '') {
+      setUserInputMsg({...userInputMsg, [name]: "하이픈(-) 없이 작성하세요"});
+      setSaveCheck({...saveCheck, [name]: false})
+    } else {
+      setUserInputMsg({...userInputMsg, [name]:""});
+      setSaveCheck({...saveCheck, [name]: false})
+    }
+    
+    setUpdateUser({ ...updateUser, [name]: value });
   }
 
   // 수정 - 휴대폰 인증
   const sendPhoneCode = () => {
+    if (!/^[0-9]+$/.test(updateUser.phone) || updateUser.phone.length !== 11) {
+      setUserInputMsg({...userInputMsg, phone:"유효하지 않은 전화번호입니다"});
+      return;
+    } else if (member.phone === updateUser.phone) {
+      setUserInputMsg({...userInputMsg, phone:"기존과 동일한 전화번호입니다"});
+      return;
+    }
     // 랜덤 코드
     const random = Math.floor(Math.random() * 9000) + 1000;
     console.log("Random code set:", random);
@@ -94,7 +168,7 @@ const UserInfo = () => {
             title: "휴대폰 번호 인증 완료",
             icon: "success"
           });
-          setRandomCodeMatch(true);
+          setSaveCheck({...saveCheck, phone: true})
         }
       });
       // })
@@ -102,7 +176,7 @@ const UserInfo = () => {
         //     console.log(error);
         // });
       }
-      
+
   // 비밀번호 관련---------------------------------------
   const [password, setPassword] = useState({pw:'', newPw:'', newPwCheck:''});
   const [passwordMatch, setPasswordMatch] = useState(false);
@@ -112,7 +186,6 @@ const UserInfo = () => {
     const { name, value } = e.target;
     setPassword((prevPassword) => {
       const updatedPassword = { ...prevPassword, [name]: value };
-      
       // 새 비밀번호 유효성
       if (name === 'newPw' && !/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/.test(value) && value.trim() !== '') {
         setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: '소문자/숫자/특수문자 포함 8~20자' }));
@@ -311,21 +384,23 @@ const UserInfo = () => {
             <div>
               <p>이메일</p>
               <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>이메일유효성 / 중복확인</span>
+              <span>{userInputMsg.email}</span>
             </div>
             <div>
               <p>닉네임</p>
               <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>닉네임유효성 / 중복확인</span>
+              <span>{userInputMsg.nickname}</span>
             </div>
             <div>
               <p>전화번호</p>
-              <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>      
-                <button onClick={sendPhoneCode} disabled={randomCodeMatch}>
-                  {randomCodeMatch ? "인증 완료" : "휴대폰 인증"}
-                </button>
-                전화번호 유효성</span>
+              <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onInput={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <span>{userInputMsg.phone}
+                {editMode && (
+                  <button onClick={sendPhoneCode} disabled={saveCheck.phone}>
+                    {saveCheck.phone ? "인증 완료" : "휴대폰 인증"}
+                  </button>
+                )}
+              </span>
             </div>
           </div>
         </div>
@@ -338,19 +413,19 @@ const UserInfo = () => {
                 <div className='pwContent'>
                     <div>
                         <p>현재 비밀번호</p>
-                        <input type="password" name="pw" value={password.pw} onInput={handlePassword} />
+                        <input type="password" name="pw" value={password.pw} onChange={handlePassword} />
                         <span className='userInfoMsg'>{passwordMatch ? "" : password.pw.trim() === "" ? "" : "현재 비밀번호와 일치하지 않습니다"} </span>
                     </div>
                     {passwordMatch && (
                     <>
                       <div>
                           <p>새 비밀번호</p>
-                          <input type="password" name="newPw" value={password.newPw} onInput={handlePassword} />
+                          <input type="password" name="newPw" value={password.newPw} onChange={handlePassword} />
                           <span className='userInfoMsg'>{passwordMsg.newPw}</span>
                       </div>
                       <div>
                           <p>새 비밀번호 확인</p>
-                          <input type="password" name="newPwCheck" value={password.newPwCheck} onInput={handlePassword} />
+                          <input type="password" name="newPwCheck" value={password.newPwCheck} onChange={handlePassword} />
                           <span className='userInfoMsg'>{passwordMsg.newPwCheck}</span>
                       </div>
                     </>
