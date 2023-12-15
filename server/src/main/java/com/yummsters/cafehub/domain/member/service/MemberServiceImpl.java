@@ -353,4 +353,9 @@ public class MemberServiceImpl implements MemberService{
         return member;
     }
 
+    // 혜리 part ----------------------------------------------------------
+    @Override
+    public Member getMemberByMemNo(Integer memNo) {
+        return memberRepository.findById(memNo).orElse(null);
+    }
 }
