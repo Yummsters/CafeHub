@@ -4,10 +4,14 @@ import {useDispatch} from 'react-redux';
 import Swal from 'sweetalert2';
 
 import axios from 'axios';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { checkLogin, tokenCreate, tokenExpried } from './TokenCheck';
 
 const OAuth2 = () => {
     const dispatch = useDispatch();    
-    const {accessToken} = useParams();
+    const {accessToken, refreshToken} = useParams();
+    console.log(accessToken);
+    console.log(refreshToken);
     const navigate = useNavigate();
     const [member, setMember] = useState({memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''});
 
@@ -25,18 +29,21 @@ const OAuth2 = () => {
     })
 
     useEffect(()=> {
-        console.log("accessToken:"+accessToken);
         dispatch({type:"accessToken", payload:accessToken});
         dispatch({type:"isLogin", payload:true});
+        setCookie("refreshToken",  `${refreshToken}`);
+        
         axios.get(`http://localhost:8080/member`,{
             headers : {
-                Authorization : accessToken
+                Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
             console.log(res);
             setMember(res.data);
             dispatch({type:"member", payload:res.data});
+            tokenCreate(dispatch, setCookie, res.headers);
             Toast.fire({
                 icon: 'success',
                 title: '로그인이 완료되었습니다.'
@@ -47,6 +54,7 @@ const OAuth2 = () => {
         .catch(err =>{
             console.log(err);
             const errStatus = err.response.data.status;
+            tokenExpried(dispatch, removeCookie, err.response.data, navigate);
 
             // 로그인 에러
         if(errStatus === 401){
