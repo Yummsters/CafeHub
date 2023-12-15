@@ -11,6 +11,7 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+import { getCookie } from '../components/Cookie';
 
 const ReviewWrite = () => {
     const [editorInstance, setEditorInstance] = useState(null);
@@ -33,11 +34,13 @@ const ReviewWrite = () => {
     useEffect(() => {
         if (token) {
             console.log('현재 토큰:', token);
+            console.log(getCookie("refreshToken"));
 
             // 토큰을 이용한 사용자 정보 가져오기
             axios.get(`http://localhost:8080/member`, {
                 headers: {
                     Authorization: accessToken,
+                    Refresh : getCookie("refreshToken"),
                     'Content-Type': 'application/json'
                 }
             })

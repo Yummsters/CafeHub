@@ -8,12 +8,16 @@ import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { checkLogin, tokenCreate, tokenExpried } from './TokenCheck';
 
 const OAuth2 = () => {
-    const dispatch = useDispatch();    
+    const dispatch = useDispatch();
     const {accessToken, refreshToken} = useParams();
     console.log(accessToken);
     console.log(refreshToken);
     const navigate = useNavigate();
     const [member, setMember] = useState({memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''});
+
+    setCookie("refreshToken", refreshToken);
+    dispatch({type:"accessToken", payload:accessToken});
+    dispatch({type:"isLogin", payload:true});
 
     // swal
     const Toast = Swal.mixin({
@@ -29,10 +33,6 @@ const OAuth2 = () => {
     })
 
     useEffect(()=> {
-        dispatch({type:"accessToken", payload:accessToken});
-        dispatch({type:"isLogin", payload:true});
-        setCookie("refreshToken",  `${refreshToken}`);
-        
         axios.get(`http://localhost:8080/member`,{
             headers : {
                 Authorization :accessToken,
@@ -43,7 +43,6 @@ const OAuth2 = () => {
             console.log(res);
             setMember(res.data);
             dispatch({type:"member", payload:res.data});
-            tokenCreate(dispatch, setCookie, res.headers);
             Toast.fire({
                 icon: 'success',
                 title: '로그인이 완료되었습니다.'
@@ -54,8 +53,6 @@ const OAuth2 = () => {
         .catch(err =>{
             console.log(err);
             const errStatus = err.response.data.status;
-            tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-
             // 로그인 에러
         if(errStatus === 401){
             Toast.fire({
