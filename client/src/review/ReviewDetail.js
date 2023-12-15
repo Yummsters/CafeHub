@@ -102,13 +102,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const handleReplySubmit = () => {
-    //등록 버튼 클릭 시 댓글 등록 요청
     axios
       .post(`http://localhost:8080/replyWrite/${memNo}/${reviewNo}`, {
         content: replyContent,
       })
       .then((res) => {
-        //댓글 등록 성공 시 추가 작업
         console.log("댓글이 성공적으로 등록되었습니다");
         setReplyContent("");
         fetchReplies();
@@ -116,16 +114,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       .catch((error) => {
         console.error("댓글 등록 에러", error);
 
-        // 에러 응답이 있을 경우 출력
         if (error.response) {
           console.error("응답 데이터:", error.response.data);
           console.error("응답 상태 코드:", error.response.status);
           console.error("응답 헤더:", error.response.headers);
         } else if (error.request) {
-          // 요청이 전송되었지만 응답을 받지 못한 경우
           console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
         } else {
-          // 요청을 설정하는 과정에서 에러가 발생한 경우
           console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
         }
       });
@@ -151,14 +146,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .catch((error) => {
         if (error.response) {
-          // 서버 응답이 왔지만 에러 상태인 경우
           console.error("Server responded with error status:", error.response.status);
           console.error("Error response data:", error.response.data);
         } else if (error.request) {
-          // 서버 응답을 받지 못한 경우
           console.error("No response received from the server.");
         } else {
-          // 요청을 보낼 때 에러가 발생한 경우
           console.error("Error while sending the request:", error.message);
         }
       });
@@ -176,23 +168,29 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReReplySubmit = () => {
     if (selectedReply) {
-      axios
-        .post(`http://localhost:8080/reply/${selectedReply.replyNo}/reReply`, {
-          content: reReplyContent,
-          writerNo: 123, //하드코딩. 수정 필요
-          likeCount: 0, //하드코딩. 수정 필요
-        })
-        .then((res) => {
-          console.log("대댓글이 성공적으로 등록되었습니다.");
-          setReReplyContent("");
-          fetchReplies();
+      axios.get(`http://localhost:8080/member/${memNo}`)
+        .then((response) => {
+          const member = response.data;
+          axios.post(`http://localhost:8080/reply/${selectedReply.replyNo}/reReply`, {
+            content: reReplyContent,
+            writerNo: member.memNo, // writerNo 대신 memNo 사용
+            likeCount: 0,
+          })
+          .then((res) => {
+            console.log("대댓글이 성공적으로 등록되었습니다.");
+            setReReplyContent("");
+            fetchReplies();
+          })
+          .catch((error) => {
+            console.error("대댓글 등록 에러", error);
+          });
         })
         .catch((error) => {
-          console.error("대댓글 등록 에러", error);
+          console.error("Member 조회 에러", error);
         });
     } else {
       console.error("댓글을 선택해주세요.");
-      return; //대댓글을 등록할 댓글을 선택하지 않은 경우 함수 종료
+      return;
     }
   };
 
