@@ -114,7 +114,7 @@ function App() {
               <Route exact path='/choicePoint/:memNo' element={<NoHeaderFooterLayout><ChoicePoint/></NoHeaderFooterLayout>}/>
               <Route exact path='/usePoint/:memNo' element={<NoHeaderFooterLayout><UsePoint/></NoHeaderFooterLayout>}/>
               <Route exact path='/userReview' element={<DefaultLayout><UserReview/></DefaultLayout>}/>
-              <Route exact path='/oauth2/redirect/:accessToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
+              <Route exact path='/oauth2/redirect/:accessToken/:refreshToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
               <Route exact path='/payment/success' element={<DefaultLayout><Success/></DefaultLayout>}/>
               <Route exact path='/payment/fail' element={<DefaultLayout><Fail/></DefaultLayout>}/>
               <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>

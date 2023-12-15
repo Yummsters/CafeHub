@@ -3,9 +3,9 @@ import {useSelector} from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import {persistor} from '../App';
-import { removeCookie} from './Cookie';
+import { getCookie, removeCookie} from './Cookie';
 import Swal from 'sweetalert2';
-import { checkLogin, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { checkLogin} from '../login/TokenCheck';
 
 const Header = () => {
     const memberType = useSelector(state=>state.persistedReducer.member.memberType);
@@ -49,8 +49,11 @@ const Header = () => {
     const logout = (e) =>{
         e.preventDefault();
         
-        persistor.purge();
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
+        dispatch({type:"accessToken", payload:""});
+        dispatch({type:"isLogin", payload:false});
+        dispatch({type:"member", payload:""});
+        dispatch({type:"cafe", payload:""});
         removeCookie("refreshToken");
 
         Toast.fire({

@@ -63,7 +63,7 @@ const Toast = Swal.mixin({
          const refreshToken = res.headers.refresh;
          console.log(res.headers);
          console.log(res);
-         setCookie("refreshToken", `${refreshToken}`);
+         setCookie("refreshToken", refreshToken);
          console.log("cookie = " + getCookie("refreshToken"));
 
 
@@ -167,7 +167,7 @@ const Toast = Swal.mixin({
          const refreshToken = res.headers.refresh;
          console.log(res.headers);
          console.log(res);
-         setCookie("refreshToken", `${refreshToken}`);
+         setCookie("refreshToken", refreshToken);
          console.log("cookie = " + getCookie("refreshToken"));
 
         Toast.fire({

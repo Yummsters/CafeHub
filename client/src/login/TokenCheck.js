@@ -26,6 +26,7 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
                 navigate('/login');
             });  
         }else{
+            
             axios.get(`http://localhost:8080/member`,{
                 headers : {
                     Authorization :accessToken,
