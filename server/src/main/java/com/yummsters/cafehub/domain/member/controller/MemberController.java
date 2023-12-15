@@ -177,11 +177,11 @@ public class MemberController {
     // 수빈 part ----------------------------------------------------------------
     // 사장님 회원가입
     
-    @PostMapping("/signUpStore")
-    public ResponseEntity<Object> existStoreMember(@RequestBody SignUpReqDto requestDto) {
+    @PostMapping("/signUpStore/{cafeNo}")
+    public ResponseEntity<Object> existStoreMember(@RequestBody SignUpReqDto requestDto, @PathVariable Integer cafeNo) {
         Member member = mapper.signUpReqDtoToMember(requestDto);
         try {
-            member = memberService.existStoreMember(member);
+            member = memberService.existStoreMember(member, cafeNo);
             SignUpResDto memberResponse = mapper.memberToSignUpResDto(member);
             return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -192,6 +192,9 @@ public class MemberController {
     
     @PostMapping("/cafe/store")
     public ResponseEntity<Object> signUpStore(@ModelAttribute SignUpStoreDto signUpStore, @RequestParam("file") List<MultipartFile> files){       
+    	System.out.println("들어옴 + " + signUpStore.getCafeName() );
+    	System.out.println("들어옴2 + " + files );
+
     	try{
             Integer cafeNo = memberService.existStore(signUpStore, files);
             return new ResponseEntity<>(cafeNo, HttpStatus.OK);

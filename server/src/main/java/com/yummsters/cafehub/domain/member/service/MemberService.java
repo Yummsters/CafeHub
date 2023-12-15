@@ -27,5 +27,5 @@ public interface MemberService {
     Member searchPw(String id, String phone) throws Exception;
     void changePw(String id, String newPassword) throws Exception;
     Integer existStore(SignUpStoreDto signUpStore,List<MultipartFile> files) throws Exception;
-    Member existStoreMember(Member member) throws Exception;
+    Member existStoreMember(Member member, Integer cafeNo) throws Exception;
 }
