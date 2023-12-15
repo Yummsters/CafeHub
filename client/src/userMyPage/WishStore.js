@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Table, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import MapCafeInfo from "../map/MapCafeInfo";
 const {kakao} = window;
 
 const WishStore = () => {
@@ -28,18 +29,6 @@ const WishStore = () => {
 
   const closeModal = () => {
     setShowModal(false);
-  };
-
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
   };
 
   useEffect(() => {
@@ -86,15 +75,6 @@ const WishStore = () => {
       marker.setMap(map);
     }
   }, [showModal, cafeNo, selectCafe]);
-  
-  const cafeInfo = (name, src, col, text) => {
-    return text !== null && text !== "" ? (
-      <div className={name}>
-        <img src={src} alt="" />
-        <div className={col}>{text}</div>
-      </div>
-    ) : null;
-  };
 
   return (
     <div className="wishStore-container">
@@ -118,54 +98,15 @@ const WishStore = () => {
           <div className="modalBox">
               <img className="closeBtn" onClick={closeModal} src="/img/X.png" alt=""/>
             <div className="cafeModalContent">
+
               <div className='modalMap'>
                 <div id="mapView2"></div>
-              </div>
-              <div className="modalCafe">
-                <div className="modalstorebox">
-                  <img src="/img/y_star.png" alt="star"/>
-                  <span>{selectCafe.cafeName}</span>
-                </div>
-
-                {selectCafe.thumbImg !== null ? ( 
-                    <div className="storeImag">
-                      <img src="/img/{selectCafe.thumbImg}" alt="" />
-                    </div>
-                  ) : null}
-                
-                <div className="storeLine" />
-
-                {cafeInfo('store_address', '/img/pin.png', 'address', selectCafe.address)}
-                {cafeInfo('store_call', '/img/phone.png', 'call', selectCafe.tel)}
-                {cafeInfo('store_time', '/img/clock.png', 'time', selectCafe.operTime)}
-                {cafeInfo('store_type', '/img/store.png', 'type', selectCafe.tagName)}
-                {cafeInfo('store_info', '/img/bean.png', 'info', "가게 정보 넣을 곳")}
-                <div className="store_review">
-                    <img src="/img/review.png" alt=""/>
-                    <div className="review">리뷰</div>
-                </div>
+                <MapCafeInfo wishModal={true} selectCafe={selectCafe} wishCafeNo = {cafeNo}/>
               </div>
             </div>
           </div>
         )}
-              <div className="pagination-container">
-
-                  <Pagination>
-                    <PaginationItem disabled={currentPage === 1}>
-                      <PaginationLink previous onClick={prevPage} />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <PaginationItem key={index} active={currentPage === index + 1}>
-                        <PaginationLink onClick={() => setCurrentPage(index + 1)}>
-                          {index + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem disabled={currentPage === totalPages}>
-                      <PaginationLink next onClick={nextPage} />
-                    </PaginationItem>
-                  </Pagination>
-                  </div>
+              
       </div>
     </div>
   );
