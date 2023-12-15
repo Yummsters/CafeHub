@@ -29,4 +29,6 @@ public interface MemberService {
     boolean matchPw(String id, String password) throws Exception;
     Integer existStore(SignUpStoreDto signUpStore,List<MultipartFile> files) throws Exception;
     Member existStoreMember(Member member, Integer cafeNo) throws Exception;
+    
+    Member getMemberByMemNo(Integer memNo) throws Exception;
 }

@@ -83,22 +83,30 @@ public class ReplyServiceImpl implements ReplyService {
 	@Override
 	@Transactional
 	public void addReReply(Integer replyNo, ReplyDto replyDto) {
-		Reply parentReply = replyRepository.findByReplyNo(replyNo);
+	    Reply parentReply = replyRepository.findByReplyNo(replyNo);
+	    if (parentReply != null) {
+	        Review review = parentReply.getReview();
+	        Member member = memberRepository.findByMemNo(replyDto.getWriterNo());
 
-		if (parentReply != null) {
-			Review review = parentReply.getReview();
-			Member member = memberRepository.findByMemNo(replyDto.getWriterNo());
+	        // Ensure that member is not null before creating the reReply
+	        if (member != null) {
+	            Reply reReply = Reply.builder()
+	                .content(replyDto.getContent())
+	                .review(review)
+	                .depth(parentReply.getDepth() + 1)
+	                .member(member)
+	                .likeCount(replyDto.getLikeCount())
+	                .build();
 
-			Reply reReply = Reply.builder().content(replyDto.getContent()).review(review)
-					.depth(parentReply.getDepth() + 1) // 댓글의 depth 증가
-					.member(member).likeCount(replyDto.getLikeCount()).build();
-
-			replyRepository.save(reReply);
-		} else {
-			throw new IllegalArgumentException("원댓글을 찾을 수 없습니다.");
-		}
+	            replyRepository.save(reReply);
+	        } else {
+	            throw new IllegalArgumentException("작성자를 찾을 수 없습니다.");
+	        }
+	    } else {
+	        throw new IllegalArgumentException("원댓글을 찾을 수 없습니다.");
+	    }
 	}
-
+	
 	@Override
 	public Page<ReplyDto> getRepliesByReviewNo(Integer reviewNo, Pageable pageable) throws Exception {
 		try {
