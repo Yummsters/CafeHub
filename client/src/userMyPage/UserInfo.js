@@ -15,6 +15,7 @@ const UserInfo = () => {
   const social = useSelector(state=>state.persistedReducer.member.social);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
+  const [randomCodeMatch, setRandomCodeMatch] = useState(false);
   
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
@@ -37,45 +38,7 @@ const UserInfo = () => {
     }
   })
 
-  // 휴대폰 인증번호
-  // Swal.fire({
-    //   title: "Submit your Github username",
-    //   input: "text",
-    //   inputAttributes: {
-      //     autocapitalize: "off"
-  //   },
-  //   showCancelButton: true,
-  //   confirmButtonText: "Look up",
-  //   showLoaderOnConfirm: true,
-  //   preConfirm: async (login) => {
-    //     try {
-      //       const githubUrl = `
-      //         https://api.github.com/users/${login}
-      //       `;
-      //       const response = await fetch(githubUrl);
-  //       if (!response.ok) {
-    //         return Swal.showValidationMessage(`
-    //           ${JSON.stringify(await response.json())}
-    //         `);
-    //       }
-    //       return response.json();
-  //     } catch (error) {
-  //       Swal.showValidationMessage(`
-  //         Request failed: ${error}
-  //       `);
-  //     }
-  //   },
-  //   allowOutsideClick: () => !Swal.isLoading()
-  // }).then((result) => {
-  //   if (result.isConfirmed) {
-  //     Swal.fire({
-  //       title: `${result.value.login}'s avatar`,
-  //       imageUrl: result.value.avatar_url
-  //     });
-  //   }
-  // });
-
-  // 수정 관련
+  // 수정 관련---------------------------------------
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(true);
   }
@@ -90,13 +53,57 @@ const UserInfo = () => {
       console.log(error);
     })
   };
-  
+
   const inputChange = (e) => {
     const { name, value } = e.target;
     setUpdateUser({ ...updateUser, [name]: value });
+    if (name === 'phone') {
+      setRandomCodeMatch(false); // 휴대폰 입력값 바뀌면 false
+    }
   }
-  
-  // 비밀번호 관련
+
+  // 수정 - 휴대폰 인증
+  const sendPhoneCode = () => {
+    // 랜덤 코드
+    const random = Math.floor(Math.random() * 9000) + 1000;
+    console.log("Random code set:", random);
+    console.log(updateUser.phone);
+    // 입력한 번호로 랜덤 코드 발송
+    // axios.get(`http://localhost:8080/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
+    // .then((res) => {
+    //     console.log(res.data);
+        // swal로 인증번호 입력 받고 확인
+        Swal.fire({
+          title: "인증번호 확인",
+          text: "입력한 번호로 전송된 인증번호를 입력하세요",
+          input: "text",
+        showCancelButton: true,
+        confirmButtonText: "ok",
+        preConfirm: (inputCode) => {
+          if (inputCode === random.toString()) {
+            return true; // 인증 성공
+          } else {
+            Swal.showValidationMessage("인증번호가 일치하지 않습니다.");
+            return false; // 인증 실패
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Toast.fire({
+            title: "휴대폰 번호 인증 완료",
+            icon: "success"
+          });
+          setRandomCodeMatch(true);
+        }
+      });
+      // })
+      // .catch((error) => {
+        //     console.log(error);
+        // });
+      }
+      
+  // 비밀번호 관련---------------------------------------
   const [password, setPassword] = useState({pw:'', newPw:'', newPwCheck:''});
   const [passwordMatch, setPasswordMatch] = useState(false);
   const [passwordMsg, setPasswordMsg] = useState({pw:'', newPw:'', newPwCheck:''});
@@ -189,7 +196,7 @@ const UserInfo = () => {
     setPasswordMatch(false);
   }
 
-  // 모달 관련
+  // 모달 관련---------------------------------------
   const openWithdrawalModal = () => {
     setIsWithdrawalModalOpen(true);
     setPwInput('');
@@ -299,22 +306,26 @@ const UserInfo = () => {
             <div>
               <p>이름</p>
               <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>이름유효성 넣을 부분</span>
+              <span></span>
             </div>
             <div>
               <p>이메일</p>
               <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>이메일유효성 넣을 부분</span>
+              <span>이메일유효성 / 중복확인</span>
             </div>
             <div>
               <p>닉네임</p>
               <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>닉네임유효성 넣을 부분</span>
+              <span>닉네임유효성 / 중복확인</span>
             </div>
             <div>
               <p>전화번호</p>
               <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span></span>
+              <span>      
+                <button onClick={sendPhoneCode} disabled={randomCodeMatch}>
+                  {randomCodeMatch ? "인증 완료" : "휴대폰 인증"}
+                </button>
+                전화번호 유효성</span>
             </div>
           </div>
         </div>
