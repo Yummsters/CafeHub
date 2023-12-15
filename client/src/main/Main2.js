@@ -29,7 +29,7 @@ const Main2 = () => {
     <div className='Main'>
       <div className='Main2'>
         <div className='mainbar'>
-          <p className='recommendstore'>당신을 위한 카페 추천</p>
+          <p className='recommendstore' style={{margin:"0"}}>당신을 위한 카페 추천</p>
         </div>
      
       <Slider {...settings}>
