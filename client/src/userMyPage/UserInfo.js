@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './UserInfoStyle.css';
 import UserSideTab from '../components/UserSideTab';
 import axios from 'axios';
@@ -15,7 +15,8 @@ const UserInfo = () => {
   const social = useSelector(state=>state.persistedReducer.member.social);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
-
+  const [randomCodeMatch, setRandomCodeMatch] = useState(false);
+  
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
   const [emailInput, setEmailInput] = useState('');
@@ -23,7 +24,7 @@ const UserInfo = () => {
   const [editMode, setEditMode] = useState(false);
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
-
+  
   // swal
   const Toast = Swal.mixin({
     toast: true,
@@ -32,12 +33,12 @@ const UserInfo = () => {
     timer: 1000,
     timerProgressBar: true,
     didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
 
-  // 수정 관련
+  // 수정 관련---------------------------------------
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(true);
   }
@@ -56,11 +57,146 @@ const UserInfo = () => {
   const inputChange = (e) => {
     const { name, value } = e.target;
     setUpdateUser({ ...updateUser, [name]: value });
+    if (name === 'phone') {
+      setRandomCodeMatch(false); // 휴대폰 입력값 바뀌면 false
+    }
   }
 
-  console.log(updateUser);
+  // 수정 - 휴대폰 인증
+  const sendPhoneCode = () => {
+    // 랜덤 코드
+    const random = Math.floor(Math.random() * 9000) + 1000;
+    console.log("Random code set:", random);
+    console.log(updateUser.phone);
+    // 입력한 번호로 랜덤 코드 발송
+    // axios.get(`http://localhost:8080/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
+    // .then((res) => {
+    //     console.log(res.data);
+        // swal로 인증번호 입력 받고 확인
+        Swal.fire({
+          title: "인증번호 확인",
+          text: "입력한 번호로 전송된 인증번호를 입력하세요",
+          input: "text",
+        showCancelButton: true,
+        confirmButtonText: "ok",
+        preConfirm: (inputCode) => {
+          if (inputCode === random.toString()) {
+            return true; // 인증 성공
+          } else {
+            Swal.showValidationMessage("인증번호가 일치하지 않습니다.");
+            return false; // 인증 실패
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Toast.fire({
+            title: "휴대폰 번호 인증 완료",
+            icon: "success"
+          });
+          setRandomCodeMatch(true);
+        }
+      });
+      // })
+      // .catch((error) => {
+        //     console.log(error);
+        // });
+      }
+      
+  // 비밀번호 관련---------------------------------------
+  const [password, setPassword] = useState({pw:'', newPw:'', newPwCheck:''});
+  const [passwordMatch, setPasswordMatch] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState({pw:'', newPw:'', newPwCheck:''});
 
-  // 모달 관련
+  const handlePassword = (e) => { // input 입력 값 저장 
+    const { name, value } = e.target;
+    setPassword((prevPassword) => {
+      const updatedPassword = { ...prevPassword, [name]: value };
+      
+      // 새 비밀번호 유효성
+      if (name === 'newPw' && !/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/.test(value) && value.trim() !== '') {
+        setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: '소문자/숫자/특수문자 포함 8~20자' }));
+      } else {
+        setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: '' }));
+      }
+      // 새 비밀번호 일치 여부
+      if (name === 'newPwCheck') {
+        setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: value !== updatedPassword.newPw ? '비밀번호가 일치하지 않습니다' : '' }));
+      }
+
+      return updatedPassword;
+    });
+  };
+
+  // 현재 비밀번호 확인
+  useEffect(() => { 
+    if (password.pw !== '') {
+      axios.post("http://localhost:8080/member/password", {id: member.id, password: password.pw}, 
+          {
+            headers : {
+              Authorization :accessToken,
+              'Content-Type': 'application/json'
+          }
+      })
+      .then((res) => {
+        console.log(res.data);
+        if(res.data === true) {
+          setPasswordMatch(true);
+        } else {
+          setPasswordMatch(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    };
+  }, [password.pw])
+
+  const pwSubmit = () => {
+      if (passwordMsg.newPw !== '' || passwordMsg.newPwCheck !== '') {
+        Toast.fire({
+          icon: 'error',
+          title: '유효하지 않은 비밀번호가 있습니다',
+        });
+        return; 
+      }
+      // 모든 필드에 값이 입력되지 않은 경우
+      if (!password.newPw || !password.newPwCheck || !password.pw) {
+        Toast.fire({
+          icon: 'error',
+          title: '비밀번호를 입력해주세요',
+        });
+        return; 
+      }
+
+      if (password.pw === password.newPw) {
+        Toast.fire({
+          icon: 'error',
+          title: '현재 비밀번호와 새 비밀번호가 동일합니다',
+        });
+        return;
+      }
+
+    axios.put(`http://localhost:8080/resetPw/${member.id}`, { password: password.newPw })
+        .then((res) => {
+            console.log(res);
+            Toast.fire({
+                title: "비밀번호 재설정 완료!",
+                icon: "success",
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+            Toast.fire({
+              title: "비밀번호 재설정 실패",
+              icon: "error",
+          });
+        })
+    setPassword({ pw: '', newPw: '', newPwCheck: '' }); // 제출 후 필드 초기화
+    setPasswordMatch(false);
+  }
+
+  // 모달 관련---------------------------------------
   const openWithdrawalModal = () => {
     setIsWithdrawalModalOpen(true);
     setPwInput('');
@@ -170,22 +306,26 @@ const UserInfo = () => {
             <div>
               <p>이름</p>
               <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>이름유효성 넣을 부분</span>
+              <span></span>
             </div>
             <div>
               <p>이메일</p>
               <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>이메일유효성 넣을 부분</span>
+              <span>이메일유효성 / 중복확인</span>
             </div>
             <div>
               <p>닉네임</p>
               <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>닉네임유효성 넣을 부분</span>
+              <span>닉네임유효성 / 중복확인</span>
             </div>
             <div>
               <p>전화번호</p>
               <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span></span>
+              <span>      
+                <button onClick={sendPhoneCode} disabled={randomCodeMatch}>
+                  {randomCodeMatch ? "인증 완료" : "휴대폰 인증"}
+                </button>
+                전화번호 유효성</span>
             </div>
           </div>
         </div>
@@ -193,19 +333,28 @@ const UserInfo = () => {
         <div className='pwBox'>
                 <div className='pwTitle'>
                     <p>비밀번호 수정</p>
-                    <span onClick={save}>저장</span>
+                    <span onClick={pwSubmit}>저장</span>
                 </div>
                 <div className='pwContent'>
                     <div>
                         <p>현재 비밀번호</p>
-                        <input type="password" name="pw" value={member.pw} onChange={inputChange} />
-                        <span>비밀번호 유효성 넣을 부분</span>
+                        <input type="password" name="pw" value={password.pw} onInput={handlePassword} />
+                        <span className='userInfoMsg'>{passwordMatch ? "" : password.pw.trim() === "" ? "" : "현재 비밀번호와 일치하지 않습니다"} </span>
                     </div>
-                    <div>
-                        <p>변경할 비밀번호</p>
-                        <input type="password" name="newPw" value={member.newPw} onChange={inputChange} />
-                        <span>비밀번호 유효성 넣을 부분</span>
-                    </div>
+                    {passwordMatch && (
+                    <>
+                      <div>
+                          <p>새 비밀번호</p>
+                          <input type="password" name="newPw" value={password.newPw} onInput={handlePassword} />
+                          <span className='userInfoMsg'>{passwordMsg.newPw}</span>
+                      </div>
+                      <div>
+                          <p>새 비밀번호 확인</p>
+                          <input type="password" name="newPwCheck" value={password.newPwCheck} onInput={handlePassword} />
+                          <span className='userInfoMsg'>{passwordMsg.newPwCheck}</span>
+                      </div>
+                    </>
+                    )}
                 </div>
             </div>
             <div className='resign'  onClick={openWithdrawalModal}>탈퇴</div>
