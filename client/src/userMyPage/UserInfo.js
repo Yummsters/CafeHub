@@ -16,7 +16,8 @@ const UserInfo = () => {
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
   const [randomCodeMatch, setRandomCodeMatch] = useState(false);
-  
+  const [userInputMsg, setUserInputMsg] = useState({});
+
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
   const [emailInput, setEmailInput] = useState('');
@@ -56,53 +57,65 @@ const UserInfo = () => {
 
   const inputChange = (e) => {
     const { name, value } = e.target;
-    setUpdateUser({ ...updateUser, [name]: value });
-    if (name === 'phone') {
-      setRandomCodeMatch(false); // 휴대폰 입력값 바뀌면 false
+    // 휴대폰 번호 유효성
+    if (name === 'phone' && !/^[0-9]+$/.test(value)) {
+      setUserInputMsg({...userInputMsg, phone: "하이픈(-) 없이 작성하세요"});
+      setRandomCodeMatch(false);
+    } else {
+      setUserInputMsg({...userInputMsg, phone:""});
+      setRandomCodeMatch(false); 
     }
+    
+    setUpdateUser({ ...updateUser, [name]: value });
   }
+  console.log(userInputMsg.phone);
+  console.log(randomCodeMatch);
 
   // 수정 - 휴대폰 인증
   const sendPhoneCode = () => {
-    // 랜덤 코드
-    const random = Math.floor(Math.random() * 9000) + 1000;
-    console.log("Random code set:", random);
-    console.log(updateUser.phone);
-    // 입력한 번호로 랜덤 코드 발송
-    // axios.get(`http://localhost:8080/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
-    // .then((res) => {
-    //     console.log(res.data);
-        // swal로 인증번호 입력 받고 확인
-        Swal.fire({
-          title: "인증번호 확인",
-          text: "입력한 번호로 전송된 인증번호를 입력하세요",
-          input: "text",
-        showCancelButton: true,
-        confirmButtonText: "ok",
-        preConfirm: (inputCode) => {
-          if (inputCode === random.toString()) {
-            return true; // 인증 성공
-          } else {
-            Swal.showValidationMessage("인증번호가 일치하지 않습니다.");
-            return false; // 인증 실패
+    if (!/^[0-9]+$/.test(updateUser.phone) || updateUser.phone.length !== 11) {
+      setUserInputMsg({...userInputMsg, phone:"유효하지 않은 전화번호입니다"});
+    } else {
+      // 랜덤 코드
+      const random = Math.floor(Math.random() * 9000) + 1000;
+      console.log("Random code set:", random);
+      console.log(updateUser.phone);
+      // 입력한 번호로 랜덤 코드 발송
+      // axios.get(`http://localhost:8080/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
+      // .then((res) => {
+      //     console.log(res.data);
+          // swal로 인증번호 입력 받고 확인
+          Swal.fire({
+            title: "인증번호 확인",
+            text: "입력한 번호로 전송된 인증번호를 입력하세요",
+            input: "text",
+          showCancelButton: true,
+          confirmButtonText: "ok",
+          preConfirm: (inputCode) => {
+            if (inputCode === random.toString()) {
+              return true; // 인증 성공
+            } else {
+              Swal.showValidationMessage("인증번호가 일치하지 않습니다.");
+              return false; // 인증 실패
+            }
+          },
+          allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Toast.fire({
+              title: "휴대폰 번호 인증 완료",
+              icon: "success"
+            });
+            setRandomCodeMatch(true);
           }
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Toast.fire({
-            title: "휴대폰 번호 인증 완료",
-            icon: "success"
-          });
-          setRandomCodeMatch(true);
+        });
+        // })
+        // .catch((error) => {
+          //     console.log(error);
+          // });
         }
-      });
-      // })
-      // .catch((error) => {
-        //     console.log(error);
-        // });
       }
-      
+
   // 비밀번호 관련---------------------------------------
   const [password, setPassword] = useState({pw:'', newPw:'', newPwCheck:''});
   const [passwordMatch, setPasswordMatch] = useState(false);
@@ -320,12 +333,12 @@ const UserInfo = () => {
             </div>
             <div>
               <p>전화번호</p>
-              <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>      
+              <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onInput={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <span>{userInputMsg.phone}
                 <button onClick={sendPhoneCode} disabled={randomCodeMatch}>
                   {randomCodeMatch ? "인증 완료" : "휴대폰 인증"}
                 </button>
-                전화번호 유효성</span>
+                </span>
             </div>
           </div>
         </div>
