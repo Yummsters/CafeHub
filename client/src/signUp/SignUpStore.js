@@ -6,13 +6,13 @@ const { daum } = window;
 
 const SignUpStore = () => {
     const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "", cafeName: "" });
-    const [store, setStore] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "" ,tagName:""});
+    const [store, setStore] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "" ,tagName: ""});
     const [thumbnail, setThumbnail] = useState(null);
     const [isFileSelected, setIsFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false, businessNo: false })
-    const [check, setCheck] = useState({ nickname: false, id: false, email: false, businessNo: false})
-    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false, cafeName: false, tel: false, businessNo: false });
+    const [check, setCheck] = useState({ nickname: false, id: false, email: false, businsssNo: false})
+    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false, cafeName: false, tel: false, businessNo: false, address: false,operTime: false });
     const [picture, setPicture] = useState("");
     const [randomCode, setRandomCode] = useState(0);
 
@@ -170,6 +170,8 @@ const SignUpStore = () => {
             }
         }).open();
     }
+    console.log(store.address);
+  
 
     // swal
     const toast = Swal.mixin({
@@ -180,27 +182,43 @@ const SignUpStore = () => {
     })
 
     const businessNo = () => { // 사업자번호 확인
+       
         axios.post(`http://localhost:8080/business/${store.businessNo}`)
             .then((res) => {
+                console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
+                  
                     toast.fire({
                         title: '사업자 인증 실패!',
                         text: '다시 입력해주세요',
                         icon: 'error',
                     })
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        businsssNo: false
+                    }));
+
                 } else {
                     toast.fire({
                         title: '사업자 인증 성공!',
                         text: '성공적으로 등록되었습니다',
                         icon: 'success',
                     })
-    
+            
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        businsssNo: true
+                    }));    
                 }
             })
             .catch((error) => {
                 console.log(error);
+                return false;
             })
-    }
+};    
+  
+    
+   
 
     // 휴대폰 번호 인증 -> 휴대폰 인증
     const sendPhoneCode = () => {
@@ -274,13 +292,15 @@ const SignUpStore = () => {
     // 회원가입 제출 가능 여부 확인
     const submitSignUP =
         member.name !== '' && member.nickname !== '' && member.id !== '' && member.password !== '' && member.passwordConfirm !== '' && member.phone !== '' && member.email !== '' &&
-        store.cafeName !=='' && store.tel !== ''  && store.businessNo !== '' && //store.operTime !== '' &&
-        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email && check.businessNo;
+        store.cafeName !=='' && store.tel !== ''  && store.businessNo !== '' &&  store.address !== '' && store.operTime !== '' &&
+        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email && check.businsssNo;
 
-
+       
     // 제출 버튼 클릭
     const handleClick = (e) => {
+       
         e.preventDefault();
+      
        
         // 빈값에 대한 warning 체크
         setWarnings((prevWarnings) => ({
@@ -296,17 +316,18 @@ const SignUpStore = () => {
             cafeName: store.cafeName.trim() === '',
             tel: store.tel.trim() === '',
             businessNo: store.businessNo.trim() === '',
-            // address: store.tel.trim() === '',
-            // operTime: store.operTime.trim() === '',
+            address: store.address.trim() === '',
+            operTime: store.operTime.trim() === '',
            
             
 
         }));
+        
+
 
         if (!check.id) {
             axios.get(`http://localhost:8080/id/${member.id}`)
                 .then(res => {
-                    console.log("제출전아이디" + res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,
@@ -322,29 +343,6 @@ const SignUpStore = () => {
                     console.log(err.data);
                 })
         }
-
-        // if (!check.businessNo) {
-        //     axios.post(`http://localhost:8080/business/${store.businessNo}`)
-        //     .then((res) => {
-        //         if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
-        //             toast.fire({
-        //                 title: '사업자 인증 실패!',
-        //                 text: '다시 입력해주세요',
-        //                 icon: 'error',
-        //             })
-        //         } else {
-        //             toast.fire({
-        //                 title: '사업자 인증 성공!',
-        //                 text: '성공적으로 등록되었습니다',
-        //                 icon: 'success',
-        //             })
-    
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //     })
-        // }
 
         if (!check.nickname) {
             axios.get(`http://localhost:8080/nickname/${member.nickname}`)
@@ -390,7 +388,7 @@ const SignUpStore = () => {
                     console.log(err.data);
                 })
         }
-        
+     
 
 
         if (submitSignUP) {
@@ -417,6 +415,11 @@ const SignUpStore = () => {
 
                 if (selectedFile) {
                     formData.append('file', selectedFile);
+                }else{
+                    Toast.fire({
+                        title: '썸네일을 선택하세요',
+                        icon: 'error',
+                    });
                 }
 
                 // 카페 생성
@@ -463,6 +466,7 @@ const SignUpStore = () => {
     };
     // 아이디 중복 체크
     const getIdCheck = (e) => {
+        
         e.preventDefault();
         const { name, value } = e.target;
 
@@ -566,6 +570,7 @@ const SignUpStore = () => {
                         <label>이름
                             <span className='signUpUser-auth'>
                                 {warnings.name && "이름을 입력하세요"}
+                                
                             </span>
                             <br/>
                             <input type="text" place="이름을 입력하세요" id="name" name="name" value={member.name} onChange={changeMember} />
@@ -636,7 +641,7 @@ const SignUpStore = () => {
                     </div> <br />
                     <div className='signUpStoreInputDiv'>
                         <label>가게 전화번호 <span className='signUpUser-auth'>
-                                {warnings.cafeName && "가게 전화번호를 입력하세요"}
+                                {warnings.tel && "가게 전화번호를 입력하세요"}
                             </span><br/>
                             <input type="text" id="tel" name="tel" onChange={changeStore} value={store.tel} /></label>
                     </div> <br />
@@ -653,14 +658,18 @@ const SignUpStore = () => {
                         <button type="button" onClick={businessNo}> 사업자 <br /> 인증 </button>
                     </div> <br />
                     <div className='signUpStoreInputDiv-other'>
-                        <label> 위치 <br />
-                            <input type="text" id="address" name="address" onChange={changeStore} /></label>
+                        <label> 위치<span className='signUpUser-auth'>
+                                {warnings.address && "위치를 입력하세요"}
+                            </span>
+                            <input type="text" id="address" name="address" onChange={changeStore} value={store.address}/></label>
                     </div>
                     <div className='searchStoreAuthNum'>
                         <button type="button" onClick={searchAddr}> 위치 <br />검색 </button>
                     </div> <br />
                     <div className='signUpStoreInputDiv'>
-                        <label>운영시간 <br />
+                        <label>운영시간 <span className='signUpUser-auth'>
+                                {warnings.operTime && "운영시간을 입력하세요"}
+                            </span><br/>
                             <input type="text" id="operTime" name="operTime" onChange={changeStore} value={store.operTime} /></label>
                     </div> <br />
 
