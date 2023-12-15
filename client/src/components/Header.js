@@ -61,12 +61,17 @@ const Header = () => {
         })
     }
 
+    const handleCafeRecommendClick = (e) => {
+        e.preventDefault();
+        document.getElementById('Main2').scrollIntoView({behavior:'smooth'});
+    };
+
     return (
         <div className='navBox'>
             <div className='navContent'>
                 <a href="/" style={{textDecoration:"none"}}><div className='logo'>Café<span className="hub">Hub</span></div></a>
                 <div className='center'>
-                    <p>카페 추천</p>
+                <p><a href="#Main2" onClick={handleCafeRecommendClick}>카페 추천</a></p>
                     <p><a href="/reviewList">리뷰 게시판</a></p>
                     <p><a href="/map">내 근처 카페</a></p>
                 </div>
