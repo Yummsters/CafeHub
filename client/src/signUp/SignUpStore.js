@@ -5,12 +5,14 @@ import Swal from 'sweetalert2';
 const { daum } = window;
 
 const SignUpStore = () => {
-    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "",cafeName: "" });
-
-    const [store, setStore] = useState({ cafeName: ""});
-    const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false })
-    const [check, setCheck] = useState({ nickname: false, id: false, email: false })
-    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false });
+    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "", cafeName: "" });
+    const [store, setStore] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "" ,tagName:""});
+    const [thumbnail, setThumbnail] = useState(null);
+    const [isFileSelected, setIsFileSelected] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false, businessNo: false })
+    const [check, setCheck] = useState({ nickname: false, id: false, email: false, businessNo: false})
+    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false, cafeName: false, tel: false, businessNo: false });
     const [picture, setPicture] = useState("");
     const [randomCode, setRandomCode] = useState(0);
 
@@ -25,7 +27,7 @@ const SignUpStore = () => {
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
-    const [tagList, setTagList] = useState([
+    const tagName = [
         '#카공',
         '#애견동반',
         '#TakoOut',
@@ -35,35 +37,22 @@ const SignUpStore = () => {
         '#커피전문',
         '#주류판매',
         '#감성'
-    ]);
+    ];
 
-   
+
     // 유효성 정규표현식
     const inputRegexs = {
         idRegex: /^[a-z0-9]{5,12}$/,
         passwordRegex: /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/,
         phoneRegex: /^[0-9]+$/,
-        emailRegex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        emailRegex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        businessNoRegex: /^[0-9]+$/
     };
 
 
-    const change = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setMember({ ...member, [name]: value });
-        setStore({...store,[name]: value});
-    }
-
-    const fileChange = (e) => {
-        const file = e.target.files[0];
-        setPicture(file);
-
-        // 업로드 로직은 아직
-    }
-
     useEffect(() => {
         const signUpStore = document.querySelector('.signUpStore');
-       
+
         if (signUpStore) {
             window.addEventListener('scroll', function () {
                 const scrollTop = window.scrollY;
@@ -101,6 +90,27 @@ const SignUpStore = () => {
 
         validUserCheck(name, value);
     };
+    const changeStore = (e) => {
+        const { name, value } = e.target;
+        setStore((prevInputs) => ({
+            ...prevInputs,
+            [name]: value
+        }));
+
+        // 입력이 변경될 때마다 해당 입력 필드에 대한 경고를 숨깁니다.
+        setWarnings((prevWarnings) => ({
+            ...prevWarnings,
+            [name]: false
+        }));
+
+        // 값이 변경되면 check도 다시 하도록
+        setCheck((prevWarnings) => ({
+            ...prevWarnings,
+            [name]: false
+        }));
+
+        validUserCheck(name, value);
+    };
 
 
 
@@ -120,6 +130,9 @@ const SignUpStore = () => {
         else if (name === 'phone') {
             isValid = inputRegexs.phoneRegex.test(value);
         }
+        else if (name === 'businessNo') {
+            isValid = inputRegexs.businessNoRegex.test(value);
+        }
 
         setValid((prevChecks) => ({
             ...prevChecks,
@@ -131,7 +144,7 @@ const SignUpStore = () => {
         new daum.Postcode({
             oncomplete: function (data) {
                 // var roadAddr = data.roadAddress; // 도로명 주소 변수
-                document.getElementById('location').value = data.address;
+                document.getElementById('address').value = data.address;
                 Promise.resolve(data).then(o => {
                     const { address } = data;
                     return new Promise((resolve, reject) => {
@@ -146,9 +159,12 @@ const SignUpStore = () => {
                         });
                     })
                 }).then(result => {
-                    console.log("111" + result)
-                    console.log("222" + result.lat)
-                    console.log("333" + result.lon)
+                    setStore(prevStore => ({
+                        ...prevStore,
+                        latitude: result.lat,
+                        longitude: result.lon,
+                        address: data.address,
+                    }));
                 });
 
             }
@@ -178,6 +194,7 @@ const SignUpStore = () => {
                         text: '성공적으로 등록되었습니다',
                         icon: 'success',
                     })
+    
                 }
             })
             .catch((error) => {
@@ -257,28 +274,14 @@ const SignUpStore = () => {
     // 회원가입 제출 가능 여부 확인
     const submitSignUP =
         member.name !== '' && member.nickname !== '' && member.id !== '' && member.password !== '' && member.passwordConfirm !== '' && member.phone !== '' && member.email !== '' &&
-        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email&&store.cafeName;
+        store.cafeName !=='' && store.tel !== ''  && store.businessNo !== '' && //store.operTime !== '' &&
+        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email && check.businessNo;
 
-        
 
     // 제출 버튼 클릭
     const handleClick = (e) => {
         e.preventDefault();
-        console.log(submitSignUP);
-        const formData = new FormData();
-        formData.append('cafeName', store.cafeName);
-        console.log("카페이름", store.cafeName);
-        axios
-            .post('http://localhost:8080/cafe/store', formData)
-            .then((res)=> {
-                console.log('성공'+res.data);
-            })
-            .catch((err)=> {
-                console.log('error입니다', err.response ? err.response.data : err.message);
-                console.log('error입니다'+err.data);
-            });
-            
-
+       
         // 빈값에 대한 warning 체크
         setWarnings((prevWarnings) => ({
             ...prevWarnings,
@@ -289,9 +292,17 @@ const SignUpStore = () => {
             passwordConfirm: member.passwordConfirm.trim() === '',
             phone: member.phone.trim() === '',
             phoneConfirm: member.phoneConfirm.trim() === '',
-            email: member.email.trim() === ''
+            email: member.email.trim() === '',
+            cafeName: store.cafeName.trim() === '',
+            tel: store.tel.trim() === '',
+            businessNo: store.businessNo.trim() === '',
+            // address: store.tel.trim() === '',
+            // operTime: store.operTime.trim() === '',
+           
+            
+
         }));
-        
+
         if (!check.id) {
             axios.get(`http://localhost:8080/id/${member.id}`)
                 .then(res => {
@@ -311,6 +322,29 @@ const SignUpStore = () => {
                     console.log(err.data);
                 })
         }
+
+        // if (!check.businessNo) {
+        //     axios.post(`http://localhost:8080/business/${store.businessNo}`)
+        //     .then((res) => {
+        //         if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
+        //             toast.fire({
+        //                 title: '사업자 인증 실패!',
+        //                 text: '다시 입력해주세요',
+        //                 icon: 'error',
+        //             })
+        //         } else {
+        //             toast.fire({
+        //                 title: '사업자 인증 성공!',
+        //                 text: '성공적으로 등록되었습니다',
+        //                 icon: 'success',
+        //             })
+    
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     })
+        // }
 
         if (!check.nickname) {
             axios.get(`http://localhost:8080/nickname/${member.nickname}`)
@@ -356,33 +390,75 @@ const SignUpStore = () => {
                     console.log(err.data);
                 })
         }
+        
 
-       
+
         if (submitSignUP) {
-           
-            axios.post(`http://localhost:8080/signUpStore`, member)
-                .then(res => {
-                    Toast.fire({
-                        icon: 'success',
-                        title: '회원가입이 완료되었습니다 '
+            
+            try {
+                const formData = new FormData();
+                formData.append('cafeName', store.cafeName);
+                console.log("카페이름 :  ", store.cafeName);
+                formData.append('tel', store.tel);
+
+                formData.append('address', store.address);
+                console.log("주소 : ", store.address);
+                formData.append('lat', store.latitude);
+                console.log("주소 : ", store.latitude);
+                formData.append('lng', store.longitude);
+                console.log("주소 : ", store.longitude);
+                formData.append('businessNo', store.businessNo);
+                formData.append('operTime', store.operTime);
+                formData.append('tagName', JSON.stringify(selectedTags));
+                console.log('태그보내짐?', JSON.stringify(selectedTags));
+
+
+                console.log(selectedFile);
+
+                if (selectedFile) {
+                    formData.append('file', selectedFile);
+                }
+
+                // 카페 생성
+                axios.post('http://localhost:8080/cafe/store', formData)
+                    .then((cafeResponse) => {
+                        console.log(cafeResponse);
+                        const cafeNo = cafeResponse.data;
+                        console.log("들어오나", store.cafeName);
+
+                        // 회원가입
+                        axios.post(`http://localhost:8080/signUpStore/${cafeNo}`, member)
+                            .then(() => {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: '회원가입이 완료되었습니다 ',
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "/login?showLoginPage=STORE";
+                                }, 1000);
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: '가입이 불가능한 아이디입니다 다시 확인해 주세요',
+                                });
+                            });
                     })
-                    setTimeout(() => {
-                        window.location.href = "/login?showLoginPage=STORE";
-                    }, 1000);
-                })
-                .catch(err => {
-                    console.log(err);
-                    console.log(err.data);
-                    Toast.fire({
-                        icon: 'error',
-                        title: '가입이 불가능한 아이디입니다 다시 확인해 주세요'
-                    })
-                })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+            } catch (error) {
+                console.log(error);
+            } finally {
+            }
         } else {
             Toast.fire({
                 icon: 'error',
-                title: '인증 여부를 다시 확인해주세요'
-            })
+                title: '인증 여부를 다시 확인해주세요',
+            });
         }
     };
     // 아이디 중복 체크
@@ -447,7 +523,38 @@ const SignUpStore = () => {
         }
 
     }
+    const fileChange = (e) => {
+        const file = e.target.files[0];
+        console.log('잘가져오나' + file);
+        if (file) {
+            setSelectedFile(file);
+            const thumbnailURL = URL.createObjectURL(file);
+            setThumbnail(thumbnailURL);
+            setIsFileSelected(true);
+        }
+    };
 
+    const [selectedTags, setSelectedTags] = useState([]);
+
+    const tagClick = (i) => {
+        let updatedTags;
+
+        if (selectedTags.includes(i)) {
+            updatedTags = selectedTags.filter((item) => item !== i);
+        } else {
+            updatedTags = [...selectedTags, i];
+        }
+
+        if (updatedTags.length > 3) {
+            Swal.fire({
+                title: '3개까지 선택 가능합니다',
+                icon: 'error',
+                confirmButtonText: '확인',
+            });
+        } else {
+            setSelectedTags(updatedTags);
+        }
+    };
 
 
     return (
@@ -456,10 +563,11 @@ const SignUpStore = () => {
                 <div className='signUpStore-title'>SignUp</div> <br />
                 <form>
                     <div className='signUpStoreInputDiv'>
-                        <label>이름 <br />
+                        <label>이름
                             <span className='signUpUser-auth'>
                                 {warnings.name && "이름을 입력하세요"}
                             </span>
+                            <br/>
                             <input type="text" place="이름을 입력하세요" id="name" name="name" value={member.name} onChange={changeMember} />
                         </label>
                     </div> <br />
@@ -505,8 +613,8 @@ const SignUpStore = () => {
                         <button type="button" onClick={sendPhoneCode}> 휴대폰 <br />인증 </button> {/* onClick={sendPhoneCode} */}
                     </div> <br />
                     <div className='signUpStoreInputDiv-other'>
-                        <label>인증번호<span className='signUpStore-auth'>인증번호를 확인하세요</span><br />
-                            <input type="text" id="authNum" name="authNum" onChange={change} /></label>
+                        <label>인증번호
+                            <input type="text" id="authNum" name="authNum" onChange={changeMember} /></label>
                     </div>
                     <div className='searchStoreAuthNum'>
                         <button type="button" onClick={phoneCodeCheck}> 확인 </button>
@@ -520,52 +628,64 @@ const SignUpStore = () => {
                     </div> <br />
 
                     <div className='signUpStoreInputDiv'>
-                        <label>가게명 <br />
-                            <input type="text" id="cafeName" name="cafeName" onChange={change} value={store.cafeName}/></label>
+                        <label>가게명 <span className='signUpUser-auth'>
+                                {warnings.cafeName && "가게명을 입력하세요"}
+                            </span>
+                            <br/>
+                            <input type="text" id="cafeName" name="cafeName" onChange={changeStore} value={store.cafeName} /></label>
                     </div> <br />
                     <div className='signUpStoreInputDiv'>
-                        <label>가게 전화번호 <br />
-                            <input type="text" id="storePhone" name="storePhone" onChange={changeMember} /></label>
+                        <label>가게 전화번호 <span className='signUpUser-auth'>
+                                {warnings.cafeName && "가게 전화번호를 입력하세요"}
+                            </span><br/>
+                            <input type="text" id="tel" name="tel" onChange={changeStore} value={store.tel} /></label>
                     </div> <br />
 
                     <div className='signUpStoreInputDiv-other'>
-                        <label> 사업자 번호 <span className='signUpStore-auth'> 하이픈(-)을 제외하고 입력하세요</span><br />
-                            <input type="text" id="businessNo" name="businessNo" onChange={changeMember} /></label>
+                        <label> 사업자 번호 
+                            <span className='signUpUser-auth'> 
+                    {warnings.businessNo && "사업자 번호를 입력하세요"}
+                            {store.businessNo && !valid.businessNo ? "하이픈(-) 제외 숫자로 작성하세요" : ""}
+                            </span><br />
+                            <input type="text" id="businessNo" name="businessNo" onChange={changeStore} value={store.businessNo} /></label>
                     </div>
                     <div className='searchStoreAuthNum'>
                         <button type="button" onClick={businessNo}> 사업자 <br /> 인증 </button>
                     </div> <br />
                     <div className='signUpStoreInputDiv-other'>
                         <label> 위치 <br />
-                            <input type="text" id="location" name="location" onChange={changeMember} /></label>
+                            <input type="text" id="address" name="address" onChange={changeStore} /></label>
                     </div>
                     <div className='searchStoreAuthNum'>
                         <button type="button" onClick={searchAddr}> 위치 <br />검색 </button>
                     </div> <br />
                     <div className='signUpStoreInputDiv'>
                         <label>운영시간 <br />
-                            <input type="text" id="time" name="time" onChange={changeMember} /></label>
+                            <input type="text" id="operTime" name="operTime" onChange={changeStore} value={store.operTime} /></label>
                     </div> <br />
 
                     <input type="file" id="picture" name="picture" onChange={fileChange} style={{ display: 'none' }} />
 
                     <div className='signUpStoreInputDiv-other'>
                         <label> 썸네일 <br />
-                            <input className="signUpStoreInput-text" type="text" id="picture" name="picture" value={picture ? picture.name : '사진을 선택하세요'} readOnly /></label>
+                            <input className="signUpStoreInput-text" type="text" id="picture" name="picture" value={selectedFile ? selectedFile.name : '사진을 선택하세요'} readOnly /></label>
                     </div>
 
                     <div className='searchStoreAuthNum'>
-                        <button type="button" onClick={() => document.getElementById("picture").click()}> 썸네일 <br />선택 </button>
+                        <button type="button" onClick={() => document.getElementById("picture").click()} > 썸네일 <br />선택 </button>
                     </div><br />
 
-                    <div className='SignUpStore-tag'>
-                        {tagList.length !== 0 &&
-                            tagList.map((tag, index) =>
-                                <span className='SignUpStore-tagList' key={index}>
-                                    <button className='SignUpStore-tag1' id={`tag${index}`} name={tag}> {tag}  </button>
-                                    {index % 3 === 2 ? <><br /></> : ""}
-                                </span>)}
 
+
+                    <div className='SignUpStore-tag'>
+                        {tagName.map((tags, i) => (
+                            <div
+                                key={i}
+                                className={selectedTags.includes(i) ? 'selectTags' : 'tags'}
+                                onClick={() => tagClick(i)}>
+                                {tags}
+                            </div>
+                        ))}
                     </div>
 
                     <div className='signUpStore-button'>
@@ -578,10 +698,10 @@ const SignUpStore = () => {
                 <div className='signUpStore'>
                     <div className='signUpStore-storeName'> {store.storeName ? store.storeName : '가게 이름'}</div>
                     <div className='signUpStore-picture' >
-                        {picture && <img src={URL.createObjectURL(picture)} style={{ width: "320px", height: "320px", borderRadius: "20px" }} alt="썸네일" />}
+                        {selectedFile && <img src={URL.createObjectURL(selectedFile)} style={{ width: "320px", height: "320px", borderRadius: "20px" }} alt="썸네일" />}
                     </div>
-                    <div className='signUpStore-location'>{store.location ? store.location : '위치를 입력하세요.'}</div>
-                    <div className='signUpStore-time'>운영 시간 : {store.time ? store.time : '시간을 입력하세요.'}</div>
+                    <div className='signUpStore-location'>{store.address ? store.address : '위치를 입력하세요.'}</div>
+                    <div className='signUpStore-time'>운영 시간 : {store.operTime ? store.operTime : '시간을 입력하세요.'}</div>
                 </div>
             </div>
         </div>
