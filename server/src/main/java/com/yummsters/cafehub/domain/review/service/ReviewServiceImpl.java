@@ -1,9 +1,6 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -12,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
@@ -229,10 +225,13 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	// 혜리 part ----------------------------------------------------------------
-
 	@Override
 	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception {
 		return reviewRepository.findAllByTitleContainsOrderByReviewNoDesc(search, pageable);
 	}
 
+	@Override
+	public Page<Review> getReviewsByMember(Member member, Pageable pageable) throws Exception {
+		return reviewRepository.findAllByMember(member, pageable);
+	}
 }
