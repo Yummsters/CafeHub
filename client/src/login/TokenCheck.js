@@ -17,31 +17,35 @@ import { setCookie, getCookie, removeCookie } from '../components/Cookie';
 
 // 버튼 클릭 시 회원 유효성 확인이 필요한 경우
 export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
-    if(!isLogin){
-        Toast.fire({
-            icon: 'error',
-            title: '로그인 후 이용해 주세요'
-        }).then(() => {
-            navigate('/login');
-        });  
-    }else{
-        axios.get(`http://localhost:8080/member`,{
-            headers : {
-                Authorization :accessToken,
-                Refresh : getCookie("refreshToken")
-            }
-        })
-        .then(res => {
-            // 토큰이 유효한 경우 확인 후 재발급
-            tokenCreate(dispatch, setCookie, res.headers);
-        })
-        .catch(err=>{
-            console.log(err);
+    return new Promise((resolve, reject) => {
+        if(!isLogin){
+            Toast.fire({
+                icon: 'error',
+                title: '로그인 후 이용해 주세요'
+            }).then(() => {
+                navigate('/login');
+            });  
+        }else{
+            axios.get(`http://localhost:8080/member`,{
+                headers : {
+                    Authorization :accessToken,
+                    Refresh : getCookie("refreshToken")
+                }
+            })
+            .then(res => {
+                // 토큰이 유효한 경우 확인 후 재발급
+                tokenCreate(dispatch, setCookie, res.headers);
+                resolve();
+            })
+            .catch(err=>{
+                console.log(err);
 
-            // 토큰이 유효하지 않은 경우 (리프레시 토큰도 만료된 경우) 재로그인 요청
-           tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-        })
-    }
+                // 토큰이 유효하지 않은 경우 (리프레시 토큰도 만료된 경우) 재로그인 요청
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                reject();
+            })
+        }
+    });
 }
 
 // 토큰 재생성
