@@ -28,23 +28,27 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
                 throw new Exception("탈퇴한 회원입니다.");
             }else{
                 // 탈퇴 회원이 아닌 경우
-                String jwtToken = JWT.create()
+                String accessToken = JWT.create()
                         .withSubject(principalDetails.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + JwtProvider.EXPIRATION_TIME))
                         .withClaim("id", principalDetails.getMember().getId())
                         .sign(Algorithm.HMAC256(JwtProvider.SECRET));
 
+                String refreshToken = JWT.create()
+                        .withSubject(principalDetails.getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + JwtProvider.EXPIRATION_TIME*10))
+                        .withClaim("id", principalDetails.getMember().getId())
+                        .sign(Algorithm.HMAC256(JwtProvider.SECRET));
+
                 // 토큰을 가지고 리액트로 다시 리턴
                 response.setCharacterEncoding("UTF-8");
-                String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect/" + JwtProvider.TOKEN_PREFIX + jwtToken)
+                String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect/"
+                                + JwtProvider.TOKEN_PREFIX + accessToken +"/" + JwtProvider.TOKEN_PREFIX + refreshToken)
                         .build().toUriString();
                 response.sendRedirect(targetUrl);
             }
         } catch (Exception e) {
             response.sendRedirect("http://localhost:3000/oauth2Error");
-            /*response.setStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value());
-            response.getWriter().write("탈퇴한 회원입니다. 재가입을 원하실 경우 관리자에게 문의해 주세요");
-            response.getWriter().flush();*/
         }
     }
 }
