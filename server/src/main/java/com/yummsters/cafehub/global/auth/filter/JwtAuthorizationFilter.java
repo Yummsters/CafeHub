@@ -40,7 +40,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String accessToken = access.replace(JwtProvider.TOKEN_PREFIX, "");
-        String refreshToken = refresh.replace(JwtProvider.TOKEN_PREFIX, "");
 
         String accessId = null;
         String refreshId = null;
@@ -54,6 +53,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             System.out.println("에세스 토큰 만료");
             try{
                 // refreshToken 검증
+                String refreshToken = refresh.replace(JwtProvider.TOKEN_PREFIX, "");
                 refreshId = JWT.require(Algorithm.HMAC256(JwtProvider.SECRET)).build().verify(refreshToken)
                         .getClaim("id").asString();
             }catch (TokenExpiredException et) {
