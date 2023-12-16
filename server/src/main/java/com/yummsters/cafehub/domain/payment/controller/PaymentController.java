@@ -24,13 +24,13 @@ public class PaymentController {
     private PaymentService service;
 
     @PostMapping("payment/result") // 결과를 통해 toss에 결제 승인 요청
-    public ResponseEntity<String> paymentResult(@RequestBody Map<String, Object> paymentData) {
+    public ResponseEntity<Boolean> paymentResult(@RequestBody Map<String, Object> paymentData) {
         try {
             service.paymentConfirm(paymentData);
-            return new ResponseEntity<>("결제 요청 성공", HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
 

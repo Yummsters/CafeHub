@@ -98,4 +98,16 @@ public class PointController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    // 포인트 구매
+    @PostMapping ("/buyPoint/{memNo}/{price}")
+    public ResponseEntity<Object> buyPoint(@PathVariable("memNo") Integer memNo, @PathVariable("price") Integer price){
+        try{
+            pointService.buyPoint(memNo, price);
+            return new ResponseEntity<>(price+"개 구매완료", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
