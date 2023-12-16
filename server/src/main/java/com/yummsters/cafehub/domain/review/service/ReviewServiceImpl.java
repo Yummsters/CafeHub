@@ -16,6 +16,7 @@ import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.service.PointService;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -118,51 +119,57 @@ public class ReviewServiceImpl implements ReviewService {
 
 	// 리뷰 수정
 	@Override
-	public Integer modifyReview(Integer reviewNo, ReviewDto reviewDto, List<MultipartFile> files) throws Exception {
-		// 기존 리뷰 정보 가져오기
-		Review review = reviewRepository.findByReviewNo(reviewNo);
+	public Integer modifyReview(Integer reviewNo, ReviewModifyDto reviewModifyDto, List<MultipartFile> files) throws Exception {
+	    // 기존 리뷰 정보 가져오기
+	    Review review = reviewRepository.findByReviewNo(reviewNo);
 
-		// 리뷰 정보 업데이트
-		review.setThumbImg(reviewDto.getThumbImg());
-		review.setTitle(reviewDto.getTitle());
+	    // 리뷰 정보 업데이트
+	    if (reviewModifyDto.getThumbImg() != null) {
+	        review.setThumbImg(reviewModifyDto.getThumbImg());
+	    }
+	    if (reviewModifyDto.getTitle() != null) {
+	        review.setTitle(reviewModifyDto.getTitle());
+	    }
+	    if (reviewModifyDto.getContent() != null) {
+	        review.setContent(reviewModifyDto.getContent());
+	    }
+	    if (reviewModifyDto.getTagName() != null) {
+	        review.setTagName(reviewModifyDto.getTagName());
+	    }
 
-		if (files != null && !files.isEmpty()) {
-			String dir = "c:/soobin/upload/";
-			String fileNums = "";
+	    if (files != null && !files.isEmpty()) {
+	        String dir = "c:/soobin/upload/";
+	        String fileNums = "";
 
-			for (MultipartFile file : files) {
-				if (file.isEmpty()) {
-					fileNums += (fileNums.isEmpty() ? "" : ",") + file.getOriginalFilename();
-				} else {
-					FileVo fileVo = FileVo.builder().directory(dir).name(file.getOriginalFilename())
-							.size(file.getSize()).contenttype(file.getContentType()).data(file.getBytes()).build();
+	        for (MultipartFile file : files) {
+	            if (!file.isEmpty()) {
+	                FileVo fileVo = FileVo.builder()
+	                        .directory(dir)
+	                        .name(file.getOriginalFilename())
+	                        .size(file.getSize())
+	                        .contenttype(file.getContentType())
+	                        .data(file.getBytes())
+	                        .build();
 
-					fileVoRepository.save(fileVo);
+	                // 파일 업로드
+	                fileVoRepository.save(fileVo);
 
-					// upload 폴더에 있는 이미지를 가져와서 썸네일 이미지 생성
-					String originalFilePath = dir + fileVo.getName();
+	                File uploadFile = new File(dir + fileVo.getFileNum());
+	                file.transferTo(uploadFile);
 
-					File uploadFile = new File(dir + fileVo.getFileNum());
-					System.out.println("File Path: " + uploadFile.getAbsolutePath());
+	                fileNums += (fileNums.isEmpty() ? "" : ",") + fileVo.getFileNum();
+	            }
+	        }
+	        // 파일 번호 목록을 썸네일 이미지로 사용
+	        review.setThumbImg(fileNums);
+	    }
 
-					file.transferTo(uploadFile);
+	    // 리뷰 정보 저장
+	    reviewRepository.save(review);
 
-					// file 번호 목록 만들기
-					if (!fileNums.isEmpty()) {
-						fileNums += ",";
-					}
-					fileNums += fileVo.getFileNum();
-				}
-			}
-			// 파일 번호 목록을 썸네일 이미지로 사용
-			review.setThumbImg(fileNums);
-		}
-
-		// 리뷰 정보 저장
-		reviewRepository.save(review);
-
-		return review.getReviewNo();
+	    return review.getReviewNo();
 	}
+
 
 	
 

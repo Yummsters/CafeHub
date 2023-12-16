@@ -70,7 +70,7 @@ public class ReviewDto {
 		            .thumbImg(thumbImg)
 		            .member(writer)
 		            .cafe(cafeNo)
-		            .likeCount(likeCount)
+		            .likeCount(0)
 		            .regDate(LocalDateTime.now())
 		            .build();
 	}

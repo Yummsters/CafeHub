@@ -202,9 +202,6 @@ public class MemberController {
     
     @PostMapping("/cafe/store")
     public ResponseEntity<Object> signUpStore(@ModelAttribute SignUpStoreDto signUpStore, @RequestParam("file") List<MultipartFile> files){       
-    	System.out.println("들어옴 + " + signUpStore.getCafeName() );
-    	System.out.println("들어옴2 + " + files );
-
     	try{
             Integer cafeNo = memberService.existStore(signUpStore, files);
             return new ResponseEntity<>(cafeNo, HttpStatus.OK);
@@ -212,24 +209,6 @@ public class MemberController {
         	e.printStackTrace();
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }
-    
-    // 혜리 part ----------------------------------------------------------
-    @GetMapping("/{memNo}")
-    public ResponseEntity<Member> getMember(@PathVariable Integer memNo) {
-        Member member;
-		try {
-			member = memberService.getMemberByMemNo(memNo);
-			if (member != null) {
-				return new ResponseEntity<>(member, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-
     }
 }
 
