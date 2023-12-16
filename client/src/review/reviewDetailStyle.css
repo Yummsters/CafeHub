@@ -123,6 +123,10 @@
     align-items: center;
 }
 
+.infoB {
+    gap: 10px;
+}
+
 .infoT .underline {
     text-decoration: underline;
 }
@@ -131,6 +135,15 @@
     display: flex;
     align-items: center;
     margin: 5px 0;
+}
+
+.replyInfo .infoB p:first-child, .reReplyInfo .infoB p:first-child {
+    word-break: break-all;
+}
+
+.replyInfo .infoB p:last-child, .reReplyInfo .infoB p:last-child {
+    flex: 0 0 auto;
+    word-break: keep-all;
 }
 
 .replyInfo .infoB img, .reReplyInfo .infoB img {

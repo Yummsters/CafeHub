@@ -35,14 +35,14 @@ const ReviewList = () => {
     })
 
     useEffect(() => {
-        setSearchKeyword(searchParams.get('search'));
-        setInputKeyword(searchParams.get('search'));
-        setPageInfo({...pageInfo, currentPage: parseInt(searchParams.get('page'))});
+        console.log(searchParams.get('page'));
+        setSearchKeyword(searchParams.get('search') ?? '');
+        setInputKeyword(searchParams.get('search') ?? '');
+        searchParams.get('page') && setPageInfo({...pageInfo, currentPage: parseInt(searchParams.get('page'))});
     }, [searchParams]);
 
-    console.log([pageInfo]);
-
     useEffect(() => {
+        if (!pageInfo) return false;
         // let url = '';
         // if (searchKeyword) {
         //     //검색어가 있는 경우에만 검색 API 호출
@@ -64,7 +64,7 @@ const ReviewList = () => {
                 let totalPages = response.data.totalPages;
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
                 let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
-                setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages });
+                setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
             })
             .catch((error) => {
                 console.error('리뷰 가져오기 오류:', error);
