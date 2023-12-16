@@ -1,53 +1,85 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 const Success = () => { // response 객체를 가지고 와서 추출하여 사용.
     const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const params = new URLSearchParams(window.location.search);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [isSuccess, setIsSuccess] = useState(false); // 결제 승인 여부
 
     const paymentData = {
         orderId: params.get('orderId'),
         paymentKey: params.get('paymentKey'),
         amount: params.get('amount'),
+        orderName: params.get('orderName'),
         memNo: memNo
     }
-    console.log(paymentData);
 
-useEffect(() => {
+    const onClick = () => {
+      navigate(-1);
+    }
+
+    console.log(paymentData.orderName);
+    useEffect(() => {
         axios
         .post('http://localhost:8080/payment/result', paymentData)
         .then((res) => {
             console.log(res);
-            window.location.href = '/userPoint';
+            setIsSuccess(true);
+            // dispatch({type:"payment", payload: { price: paymentData.amount, isSuccess: true }});
+            if (paymentData.orderName === '포인트구매') {
+              buyPoint();
+            }
         })
         .catch((error) => {
             console.log(error);
         })
     }, [])
 
+    const buyPoint = () => {
+      axios.post(`http://localhost:8080/point/buyPoint/${memNo}/${paymentData.amount/100}`,
+      {
+          headers : {
+              Authorization : accessToken
+          }
+      })
+      .then((res)=>{
+          console.log(res.data);
+      })
+      .catch((error) =>{
+          console.log(error);
+      })
+    }
+
     return (
     <div>
-      {/* {isSuccess === 'true' ? (
-        <div>
-          <h1>결제 성공</h1>
-          <p>결과데이터: {responseStr}</p>
-          <p>orderName: {orderName}</p>
-          <p>method: {method}</p>
-          {method === '카드' && <p>cardNumber: {cardNumber}</p>}
-          {method === '가상계좌' && <p>accountNumber: {accountNumber}</p>}
-          {method === '계좌이체' && <p>bank: {bank}</p>}
-          {method === '휴대폰' && <p>customerMobilePhone: {customerMobilePhone}</p>}
+      
+      {isSuccess ? (
+          <div className='paymentModal'>
+          <div className='paymentModal-content'>
+                <div className='payment-result-box'>
+                  <p className='payment-result'>{paymentData.amount}원 결제 완료</p>
+                  <button className='purchaseBtn' onClick={onClick}>확인</button>
+                </div>
+          </div>
         </div>
       ) : (
-        <div>
-          <h1>결제 실패</h1>
-          <p>에러메시지: {message}</p>
-          <p>에러코드: {code}</p>
+        <div className='paymentModal'>
+        <div className='paymentModal-content'>
+            <div className='payment-result-box'>
+              <p className='payment-result'>결제 실패</p>
+              <button className='purchaseBtn' onClick={onClick}>확인</button>
+            </div>
+          </div>
         </div>
-      )} */}
+      )}
     </div>
+
     );
 };
 
