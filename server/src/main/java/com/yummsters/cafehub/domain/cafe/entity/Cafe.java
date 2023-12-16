@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.cafe.entity;
 
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.tag.entity.StoreTag;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,7 +32,9 @@ public class Cafe {
     @Column
     private String thumbImg;
     @Column
-    private String tagName;
+   private String tagName;
+    // 태그 이름 칼럼을 없애고, 원투원매핑 필요 >> 아래 임의로 만들어두었는데, 참고하실거면 참고하기!
+    // 만약 원투원매핑하게 된다면 dto에 있는 tagName도 없애야 합니다!
     @Column
     private String lat;
     @Column
@@ -47,6 +50,10 @@ public class Cafe {
 
     @OneToOne(mappedBy="cafe")
     private Member member;
+
+    @OneToOne
+    @JoinColumn(name = "storeTagNo")
+    private StoreTag storeTag;
     
     public Integer getCafeNo() {
         return cafeNo;
