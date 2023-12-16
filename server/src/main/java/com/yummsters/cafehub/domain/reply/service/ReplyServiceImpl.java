@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
+import com.yummsters.cafehub.domain.reply.dto.ReplyInterface;
 import com.yummsters.cafehub.domain.reply.entity.LikeReply;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.reply.repository.LikeReplyRepository;
@@ -83,7 +84,7 @@ public class ReplyServiceImpl implements ReplyService {
 	@Override
 	@Transactional
 	public void addReReply(Integer replyNo, ReplyDto replyDto) {
-	    Reply parentReply = replyRepository.findByReplyNo(replyNo);
+	    Reply parentReply = replyRepository.findByReplyNo(replyDto.getParentReplyNo());
 	    if (parentReply != null) {
 	        Review review = parentReply.getReview();
 	        Member member = memberRepository.findByMemNo(replyDto.getWriterNo());
@@ -94,6 +95,7 @@ public class ReplyServiceImpl implements ReplyService {
 	                .content(replyDto.getContent())
 	                .review(review)
 	                .depth(parentReply.getDepth() + 1)
+	                .parentReply(parentReply)
 	                .member(member)
 	                .likeCount(replyDto.getLikeCount())
 	                .build();
@@ -108,12 +110,14 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 	
 	@Override
-	public Page<ReplyDto> getRepliesByReviewNo(Integer reviewNo, Pageable pageable) throws Exception {
+	public Page<ReplyInterface> getRepliesByReviewNo(Integer memNo, Integer reviewNo, Pageable pageable) throws Exception {
 		try {
-			Page<Reply> replyPage = replyRepository.findAllByReview_ReviewNoOrderByReplyNoDesc(reviewNo, pageable);
+			Page<ReplyInterface> replyPage = replyRepository.findReplyList(memNo, reviewNo, pageable);
 			System.out.println(replyPage.getContent());
+			
+			return replyPage;
 
-			return replyPage.map((reply) -> reply.toDto());
+//			return replyPage.map((reply) -> reply.toDto());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("댓글 목록을 가져오는 중에 오류가 발생했습니다.");
@@ -121,10 +125,10 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 
 	@Override
-    public ReplyDto getBestReplyByReviewNo(Integer reviewNo) throws Exception {
+    public ReplyInterface getBestReplyByReviewNo(Integer memNo, Integer reviewNo) throws Exception {
         try {
-            Optional<Reply> bestReply = replyRepository.findTopByReview_ReviewNoOrderByLikeCountDesc(reviewNo);
-            return bestReply.map(Reply::toDto).orElse(null);
+            Optional<ReplyInterface> bestReply = replyRepository.findBestReply(memNo, reviewNo);
+            return bestReply.get();
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("베스트 댓글을 가져오는 중에 오류가 발생했습니다.");

@@ -215,7 +215,7 @@ public class MemberController {
     }
     
     // 혜리 part ----------------------------------------------------------
-    @GetMapping("/{memNo}")
+    @GetMapping("/member/{memNo}")
     public ResponseEntity<Member> getMember(@PathVariable Integer memNo) {
         Member member;
 		try {
