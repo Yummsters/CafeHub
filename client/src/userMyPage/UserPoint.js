@@ -2,16 +2,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import './UserPointStyle.css';
 import UserSideTab from '../components/UserSideTab';
 import { CheckoutPage } from '../payment/CheckoutPage';
-import { PaymentContext } from '../payment/PaymentContext';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { useLocation } from 'react-router';
 
 const UserPoint = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const member = useSelector(state => state.persistedReducer.member);
-    const payment = useSelector(state=>state.persistedReducer.payment.isSuccess);
     const dispatch = useDispatch();
     const [myPoint, setMyPoint] = useState(0); // 회원의 보유 포인트
 
@@ -28,6 +25,8 @@ const UserPoint = () => {
 
     // 테스트
     // const { updatePaymentInfo } = useContext(PaymentContext);
+    const paySuccess = useSelector(state=>state.persistedReducer.payment.isSuccess);
+
     const [paymentModal, setPaymentModal] = useState(false);
     const paymentData = {price: price, orderName: "포인트구매"};
     const paymentOpen = () => {
@@ -68,6 +67,24 @@ const UserPoint = () => {
         .catch((error) =>{
             console.log(error);
         })
+    }, [])
+
+    useEffect(() => {
+        if(paySuccess) {
+            axios.post(`http://localhost:8080/point/buyPoint/${member.memNo}/${price/100}`,
+            {
+                headers : {
+                    Authorization : accessToken
+                }
+            })
+            .then((res)=>{
+                console.log(res.data);
+                dispatch({type:"payment", payload: { price: 0, isSuccess: false }});
+            })
+            .catch((error) =>{
+                console.log(error);
+            })
+        }
     }, [])
 
     return (

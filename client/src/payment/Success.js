@@ -31,30 +31,30 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
         .then((res) => {
             console.log(res);
             setIsSuccess(true);
-            // dispatch({type:"payment", payload: { price: paymentData.amount, isSuccess: true }});
-            if (paymentData.orderName === '포인트구매') {
-              buyPoint();
-            }
+            dispatch({type:"payment", payload: { price: paymentData.amount, isSuccess: true }});
+            // if (paymentData.orderName === '포인트구매') {
+            //   buyPoint();
+            // }
         })
         .catch((error) => {
             console.log(error);
         })
     }, [])
 
-    const buyPoint = () => {
-      axios.post(`http://localhost:8080/point/buyPoint/${memNo}/${paymentData.amount/100}`,
-      {
-          headers : {
-              Authorization : accessToken
-          }
-      })
-      .then((res)=>{
-          console.log(res.data);
-      })
-      .catch((error) =>{
-          console.log(error);
-      })
-    }
+    // const buyPoint = () => {
+    //   axios.post(`http://localhost:8080/point/buyPoint/${memNo}/${paymentData.amount/100}`,
+    //   {
+    //       headers : {
+    //           Authorization : accessToken
+    //       }
+    //   })
+    //   .then((res)=>{
+    //       console.log(res.data);
+    //   })
+    //   .catch((error) =>{
+    //       console.log(error);
+    //   })
+    // }
 
     return (
     <div>
