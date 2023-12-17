@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { CheckoutPage } from '../payment/CheckoutPage';
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
@@ -11,6 +12,15 @@ const StoreBanner = () => {
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
+
+    const paySuccess = useSelector(state=>state.persistedReducer.payment.isSuccess);
+    const paymentKey = useSelector(state=>state.persistedReducer.payment.paymentKey);
+    const [paymentModal, setPaymentModal] = useState(false);
+    const paymentData = {price: 140000, orderName: "광고신청"};
+    const dispatch = useDispatch();
+    const openModal = () => {
+        setPaymentModal(true);
+    };
 
     // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
     const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
@@ -107,8 +117,77 @@ const StoreBanner = () => {
 
     const submitAd = (e) =>{
         e.preventDefault();
+        if(submitCheck) {
+            openModal();
+            dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
+        } else {
+            Toast.fire({
+                icon: 'error',
+                title: '이미지 / 설명 / 메뉴를 모두 입력하세요'
+            })
+        }
+    }
 
-        if(submitCheck){
+    const refund = (cancelReason) => {
+        return new Promise((resolve, reject) => {
+            const data = {
+                cafeNo: cafeNo,
+                cancelReason: cancelReason,
+                paymentKey: paymentKey
+            };
+            console.log('data' + data);
+            axios.post("http://localhost:8080/payment/refund", data)
+            .then((res) => {
+                console.log(res);
+                if(res.data) {
+                    Toast.fire({
+                        title: "취소가 완료되었습니다"
+                    })
+                }
+                resolve(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                reject(error);
+            })
+        })
+    }
+
+    const paymentCancel = () => {
+        Swal.fire({
+            title: "광고 신청을 취소하시겠습니까?",
+            text: "광고 승인이 취소되며, 환불이 진행됩니다",
+            showCancelButton: true,
+            confirmButtonText: "환불요청",
+            cancelButtonText: "취소"
+          }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "취소하려는 이유를 작성해주세요",
+                    input: "text",
+                    showCancelButton: true,
+                    confirmButtonText: "확인",
+                    cancelButtonText: "취소",
+                    showLoaderOnConfirm: true,
+                    preConfirm: (reason) => {
+                        refund(reason)
+                        .then((res) => {console.log(res)})
+                        .catch((error) => console.log(error));
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      Swal.fire({
+                        title: "작성된 내용이 없습니다",
+                      });
+                    }
+                  });
+             }
+          });
+    }
+
+    useEffect(() => {
+        if(paySuccess) {
             var descrInput = document.getElementById("description");
             var menuInput = document.getElementById("menu");
 
@@ -116,6 +195,10 @@ const StoreBanner = () => {
             formData.append("description",cafeAd.description);
             formData.append("menu", cafeAd.menu);
             formData.append("thumbImg", thumbImg);
+            formData.append("paymentKey", paymentKey);
+
+            console.log(formData);
+            console.log(paymentKey);
 
             axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
             {
@@ -132,29 +215,27 @@ const StoreBanner = () => {
                 setCafeAd(res.data);
                 descrInput.disabled = true;
                 menuInput.disabled = true;
-
+                dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
                 Toast.fire({
                     icon: 'success',
                     title: '광고 신청이 완료되었습니다'
                 }).then(()=>{
                     window.location.reload();
                 })
-                
             })
             .catch(err=>{
+                refund("광고신청실패")
+                .then((res) => {console.log(res)})
+                .catch((error)=>{console.log(error)})
+                dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
                 console.log(err);
                 Toast.fire({
                     icon: 'error',
                     title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
                 })
             })
-        }else{
-            Toast.fire({
-                icon: 'error',
-                title: '이미지 / 설명 / 메뉴를 모두 입력하세요'
-            })
         }
-    }
+    }, [])
 
     return (
         <div className='storeBanner-container'>
@@ -169,7 +250,7 @@ const StoreBanner = () => {
                             style={{ display: 'none' }}
                             ref={inputRef}
                         />
-                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}>                            {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
                             <div className='storeBanner-title'>{cafe.title},</div>
@@ -224,13 +305,13 @@ const StoreBanner = () => {
                             />
                             </label>
                         </div>
-                        {!isAdExist ? <button className='storeBanner-regBtn' onClick={submitAd}>광고 신청</button> :  (!isApprove ? <button className='storeBanner-regBtn'>광고 취소</button> : '')}
+                        {!isAdExist ? <button className='storeBanner-regBtn' onClick={submitAd}>광고 신청</button> :  (!isApprove ? <button className='storeBanner-regBtn' onClick={paymentCancel}>광고 취소</button> : '')}
                     </div>
 
                     <div className='hl' />
-
                 </div>
             </div>
+            {paymentModal && (<CheckoutPage paymentData={paymentData} />)}
         </div>
     )
 }

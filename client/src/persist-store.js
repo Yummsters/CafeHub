@@ -10,7 +10,8 @@ export const initialState = {
     isLogin:false,
     member:{memNo:'', name : '', nickname : '', email:'', social : null, status : true, memberType:null},
     accessToken:'',
-    cafe:{cafeNo:'', cafeName:'', thumbImg: null, address:'', isPaid:false, paidDate : null}
+    cafe:{cafeNo:'', cafeName:'', thumbImg: null, address:'', isPaid:false, paidDate : null},
+    payment: {isSuccess: false, paymentKey: ''}
 }
 
 const reducer = (currentState,action) => {
@@ -23,6 +24,7 @@ const reducer = (currentState,action) => {
         case "member": newState.member=action.payload; break;
         case "accessToken": newState.accessToken=action.payload; break;
         case "cafe" : newState.cafe=action.payload; break;
+        case "payment" : newState.payment=action.payload; break;
         default: 
     }
     return newState;
