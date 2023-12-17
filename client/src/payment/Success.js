@@ -1,12 +1,11 @@
 import axios from 'axios';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 const Success = () => { // response 객체를 가지고 와서 추출하여 사용.
     const memNo = useSelector(state=>state.persistedReducer.member.memNo);
-    const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const params = new URLSearchParams(window.location.search);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,41 +23,21 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
       navigate(-1);
     }
 
-    console.log(paymentData.orderName);
     useEffect(() => {
         axios
         .post('http://localhost:8080/payment/result', paymentData)
         .then((res) => {
             console.log(res);
             setIsSuccess(true);
-            dispatch({type:"payment", payload: { price: paymentData.amount, isSuccess: true }});
-            // if (paymentData.orderName === '포인트구매') {
-            //   buyPoint();
-            // }
+            dispatch({type:"payment", payload: { isSuccess: true, paymentKey: paymentData.paymentKey }});
         })
         .catch((error) => {
             console.log(error);
         })
     }, [])
 
-    // const buyPoint = () => {
-    //   axios.post(`http://localhost:8080/point/buyPoint/${memNo}/${paymentData.amount/100}`,
-    //   {
-    //       headers : {
-    //           Authorization : accessToken
-    //       }
-    //   })
-    //   .then((res)=>{
-    //       console.log(res.data);
-    //   })
-    //   .catch((error) =>{
-    //       console.log(error);
-    //   })
-    // }
-
     return (
     <div>
-      
       {isSuccess ? (
           <div className='paymentModal'>
           <div className='paymentModal-content'>
