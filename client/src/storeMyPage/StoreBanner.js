@@ -13,8 +13,10 @@ const StoreBanner = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
     // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
-    const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
-    const [cafeNo, setCafeNo] = useState(1);
+    const cafe= useSelector(state => state.persistedReducer.cafe);
+    const cafeNo = cafe.cafeNo;
+    console.log(cafe);
+    console.log(cafeNo);
 
     const inputRef = useRef(null);
 
@@ -172,7 +174,7 @@ const StoreBanner = () => {
                         <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}>                            {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
-                            <div className='storeBanner-title'>{cafe.title},</div>
+                            <div className='storeBanner-title'>{cafe.cafeName},</div>
                             <div className='storeBanner-description'>
                                 <br />{cafeAd.description}
                             </div>

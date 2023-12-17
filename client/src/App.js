@@ -44,6 +44,7 @@ import SearchPwResult from './searchPw/SearchPwResult';
 import UserReview from './userReview/UserReview';
 import { IsLoginCheck } from './components/IsLoginCheck';
 import { IsSManagerCheck, IsStoreCheck, IsUserCheck } from './components/IsMemberTypeCheck';
+import RecommendCafe from './main/RecommandCafe';
 
 export const persistor = persistStore(store);
 function App() {
@@ -77,6 +78,7 @@ function App() {
             <Routes>
               {/* 모두 사용 가능 */}
               <Route exact path='/' element={<DefaultLayout><Main/></DefaultLayout>}/>
+              <Route exact path='/recoReviewCafe' element={<DefaultLayout><RecommendCafe/></DefaultLayout>}/>
               <Route exact path="/map" element={<DefaultLayout><Map/></DefaultLayout>} />
               <Route exact path="/reviewList" element={<DefaultLayout><ReviewList/></DefaultLayout>} />
               <Route exact path='/userReview/:nickname' element={<DefaultLayout><UserReview/></DefaultLayout>}/>
