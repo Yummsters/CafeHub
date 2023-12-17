@@ -5,14 +5,14 @@ import Swal from 'sweetalert2';
 const { daum } = window;
 
 const SignUpStore = () => {
-    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "", cafeName: "" });
-    const [store, setStore] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "" ,tagName: ""});
+    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "", cafeName: "",authNum:"" });
+    const [store, setStore] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "" ,tagName:""});
     const [thumbnail, setThumbnail] = useState(null);
     const [isFileSelected, setIsFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false, businessNo: false })
-    const [check, setCheck] = useState({ nickname: false, id: false, email: false, businsssNo: false})
-    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false, cafeName: false, tel: false, businessNo: false, address: false,operTime: false });
+    const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false, businessNo: false, authNum: false })
+    const [check, setCheck] = useState({ nickname: false, id: false, email: false, businsssNo: false, authNum: false})
+    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false, cafeName: false, tel: false, businessNo: false, address: false,operTime: false ,authNum:false});
     const [picture, setPicture] = useState("");
     const [randomCode, setRandomCode] = useState(0);
 
@@ -245,13 +245,21 @@ const SignUpStore = () => {
             toast.fire({
                 title: "휴대폰 번호 인증 성공!",
                 icon: "success",
-            });
+            }) 
+            setCheck((prevWarnings) => ({
+                ...prevWarnings,
+                authNum: true
+            }));
         } else {
             toast.fire({
                 title: "인증번호가 틀렸습니다",
                 text: "확인 후 다시 입력해주세요",
                 icon: "error",
-            });
+            })
+            setCheck((prevWarnings) => ({
+                ...prevWarnings,
+                authNum: false
+            }));  
         }
     };
 
@@ -292,8 +300,8 @@ const SignUpStore = () => {
     // 회원가입 제출 가능 여부 확인
     const submitSignUP =
         member.name !== '' && member.nickname !== '' && member.id !== '' && member.password !== '' && member.passwordConfirm !== '' && member.phone !== '' && member.email !== '' &&
-        store.cafeName !=='' && store.tel !== ''  && store.businessNo !== '' &&  store.address !== '' && store.operTime !== '' &&
-        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email && check.businsssNo;
+        store.cafeName !=='' && store.tel !== ''  && store.businessNo !== '' &&  store.address !== '' && store.operTime !== '' && member.authNum !== '' &&
+        valid.id && valid.password && valid.email && valid.phone && check.nickname && check.id && check.email && check.businsssNo && check.authNum;
 
        
     // 제출 버튼 클릭
@@ -318,6 +326,7 @@ const SignUpStore = () => {
             businessNo: store.businessNo.trim() === '',
             address: store.address.trim() === '',
             operTime: store.operTime.trim() === '',
+            authNum: member.authNum.trim() === '',
            
             
 
@@ -549,9 +558,9 @@ const SignUpStore = () => {
             updatedTags = [...selectedTags, i];
         }
 
-        if (updatedTags.length > 3) {
+        if (updatedTags.length > 1) {
             Swal.fire({
-                title: '3개까지 선택 가능합니다',
+                title: '1개까지 선택 가능합니다',
                 icon: 'error',
                 confirmButtonText: '확인',
             });
