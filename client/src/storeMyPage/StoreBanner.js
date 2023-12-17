@@ -4,6 +4,7 @@ import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { getCookie } from '../components/Cookie';
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
@@ -12,11 +13,8 @@ const StoreBanner = () => {
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
-    // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
     const cafe= useSelector(state => state.persistedReducer.cafe);
     const cafeNo = cafe.cafeNo;
-    console.log(cafe);
-    console.log(cafeNo);
 
     const inputRef = useRef(null);
 
@@ -47,7 +45,8 @@ const StoreBanner = () => {
 
         axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
             headers : {
-                Authorization : accessToken
+                Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
@@ -122,13 +121,13 @@ const StoreBanner = () => {
             axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
             {
                 headers : {
-                    Authorization : accessToken,
+                    Authorization :accessToken,
+                    Refresh : getCookie("refreshToken"),
                     'Content-Type': 'multipart/form-data'
                 }
             })
             .then(res=>{
-                console.log(res);
-                console.log(res.data);
+
                 setIsAdExist(true); 
                 setIsApprove(false);
                 setCafeAd(res.data);

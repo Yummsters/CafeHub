@@ -5,6 +5,7 @@ import { Button } from "reactstrap";
 import Swal from 'sweetalert2';
 import { useState } from "react";
 import { useNavigate } from 'react-router';
+import { getCookie } from "../components/Cookie";
 
 
 
@@ -13,7 +14,7 @@ const ChoicePoint = () => {
     const {memNo} = useParams();
     const navigate = useNavigate();
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    const [cafeNo,setCafeNo] = useState(1);
+    const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
 
     // swal
     const Toast = Swal.mixin({
@@ -34,6 +35,7 @@ const ChoicePoint = () => {
         axios.post(`http://localhost:8080/point/save/${memNo}/cafe/${cafeNo}`,{
             headers : {
                 Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
@@ -62,7 +64,8 @@ const ChoicePoint = () => {
        axios.get(`http://localhost:8080/point/${memNo}`,
        {
            headers : {
-               Authorization : accessToken
+                Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
            }
        })
        .then(res=>{

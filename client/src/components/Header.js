@@ -33,7 +33,9 @@ const Header = () => {
         e.preventDefault();
         checkLogin(dispatch, accessToken, isLogin, navigate)
         .then(()=>{
-            navigate('/userInfo');
+            if(memberType === "USER") navigate('/userInfo');
+            else if(memberType === "STORE") navigate('/storeInfo');
+            else if(memberType === "MANAGER") navigate('/managerAd');
         })
         .catch(()=>{
             Toast.fire({
@@ -81,9 +83,9 @@ const Header = () => {
                 <div className='right'>
 
                 {/* 추후 토큰 시간 관련하여 추가 설정 필요 */}
-                    <p>{ memberType==="MANAGER" ? <a href="/managerAd"> 관리자 마이페이지 </a>: 
-                    (memberType === "STORE" ? <a href="/storeInfo">내 가게 관리</a> : 
-                    <a href= "#" onClick={mypage}>마이페이지</a>)}</p>
+                    <p>{ memberType==="MANAGER" ? <a href="/" onClick={mypage}> 관리자 마이페이지 </a>: 
+                    (memberType === "STORE" ? <a href="/storeInfo" onClick={mypage}>내 가게 관리</a> : 
+                    <a href= "/userInfo" onClick={mypage}>마이페이지</a>)}</p>
 
                     <p> {!isLogin ? <a href="/login">로그인</a> : <a href="#" onClick={logout}>로그아웃</a>}</p>
                 </div>
