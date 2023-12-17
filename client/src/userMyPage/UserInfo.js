@@ -16,8 +16,8 @@ const UserInfo = ({sideTab}) => {
   const social = useSelector(state=>state.persistedReducer.member.social);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
-  const [userInputMsg, setUserInputMsg] = useState({email:'', nickname:'', phone:''});
-  const [saveCheck, setSaveCheck] = useState({name: true, email: true, nickname: true, phone: true})
+  const [userInputMsg, setUserInputMsg] = useState({name: '', email:'', nickname:'', phone:''});
+  const [saveCheck, setSaveCheck] = useState({email: false, nickname: false, phone: false})
 
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
@@ -67,11 +67,11 @@ const UserInfo = ({sideTab}) => {
     }
 
     axios.put("http://localhost:8080/member/modifyInfo", updateUser,{
-      headers : {
-          Authorization :accessToken,
-          Refresh : getCookie("refreshToken")
-      }
-  })
+        headers : {
+            Authorization :accessToken,
+            Refresh : getCookie("refreshToken")
+        }
+    })
     .then((res) => {
       console.log(res.data);
       dispatch({type:"member", payload: updateUser});
