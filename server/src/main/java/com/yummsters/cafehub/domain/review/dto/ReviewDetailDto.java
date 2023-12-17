@@ -17,6 +17,7 @@ public class ReviewDetailDto {
     private List<String> tagNames;
     private Integer likeCount;
     private LocalDateTime regDate;
+    private boolean modPossible;
     private String thumbImg;
 
     // Member 정보
