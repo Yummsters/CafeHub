@@ -3,6 +3,8 @@ package com.yummsters.cafehub.domain.cafeAd.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.yummsters.cafehub.domain.payment.entity.Payment;
+import com.yummsters.cafehub.domain.payment.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class CafeAdController {
     private final CafeAdService cafeAdService;
     private final CafeService cafeService;
+    private final PaymentService paymentService;
 
     // 광고 신청 조회
     @GetMapping("/{cafeNo}")
@@ -46,7 +49,8 @@ public class CafeAdController {
     @PostMapping("/{cafeNo}")
     public ResponseEntity<Object> cafeAdSub(@PathVariable("cafeNo") Integer cafeNo,
                                             @ModelAttribute CafeAdReqDto cafeAdReqDto,
-                                            @RequestParam("thumbImg") MultipartFile thumbImg) throws Exception {
+                                            @RequestParam("thumbImg") MultipartFile thumbImg,
+                                            @RequestParam("paymentKey") String paymentKey) throws Exception {
         Cafe cafe = null;
         try{
             cafe = cafeService.searchCafe(cafeNo);
@@ -55,7 +59,15 @@ public class CafeAdController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
-        CafeAd cafeAd = CafeAdReqDto.cafeAdReqDto(cafeAdReqDto, cafe);
+        Payment payment = null;
+        try{
+            payment = paymentService.searchPaymentKey(paymentKey);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
+        CafeAd cafeAd = CafeAdReqDto.cafeAdReqDto(cafeAdReqDto, cafe, payment);
 
         try{
             CafeAd responseCafeAd = cafeAdService.cafeAdSub(cafeAd, thumbImg);

@@ -19,11 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("payment")
 public class PaymentController {
     @Autowired
     private PaymentService service;
 
-    @PostMapping("payment/result") // 결과를 통해 toss에 결제 승인 요청
+    @PostMapping("result") // 결과를 통해 toss에 결제 승인 요청
     public ResponseEntity<Boolean> paymentResult(@RequestBody Map<String, Object> paymentData) {
         try {
             service.paymentConfirm(paymentData);
@@ -34,7 +35,7 @@ public class PaymentController {
         }
     }
 
-    @GetMapping(value = "fail")
+    @PostMapping(value = "cancel/")
     public String paymentResult(
             Model model,
             @RequestParam(value = "message") String message,

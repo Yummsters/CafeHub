@@ -89,4 +89,14 @@ public class PaymentServiceImpl implements PaymentService{
 
         repository.save(payment);
     }
+
+    @Override
+    public void paymentCancel(Map<String, Object> paymentData) throws Exception {
+
+    }
+
+    @Override
+    public Payment searchPaymentKey(String paymentKey) throws Exception {
+        return repository.findByPaymentKey(paymentKey);
+    }
 }

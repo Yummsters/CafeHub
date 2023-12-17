@@ -3,6 +3,7 @@ package com.yummsters.cafehub.domain.cafeAd.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.yummsters.cafehub.domain.payment.entity.Payment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
