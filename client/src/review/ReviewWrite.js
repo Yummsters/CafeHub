@@ -241,7 +241,7 @@ const ReviewWrite = () => {
                         </option>
                         {cafes.map((reviewAuth, i) => (
                             <option key={i} value={`${reviewAuth.reviewAuthNo},${reviewAuth.cafeNo}`}>
-                                {reviewAuth.cafeName}
+                                {reviewAuth.cafeName} ({reviewAuth.remainTime}일 남음)
                             </option>
                         ))}
                     </select>

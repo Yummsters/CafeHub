@@ -39,6 +39,7 @@ const ReviewModify = () => {
         thumbImg: '',
         cafeName: '',
         reviewNo: pathNamePart,
+        modDate : 3
     });
 
 
@@ -72,17 +73,14 @@ const ReviewModify = () => {
                     thumbImg: response.data.review.thumbImg,
                     reviewNo: response.data.review.reviewNo,
                     cafeName: response.data.review.cafeName,
+                    modDate : response.data.modDate
                 });
+
 
                 const htmlString = decodeURIComponent(response.data.review.content);
                 editorRef.current?.getInstance().setHTML(htmlString);
                 setSelectedCafeNo(response.data.review.cafeNo);
                 console.log(response.data.review.cafeNo);
-
-
-
-
-
             })
             .catch((error) => {
                 console.error('리뷰 정보 가져오기 실패:', error);
@@ -189,7 +187,7 @@ const ReviewModify = () => {
                         </option>
                         {cafes.map((reviewAuth, i) => (
                             <option key={i} value={`${reviewAuth.reviewAuthNo},${reviewAuth.cafeNo}`}>
-                                {reviewAuth.cafeName}
+                                {reviewAuth.cafeName} ({review.modDate}일 남음)
                             </option>
                         ))}
                     </select>
