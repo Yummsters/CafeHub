@@ -35,16 +35,14 @@ public class PaymentController {
         }
     }
 
-    @PostMapping(value = "cancel/")
-    public String paymentResult(
-            Model model,
-            @RequestParam(value = "message") String message,
-            @RequestParam(value = "code") Integer code
-    ) throws Exception {
-
-        model.addAttribute("code", code);
-        model.addAttribute("message", message);
-
-        return "fail";
+    @PostMapping("refund") // 환불 요청
+    public ResponseEntity<Boolean> paymentRefund(@RequestBody Map<String, Object> paymentData) {
+        try {
+            service.paymentCancel(paymentData);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
     }
 }
