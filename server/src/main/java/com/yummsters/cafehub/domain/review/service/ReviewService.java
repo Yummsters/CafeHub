@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 
@@ -28,7 +29,7 @@ public interface ReviewService {
 	List<ReviewAuth> getReviewAuthList(Integer memNo) throws Exception; //리뷰 권한
 	void deleteReviewAuth(Integer reviewAuthNo) throws Exception; //리뷰 권한 삭제
 	void deleteReview(Integer reviewNo) throws Exception; //리뷰 삭제
-	Integer modifyReview(Integer reviewNo, ReviewDto review, List<MultipartFile> file) throws Exception; //리뷰 수정
+	Integer modifyReview(Integer reviewNo, ReviewModifyDto reviewModifyDto, List<MultipartFile> files) throws Exception; //리뷰 수정
 	// 희진 part
 	Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo);
 

@@ -30,6 +30,7 @@ import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewListRes;
+import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
@@ -81,10 +82,10 @@ public class ReviewController {
 	    }
 	}
 	//리뷰 수정
-		@PutMapping("/reviewmodify/{revewNo}")
+		@PostMapping("/reviewmodify/{reviewNo}")
 	    public ResponseEntity<Integer> modifyReview(@PathVariable Integer reviewNo,
-	                                                @ModelAttribute ReviewDto review,
-	                                                @RequestParam("files") List<MultipartFile> files) {
+	                                                @ModelAttribute ReviewModifyDto review,
+	                                                @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 	        try {
 	            Integer updatedReviewNo = reviewService.modifyReview(reviewNo, review, files);
 	            return ResponseEntity.ok(updatedReviewNo);
