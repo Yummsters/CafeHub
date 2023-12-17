@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import "./SideTabStyle.css"
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
-const SideTab = () => {
+const UserSideTab = () => {
     const tabs = [
        {label:'회원 정보', link:'/userInfo'},
        {label: '찜한 가게', link:'/WishStore'},
@@ -28,4 +28,4 @@ const SideTab = () => {
     );
 };
 
-export default SideTab;
+export default UserSideTab;

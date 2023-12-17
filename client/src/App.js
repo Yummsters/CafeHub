@@ -24,7 +24,6 @@ import ReviewDetail from './review/ReviewDetail';
 import ReviewModify from './review/ReviewModify';
 import ReviewWrite from './review/ReviewWrite';
 import UserInfo from './userMyPage/UserInfo';
-import StoreUserInfo from './storeMyPage/StoreUserInfo';
 import UserPoint from './userMyPage/UserPoint';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -99,8 +98,8 @@ function App() {
               <Route exact path="/map" element={<DefaultLayout><Map/></DefaultLayout>} />
               <Route exact path="/reviewList" element={<DefaultLayout><ReviewList/></DefaultLayout>} />
               <Route exact path="/userPoint" element={<DefaultLayout><UserPoint/></DefaultLayout>}/>
-              <Route exact path="/userInfo" element={<DefaultLayout><UserInfo/></DefaultLayout>} />
-              <Route exact path="/storeuserInfo" element={<DefaultLayout><StoreUserInfo/></DefaultLayout>} />
+              <Route exact path="/userInfo" element={<DefaultLayout><UserInfo sideTab="user"/></DefaultLayout>} />
+              <Route exact path="/storeuserInfo" element={<DefaultLayout><UserInfo sideTab="store"/></DefaultLayout>} />
               <Route exact path="/myReivew" element={<DefaultLayout><MyReivew/></DefaultLayout>} />
               <Route exact path="/myReply" element={<DefaultLayout><MyReply/></DefaultLayout>} />
               <Route exact path='/reviewDetail/:reviewNo' element={<DefaultLayout><ReviewDetail/></DefaultLayout>}/>

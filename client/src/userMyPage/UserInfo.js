@@ -6,9 +6,10 @@ import {useSelector, useDispatch} from 'react-redux';
 import { useNavigate } from 'react-router';
 import { getCookie, removeCookie} from '../components/Cookie';
 import Swal from 'sweetalert2';
+import StoreSideTab from '../components/StoreSideTab';
 
 
-const UserInfo = () => {
+const UserInfo = ({sideTab}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const member = useSelector(state=>state.persistedReducer.member);
@@ -404,7 +405,10 @@ const UserInfo = () => {
 
   return (
     <div className='mypage'>
-      <UserSideTab />
+
+      {sideTab === 'user' && <UserSideTab />}
+      {sideTab === 'store' && <StoreSideTab />}
+
       <div className='userInfoBox'>
         <div className='nicknameBox'>
           <p><img src="/img/house.png" alt="house" />{member.nickname} 님</p>
