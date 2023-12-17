@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.cafeAd.service;
 
 import java.util.List;
 
+import com.yummsters.cafehub.domain.payment.entity.Payment;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;

@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.cafeAd.dto;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
+import com.yummsters.cafehub.domain.payment.entity.Payment;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ public class CafeAdReqDto {
     private String description;
     private String menu;
 
-    public static CafeAd cafeAdReqDto(CafeAdReqDto cafeAdReqDto, Cafe cafe){
+    public static CafeAd cafeAdReqDto(CafeAdReqDto cafeAdReqDto, Cafe cafe, Payment payment){
         if(cafeAdReqDto == null){
             return null;
         }else{
@@ -19,6 +20,7 @@ public class CafeAdReqDto {
             cafeAd.description(cafeAdReqDto.getDescription());
             cafeAd.menu(cafeAdReqDto.getMenu());
             cafeAd.cafe(cafe);
+            cafeAd.payment(payment);
             return cafeAd.build();
         }
     }

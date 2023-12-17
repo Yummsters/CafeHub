@@ -14,4 +14,5 @@ public interface PointService {
     Page<Point> reqPointCal(Integer page, Integer size) throws Exception;
     void pointUp(Integer memNo) throws Exception;	//회원 포인트 적립
     boolean permitPoint(Integer memNo) throws Exception;
+    void buyPoint(Integer memNo, Integer price) throws Exception;
 }
