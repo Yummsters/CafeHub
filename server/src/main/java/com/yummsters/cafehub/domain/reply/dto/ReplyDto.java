@@ -28,6 +28,7 @@ public class ReplyDto {
 	private String nickname;
 	private Integer likeCount;
 	private LocalDateTime regDate;
+	private Integer parentReplyNo;
 
 	public Reply toEntity() {
 		return Reply.builder()
@@ -35,6 +36,7 @@ public class ReplyDto {
 				.content(content)
 				.review(Review.builder().reviewNo(reviewNo).build())
 				.depth(depth)
+				.parentReply(Reply.builder().replyNo(parentReplyNo).build())
 				.member(Member.builder().memNo(writerNo).nickname(nickname).build())
 				.likeCount(likeCount)
 				.build();

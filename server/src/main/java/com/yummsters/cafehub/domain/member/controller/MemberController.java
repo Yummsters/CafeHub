@@ -210,5 +210,23 @@ public class MemberController {
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+   
+    // 혜리 part ----------------------------------------------------------
+    @GetMapping("/member/{memNo}")
+    public ResponseEntity<Member> getMember(@PathVariable Integer memNo) {
+        Member member;
+		try {
+			member = memberService.getMemberByMemNo(memNo);
+			if (member != null) {
+				return new ResponseEntity<>(member, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+    }
 }
 
