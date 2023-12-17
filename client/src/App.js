@@ -79,7 +79,7 @@ function App() {
               <Route exact path='/' element={<DefaultLayout><Main/></DefaultLayout>}/>
               <Route exact path="/map" element={<DefaultLayout><Map/></DefaultLayout>} />
               <Route exact path="/reviewList" element={<DefaultLayout><ReviewList/></DefaultLayout>} />
-              <Route exact path='/userReview' element={<DefaultLayout><UserReview/></DefaultLayout>}/>
+              <Route exact path='/userReview/:nickname' element={<DefaultLayout><UserReview/></DefaultLayout>}/>
               <Route exact path='/reviewDetail/:reviewNo' element={<DefaultLayout><ReviewDetail/></DefaultLayout>}/>
               <Route exact path='/oauth2/redirect/:accessToken/:refreshToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
               <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
