@@ -97,11 +97,6 @@ public class PaymentServiceImpl implements PaymentService{
         Integer cafeNo = (Integer) paymentData.get("cafeNo");
         CafeAd cafeAd = cafeAdRepository.findByCafe_CafeNo(cafeNo);
 
-
-//        String paymentKey = cafeAd.getPayment().getPaymentKey();
-//        Payment payment = paymentRepository.findByPaymentKey(paymentKey);
-//        System.out.println(paymentKey);
-
         String paymentKey;
 
         if (cafeAd == null) {
