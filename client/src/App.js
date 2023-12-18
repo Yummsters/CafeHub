@@ -23,7 +23,6 @@ import ReviewDetail from './review/ReviewDetail';
 import ReviewModify from './review/ReviewModify';
 import ReviewWrite from './review/ReviewWrite';
 import UserInfo from './userMyPage/UserInfo';
-import StoreUserInfo from './storeMyPage/StoreUserInfo';
 import UserPoint from './userMyPage/UserPoint';
 import Header from './components/Header';
 import Footer from './components/Footer';

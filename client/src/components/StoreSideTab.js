@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import "./SideTabStyle.css";
 
-const SideTab = () => {
+const StoreSideTab = () => {
     const tabs = [
        {label:'회원 정보', link:'/storeuserInfo'},
         {label:'가게 정보', link:'/storeInfo'},
@@ -29,4 +29,4 @@ const SideTab = () => {
     );
 };
 
-export default SideTab;
+export default StoreSideTab;

@@ -6,9 +6,10 @@ import {useSelector, useDispatch} from 'react-redux';
 import { useNavigate } from 'react-router';
 import { getCookie, removeCookie} from '../components/Cookie';
 import Swal from 'sweetalert2';
+import StoreSideTab from '../components/StoreSideTab';
 
 
-const UserInfo = () => {
+const UserInfo = ({sideTab}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const member = useSelector(state=>state.persistedReducer.member);
@@ -43,6 +44,7 @@ const UserInfo = () => {
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(true);
   }
+
   const save = () => { // 저장버튼 클릭 시 input readOnly
     const isUnchanged = Object.keys(updateUser).every((key) => updateUser[key] === member[key]);
     if (isUnchanged) {
@@ -59,7 +61,7 @@ const UserInfo = () => {
     if (!allCheck) {
       Toast.fire({
         icon: 'error',
-        title: '입력값을 확인해주세요.',
+        title: '입력값을 확인해주세요',
       });
       return;
     }
@@ -72,57 +74,104 @@ const UserInfo = () => {
     })
     .then((res) => {
       console.log(res.data);
-      dispatch({type:"member", payload: updateUser}); // redux 상태 업데이트 확인 후 주석 풀기
+      dispatch({type:"member", payload: updateUser});
       setEditMode(false);
+      Toast.fire({
+        icon: 'success',
+        title: '정상적으로 수정되었습니다',
+      });
     })
     .catch((error) => {
       console.log(error);
     })
   };
 
-  console.log("이름" + saveCheck.name);
-  console.log("이메일" + saveCheck.email);
-  console.log("닉네임" + saveCheck.nickname);
-  console.log("폰" + saveCheck.phone);
+  // 수정모드 변경될 때마다 msg 초기화
+  useEffect(() => {
+    if (editMode) {
+      setUserInputMsg({ email: '', nickname: '', phone: '' });
+    }
+  }, [editMode]);
 
+  // 입력값 관련
+  let emailTimer;
+  let nicknameTimer;
+  let phoneTimer;
+  
   const inputChange = (e) => {
     const { name, value } = e.target;
-
-    // 이메일 중복확인
-    if (name === 'email' && value.trim() !== '') {
-      axios.get(`http://localhost:8080/email/${value}`)
-      .then(res =>{
-          console.log(res.data);
-          if(res.data){
-            setUserInputMsg({...userInputMsg, [name]: "사용불가능한 이메일입니다"});
-            setSaveCheck({...saveCheck, [name]: false})
-          } else { 
-            setUserInputMsg({...userInputMsg, [name]: ""}); 
-            setSaveCheck({...saveCheck, [name]: true})
-          }
-      })
-      .catch(err => {console.log(err);})
+    
+    if (member[name] !== value) {
+      clearTimeout(name === 'email' ? emailTimer : name === 'nickname' ? nicknameTimer : phoneTimer);
+  
+      if (name === 'email') {
+        emailTimer = setTimeout(() => emailCheck(name, value), 500);
+      } else if (name === 'nickname') {
+        nicknameTimer = setTimeout(() => nicknameCheck(name, value), 500);
+      } else if (name === 'phone') {
+        phoneTimer = setTimeout(() => phoneCheck(name, value), 500);
+      }
+      setSaveCheck({ ...saveCheck, [name]: false }); 
     } else {
-      setUserInputMsg({...userInputMsg, [name]: ""})
+      setSaveCheck({ ...saveCheck, [name]: true }); // input값 변경하지 않으면 제출가능 true로 유지
+      setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
     }
+    setUpdateUser({ ...updateUser, [name]: value });
+  };
 
-    // 닉네임 중복확인
+  // 수정 - 이메일 관련
+  const emailCheck = (name, value) => {
+    setTimeout(() => {
+    if (name === 'email' && value.trim() !== '') {
+      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+        setUserInputMsg({ ...userInputMsg, [name]: '이메일 형식을 확인하세요' });
+        setSaveCheck({ ...saveCheck, [name]: false });
+      } else {
+          axios.get(`http://localhost:8080/email/${value}`)
+            .then(res => {
+              console.log(res.data);
+              if (res.data) {
+                setUserInputMsg({ ...userInputMsg, [name]: '사용불가능한 이메일입니다' });
+                setSaveCheck({ ...saveCheck, [name]: false });
+              } else {
+                setUserInputMsg({ ...userInputMsg, [name]: '사용가능한 이메일입니다' });
+                setSaveCheck({ ...saveCheck, [name]: true });
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+          }
+        } else {
+          setUserInputMsg({ ...userInputMsg, [name]: '' });
+        }
+      }, 500);
+  };
+
+  // 수정 - 닉네임 관련
+  const nicknameCheck = (name, value) => {
     if (name === 'nickname' && value.trim() !== '') {
       axios.get(`http://localhost:8080/nickname/${value}`)
-      .then(res =>{
-        console.log(res.data);
-        if(res.data){
-          setUserInputMsg({...userInputMsg, [name]: "사용불가능한 닉네임입니다"});
-          setSaveCheck({...saveCheck, [name]: false})
-        } else { 
-          setUserInputMsg({...userInputMsg, [name]: ""}); 
-          setSaveCheck({...saveCheck, [name]: true})
-        }
-      })
-      .catch(err => {console.log(err);})
+        .then(res => {
+          console.log(res.data);
+          if (res.data) {
+            setUserInputMsg({ ...userInputMsg, [name]: "사용불가능한 닉네임입니다" });
+            setSaveCheck({ ...saveCheck, [name]: false });
+          } else {
+            setUserInputMsg({ ...userInputMsg, [name]: "사용가능한 닉네임입니다" });
+            setSaveCheck({ ...saveCheck, [name]: true });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      setUserInputMsg({ ...userInputMsg, [name]: "" });
     }
+  };
 
-    // 휴대폰 번호 유효성
+  // 수정 - 휴대폰 관련
+  const phoneCheck = (name, value) => {
     if (name === 'phone' && !/^[0-9]+$/.test(value) && value.trim() !== '') {
       setUserInputMsg({...userInputMsg, [name]: "하이픈(-) 없이 작성하세요"});
       setSaveCheck({...saveCheck, [name]: false})
@@ -130,19 +179,14 @@ const UserInfo = () => {
       setUserInputMsg({...userInputMsg, [name]:""});
       setSaveCheck({...saveCheck, [name]: false})
     }
-    
-    setUpdateUser({ ...updateUser, [name]: value });
-  }
+  };
 
   // 수정 - 휴대폰 인증
   const sendPhoneCode = () => {
     if (!/^[0-9]+$/.test(updateUser.phone) || updateUser.phone.length !== 11) {
       setUserInputMsg({...userInputMsg, phone:"유효하지 않은 전화번호입니다"});
       return;
-    } else if (member.phone === updateUser.phone) {
-      setUserInputMsg({...userInputMsg, phone:"기존과 동일한 전화번호입니다"});
-      return;
-    }
+    } 
     // 랜덤 코드
     const random = Math.floor(Math.random() * 9000) + 1000;
     console.log("Random code set:", random);
@@ -361,7 +405,10 @@ const UserInfo = () => {
 
   return (
     <div className='mypage'>
-      <UserSideTab />
+
+      {sideTab === 'user' && <UserSideTab />}
+      {sideTab === 'store' && <StoreSideTab />}
+
       <div className='userInfoBox'>
         <div className='nicknameBox'>
           <p><img src="/img/house.png" alt="house" />{member.nickname} 님</p>
@@ -379,33 +426,32 @@ const UserInfo = () => {
             <div>
               <p>아이디</p>
               <input type="text" name="id" value={updateUser.id} readOnly={!editMode} className="inputN" />
-              <span></span>
+              <span className='userInfoMsg'></span>
             </div>
             <div>
               <p>이름</p>
               <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span></span>
+              {editMode ? <span className='userInfoMsg'></span> : <span></span>}
             </div>
             <div>
               <p>이메일</p>
               <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>{userInputMsg.email}</span>
+              {editMode ? <span className='userInfoMsg'>{userInputMsg.email}</span> : <span></span>}
             </div>
             <div>
               <p>닉네임</p>
               <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>{userInputMsg.nickname}</span>
+              {editMode ? <span className='userInfoMsg'>{userInputMsg.nickname}</span> : <span></span>}
             </div>
             <div>
               <p>전화번호</p>
               <input type="text" name="phone" value={updateUser.phone} readOnly={!editMode} onInput={inputChange} className={editMode ? 'inputB' : 'inputN'} />
-              <span>{userInputMsg.phone}
-                {editMode && (
-                  <button onClick={sendPhoneCode} disabled={saveCheck.phone}>
+              {editMode ?
+                <span className='userInfoMsg'>{userInputMsg.phone}
+                  <button onClick={sendPhoneCode} disabled={saveCheck.phone} className='phoneCodeBtn'>
                     {saveCheck.phone ? "인증 완료" : "휴대폰 인증"}
                   </button>
-                )}
-              </span>
+              </span> : <span></span>}
             </div>
           </div>
         </div>
