@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -231,9 +232,27 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").ascending()), cafeNo);
 	}
 
+	// 닉네임 사용자의 리뷰 조회
 	@Override
 	public Page<Review> userReviewPage(Integer page, Integer size, String nickname){
 		return reviewRepository.findAllByMember_Nickname(PageRequest.of(page, size, Sort.by("regDate").descending()), nickname);
+	}
+
+	// 전체 리뷰 권한 및 날짜에 대한 삭제 스케줄러 설정
+	@Override
+	public void deleteReviewAuth() throws Exception {
+		// 오늘 날짜 기준 3일 전 등록된 것이라면 modPossible을 false로 변경
+		List<Review> reviewList = reviewRepository.findAllByModPossibleIsTrueAndRegDateIsBefore(LocalDateTime.now().minusDays(3));
+		//System.out.println(reviewList.toString());
+		for(Review review : reviewList){
+			review.setModPossible(false);
+			reviewRepository.save(review);
+		}
+
+		// 오늘 날짜 기준 7일 전 등록된 것이라면 삭제
+		//System.out.println(reviewAuthRepository.findByRegDateIsBefore(LocalDateTime.now().minusDays(7)).toString());
+		reviewAuthRepository.deleteAllByRegDateIsBefore(LocalDateTime.now().minusDays(7));
+
 	}
 
 	// 혜리 part ----------------------------------------------------------------

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -201,5 +202,11 @@ public class ReviewController {
 			e.printStackTrace();
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
+	}
+
+	// 리뷰 작성 및 수정 기한에 따른 스케줄러 설정
+	@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
+	public void  deleteReviewAuth() throws Exception {
+		reviewService.deleteReviewAuth();
 	}
 }
