@@ -163,7 +163,19 @@ public class ReviewController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
+	// 메인 추천 리뷰 노출
+	@GetMapping("/reviewList/member/{memNo}")
+	public ResponseEntity<List<Map<String, Object>>> getReviewsByMemNo(@PathVariable Integer memNo) {
+	    try {
+	        List<Map<String, Object>> reviews = reviewService.findReviewsByMemNo(memNo);
+	        return new ResponseEntity<>(reviews, HttpStatus.OK);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
+	}
+	
 	//희진 part ----------------------------------------------------------------
 	// 가게 리뷰 리스트 조회
 	@GetMapping("/review/storeList/{cafeNo}")

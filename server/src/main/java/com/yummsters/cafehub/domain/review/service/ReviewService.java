@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,6 @@ public interface ReviewService {
 	//혜리 part ----------------------------------------------------------------
 	Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
 	Page<Review> getReviewsByMember(Member member, Pageable pageable) throws Exception;
+	List<Map<String, Object>> findReviewsByMemNo(Integer memNo) throws Exception;
+	boolean hasNoReviews(Integer memNo) throws Exception;
 }
