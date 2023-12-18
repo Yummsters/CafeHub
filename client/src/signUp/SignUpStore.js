@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import signUpStoreStyle from './signUpStoreStyle.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useDispatch, useSelector } from 'react-redux';
+import { CheckoutPage } from '../payment/CheckoutPage';
 const { daum } = window;
 
 const SignUpStore = () => {
@@ -17,18 +19,51 @@ const SignUpStore = () => {
     const [randomCode, setRandomCode] = useState(0);
     const [tagName, setTagName] = useState([]);
 
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
+    // 페이먼트 관련
+    const [memNo, setMemNo] = useState(0);
+    const payment = useSelector(state=>state.persistedReducer.payment);
+    const accessToken = useSelector(state=>state.persistedReducer.accessToken);
+    const [paymentModal, setPaymentModal] = useState(false);
+    const paymentData = {price: 5000, orderName: "입점비", memNo: memNo};
+    const dispatch = useDispatch();
+    const openModal = () => {
+        setPaymentModal(true);
+    };
 
+    // 페이먼트 관련
+    // memNo로 회원조회 -> if(paySuccess) {memNo에 맞는 Cafe 찾아 isPaid true로 변경하고, paymentKey 기준으로 매핑}
+    // memNo로 회원조회 -> if(!paySuccess) {memNo, cafeNo 삭제}
+
+    useEffect(() => {
+        if(payment.memNo !== null) {
+            if(payment.isSuccess) { // memNo이 존재(직전에회원가입)하고 결제완료된 경우 컬럼 update
+                axios.put(`http://localhost:8080/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
+                .then((res) => {
+                    console.log(res.data)
+                    toast.fire({
+                        title: '가입 및 가게등록이 완료되었습니다',
+                        icon: 'error',
+                    })
+                    dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '', memNo: null }});
+                    setTimeout(() => {
+                        window.location.href="/login";
+                    }, 2000);
+                })
+                .catch((error) => console.log(error))
+            } else { // memNo이 존재(직전에회원가입)하고 결제실패한 경우 가입된 정보 삭제
+                axios.delete(`http://localhost:8080/signUpStore/${payment.memNo}`)
+                .then((res) => {
+                    console.log(res.data);
+                    dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '', memNo: null }});
+                    toast.fire({
+                        title: '가입 및 가게등록에 실패했습니다',
+                        text: '사유: 결제 오류',
+                        icon: 'error',
+                    })
+                })
+            }
+        }
+    }, [])
 
 
     useEffect(()=>{
@@ -56,24 +91,25 @@ const SignUpStore = () => {
     };
 
 
-    useEffect(() => {
-        const signUpStore = document.querySelector('.signUpStore');
+    // useEffect(() => {
+    //     const signUpStore = document.querySelector('.signUpStore');
 
-        if (signUpStore) {
-            window.addEventListener('scroll', function () {
-                const scrollTop = window.scrollY;
+    //     if (signUpStore) {
+    //         window.addEventListener('scroll', function () {
+    //             const scrollTop = window.scrollY;
 
-                if (scrollTop > 30) {
-                    signUpStore.style.top = `${scrollTop}px`;
-                } else {
-                    signUpStore.style.top = '20px';
-                }
+    //             if (scrollTop > 30) {
+    //                 signUpStore.style.top = `${scrollTop}px`;
+    //             } else {
+    //                 signUpStore.style.top = '20px';
+    //             }
 
-            });
-        } else {
-            console.error("Element with class 'signUpStore' not found.");
-        }
-    }, [])
+    //         });
+    //     } else {
+    //         console.error("Element with class 'signUpStore' not found.");
+    //     }
+    // }, [])
+
 
     const changeMember = (e) => {
         const { name, value } = e.target;
@@ -177,12 +213,10 @@ const SignUpStore = () => {
         }).open();
     }
 
-  
-
     // swal
     const toast = Swal.mixin({
         toast: true,
-        position: 'top-right',
+        position: 'top',
         showConfirmButton: false,
         timer: 1500
     })
@@ -429,7 +463,7 @@ const SignUpStore = () => {
                 if (selectedFile) {
                     formData.append('file', selectedFile);
                 }else{
-                    Toast.fire({
+                    toast.fire({
                         title: '썸네일을 선택하세요',
                         icon: 'error',
                     });
@@ -444,19 +478,15 @@ const SignUpStore = () => {
 
                         // 회원가입
                         axios.post(`http://localhost:8080/signUpStore/${cafeNo}`, member)
-                            .then(() => {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: '회원가입이 완료되었습니다 ',
-                                });
-
-                                setTimeout(() => {
-                                    window.location.href = "/login?showLoginPage=STORE";
-                                }, 1000);
+                            .then((res) => {
+                                console.log(res.data);
+                                setMemNo(res.data.memNo);
+                                dispatch({type:"payment", payload: { isSuccess: false, memNo: res.data.memNo }}); // 결제 전 새로고침하는 경우 회원가입 방지
+                                openModal();
                             })
                             .catch((error) => {
                                 console.log(error);
-                                Toast.fire({
+                                toast.fire({
                                     icon: 'error',
                                     title: '가입이 불가능한 아이디입니다 다시 확인해 주세요',
                                 });
@@ -471,7 +501,7 @@ const SignUpStore = () => {
             } finally {
             }
         } else {
-            Toast.fire({
+            toast.fire({
                 icon: 'error',
                 title: '인증 여부를 다시 확인해주세요',
             });
@@ -725,6 +755,7 @@ const SignUpStore = () => {
                     <div className='signUpStore-time'>운영 시간 : {store.operTime ? store.operTime : '시간을 입력하세요.'}</div>
                 </div>
             </div>
+            {paymentModal && (<CheckoutPage paymentData={paymentData} />)}
         </div>
     );
 }

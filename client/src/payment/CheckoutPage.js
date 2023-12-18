@@ -44,7 +44,7 @@ export function CheckoutPage({paymentData}) {
         orderName: `${paymentData.orderName}`,
         customerName: `${member.memNo}`,
         customerEmail: `${member.email}`,
-        successUrl: `${window.location.origin}/payment/success?orderName=${paymentData.orderName}`,
+        successUrl: `${window.location.origin}/payment/success?orderName=${paymentData.orderName}&memNo=${paymentData.memNo}`,
         failUrl: `${window.location.origin}/payment/fail`
       });
     } catch(error) {
@@ -58,11 +58,9 @@ export function CheckoutPage({paymentData}) {
     <>
     <div className='paymentModal'>
       <div className='paymentModal-content'>
-        {/* <button className='closeBtn' onClick={closeModal}>X</button> */}
           <div id="payment-widget"/>
             <div className='purchaseWrap'>
               <button className='purchaseBtn' onClick={onClick}>{paymentData.price}원 결제</button>
-              {/* <button className='purchaseBtn' onClick={onClick}>취소</button> */}
             </div>
       </div>
     </div>
