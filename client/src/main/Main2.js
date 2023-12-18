@@ -19,11 +19,9 @@ const Main2 = () => {
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    // memNo가 유효한 경우에만 데이터를 가져오도록 처리
-    if (memNo) {
       const fetchReviews = async () => {
         try {
-          const response = await axios.get(`http://localhost:8080/reviewList/member/${memNo}`);
+          const response = await axios.get(`http://localhost:8080/reviewList/member/${memNo??0}`);
           setReviews(response.data);
         } catch (error) {
           console.error('리뷰 목록 조회 실패', error);
@@ -31,7 +29,6 @@ const Main2 = () => {
       };
 
       fetchReviews();
-    }
 
     const handleResize = () => {
       // 화면 크기 변경에 대한 로직 추가
