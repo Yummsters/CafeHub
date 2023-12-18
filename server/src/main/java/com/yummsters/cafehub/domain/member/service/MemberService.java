@@ -1,15 +1,13 @@
 package com.yummsters.cafehub.domain.member.service;
 
-import com.yummsters.cafehub.domain.member.dto.ModifyReqDto;
-import com.yummsters.cafehub.domain.member.dto.ModifyResDto;
+import com.yummsters.cafehub.domain.member.dto.*;
+
 import java.io.File;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-import com.yummsters.cafehub.domain.member.dto.SearchPwDto;
-import com.yummsters.cafehub.domain.member.dto.SignUpStoreDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 
 public interface MemberService {
@@ -27,6 +25,8 @@ public interface MemberService {
     Member searchPw(String id, String phone) throws Exception;
     void changePw(String id, String newPassword) throws Exception;
     boolean matchPw(String id, String password) throws Exception;
+    Cafe paymentSignUp(SignUpPayDto signUpPayDto) throws Exception;
+    Boolean deleteSignUp(Integer memNo) throws Exception;
     Integer existStore(SignUpStoreDto signUpStore,List<MultipartFile> files) throws Exception;
     Member existStoreMember(Member member, Integer cafeNo) throws Exception;
     

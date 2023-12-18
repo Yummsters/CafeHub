@@ -1,5 +1,8 @@
 package com.yummsters.cafehub.domain.member.controller;
 
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.cafeAd.dto.SearchResDto;
+import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.member.dto.*;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
 
@@ -183,10 +186,30 @@ public class MemberController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+    // 사장 회원가입 시 카페정보에 결제관련 업데이트
+    @PutMapping("/signUpStore")
+    public ResponseEntity<Object> updateAd(@RequestBody SignUpPayDto signUpPayDto){
+        try{
+            Cafe cafe = memberService.paymentSignUp(signUpPayDto);
+            SignUpPayDto result = signUpPayDto.signUpStoreToDto(cafe);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+    // 결제 실패 시 등록된 정보 삭제
+    @DeleteMapping("signUpStore/{memNo}")
+    public ResponseEntity<Object> deleteAd(@PathVariable("memNo") Integer memNo){
+        try{
+            boolean isDelete = memberService.deleteSignUp(memNo);
+            return new ResponseEntity<>(isDelete, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
     // 수빈 part ----------------------------------------------------------------
     // 사장님 회원가입
-    
     @PostMapping("/signUpStore/{cafeNo}")
     public ResponseEntity<Object> existStoreMember(@RequestBody SignUpReqDto requestDto, @PathVariable Integer cafeNo) {
         Member member = mapper.signUpReqDtoToMember(requestDto);
