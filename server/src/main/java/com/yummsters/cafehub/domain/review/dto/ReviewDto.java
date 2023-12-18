@@ -28,6 +28,7 @@ public class ReviewDto {
 	private Member writer;
 	private Integer likeCount;
 	private LocalDateTime regDate;
+	private boolean modPossible; // 리뷰 수정 가능 여부
     private Integer reviewAuthNo;  // 리뷰 권한 번호
 
 	// Member 정보
@@ -70,6 +71,7 @@ public class ReviewDto {
 		            .thumbImg(thumbImg)
 		            .member(writer)
 		            .cafe(cafeNo)
+				 .modPossible(true)
 		            .likeCount(0)
 		            .regDate(LocalDateTime.now())
 		            .build();

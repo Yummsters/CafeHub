@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.review.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +101,8 @@ public class ReviewController {
 			res.put("isLike", isLike);
 			boolean isWish = reviewService.isWishReview(memNo, reviewNo);
 			res.put("isWish", isWish);
+			Integer modDate = review.getRegDate().plusDays(3).getDayOfYear()- LocalDateTime.now().getDayOfYear();
+			res.put("modDate", modDate);
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -46,6 +46,8 @@ public class Review {
 	private Integer likeCount;
 	@Column
 	private LocalDateTime regDate;
+    @Column
+    private boolean modPossible;
 	@OneToMany(mappedBy = "review")
 	private List<ReviewToTag> reviewToTags = new ArrayList<>();
 	@ManyToOne

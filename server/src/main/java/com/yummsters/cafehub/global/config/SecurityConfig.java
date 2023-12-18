@@ -51,7 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/member/**").access("hasRole('STORE') or hasRole('USER') or hasRole('MANAGER')") // 권한 부여 확인용 임시 코드
-                .antMatchers("/store/**").access("hasRole('STORE')")
+                .antMatchers("/user/**").access("hasRole('USER') or hasRole('MANAGER')")
+                .antMatchers("/store/**").access("hasRole('STORE') or hasRole('MANAGER')")
+                .antMatchers("/manager/**").access("hasRole('MANAGER')")
                 .anyRequest().permitAll();
     }
 }
