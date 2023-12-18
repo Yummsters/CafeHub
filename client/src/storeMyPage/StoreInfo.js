@@ -1,20 +1,219 @@
-import { useState, useRef, useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import { useState, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import storeInfoStyle from './storeInfoStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
-
-const StoreInfo= () =>{
-    const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+const { daum } = window;
+const StoreInfo = () => {
+    const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-
     const [point, setPoint] = useState(0);
-
-    const [owner, setOwner] = useState({name:"", id:"", password:"", passwordCk:"", phone:"", email:"",
-    storeName:"", storePhone:"", storeNum:"", location:"", time:""});
+    const [fileNum, setFileNum] = useState(0);
+    const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
+    const [valid, setValid] = useState({ businessNo: false });
+    const [cafe, setCafe] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "", tagName: "", thumbImg: "" });
+    const [check, setCheck] = useState({ businessNo: false });
+    const [warnings, setWarnings] = useState({ businessNo: false });
+    const [isBusinessNoChanged, setIsBusinessNoChanged] = useState(true);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [tagName, setTagName] = useState([]);
     const [picture, setPicture] = useState("");
+    const [owner, setOwner] = useState({
+        name: "", id: "", password: "", passwordCk: "", phone: "", email: "",
+        storeName: "", storePhone: "", storeNum: "", location: "", time: ""
+    });
+
+
+    const searchAddr = () => { // 주소 입력
+        new daum.Postcode({
+            oncomplete: function (data) {
+                // var roadAddr = data.roadAddress; // 도로명 주소 변수
+                document.getElementById('address').value = data.address;
+                Promise.resolve(data).then(o => {
+                    const { address } = data;
+                    return new Promise((resolve, reject) => {
+                        const geocoder = new daum.maps.services.Geocoder();
+                        geocoder.addressSearch(address, (result, status) => {
+                            if (status === daum.maps.services.Status.OK) {
+                                const { x, y } = result[0];
+                                resolve({ lat: y, lon: x })
+                            } else {
+                                reject();
+                            }
+                        });
+                    })
+                }).then(result => {
+                    setCafe(prevStore => ({
+                        ...prevStore,
+                        latitude: result.lat,
+                        longitude: result.lon,
+                        address: data.address,
+                    }));
+                });
+
+            }
+        }).open();
+    }
+
+    useEffect(() => {
+        axios
+            .get(`http://localhost:8080/cafe/${cafeNo}`)
+            .then((res) => {
+                console.log(res.data);
+                const cafeData = res.data;
+
+                if (cafeData) {
+                    setCafe({
+                        cafeName: cafeData.cafeName,
+                        tel: cafeData.tel,
+                        address: cafeData.address,
+                        businessNo: cafeData.businessNo,
+                        operTime: cafeData.operTime,
+                        thumbImg: cafeData.thumbImg,
+
+
+                    });
+                } else {
+                    console.error('카페 정보가 없습니다.');
+                }
+
+            })
+            .catch((error) => {
+                console.error('카페 정보 가져오기 실패:', error);
+            });
+    }, [accessToken]);
+
+    useEffect(() => {
+        // Fetch cafe image
+        if (cafe.thumbImg) {
+            axios.get(`http://localhost:8080/common/upload/${cafe.thumbImg}`, {
+                responseType: 'blob',
+            })
+
+                .then((res) => {
+                    // Blob 객체를 URL로 변환
+                    const imageUrl = URL.createObjectURL(res.data);
+                    console.log(imageUrl);
+
+                    // 이미지 데이터를 state에 설정
+                    setCafe((prevCafe) => ({
+                        ...prevCafe,
+                        imageUrl: imageUrl,
+                    }));
+                })
+                .catch((error) => {
+                    console.error('카페 사진 가져오기 실패:', error);
+                });
+        }
+    }, [cafe.thumbImg]);
+
+
+    const businessNo = () => { // 사업자번호 확인
+
+        axios.post(`http://localhost:8080/business/${cafe.businessNo}`)
+            .then((res) => {
+                console.log(res.data);
+                if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
+
+                    MyToast.fire({
+                        title: '사업자 인증 실패!',
+                        text: '다시 입력해주세요',
+                        icon: 'error',
+                    })
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        businessNo: false
+                    }));
+
+                } else {
+                    MyToast.fire({
+                        title: '사업자 인증 성공!',
+                        text: '성공적으로 등록되었습니다',
+                        icon: 'success',
+                    })
+
+                    setCheck((prevWarnings) => ({
+                        ...prevWarnings,
+                        businessNo: true
+                    }));
+                } 
+              
+            })
+            .catch((error) => {
+                console.log(error);
+                return false;
+            })
+           
+    };
+
+    // 유효성 검증
+    const validUserCheck = (name, value) => {
+        let isValid;
+
+        if (name === 'businessNo') {
+            isValid = inputRegexs.businessNoRegex.test(value);
+        }
+
+        setValid((prevChecks) => ({
+            ...prevChecks,
+            [name]: isValid,
+        }));
+    }
+
+
+
+    const StoreInfo = async (e) => {
+        e.preventDefault();
+        if (!isBusinessNoChanged) {
+            MyToast.fire({
+                title: '사업자 등록번호 변경',
+                text: '사업자 등록번호를 변경하세요.',
+                icon: 'error',
+            });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('cafeName', cafe.cafeName);
+        formData.append('tel', cafe.tel);
+        formData.append('businessNo', cafe.businessNo);
+        formData.append('address', cafe.address);
+        formData.append('operTime', cafe.operTime);
+     
+        // 이미지 파일이 선택된 경우에만 추가
+    if (selectedFile) {
+        formData.append('file', selectedFile);
+      }
+
+        try {
+            // 서버로 요청을 보낼 때는 formData를 config 객체에 넣어서 보냅니다.
+            const response = await axios.put(`http://localhost:8080/cafe/store/${cafeNo}`, formData, {
+                headers: {
+                    Authorization: accessToken,
+                    'Content-Type': 'multipart/form-data', // 중요: FormData를 보낼 때 Content-Type을 설정해야 합니다.
+                },
+            });
+
+            Swal.fire({
+                title: '수정 성공!',
+                text: '리뷰가 성공적으로 등록되었습니다',
+                icon: 'success',
+                confirmButtonText: '확인',
+            }).then(() => {
+                // 추가적인 로직
+            });
+
+
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+
     const [tagList, setTagList] = useState([
         '#카공',
         '#애견 동반',
@@ -27,7 +226,7 @@ const StoreInfo= () =>{
     ]);
 
     // swal
-    const Toast = Swal.mixin({
+    const MyToast = Swal.mixin({
         toast: true,
         position: 'top',
         showConfirmButton: false,
@@ -38,28 +237,43 @@ const StoreInfo= () =>{
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
+    // 유효성 정규표현식
+    const inputRegexs = {
 
+        businessNoRegex: /^[0-9]+$/
+    };
 
-    const change = (e) =>{
-        let name = e.target.name;
-        let value = e.target.value;
-        
-        setOwner({...owner, [name] : value});
-    }
+    const change = (e) => {
+        const { name, value } = e.target;
+        validUserCheck(name, value);
+        if (name === 'businessNo' && cafe.businessNo !== value) {
+            setIsBusinessNoChanged(false);
+        }
+        console.log('흠,,'+businessNo);
+        setCafe((prevCafe) => ({ ...prevCafe, [name]: value }));
 
-    const fileChange = (e) =>{
+    };
+
+   
+    const fileChange = (e) => {
         const file = e.target.files[0];
-        setPicture(file);
+        setSelectedFile(file);
 
-        // 업로드 로직은 아직
+       
+        const imageUrl = URL.createObjectURL(file);
+        setCafe((prevCafe) => ({
+            ...prevCafe,
+            imageUrl: imageUrl,
+        }));
     }
 
-    useEffect(()=>{
-        /* 오른쪽 가게 미리보기 움직이기 */
+
+    useEffect(() => {
+       
         const storeInfo = document.querySelector('.storeInfo-right-section');
 
         if (storeInfo) {
-            window.addEventListener('scroll', function() {
+            window.addEventListener('scroll', function () {
                 const scrollTop = window.scrollY;
 
                 if (scrollTop > 50) {
@@ -74,158 +288,159 @@ const StoreInfo= () =>{
     }, [])
 
     // 가게 포인트 조회
-    useEffect(()=>{
-        axios.get(`http://localhost:8080/point/${memNo}`,{
-            headers : {
-                Authorization : accessToken
+    useEffect(() => {
+        axios.get(`http://localhost:8080/point/${memNo}`, {
+            headers: {
+                Authorization: accessToken
             }
         })
-        .then(res=>{
-            const resPoint = res.data;
-            console.log(resPoint);
-            console.log(res);
-            setPoint(resPoint);
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    },[])
-    
-    const pointCalReq = () =>{
-        if(point < 100){
-            Toast.fire({
+            .then(res => {
+                const resPoint = res.data;
+                console.log(resPoint);
+                console.log(res);
+                setPoint(resPoint);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }, [])
+
+    const pointCalReq = () => {
+        if (point < 100) {
+            MyToast.fire({
                 icon: 'error',
                 title: '100개 이상부터 정산 신청이 가능합니다'
             })
-        }else{
-            axios.post(`http://localhost:8080/point/calculate/${memNo}`,{
-                headers : {
-                    Authorization : accessToken
+        } else {
+            axios.post(`http://localhost:8080/point/calculate/${memNo}`, {
+                headers: {
+                    Authorization: accessToken
                 }
             })
-            .then(res=>{
-                console.log(res);
-                console.log(res.data);
-                setPoint(res.data);
-                Toast.fire({
-                    icon: 'success',
-                    title: '포인트 정산 신청이 완료되었습니다'
+                .then(res => {
+                    console.log(res);
+                    console.log(res.data);
+                    setPoint(res.data);
+                    MyToast.fire({
+                        icon: 'success',
+                        title: '포인트 정산 신청이 완료되었습니다'
+                    })
                 })
-            })
-            .catch(err =>{
-                console.log(err);
-            })
+                .catch(err => {
+                    console.log(err);
+                })
         }
     }
 
+
+
+
+
+
     return (
         <div className='storeInfo-container'>
-            <StoreSideTab/>
+            <StoreSideTab />
             <div className='storeInfo-container-other'>
-            {/* 오른쪽에 사진 */}
-          <div className='storeInfo-left-section'>
-            <div className='storeInfo'>
-                <div className='storeInfo-storeName'> 선진카페 </div>
-                <div className='storeInfo-picture' > 
-                <img src="/img/Store1.png"  style={{width:"320px", height:"320px", borderRadius:"20px"}}alt="썸네일" />
+                <div className='storeInfo-left-section'>
+                    <div className='storeInfo'>
+                        <div className='storeInfo-storeName'>{cafe.cafeName ? cafe.cafeName : '가게 이름'}</div>
+                        <div className='storeInfo-picture' >
+                            {cafe.imageUrl && (
+                                <img src={cafe.imageUrl} style={{ width: "320px", height: "320px", borderRadius: "20px" }} alt="썸네일" />
+                            )}
+                        </div>
+                        <div className='storeInfo-location'>{cafe.address ? cafe.address : '위치를 입력하세요.'}</div>
+                        <div className='storeInfo-time'>운영 시간 : {cafe.operTime ? cafe.operTime : '시간을 입력하세요.'}</div>
+                    </div> <br />
+                    <div className='storeInfo-point'>
+                        보유 커피콩
+                        <img className='storeInfo-pointImg' src="/img/bean.png" alt='bean' /> {point}개
+                    </div>
+                    <button className='storeInfo-pointCheck' onClick={pointCalReq}>환급신청</button>
                 </div>
-                <div className='storeInfo-location'>서울시 금천구 가산디지털1로 70</div>
-                <div className='storeInfo-time'>운영 시간 : 10:00 ~ 20:00</div>
-            </div> <br/>
-            <div className='storeInfo-point'>
-                보유 커피콩
-                <img className='storeInfo-pointImg' src="/img/bean.png" alt='bean'/> {point}개
-            </div>
-            <button className='storeInfo-pointCheck' onClick={pointCalReq}>환급신청</button>
-          </div>
 
 
-          <div className='storeInfo-right-section'>
-            <form>
-            <div className='storeInfoInputDiv'>
-                <label>이름 <br/>
-                <input type="text" id="name" name="name" onChange={change}/></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-                <label>닉네임 <br/>
-                <input type="text" id="nickName" name="nickName" onChange={change}/></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-                <label>아이디 <span className='storeInfo-auth'>5~12자로 작성하세요</span><br/>
-                <input type="text" id="id" name="id" onChange={change} /></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-                <label>비밀번호<span className='storeInfo-auth'>소문자/숫자/특수문자 포함 5~12자 이내로 작성하세요</span> <br/>
-                <input type="password" id="password" name="password" onChange={change}/></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-                <label>비밀번호 확인 <span className='storeInfo-auth'>비밀번호가 일치하지 않습니다</span><br/>
-                <input type="password" id="passwordCk" name="passwordCk" onChange={change}/></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv-other'>
-                <label>휴대폰 번호 <span className='storeInfo-auth'>휴대폰 번호를 확인하세요</span><br/>
-                <input type="text" id="phone" name="phone" onChange={change}/></label>
-            </div> 
-            <div className='storeInfoAuthNum'>
-                <button type="button" > 휴대폰 <br/>인증 </button>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-              <label>이메일  <span className='storeInfo-auth'> 이메일 형식으로 입력하세요</span><br/>
-              <input type="text" id="email" name="email" onChange={change}/></label>
-            </div><br/>
-            <div className='storeInfoInputDiv'>
-                <label>가게명 <br/>
-                <input type="text" id="storeName" name="storeName" onChange={change}/></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-                <label>가게 전화번호 <br/>
-                <input type="text" id="storePhone" name="storePhone" onChange={change}/></label>
-            </div> <br/>
-            <div className='storeInfoInputDiv-other'>
-              <label> 사업자 등록 번호 <span className='storeInfo-auth'> 하이픈(-)을 제외하고 입력하세요</span><br/>
-              <input type="text" id="storeNum" name="storeNum" onChange={change}/></label>
-            </div>
-            <div className='storeInfoAuthNum'>
-                <button type="button"> 사업자 <br/> 인증 </button>
-            </div> <br/>
-            <div className='storeInfoInputDiv-other'>
-              <label> 위치 <br/>
-              <input type="text" id="location" name="location" onChange={change}/></label>
-            </div>
-            <div className='storeInfoAuthNum'>
-                <button type="button"> 위치 <br/> 검색 </button>
-            </div> <br/>
-            <div className='storeInfoInputDiv'>
-                <label>운영시간 <br/>
-                <input type="text" id="time" name="time" onChange={change}/></label>
-            </div> <br/>
+                <div className='storeInfo-right-section'>
+                    <form>
 
-            <input type="file" id="picture" name="picture" onChange={fileChange} style={{ display: 'none' }}/>
+                        <div className='storeInfoInputDiv'>
+                            <label>가게명 <br />
+                                <input type="text" id="cafeName" name="cafeName" onChange={change} value={cafe.cafeName} /></label>
+                        </div> <br />
+                        <div className='storeInfoInputDiv'>
+                            <label>가게 전화번호 <br />
+                                <input type="text" id="tel" name="tel" onChange={change} value={cafe.tel} /></label>
+                        </div> <br />
+                        <div className='storeInfoInputDiv-other'>
+                            <label> 사업자 등록 번호
+                                <span className='storeInfo-auth'>
+                                    {/* {cafe.businessNo && !valid.businessNo ? "하이픈(-) 제외 숫자로 작성하세요" : ""} */}
+                                    {!isBusinessNoChanged && cafe.businessNo && !valid.businessNo ? "하이픈(-) 제외 숫자로 작성하세요" : ""}
+                   
+                                </span><br />
+                                <input type="text" id="businessNo" name="businessNo" onChange={change} value={cafe.businessNo} /></label>
+                        </div>
+                        <div className='storeInfoAuthNum'>
+                            <button type="button" onClick={businessNo}>
+                                사업자 <br /> 인증 </button>
+                        </div> <br />
+                        <div className='storeInfoInputDiv-other'>
+                            <label> 위치 <br />
+                                <input type="text" id="address" name="address" onChange={change} value={cafe.address} /></label>
+                        </div>
+                        <div className='storeInfoAuthNum'>
+                            <button type="button" onClick={searchAddr}> 위치 <br /> 검색 </button>
+                        </div> <br />
+                        <div className='storeInfoInputDiv'>
+                            <label>운영시간 <br />
+                                <input type="text" id="operTime" name="operTime" onChange={change} value={cafe.operTime} /></label>
+                        </div> <br />
 
-            <div className='storeInfoInputDiv-other'>
-                <label> 썸네일 <br/>
-                <input className="storeInfoInput-text" type="text" id="picture" name="picture" value={picture ? picture.name : '사진을 선택하세요'} readOnly /></label>
-            </div>
-            <div className='storeInfoAuthNum'>
-                <button type="button" onClick={() => document.getElementById("picture").click()}> 썸네일 <br/>선택 </button>
-            </div><br/>
+                        <input
+                            type="file"
+                            id="thumbImg"
+                            name="thumbImg"
+                            onChange={fileChange}
+                            style={{ display: 'none' }}
+                        />
+                        <div className='storeInfoInputDiv-other'>
+                            <label> 썸네일 <br />
+                                <input
+                                    className="storeInfoInput-text"
+                                    type="text"
+                                    id="thumbImg"
+                                    name="thumbImg"
+                                    value={cafe.imageUrl}
+                                    readOnly
+                                />
+                            </label>
+                        </div>
+                        <div className='storeInfoAuthNum'>
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById("thumbImg").click()}
+                            >
+                                썸네일 <br />선택
+                            </button> </div><br />
 
-            {/* 사장님 선택 태그 */}
-            <div className='storeInfo-tag'>
-            { tagList.length !== 0 &&
-            tagList.map((tag, index)=>
-            <span className='storeInfo-tagList' key={index}>
-                <button className='storeInfo-tag1'  id={`tag${index}`} name={tag}> {tag} </button>
-                {index % 3 ===2 ? <><br/></> : ""}
-            </span>)}
+                        {/* 사장님 선택 태그 */}
+                        <div className='storeInfo-tag'>
+                            {tagList.length !== 0 &&
+                                tagList.map((tag, index) =>
+                                    <span className='storeInfo-tagList' key={index}>
+                                        <button className='storeInfo-tag1' id={`tag${index}`} name={tag}> {tag} </button>
+                                        {index % 3 === 2 ? <><br /></> : ""}
+                                    </span>)}
+                        </div>
+                        <div className='storeInfo-button'>
+                            <button type="button" onClick={StoreInfo}> 정보 수정 </button>
+                        </div> <br />
+
+
+                    </form>
+                </div>
             </div>
-            <div className='storeInfo-button'>
-                <button type="button" > 정보 수정 </button>
-            </div> <br/>
-            </form>
-        </div>      
-    </div>
-    </div>
+        </div>
     );
 }
 

@@ -176,7 +176,7 @@ const SignUpStore = () => {
             }
         }).open();
     }
-    console.log(store.address);
+
   
 
     // swal
