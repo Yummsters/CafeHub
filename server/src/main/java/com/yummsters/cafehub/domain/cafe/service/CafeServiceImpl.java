@@ -1,14 +1,14 @@
 package com.yummsters.cafehub.domain.cafe.service;
 
-import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
-import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
-import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
-import com.yummsters.cafehub.domain.member.entity.Member;
-import com.yummsters.cafehub.domain.member.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,14 +17,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
+import com.yummsters.cafehub.domain.cafe.dto.ModifyCafeDto;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
+import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.repository.MemberRepository;
+import com.yummsters.cafehub.domain.review.entity.FileVo;
+import com.yummsters.cafehub.domain.review.entity.Review;
+import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
+import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
+import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 
 @Service
@@ -34,7 +42,8 @@ public class CafeServiceImpl implements CafeService {
     private final CafeRepository cafeRepository;
     private final WishCafeRepository wishRepository;
     private final MemberRepository memberRepository;
-
+    private final FileVoRepository fileVoRepository;
+	
 
     @Override
     public void saveCafe() throws Exception {
@@ -136,4 +145,76 @@ public class CafeServiceImpl implements CafeService {
 		Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
 		return unpaidCafesDtoPage;
 	}
+	// 수빈 part---------------------------------------------------------------------------
+	
+	
+	@Override
+	  public Cafe getCafeInfo(Integer cafeNo) throws Exception{
+		
+	        return cafeRepository.findByCafeNo(cafeNo);
+	    }
+
+	@Override
+	public Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files)throws Exception {
+	    // 기존 카페 정보 가져오기
+	    Cafe cafe = cafeRepository.findByCafeNo(cafeNo);
+
+	    // 카페 정보 업데이트
+	    if (modifyCafeDto.getThumbImg() != null) {
+	        cafe.setThumbImg(modifyCafeDto.getThumbImg());
+	    }
+	    if (modifyCafeDto.getAddress() != null) {
+	        cafe.setAddress(modifyCafeDto.getAddress());
+	    }
+	    if (modifyCafeDto.getCafeName() != null) {
+	        cafe.setCafeName(modifyCafeDto.getCafeName());
+	    }
+	    if (modifyCafeDto.getTel() != null) {
+	        cafe.setTel(modifyCafeDto.getTel());
+	    }
+	    if (modifyCafeDto.getTagName() != null) {
+	        cafe.setTagName(modifyCafeDto.getTagName());
+	    }
+	    if (modifyCafeDto.getOperTime() != null) {
+	        cafe.setOperTime(modifyCafeDto.getOperTime());
+	    }
+
+	    if (files != null && !files.isEmpty()) {
+	        String dir = "c:/soobin/upload/";
+	        String fileNums = "";
+
+	        for (MultipartFile file : files) {
+	            if (!file.isEmpty()) {
+	                try {
+	                    FileVo fileVo = FileVo.builder()
+	                            .directory(dir)
+	                            .name(file.getOriginalFilename())
+	                            .size(file.getSize())
+	                            .contenttype(file.getContentType())
+	                            .data(file.getBytes())
+	                            .build();
+
+	                    // 파일 업로드
+	                    fileVoRepository.save(fileVo);
+
+	                    File uploadFile = new File(dir + fileVo.getFileNum());
+	                    file.transferTo(uploadFile);
+
+	                    fileNums += (fileNums.isEmpty() ? "" : ",") + fileVo.getFileNum();
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                    // 파일 업로드 중 예외 처리
+	                }
+	            }
+	        }
+	        // 파일 번호 목록을 썸네일 이미지로 사용
+	        cafe.setThumbImg(fileNums);
+	    }
+	    // 카페 정보 저장
+	    cafeRepository.save(cafe);
+
+	    return cafe.getCafeNo();
+	}
+
+ 
 }

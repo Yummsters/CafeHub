@@ -1,9 +1,9 @@
 package com.yummsters.cafehub.domain.cafe.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.yummsters.cafehub.domain.review.entity.Review;
-import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,13 +11,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
+import com.yummsters.cafehub.domain.cafe.dto.ModifyCafeDto;
+import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
+import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 
 @RestController
 public class CafeController {
@@ -92,4 +98,37 @@ public class CafeController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    // 수빈 part---------------------------------------------------------------------------
+    @GetMapping("/cafe/{cafeNo}")
+    public ResponseEntity<Object> getCafeInfo(@PathVariable Integer cafeNo) {
+        try {
+            Cafe cafe = service.getCafeInfo(cafeNo);
+            
+            if (cafe != null) {
+                CafeDto cafeDto = cafe.toDTO();
+                return new ResponseEntity<>(cafeDto, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/cafe/store/{cafeNo}")
+    public ResponseEntity<Object> modifyCafeInfo(
+            @PathVariable Integer cafeNo,
+            @ModelAttribute ModifyCafeDto modifyCafeDto,
+            @RequestParam(value = "file", required = false) List<MultipartFile> files) {
+        try {
+            Integer updatedCafeNo = service.modifyCafe(cafeNo, modifyCafeDto, files);
+            return ResponseEntity.ok(updatedCafeNo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
 }
