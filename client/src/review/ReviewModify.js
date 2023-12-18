@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './reviewStyle.css';
 import axios from 'axios';
 import { Editor } from '@toast-ui/react-editor';
@@ -20,17 +21,23 @@ const ReviewModify = () => {
     const token = useSelector((state) => state.persistedReducer.accessToken);
     const memNo = useSelector((state) => state.persistedReducer.member.memNo);
     const editorRef = useRef();
+    const navigate = useNavigate();
     const state2 = useLocation();
     const pathname = state2.pathname;
     const pathNamePart = pathname.split('/')[2];
     const [selectedReviewAuthNo, setSelectedReviewAuthNo] = useState('');
     const [selectedCafeNo, setSelectedCafeNo] = useState('');
     const [cafes, setCafes] = useState([]);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    
+    
 
     const thumbnailUrl = thumbImg ? `http://localhost:8080/common/thumbImg/${thumbImg}` : '';
     console.log("썸" + thumbnailUrl);
+    
 
-    const [review, setReview] = useState({
+    const initialState = {
         title: '',
         content: '',
         writer: '',
@@ -39,7 +46,12 @@ const ReviewModify = () => {
         thumbImg: '',
         cafeName: '',
         reviewNo: pathNamePart,
-    });
+      };
+      const [review, setReview] = useState(initialState);
+    // 초기화
+    const handleReset = () => {
+    setReview(initialState);
+};
 
 
     const change = (e) => {
@@ -48,10 +60,44 @@ const ReviewModify = () => {
     };
 
     const handleEditorChange = (content) => {
-        console.log(content);
         setReview((prevReview) => ({ ...prevReview, content: content }));
     };
-
+    const ReviewCahange = async (e) => {
+        e.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('title', review.title);
+        const content = editorRef.current.getInstance().getHTML();
+        formData.append('content', content);
+        formData.append('memNo', memNo);
+        formData.append('writer', memNo);
+        formData.append('ReviewAuthNo', selectedReviewAuthNo);
+        formData.append('cafeNo', selectedCafeNo);
+        
+        if (selectedFile) {
+            formData.append('files', selectedFile);
+        }
+        
+        // 다른 필요한 데이터도 필요에 따라 추가...
+    
+        try {
+            const response = await axios.post(`http://localhost:8080/reviewmodify/${review.reviewNo}`, formData);
+            
+            Swal.fire({
+                title: '수정 성공!',
+                text: '리뷰가 성공적으로 등록되었습니다',
+                icon: 'success',
+                confirmButtonText: '확인',
+            }).then(() => {
+                navigate(`/reviewList`);
+            });
+            
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    
     const [editorInitialValue, setEditorInitialValue] = useState('');
     let encodedHTML;
     useEffect(() => {
@@ -59,9 +105,6 @@ const ReviewModify = () => {
         axios
             .get(`http://localhost:8080/review/${review.reviewNo}`)
             .then((response) => {
-                console.log('API 응답:', response.data);
-                console.log('리뷰 정보:', response.data.review);
-                console.log('리뷰', response.data.review.content);
                 setThumbImg(response.data.review.thumbImg || ''); 
 
                 setReview({
@@ -126,45 +169,47 @@ const ReviewModify = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-
+    
         if (file) {
             setSelectedFile(file);
-
+    
             uploadImages(file, (response) => {
                 console.log('이미지 업로드 결과:', response);
-                const thumbnailURL = URL.createObjectURL(file);
-                setThumbnail(thumbnailURL);
-                setThumbImg(response);
                 setIsFileSelected(true);
+                 // 이미지 프리뷰 업데이트
+                 setImagePreview(URL.createObjectURL(file));
+           
             });
         }
     };
+   
 
-    // 이미지 업로드 성공 후 처리
-    const uploadImages = (blob, callback) => {
-        let formData = new FormData();
-        formData.append('images', blob);
+ // 이미지 업로드 성공 후 처리
+const uploadImages = (blob, callback) => {
+    let formData = new FormData();
+    formData.append('images', blob);
 
-        axios({
-            method: 'POST',
-            url: 'http://localhost:8080/common/fileUpload',
-            data: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+    axios({
+        method: 'POST',
+        url: 'http://localhost:8080/common/fileUpload',
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+        .then((response) => {
+            console.log('이미지 업로드 성공 맞나', response.data);
+            const fileNum = response.data.filenum; // 파일의 filenum을 가져옴
+            setThumbImg(fileNum); // 썸네일 이미지 업데이트
+            callback(response.data);
         })
-            .then((response) => {
-                console.log('이미지 업로드 성공', response.data);
-                setThumbImg(response.data);
-                setIsFileSelected(true);
-                callback(response.data);
-            })
-            .catch((error) => {
-                console.error('프론트 이미지 업로드 실패', error);
-                callback('image_load_fail');
-            });
-
-    };
+        .catch((error) => {
+            console.error('이미지 업로드 실패', error);
+            console.error('서버 응답 데이터:', error.response.data); // 서버 응답 데이터 출력
+  
+            callback('image_load_fail');
+        });
+};
     useEffect(() => {
         fetchCafeList();
     }, [memNo]);
@@ -179,19 +224,13 @@ const ReviewModify = () => {
 
                     <select
                         value={`${selectedReviewAuthNo},${selectedCafeNo}`}
-                        onChange={(e) => {
-                            const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
-                            setSelectedReviewAuthNo(selectedReviewAuthNo);
-                            setSelectedCafeNo(selectedCafeNo);
-                        }}>
+                    >
                         <option value='1' disabled={!selectedReviewAuthNo && !selectedCafeNo}>
                             {review.cafeName}
                         </option>
-                        {cafes.map((reviewAuth, i) => (
-                            <option key={i} value={`${reviewAuth.reviewAuthNo},${reviewAuth.cafeNo}`}>
-                                {reviewAuth.cafeName}
-                            </option>
-                        ))}
+                        <option>
+                            (카페는 수정할 수 없습니다)
+                        </option>
                     </select>
 
                     <input
@@ -208,20 +247,21 @@ const ReviewModify = () => {
 
                 <hr className="line" />
 
-                <div className="thumbnail">
+                  <div className="thumbnail">
                     <p className="review-thum">썸네일 선택 &nbsp;&nbsp;&nbsp;</p>
                     <label className="review-img">
                         {' '}
-                        사진 선택
+                        사진 선택 
                         <input type="file" name="filename" onChange={handleFileChange} />
-                    </label>
-                    {thumbImg && <img className='thumbnail-preview' src={thumbnailUrl} alt='Thumbnail Preview' />}
+                    </label>&nbsp;&nbsp;
+                    <img className='thumbnail-preview' src={thumbnailUrl} alt='Thumbnail Preview' />
+
                 </div>
 
 
                 <div className="editor">
                     <Editor
-                        //value={decodeURIComponent(editorInitialValue)} // 디코딩된 값을 사용
+                        //value={decodeURIComponent(editorInitialValue)} 
                         ref={editorRef}
                         onChange={handleEditorChange}
                         className="custom-editor"
@@ -270,12 +310,11 @@ const ReviewModify = () => {
                 </div>
 
                 <div className="btnBox">
-                    <div className="review-btn">초기화</div>
-                    <div className="review-btn">리뷰 수정</div>
+                    <div className="review-btn" onClick={handleReset}>초기화</div>
+                    <div className="review-btn" onClick ={ReviewCahange}>리뷰 수정</div>
                 </div>
             </div>
         </div>
     );
 };
-
 export default ReviewModify;
