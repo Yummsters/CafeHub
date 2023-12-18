@@ -56,6 +56,7 @@ const Header = () => {
         dispatch({type:"isLogin", payload:false});
         dispatch({type:"member", payload:""});
         dispatch({type:"cafe", payload:""});
+        dispatch({type:"payment", payload:""})
         removeCookie("refreshToken");
 
         Toast.fire({
