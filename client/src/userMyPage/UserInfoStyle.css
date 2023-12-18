@@ -222,4 +222,15 @@
 
 .userInfoMsg {
   color: #F59A23;
+  font-size: 18px;
+}
+
+.phoneCodeBtn {
+  background-color: #F59A23;
+  color:#FFFFFF;
+  border: 0px;
+  border-radius: 10px;
+  margin-left: 15px;
+  font-size:15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

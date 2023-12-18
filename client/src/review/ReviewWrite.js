@@ -223,6 +223,20 @@ const ReviewWrite = () => {
             setIsFileSelected(true);
         }
     };
+    const resetForm = () => {
+        setReview({ title: '', content: '', writer: '', reg_date: '', cafeNo: '' });
+        setFiles([]);
+        setSelectedFile(null);
+        setThumbnail(null);
+        setIsFileSelected(false);
+        setSelectTag([]);
+        setSelectedTags([]);
+        setSelectedReviewAuthNo('');
+        setSelectedCafeNo('');
+        //content초기화
+       
+    editorRef.current.getInstance().setMarkdown('');
+    };
 
     return (
         <div className='review-bgBox'>
@@ -317,7 +331,7 @@ const ReviewWrite = () => {
                     ))}
                 </div>
                 <div className='btnBox'>
-                    <div className='review-btn'>초기화</div>
+                    <div className='review-btn' onClick={resetForm}>초기화</div>
                     <div className='review-btn' onClick={submit}>
                         리뷰 등록
                     </div>
