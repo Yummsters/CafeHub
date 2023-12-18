@@ -49,8 +49,17 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const navigate = useNavigate();
-  const ReviewModify = () => {
-    navigate(`/reviewmodify/${review.reviewNo}`);
+  const ReviewModify = (e) => {
+    e.preventDefault();
+    if(review.modPossible){
+      navigate(`/reviewmodify/${review.reviewNo}`);
+    }else{
+      Swal.fire({
+        text: '리뷰 수정이 불가합니다',
+        icon: 'error',
+        confirmButtonText: '확인'
+      });
+    }
   }
 
   const ReviewDelete = async (reviewNo) => {
@@ -358,6 +367,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
     getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
+
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {

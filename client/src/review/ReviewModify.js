@@ -46,7 +46,9 @@ const ReviewModify = () => {
         thumbImg: '',
         cafeName: '',
         reviewNo: pathNamePart,
-      };
+        modDate : 3
+    });
+  
       const [review, setReview] = useState(initialState);
     // 초기화
     const handleReset = () => {
@@ -115,17 +117,14 @@ const ReviewModify = () => {
                     thumbImg: response.data.review.thumbImg,
                     reviewNo: response.data.review.reviewNo,
                     cafeName: response.data.review.cafeName,
+                    modDate : response.data.modDate
                 });
+
 
                 const htmlString = decodeURIComponent(response.data.review.content);
                 editorRef.current?.getInstance().setHTML(htmlString);
                 setSelectedCafeNo(response.data.review.cafeNo);
                 console.log(response.data.review.cafeNo);
-
-
-
-
-
             })
             .catch((error) => {
                 console.error('리뷰 정보 가져오기 실패:', error);
@@ -226,7 +225,7 @@ const uploadImages = (blob, callback) => {
                         value={`${selectedReviewAuthNo},${selectedCafeNo}`}
                     >
                         <option value='1' disabled={!selectedReviewAuthNo && !selectedCafeNo}>
-                            {review.cafeName}
+                            {review.cafeName}({review.modDate}일 남음)
                         </option>
                         <option>
                             (카페는 수정할 수 없습니다)
