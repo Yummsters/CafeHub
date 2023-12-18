@@ -47,7 +47,7 @@ const ReviewModify = () => {
         cafeName: '',
         reviewNo: pathNamePart,
         modDate : 3
-    });
+    };
   
       const [review, setReview] = useState(initialState);
     // 초기화

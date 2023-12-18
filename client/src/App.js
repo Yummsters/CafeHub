@@ -86,7 +86,6 @@ function App() {
 
               {/*로그인 한 사람 모두 사용 가능 */}
               <Route exact path='/payment/success' element={!IsLoginCheck() ? <DefaultLayout><Success/></DefaultLayout> : <Navigate to="/"/>}/>
-              <Route exact path='/payment/fail' element={!IsLoginCheck() ? <DefaultLayout><Fail/></DefaultLayout> : <Navigate to="/"/>}/>
 
               {/* 로그인 하지 않은 사람만 사용 가능 */}
               <Route exact path='/login' element={IsLoginCheck() ? <DefaultLayout><LoginPage/></DefaultLayout> : <Navigate to="/"/>}/>
@@ -101,11 +100,12 @@ function App() {
               <Route exact path='/wishStore' element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><WishStore/></DefaultLayout> : <Navigate to="/"/>}/>
               <Route exact path='/wishReview' element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><WishReview/></DefaultLayout>:  <Navigate to="/"/>}/>
               <Route exact path="/userPoint" element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><UserPoint/></DefaultLayout> : <Navigate to="/"/>}/>
-              <Route exact path="/userInfo" element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><UserInfo/></DefaultLayout> : <Navigate to="/"/>} />
               <Route exact path="/myReivew" element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><MyReivew/></DefaultLayout> : <Navigate to="/"/>} />
               <Route exact path="/myReply" element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><MyReply/></DefaultLayout> : <Navigate to="/"/>} />
               <Route exact path='/reviewModify/:reviewNo' element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><ReviewModify/></DefaultLayout> : <Navigate to="/"/>}/>
               <Route exact path='/reviewWrite' element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><ReviewWrite/></DefaultLayout> : <Navigate to="/"/>}/>
+              <Route exact path="/userInfo" element={(IsUserCheck() || IsSManagerCheck())&& !IsLoginCheck() ? <DefaultLayout><UserInfo sideTab = "user"/></DefaultLayout> : <Navigate to="/"/>} />
+
 
               {/* 로그인 한 사장 & 매니저만 사용 가능 */}
               <Route exact path='/storeInfo' element={(IsStoreCheck() || IsSManagerCheck()) && !IsLoginCheck() ? <DefaultLayout><StoreInfo/></DefaultLayout> : <Navigate to="/"/>}/>
@@ -115,8 +115,8 @@ function App() {
               <Route exact path='/storeBanner' element={(IsStoreCheck() || IsSManagerCheck()) && !IsLoginCheck() ? <DefaultLayout><StoreBanner/></DefaultLayout> : <Navigate to="/"/>}/>
               <Route exact path='/choicePoint/:memNo' element={(IsStoreCheck() || IsSManagerCheck()) && !IsLoginCheck() ? <NoHeaderFooterLayout><ChoicePoint/></NoHeaderFooterLayout> : <Navigate to="/"/>}/>
               <Route exact path='/usePoint/:memNo' element={(IsStoreCheck() || IsSManagerCheck()) && !IsLoginCheck() ? <NoHeaderFooterLayout><UsePoint/></NoHeaderFooterLayout> : <Navigate to="/"/>}/>
-              <Route exact path="/storeuserInfo" element={(IsStoreCheck() || IsSManagerCheck()) && !IsLoginCheck() ? <DefaultLayout><StoreUserInfo/></DefaultLayout> : <Navigate to="/"/>} />
-              
+              <Route exact path="/storeuserInfo" element={(IsStoreCheck() || IsSManagerCheck()) && !IsLoginCheck() ? <DefaultLayout><UserInfo sideTab = "store"/></DefaultLayout> : <Navigate to="/"/>} />
+
               {/* 로그인 한 매니저만 사용 가능 */} 
               <Route exact path="/managerAd" element={IsSManagerCheck() && !IsLoginCheck() ? <DefaultLayout><ManagerAd/></DefaultLayout> : <Navigate to="/"/>} />
               <Route exact path="/managerPoint" element={IsSManagerCheck() && !IsLoginCheck() ? <DefaultLayout><ManagerPoint/></DefaultLayout> : <Navigate to="/"/>} />
