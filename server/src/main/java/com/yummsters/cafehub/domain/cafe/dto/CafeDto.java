@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.cafe.dto;
 
+import com.yummsters.cafehub.domain.tag.entity.StoreTag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +26,5 @@ public class CafeDto {
     private LocalDateTime paidDate;
     private boolean isExisting;
     private String cafeInfo;
+    private StoreTag storeTag;
 }
