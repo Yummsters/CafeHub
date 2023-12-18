@@ -46,8 +46,6 @@ import RecommendCafe from './main/RecommandCafe';
 
 export const persistor = persistStore(store);
 function App() {
-
-
   const DefaultLayout = ({ children }) => (
     <div>
        <Provider store={store}>
@@ -121,9 +119,6 @@ function App() {
               <Route exact path="/managerAd" element={IsSManagerCheck() && !IsLoginCheck() ? <DefaultLayout><ManagerAd/></DefaultLayout> : <Navigate to="/"/>} />
               <Route exact path="/managerPoint" element={IsSManagerCheck() && !IsLoginCheck() ? <DefaultLayout><ManagerPoint/></DefaultLayout> : <Navigate to="/"/>} />
               <Route exact path="/managerConfirm" element={IsSManagerCheck() && !IsLoginCheck() ? <DefaultLayout><ManagerConfirm/></DefaultLayout> : <Navigate to="/"/>} />
-             
-              
-             
             </Routes>
        </BrowserRouter>
   );

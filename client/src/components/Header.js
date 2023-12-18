@@ -6,6 +6,7 @@ import {persistor} from '../App';
 import { getCookie, removeCookie} from './Cookie';
 import Swal from 'sweetalert2';
 import { checkLogin} from '../login/TokenCheck';
+import { IsUserCheck } from './IsMemberTypeCheck';
 
 const Header = () => {
     const memberType = useSelector(state=>state.persistedReducer.member.memberType);
@@ -33,9 +34,9 @@ const Header = () => {
         e.preventDefault();
         checkLogin(dispatch, accessToken, isLogin, navigate)
         .then(()=>{
-            if(memberType === "USER") navigate('/userInfo');
-            else if(memberType === "STORE") navigate('/storeInfo');
-            else if(memberType === "MANAGER") navigate('/managerAd');
+            if(memberType == "USER") navigate('/userInfo');
+            else if(memberType =="STORE") navigate('/storeuserInfo');
+            else if(memberType == "MANAGER") navigate('/managerAd');
         })
         .catch(()=>{
             Toast.fire({
