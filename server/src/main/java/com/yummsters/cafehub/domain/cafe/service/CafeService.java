@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
+import com.yummsters.cafehub.domain.cafe.dto.ModifyCafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 
 public interface CafeService {
@@ -19,4 +21,7 @@ public interface CafeService {
     Cafe searchCafe(Integer cafeNo) throws Exception;
     // 혜리 part---------------------------------------------------------------------------
     Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception;
+    // 수빈 part---------------------------------------------------------------------------
+    Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files)throws Exception;
+    Cafe getCafeInfo(Integer cafeNo) throws Exception;    
 }

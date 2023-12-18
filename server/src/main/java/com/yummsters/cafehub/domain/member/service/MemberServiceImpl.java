@@ -337,7 +337,7 @@ public class MemberServiceImpl implements MemberService{
                 .status(true)
                 .email(member.getEmail())
                 .phone(member.getPhone())
-                .cafeno(cafeNo)
+                .cafe(cafeRepository.findByCafeNo(cafeNo))
                 .social(Social.NORMAL)
                 .build();
 
