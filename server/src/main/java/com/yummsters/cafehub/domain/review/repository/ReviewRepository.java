@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
@@ -20,16 +21,16 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	Page<Review> findAllByTitleContainsOrderByReviewNoDesc(String title, Pageable pageable);
 	Page<Review> findAllByMember(Member member, Pageable pageable);
     @Query(value = "SELECT r.title, "
-    		+ "r.thumb_img, "
-    		+ "c.cafe_name "
+    		+ "r.thumb_img as thumbImg, "
+    		+ "c.cafe_name as cafeName "
             + "FROM review r "
             + "JOIN cafe c "
-            + "WHERE r.cafe_no = c.cafe_no AND "
+            + "WHERE r.cafe_no = c.cafe_no "
             + "ORDER BY r.like_count DESC LIMIT 12", nativeQuery = true)
-    List<Object[]> findReviewsByMemberNoWithoutReviews();
+    List<ReviewInterface> findReviewsByMemberNoWithoutReviews();
     @Query(value = "SELECT r.title, "
-    		+ "r.thumb_img, "
-    		+ "c.cafe_name "
+    		+ "r.thumb_img as thumbImg, "
+    		+ "c.cafe_name as cafeName"
             + "FROM review r "
             + "JOIN cafe c ON r.cafe_no = c.cafe_no "
             + "WHERE r.tag_name in "
@@ -39,7 +40,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             + "WHERE r2.writer =:memNo "
             + "ORDER BY COUNT(rt.tag_no) DESC) "
             + "ORDER BY r.like_count DESC LIMIT 12", nativeQuery = true)
-    List<Object[]> findReviewsByMemberNoWithReviews(@Param("memNo")Integer memNo);
+    List<ReviewInterface> findReviewsByMemberNoWithReviews(@Param("memNo")Integer memNo);
     Integer countByMember_MemNo(Integer memNo);
 	
 	// 희진 part --------

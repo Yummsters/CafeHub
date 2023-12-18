@@ -166,9 +166,9 @@ public class ReviewController {
 	
 	// 메인 추천 리뷰 노출
 	@GetMapping("/reviewList/member/{memNo}")
-	public ResponseEntity<List<Map<String, Object>>> getReviewsByMemNo(@PathVariable Integer memNo) {
+	public ResponseEntity<List<ReviewInterface>> getReviewsByMemNo(@PathVariable Integer memNo) {
 	    try {
-	        List<Map<String, Object>> reviews = reviewService.findReviewsByMemNo(memNo);
+	        List<ReviewInterface> reviews = reviewService.findReviewsByMemNo(memNo);
 	        return new ResponseEntity<>(reviews, HttpStatus.OK);
 	    } catch (Exception e) {
 	        e.printStackTrace();

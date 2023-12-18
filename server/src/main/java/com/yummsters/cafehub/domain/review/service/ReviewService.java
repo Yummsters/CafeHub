@@ -1,7 +1,6 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
 import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
@@ -38,6 +38,6 @@ public interface ReviewService {
 	//혜리 part ----------------------------------------------------------------
 	Page<Review> getReviewList(String search, Pageable pageable) throws Exception;
 	Page<Review> getReviewsByMember(Member member, Pageable pageable) throws Exception;
-	List<Map<String, Object>> findReviewsByMemNo(Integer memNo) throws Exception;
+	List<ReviewInterface> findReviewsByMemNo(Integer memNo) throws Exception;
 	boolean hasNoReviews(Integer memNo) throws Exception;
 }

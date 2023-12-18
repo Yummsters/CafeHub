@@ -19,6 +19,7 @@ import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.service.PointService;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
 import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
@@ -251,38 +252,24 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<Map<String, Object>> findReviewsByMemNo(Integer memNo) throws Exception {
+	public List<ReviewInterface> findReviewsByMemNo(Integer memNo) throws Exception {
 	    if (memNo == null || memNo == 0) {
 	        // 로그인하지 않은 회원이거나 리뷰를 작성하지 않은 회원의 경우
-	        return convertToMapList(reviewRepository.findReviewsByMemberNoWithoutReviews());
+	        return reviewRepository.findReviewsByMemberNoWithoutReviews();
 	    } else {
 	        // 로그인한 회원인 경우
 	        if (hasNoReviews(memNo)) {
 	            // 리뷰를 작성하지 않은 회원인 경우
-	            return convertToMapList(reviewRepository.findReviewsByMemberNoWithoutReviews());
+	            return reviewRepository.findReviewsByMemberNoWithoutReviews();
 	        } else {
 	            // 리뷰를 작성한 회원인 경우
-	            return convertToMapList(reviewRepository.findReviewsByMemberNoWithReviews(memNo));
+	            return reviewRepository.findReviewsByMemberNoWithReviews(memNo);
 	        }
 	    }
-	}
-	
-	private List<Map<String, Object>> convertToMapList(List<Object[]> reviews) {
-	    return reviews.stream()
-	            .map(review -> {
-	                Map<String, Object> reviewData = new HashMap<>();
-	                reviewData.put("title", review[0]);
-	                reviewData.put("thumbImg", review[1]);
-	                reviewData.put("cafeName", review[2]);
-	                return reviewData;
-	            })
-	            .collect(Collectors.toList());
 	}
 
 	@Override
 	public boolean hasNoReviews(Integer memNo) throws Exception {
 		return reviewRepository.countByMember_MemNo(memNo) == 0;
 	}
-
-	
 }
