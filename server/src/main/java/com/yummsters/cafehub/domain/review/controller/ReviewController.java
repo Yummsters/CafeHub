@@ -205,7 +205,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 작성 및 수정 기한에 따른 스케줄러 설정
-	@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
+	//@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
 	public void  deleteReviewAuth() throws Exception {
 		reviewService.deleteReviewAuth();
 	}
