@@ -2,10 +2,8 @@ import {useState, useEffect} from 'react';
 import { useParams, useNavigate } from 'react-router';
 import {useDispatch} from 'react-redux';
 import Swal from 'sweetalert2';
-
 import axios from 'axios';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
-import { checkLogin, tokenCreate, tokenExpried } from './TokenCheck';
 
 const OAuth2 = () => {
     const dispatch = useDispatch();
@@ -47,7 +45,7 @@ const OAuth2 = () => {
                 icon: 'success',
                 title: '로그인이 완료되었습니다.'
             }).then(() => {
-                navigate('/');
+                window.location.href="/";
             }); 
         })
         .catch(err =>{

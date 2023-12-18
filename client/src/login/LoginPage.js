@@ -72,7 +72,7 @@ const Toast = Swal.mixin({
           title: '로그인 완료되었습니다'
       })
       setTimeout(() => {
-        navigate("/");
+        window.location.href="/";
       }, 700); 
       })
       .catch(err =>{
@@ -174,7 +174,7 @@ const Toast = Swal.mixin({
           icon: 'success',
           title: '로그인 완료되었습니다'
       }).then(() => {
-        navigate('/');
+        window.location.href="/";
       });
     })
       .catch(err=>{
