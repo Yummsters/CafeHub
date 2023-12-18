@@ -8,23 +8,22 @@ import java.util.List;
 
 import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.payment.repository.PaymentRepository;
+import com.yummsters.cafehub.domain.tag.entity.StoreTag;
+import com.yummsters.cafehub.domain.tag.repository.StoreTagRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.file.service.FileService;
+import com.yummsters.cafehub.domain.member.dto.SignUpStoreDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
 import com.yummsters.cafehub.domain.member.entity.Social;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.point.repository.PointRepository;
-import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +37,7 @@ public class MemberServiceImpl implements MemberService{
     private final PointRepository pointRepository;  
     private final CafeRepository cafeRepository;
     private final FileVoRepository fileVoRepository;
+    private final StoreTagRepository storeTagRepository;
 
   // 아이디 중복 체크
     @Override
@@ -315,8 +315,7 @@ public class MemberServiceImpl implements MemberService{
                     fileNums += fileVo.getFileNum();
                 }
 
-                System.out.println("카페 이름: " + signUpStore.getCafeName());
-                System.out.println("전화번호: " + signUpStore.getTel());
+                StoreTag storeTag = storeTagRepository.findByStoreTagNo(signUpStore.getTagName().charAt(1)-'0'+1);
 
                 Cafe cafeEntity = Cafe.builder()
                         .cafeName(signUpStore.getCafeName())
@@ -328,7 +327,7 @@ public class MemberServiceImpl implements MemberService{
                         .lng(signUpStore.getLng())
                         .isExisting(true)
                         .thumbImg(fileNums)
-                        .tagName(signUpStore.getTagName())
+                        .storeTag(storeTag)
                         .build();
 
                 System.out.println("카페 엔터티: " + cafeEntity);

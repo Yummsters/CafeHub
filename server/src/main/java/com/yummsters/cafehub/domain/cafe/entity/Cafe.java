@@ -32,10 +32,6 @@ public class Cafe {
     @Column
     private String thumbImg;
     @Column
-   private String tagName;
-    // 태그 이름 칼럼을 없애고, 원투원매핑 필요 >> 아래 임의로 만들어두었는데, 참고하실거면 참고하기!
-    // 만약 원투원매핑하게 된다면 dto에 있는 tagName도 없애야 합니다!
-    @Column
     private String lat;
     @Column
     private String lng;
@@ -75,7 +71,7 @@ public class Cafe {
                 .address(address)
                 .operTime(operTime)
                 .thumbImg(thumbImg)
-                .tagName(tagName)
+                .storeTag(storeTag)
                 .lat(lat)
                 .lng(lng)
                 .isPaid(isPaid)
