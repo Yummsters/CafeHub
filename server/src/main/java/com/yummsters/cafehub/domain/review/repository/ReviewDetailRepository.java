@@ -28,7 +28,7 @@ public class ReviewDetailRepository {
         ReviewDetailDto reviewDetailDTO = jpaQueryFactory
                 .select(Projections.bean(ReviewDetailDto.class,
                         review.reviewNo, review.title, review.content,
-                        review.likeCount, review.regDate,
+                        review.likeCount, review.regDate, review.modPossible,
                         member.memNo, member.nickname,
                         cafe.cafeNo, cafe.cafeName, cafe.lat, cafe.lng,review.thumbImg))
                 .from(review)

@@ -13,6 +13,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,6 @@ import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -43,56 +43,68 @@ public class CafeServiceImpl implements CafeService {
     private final WishCafeRepository wishRepository;
     private final MemberRepository memberRepository;
     private final FileVoRepository fileVoRepository;
-	
+
+    @Value("${kakaomap-key}")
+    private String apiKey;
 
     @Override
     public void saveCafe() throws Exception {
         List<Cafe> cafes = new ArrayList<>();
 
+        List<String> regions = new ArrayList<>();
+        regions.add("서울"); regions.add("부산"); regions.add("대구");regions.add("인천");
+        regions.add("광주"); regions.add("대전"); regions.add("울산"); regions.add("세종");
+        regions.add("경기"); regions.add("강원"); regions.add("충북"); regions.add("충남");
+        regions.add("전북"); regions.add("전남"); regions.add("경북"); regions.add("경남"); regions.add("제주");
+
         int totalCount = 45; // 총 데이터 수
         int countPerPage = 15; // 페이지 당 데이터 수
         int totalPages = (totalCount + countPerPage - 1) / countPerPage; // 전체 페이지 수
 
-        for (int page = 1; page <= totalPages; page++) { // API 에서 최대로 제공하는 데이터 수
-            StringBuilder urlBuilder = new StringBuilder("https://dapi.kakao.com/v2/local/search/keyword.json");
-            urlBuilder.append("?query=" + URLEncoder.encode("테마카페", "UTF-8"));
-            urlBuilder.append("&page=" + page);
+        for (String region : regions) {
 
-            URL url = new URL(urlBuilder.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("content-type", "application/json;charset=UTF-8");
-            conn.setRequestProperty("Authorization", " KakaoAK c95c7f73f119e07ce4e82a038f1d7883");
+            for (int page = 1; page <= totalPages; page++) { // API 에서 최대로 제공하는 데이터 수
+                StringBuilder urlBuilder = new StringBuilder("https://dapi.kakao.com/v2/local/search/keyword.json");
+                urlBuilder.append("?query=" + URLEncoder.encode(region + "테마카페", "UTF-8"));
+                urlBuilder.append("&page=" + page);
 
-            StringBuilder resBuilder = new StringBuilder();
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    resBuilder.append(line);
+                URL url = new URL(urlBuilder.toString());
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("content-type", "application/json;charset=UTF-8");
+                conn.setRequestProperty("Authorization", " KakaoAK "+ apiKey);
+
+                StringBuilder resBuilder = new StringBuilder();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        resBuilder.append(line);
+                    }
+                } finally {
+                    conn.disconnect();
                 }
-            } finally {
-                conn.disconnect();
-            }
 
-            JSONParser parser = new JSONParser();
-            JSONObject mobj = (JSONObject) parser.parse(resBuilder.toString());
-            JSONArray data = (JSONArray) mobj.get("documents");
+                JSONParser parser = new JSONParser();
+                JSONObject mobj = (JSONObject) parser.parse(resBuilder.toString());
+                JSONArray data = (JSONArray) mobj.get("documents");
 
-            for (int i = 0; i < data.size(); i++) {
-                JSONObject cafeJson = (JSONObject) data.get(i);
+                for (int i = 0; i < data.size(); i++) {
+                    JSONObject cafeJson = (JSONObject) data.get(i);
 
-                Cafe cafe = new Cafe();
-                cafe.setCafeName((String) cafeJson.get("place_name"));
-                cafe.setTel((String) cafeJson.get("phone"));
-                cafe.setAddress((String) cafeJson.get("address_name"));
-                cafe.setLat((String) cafeJson.get("y"));
-                cafe.setLng((String) cafeJson.get("x"));
+                    Cafe cafe = new Cafe();
+                    cafe.setCafeName((String) cafeJson.get("place_name"));
+                    cafe.setTel((String) cafeJson.get("phone"));
+                    cafe.setAddress((String) cafeJson.get("address_name"));
+                    cafe.setLat((String) cafeJson.get("y"));
+                    cafe.setLng((String) cafeJson.get("x"));
 
-                cafes.add(cafe);
+                    cafes.add(cafe);
+                }
             }
         }
         cafeRepository.saveAll(cafes);
     }
+
 
     @Override
     public List<CafeDto> getCafes() throws Exception {
@@ -139,12 +151,19 @@ public class CafeServiceImpl implements CafeService {
     }
 
     // 혜리 part---------------------------------------------------------------------------
+
 	@Override
 	public Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception {
 		Page<Cafe> unpaidCafesPage = cafeRepository.findByIsPaidFalseOrderByPaidDate(pageable);
 		Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
 		return unpaidCafesDtoPage;
 	}
+   @Override
+    public Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception {
+        Page<Cafe> unpaidCafesPage = cafeRepository.findByIsPaidFalseOrderByPaidDate(pageable);
+        Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
+        return unpaidCafesDtoPage;
+    }
 	// 수빈 part---------------------------------------------------------------------------
 	
 	
@@ -218,3 +237,4 @@ public class CafeServiceImpl implements CafeService {
 
  
 }
+

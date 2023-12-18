@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.cafeAd.entity;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
 import lombok.*;
 
@@ -39,6 +40,10 @@ public class CafeAd {
     @OneToOne
     @JoinColumn(name = "fileNum", referencedColumnName = "fileNum")
     private FileVo fileVo;
+
+    @OneToOne
+    @JoinColumn(name = "paymentKey", referencedColumnName = "paymentKey")
+    private Payment payment;
 
    /* public void addThumbImg(String thumbImg) {
         this.thumbImg = thumbImg;

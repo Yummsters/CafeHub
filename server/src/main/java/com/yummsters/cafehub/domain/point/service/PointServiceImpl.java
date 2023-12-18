@@ -117,4 +117,12 @@ public class PointServiceImpl implements PointService{
         pointRepository.save(point);
         return true;
     }
+
+    // 포인트 구매
+    @Override
+    public void buyPoint(Integer memNo, Integer price) throws Exception {
+        Point point = checkPoint(memNo);
+        point.plusPoint(price);
+        pointRepository.save(point);
+    }
 }

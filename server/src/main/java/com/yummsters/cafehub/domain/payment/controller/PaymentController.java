@@ -19,31 +19,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("payment")
 public class PaymentController {
     @Autowired
     private PaymentService service;
 
-    @PostMapping("payment/result") // 결과를 통해 toss에 결제 승인 요청
-    public ResponseEntity<String> paymentResult(@RequestBody Map<String, Object> paymentData) {
+    @PostMapping("result") // 결과를 통해 toss에 결제 승인 요청
+    public ResponseEntity<Boolean> paymentResult(@RequestBody Map<String, Object> paymentData) {
         try {
             service.paymentConfirm(paymentData);
-            return new ResponseEntity<>("결제 요청 성공", HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping(value = "fail")
-    public String paymentResult(
-            Model model,
-            @RequestParam(value = "message") String message,
-            @RequestParam(value = "code") Integer code
-    ) throws Exception {
-
-        model.addAttribute("code", code);
-        model.addAttribute("message", message);
-
-        return "fail";
+    @PostMapping("refund") // 환불 요청
+    public ResponseEntity<Boolean> paymentRefund(@RequestBody Map<String, Object> paymentData) {
+        try {
+            service.paymentCancel(paymentData);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
     }
 }

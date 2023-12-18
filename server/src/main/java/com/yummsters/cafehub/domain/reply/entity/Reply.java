@@ -48,6 +48,10 @@ public class Reply {
     private Integer depth;
     
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentReplyNo", nullable = true)
+    private Reply parentReply;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer", nullable = false)
     private Member member;
     
@@ -81,6 +85,7 @@ public class Reply {
                 .content(this.content)
                 .reviewNo(this.review.getReviewNo())
                 .depth(this.depth)
+                .parentReplyNo(this.parentReply != null ? this.parentReply.getReplyNo() : null)
                 .writerNo(this.member.getMemNo())
                 .writer(this.member.getNickname())
                 .nickname(this.member.getNickname())

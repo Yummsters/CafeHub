@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
+import com.yummsters.cafehub.domain.reply.dto.ReplyInterface;
 import com.yummsters.cafehub.domain.reply.service.ReplyService;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class ReplyController {
-	
 	@Autowired
 	private ReplyService replyService;
 	
@@ -70,13 +70,14 @@ public class ReplyController {
 	}
 	
 	@GetMapping("/reply/{reviewNo}/list")
-	public ResponseEntity<Page<ReplyDto>> getRepliesByReviewNo(@PathVariable Integer reviewNo,
+	public ResponseEntity<Page<ReplyInterface>> getRepliesByReviewNo(@PathVariable Integer reviewNo,
+															   @RequestParam(name="memNo",defaultValue="0") int memNo,
 	                                                           @RequestParam(name="page",defaultValue = "0") int page,
 	                                                           @RequestParam(name="size",defaultValue = "10") int size) {
 	   System.out.println(page);
 		try {
 	        Pageable pageable = PageRequest.of(page, size);
-	        Page<ReplyDto> replyPage = replyService.getRepliesByReviewNo(reviewNo, pageable);
+	        Page<ReplyInterface> replyPage = replyService.getRepliesByReviewNo(memNo, reviewNo, pageable);
 	        //System.out.println(replyPage.getContent());
 	        return new ResponseEntity<>(replyPage, HttpStatus.OK);
 	    } catch(Exception e) {
@@ -97,9 +98,9 @@ public class ReplyController {
 	}
 	
 	@GetMapping("/reply/{reviewNo}/best")
-    public ResponseEntity<ReplyDto> getBestReplyByReviewNo(@PathVariable Integer reviewNo) {
+    public ResponseEntity<ReplyInterface> getBestReplyByReviewNo(@PathVariable Integer reviewNo, @RequestParam(required=false, defaultValue = "0") Integer memNo) {
         try {
-            ReplyDto bestReply = replyService.getBestReplyByReviewNo(reviewNo);
+        	ReplyInterface bestReply = replyService.getBestReplyByReviewNo(memNo, reviewNo);
             return new ResponseEntity<>(bestReply, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

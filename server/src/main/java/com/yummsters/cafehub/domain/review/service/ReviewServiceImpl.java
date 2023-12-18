@@ -231,6 +231,11 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").ascending()), cafeNo);
 	}
 
+	@Override
+	public Page<Review> userReviewPage(Integer page, Integer size, String nickname){
+		return reviewRepository.findAllByMember_Nickname(PageRequest.of(page, size, Sort.by("regDate").descending()), nickname);
+	}
+
 	// 혜리 part ----------------------------------------------------------------
 	@Override
 	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception {
