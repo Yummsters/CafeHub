@@ -38,7 +38,6 @@ import ChoicePoint from './storeMyPage/ChoicePoint';
 import UsePoint from './storeMyPage/UsePoint';
 import OAuth2 from './login/OAuth2';
 import Success from './payment/Success';
-import Fail from './payment/Fail';
 import OAuth2Err from './login/OAuth2Err';
 import SearchPwResult from './searchPw/SearchPwResult';
 import UserReview from './userReview/UserReview';

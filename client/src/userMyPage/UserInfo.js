@@ -4,7 +4,7 @@ import UserSideTab from '../components/UserSideTab';
 import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import { useNavigate } from 'react-router';
-import { removeCookie} from '../components/Cookie';
+import { getCookie, removeCookie} from '../components/Cookie';
 import Swal from 'sweetalert2';
 
 
@@ -15,8 +15,8 @@ const UserInfo = () => {
   const social = useSelector(state=>state.persistedReducer.member.social);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
-  const [userInputMsg, setUserInputMsg] = useState({email:'', nickname:'', phone:''});
-  const [saveCheck, setSaveCheck] = useState({name: false, email: false, nickname: false, phone: false})
+  const [userInputMsg, setUserInputMsg] = useState({name: '', email:'', nickname:'', phone:''});
+  const [saveCheck, setSaveCheck] = useState({email: false, nickname: false, phone: false})
 
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
@@ -64,10 +64,15 @@ const UserInfo = () => {
       return;
     }
 
-    axios.put("http://localhost:8080/member/modifyInfo", updateUser)
+    axios.put("http://localhost:8080/member/modifyInfo", updateUser,{
+        headers : {
+            Authorization :accessToken,
+            Refresh : getCookie("refreshToken")
+        }
+    })
     .then((res) => {
       console.log(res.data);
-      // dispatch({type:"member", payload: updateUser}); // redux 상태 업데이트 확인 후 주석 풀기
+      dispatch({type:"member", payload: updateUser}); // redux 상태 업데이트 확인 후 주석 풀기
       setEditMode(false);
     })
     .catch((error) => {

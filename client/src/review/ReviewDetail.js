@@ -29,12 +29,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
 
   const [pageInfo, setPageInfo] = useState({
-    currentPage:1,
-    repliesPerPage:10,
-    startPage:1,
-    endPage:1,
-    totalPages:1
-})
+    currentPage: 1,
+    repliesPerPage: 10,
+    startPage: 1,
+    endPage: 1,
+    totalPages: 1
+  })
 
   const showSwal = (title) => {
     Swal.mixin({
@@ -102,6 +102,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const handleReplySubmit = () => {
+    if(replyContent.length > 0) {
     axios
       .post(`http://localhost:8080/replyWrite/${memNo}/${reviewNo}`, {
         content: replyContent,
@@ -124,7 +125,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
         }
       });
-  }
+  }}
 
   const fetchReplies = () => {
     axios
@@ -132,6 +133,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         params: {
           page: pageInfo.currentPage - 1,
           size: pageInfo.repliesPerPage,
+          memNo: memNo,
         },
       })
       .then((res) => {
@@ -166,30 +168,31 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     setReReplyContent(e.target.value);
   }
 
-  const handleReReplySubmit = () => {
-    if (selectedReply) {
+  const handleReReplySubmit = (parentReplyNo) => {
+    if (selectedReply && reReplyContent) {
       axios.get(`http://localhost:8080/member/${memNo}`)
         .then((response) => {
           const member = response.data;
           axios.post(`http://localhost:8080/reply/${selectedReply.replyNo}/reReply`, {
+            parentReplyNo: parentReplyNo,
             content: reReplyContent,
             writerNo: member.memNo, // writerNo 대신 memNo 사용
             likeCount: 0,
           })
-          .then((res) => {
-            console.log("대댓글이 성공적으로 등록되었습니다.");
-            setReReplyContent("");
-            fetchReplies();
-          })
-          .catch((error) => {
-            console.error("대댓글 등록 에러", error);
-          });
+            .then((res) => {
+              console.log("대댓글이 성공적으로 등록되었습니다.");
+              setReReplyContent("");
+              fetchReplies();
+            })
+            .catch((error) => {
+              console.error("대댓글 등록 에러", error);
+            });
         })
         .catch((error) => {
           console.error("Member 조회 에러", error);
         });
     } else {
-      console.error("댓글을 선택해주세요.");
+      console.error("댓글을 입력해주세요.");
       return;
     }
   };
@@ -200,7 +203,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     setSelectedReply(reply);
     setShowReply(!showReply);
   }
-  
+
 
   const ReplyDelete = async (replyNo) => {
     try {
@@ -269,7 +272,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     if (memNo !== undefined) {
       axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
         .then((res) => {
-          
+
           setLike(res.data.toggleLike);
           setLikeCount(res.data.likeCount);
           console.log(res.data);
@@ -289,8 +292,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
         .then((res) => {
           const index = replies.findIndex((reply) => reply.replyNo == replyNo);
-          const reply = {...replies[index]};
-          reply.replyLike = res.data.isToggleLike;
+          const reply = { ...replies[index] };
+          reply.isReplyLike = res.data.isToggleLike;
           reply.likeCount = res.data.likeCount;
           setReplies([...replies.slice(0, index), reply, ...replies.slice(index + 1)]);
           getBestReply();
@@ -322,7 +325,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const getBestReply = () => {
     //베스트 댓글 가져오기
     axios
-      .get(`http://localhost:8080/reply/${reviewNo}/best`)
+      .get(`http://localhost:8080/reply/${reviewNo}/best`, {
+        params: {
+          memNo: memNo,
+        }
+      })
       .then((res) => {
         setBestReply(res.data);
       })
@@ -335,13 +342,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     axios
       .get(`http://localhost:8080/review/${reviewNo}`, { headers: { memNo } })
       .then((res) => {
-        
+
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
-       
-         console.log(res.data);
+
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -391,7 +398,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               </div>
             </div>
             <div className="detailContent"><Viewer initialValue={review.content || ''} /></div>
-            
+
 
             <div id="detailMap"></div>
 
@@ -400,17 +407,17 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
               </div>
-              
-              {memNo == review.memNo && (
-                
-              <div className="detailBtnBox">
-                
-                  <div className="Gbtn" onClick={ReviewModify}>수정</div>
+
+                {memNo == review.memNo && (
+
+                  <div className="detailBtnBox">
+
+                    <div className="Gbtn" onClick={ReviewModify}>수정</div>
 
 
-                  <div className="Obtn"  onClick={handleReviewDelete}>삭제</div>
-                </div>
-                
+                    <div className="Obtn" onClick={handleReviewDelete}>삭제</div>
+                  </div>
+
                 )}
                 <div className="detailLine" />
 
@@ -437,7 +444,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       답글
                     </span>
                     &nbsp;&nbsp;
-                    <img src={bestReply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
+                    <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
                     <span>{bestReply.likeCount}</span>
                   </p>
                 </div>
@@ -484,23 +491,22 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               <div key={reply.replyNo} className="replyInfo">
                 <div className="infoT">
                   <p>
+                    {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
                     <img src="/img/house.png" alt="house" /> {reply.nickname}
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                    <span className="underline" onClick={() => showReplyClick(reply)}>
-                      답글
-                    </span>
+                    {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
                     &nbsp;&nbsp;
-                    <img src={reply.replyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
+                    <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
                     <span>{reply.likeCount}</span>
                   </p>
                 </div>
-                <div className="infoB">
+                <div className="infoB" style={reply.depth === 1 ? {marginLeft: 35} : {}}>
                   <p>
                     {reply.content}
                   </p>
-                  <p>{reply.regDate}</p>
+                  <p>{reply.regDate.split('.')[0]}</p>
                 </div>
                 <div className="detailLine" />
 
@@ -515,19 +521,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       </div>
                     </div>
                     <div className="detailLine" />
-
-                    {/* 대댓글 목록 */}
-                    {selectedReply.replies && selectedReply.replies.length > 0 && (
-                      <div className="reReplyInfo">
-                        {selectedReply.replies.map((reReply) => (
-                          <div key={reReply.replyNo} className="infoB comment">
-                            <p>{reReply.content}</p>
-                            <p>{reReply.regDate}</p>
-                          </div>
-                        ))}
-                        <div className="detailLine" />
-                      </div>
-                    )}
                   </>
                 )}
 
