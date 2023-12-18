@@ -29,8 +29,6 @@ const SignUpStore = () => {
         }
     })
 
-
-
     useEffect(()=>{
         axios.get(`http://localhost:8080/storeTagList`)
         .then(res=>{
@@ -223,9 +221,6 @@ const SignUpStore = () => {
             })
 };    
   
-    
-   
-
     // 휴대폰 번호 인증 -> 휴대폰 인증
     const sendPhoneCode = () => {
         const random = Math.floor(Math.random() * 9000) + 1000;
@@ -335,8 +330,6 @@ const SignUpStore = () => {
             authNum: member.authNum.trim() === '',
            
         }));
-        
-
 
         if (!check.id) {
             axios.get(`http://localhost:8080/id/${member.id}`)
@@ -402,8 +395,6 @@ const SignUpStore = () => {
                 })
         }
      
-
-
         if (submitSignUP) {
             
             try {
