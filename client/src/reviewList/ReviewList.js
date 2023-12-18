@@ -117,8 +117,9 @@ const ReviewList = () => {
                                     </td>
                                     <td colSpan={2}>
                                         <div className='writeInfo'>
+                                        <a href={`/userReview/${review.nickname}`}>
                                             <img src='/img/cookies.png' alt='' />
-                                            {`${review.nickname} | 추천 ${review.likeCount}`}
+                                            {review.nickname}</a> | 추천 {review.likeCount}
                                         </div>
                                         <div className='dateTime'>{review.regDate}</div>
                                     </td>
