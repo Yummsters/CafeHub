@@ -33,6 +33,7 @@ public interface ReviewService {
 	// 희진 part
 	Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo);
 	Page<Review> userReviewPage(Integer page, Integer size, String nickname);
+	void deleteReviewAuth() throws Exception;
 
 	//혜리 part ----------------------------------------------------------------
 	Page<Review> getReviewList(String search, Pageable pageable) throws Exception;

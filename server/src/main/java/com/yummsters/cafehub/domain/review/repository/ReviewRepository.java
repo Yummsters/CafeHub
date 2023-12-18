@@ -8,6 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	//수빈 part ----------------------------------------------------------------
 	Review findByReviewNo(Integer reviewNo);
@@ -18,4 +22,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
   // 희진 part --------
   Page<Review> findAllByCafe_CafeNo(PageRequest pageRequest, Integer cafeNo);
   Page<Review> findAllByMember_Nickname(PageRequest pageRequest, String nickname);
+  List<Review> findAllByModPossibleIsTrueAndRegDateIsBefore(LocalDateTime localDateTime);
 }
