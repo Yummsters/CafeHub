@@ -15,6 +15,7 @@ const SignUpStore = () => {
     const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false, cafeName: false, tel: false, businessNo: false, address: false,operTime: false ,authNum:false});
     const [picture, setPicture] = useState("");
     const [randomCode, setRandomCode] = useState(0);
+    const [tagName, setTagName] = useState([]);
 
     const Toast = Swal.mixin({
         toast: true,
@@ -27,17 +28,22 @@ const SignUpStore = () => {
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
-    const tagName = [
-        '#카공',
-        '#애견동반',
-        '#TakoOut',
-        '#노키즈존',
-        '#베이커리',
-        '#이색',
-        '#커피전문',
-        '#주류판매',
-        '#감성'
-    ];
+
+
+
+    useEffect(()=>{
+        axios.get(`http://localhost:8080/storeTagList`)
+        .then(res=>{
+            console.log(res);
+            console.log(res.data);
+            setTagName([...res.data]);
+            console.log(tagName);
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    },[])
+
 
 
     // 유효성 정규표현식
@@ -328,8 +334,6 @@ const SignUpStore = () => {
             operTime: store.operTime.trim() === '',
             authNum: member.authNum.trim() === '',
            
-            
-
         }));
         
 
@@ -551,6 +555,7 @@ const SignUpStore = () => {
 
     const tagClick = (i) => {
         let updatedTags;
+        console.log(i);
 
         if (selectedTags.includes(i)) {
             updatedTags = selectedTags.filter((item) => item !== i);
@@ -693,15 +698,13 @@ const SignUpStore = () => {
                         <button type="button" onClick={() => document.getElementById("picture").click()} > 썸네일 <br />선택 </button>
                     </div><br />
 
-
-
                     <div className='SignUpStore-tag'>
                         {tagName.map((tags, i) => (
                             <div
                                 key={i}
                                 className={selectedTags.includes(i) ? 'selectTags' : 'tags'}
                                 onClick={() => tagClick(i)}>
-                                {tags}
+                                {tags.storeTagName}
                             </div>
                         ))}
                     </div>
