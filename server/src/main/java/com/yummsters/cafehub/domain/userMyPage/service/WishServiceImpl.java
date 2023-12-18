@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.userMyPage.service;
 
-import com.yummsters.cafehub.domain.review.dto.ReviewListRes;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishCafeDto;
 import com.yummsters.cafehub.domain.userMyPage.dto.WishReviewDto;
