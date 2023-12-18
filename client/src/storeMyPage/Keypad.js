@@ -5,14 +5,13 @@ import {Container, Col, Row} from 'reactstrap';
 import {useSelector} from 'react-redux';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { getCookie } from '../components/Cookie';
 
 
 const Keypad = () =>{
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    //const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const navigate = useNavigate();
     const [phone, setPhone] = useState('010'); 
-
 
      // swal
      const Toast = Swal.mixin({
@@ -47,12 +46,11 @@ const Keypad = () =>{
 
        axios.get(`http://localhost:8080/member/phone/${phone}`,{
             headers : {
-                Authorization : accessToken
+                Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
             }
        })
        .then(res=>{
-            console.log(res);
-            console.log(res.data);
             navigate('/choicePoint/'+res.data);
        })
        .catch(err=>{

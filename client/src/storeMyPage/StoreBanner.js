@@ -4,6 +4,7 @@ import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { getCookie } from '../components/Cookie';
 import { CheckoutPage } from '../payment/CheckoutPage';
 
 const StoreBanner = () => {
@@ -13,6 +14,10 @@ const StoreBanner = () => {
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
+    // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
+    const cafe= useSelector(state => state.persistedReducer.cafe);
+    const cafeNo = cafe.cafeNo;
+  
     const paySuccess = useSelector(state=>state.persistedReducer.payment.isSuccess);
     const paymentKey = useSelector(state=>state.persistedReducer.payment.paymentKey);
     const [paymentModal, setPaymentModal] = useState(false);
@@ -21,10 +26,6 @@ const StoreBanner = () => {
     const openModal = () => {
         setPaymentModal(true);
     };
-
-    // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
-    const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
-    const [cafeNo, setCafeNo] = useState(1);
 
     const inputRef = useRef(null);
 
@@ -55,7 +56,8 @@ const StoreBanner = () => {
 
         axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
             headers : {
-                Authorization : accessToken
+                Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
@@ -203,13 +205,13 @@ const StoreBanner = () => {
             axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
             {
                 headers : {
-                    Authorization : accessToken,
+                    Authorization :accessToken,
+                    Refresh : getCookie("refreshToken"),
                     'Content-Type': 'multipart/form-data'
                 }
             })
             .then(res=>{
-                console.log(res);
-                console.log(res.data);
+
                 setIsAdExist(true); 
                 setIsApprove(false);
                 setCafeAd(res.data);
@@ -253,7 +255,7 @@ const StoreBanner = () => {
                         <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
-                            <div className='storeBanner-title'>{cafe.title},</div>
+                            <div className='storeBanner-title'>{cafe.cafeName},</div>
                             <div className='storeBanner-description'>
                                 <br />{cafeAd.description}
                             </div>

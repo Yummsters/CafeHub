@@ -33,7 +33,9 @@ const Header = () => {
         e.preventDefault();
         checkLogin(dispatch, accessToken, isLogin, navigate)
         .then(()=>{
-            navigate('/userInfo');
+            if(memberType === "USER") navigate('/userInfo');
+            else if(memberType === "STORE") navigate('/storeInfo');
+            else if(memberType === "MANAGER") navigate('/managerAd');
         })
         .catch(()=>{
             Toast.fire({
@@ -66,7 +68,7 @@ const Header = () => {
 
     const handleCafeRecommendClick = (e) => {
         e.preventDefault();
-        document.getElementById('Main2').scrollIntoView({behavior:'smooth'});
+        navigate("/recoReviewCafe");
     };
 
     return (
@@ -74,16 +76,16 @@ const Header = () => {
             <div className='navContent'>
                 <a href="/" style={{textDecoration:"none"}}><div className='logo'>Café<span className="hub">Hub</span></div></a>
                 <div className='center'>
-                <p><a href="#Main2" onClick={handleCafeRecommendClick}>카페 추천</a></p>
+                <p><a href="#Main2" onClick={handleCafeRecommendClick}>카페 리뷰 추천</a></p>
                     <p><a href="/reviewList">리뷰 게시판</a></p>
                     <p><a href="/map">내 근처 카페</a></p>
                 </div>
                 <div className='right'>
 
                 {/* 추후 토큰 시간 관련하여 추가 설정 필요 */}
-                    <p>{ memberType==="MANAGER" ? <a href="/managerAd"> 관리자 마이페이지 </a>: 
-                    (memberType === "STORE" ? <a href="/storeInfo">내 가게 관리</a> : 
-                    <a href= "#" onClick={mypage}>마이페이지</a>)}</p>
+                    <p>{ memberType==="MANAGER" ? <a href="/" onClick={mypage}> 관리자 마이페이지 </a>: 
+                    (memberType === "STORE" ? <a href="/storeInfo" onClick={mypage}>내 가게 관리</a> : 
+                    <a href= "/userInfo" onClick={mypage}>마이페이지</a>)}</p>
 
                     <p> {!isLogin ? <a href="/login">로그인</a> : <a href="#" onClick={logout}>로그아웃</a>}</p>
                 </div>
