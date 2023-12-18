@@ -5,6 +5,7 @@ import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { CheckoutPage } from '../payment/CheckoutPage';
+import { getCookie } from '../components/Cookie';
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
@@ -12,7 +13,6 @@ const StoreBanner = () => {
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-
     const paySuccess = useSelector(state=>state.persistedReducer.payment.isSuccess);
     const paymentKey = useSelector(state=>state.persistedReducer.payment.paymentKey);
     const [paymentModal, setPaymentModal] = useState(false);
@@ -23,8 +23,8 @@ const StoreBanner = () => {
     };
 
     // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
-    const [cafe,setCafe] = useState({title : "우드슬랩", address : "서울 금천구 가산디지털 1로 58 에이스한솔타워 제 101호"});
-    const [cafeNo, setCafeNo] = useState(1);
+    const cafe= useSelector(state => state.persistedReducer.cafe);
+    const cafeNo = cafe.cafeNo;
 
     const inputRef = useRef(null);
 
@@ -55,7 +55,8 @@ const StoreBanner = () => {
 
         axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
             headers : {
-                Authorization : accessToken
+                Authorization : accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
