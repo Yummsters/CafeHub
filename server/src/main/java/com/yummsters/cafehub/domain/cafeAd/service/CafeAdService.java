@@ -1,8 +1,8 @@
 package com.yummsters.cafehub.domain.cafeAd.service;
 
 import java.util.List;
+import java.util.Map;
 
-import com.yummsters.cafehub.domain.payment.entity.Payment;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
@@ -12,4 +12,6 @@ public interface CafeAdService {
     CafeAd cafeAdSub(CafeAd cafeAd, MultipartFile thumbImg) throws Exception;
   //혜리 part-------------------------------------------------------
     List<CafeAd> getApprovedAds() throws Exception;
+    List<Map<String, Object>> getUnapprovedAds() throws Exception;
+    List<Map<String, Object>> convertToMapList(List<CafeAd> cafeAds) throws Exception;
 }

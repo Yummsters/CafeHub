@@ -1,9 +1,11 @@
 package com.yummsters.cafehub.domain.cafeAd.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.yummsters.cafehub.domain.payment.entity.Payment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,5 +56,26 @@ public class CafeAdServiceImpl implements CafeAdService{
 		LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7); // 7일 이전까지의 승인된 광고
 	    return cafeAdRepository.findByIsApprovedAndAuthDateBefore(true, cutoffDate);
 
+	}
+
+	@Override
+	public List<Map<String, Object>> getUnapprovedAds() throws Exception {
+		List<CafeAd> unapprovedAds = cafeAdRepository.findByIsApprovedFalse();
+		return convertToMapList(unapprovedAds);
+	}
+
+	@Override
+	public List<Map<String, Object>> convertToMapList(List<CafeAd> cafeAds) throws Exception {
+		return cafeAds.stream()
+                .map(cafeAd -> {
+                    Map<String, Object> cafeAdData = new HashMap<>();
+                    cafeAdData.put("cafeName", cafeAd.getCafe().getCafeName());
+                    cafeAdData.put("thumbImg", cafeAd.getCafe().getThumbImg());
+                    cafeAdData.put("description", cafeAd.getDescription());
+                    cafeAdData.put("menu", cafeAd.getMenu());
+                    cafeAdData.put("regDate", cafeAd.getRegDate());
+                    return cafeAdData;
+                })
+                .collect(Collectors.toList());
 	}
 }

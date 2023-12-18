@@ -1,12 +1,25 @@
 package com.yummsters.cafehub.domain.cafeAd.entity;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+import org.springframework.data.annotation.CreatedDate;
+
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import lombok.*;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -29,6 +42,9 @@ public class CafeAd {
 
     @Column
     private boolean isApproved;
+    
+    @CreatedDate
+    private LocalDateTime regDate;
 
     @Column
     private LocalDateTime authDate;

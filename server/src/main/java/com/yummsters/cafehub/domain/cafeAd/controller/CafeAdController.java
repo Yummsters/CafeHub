@@ -2,9 +2,8 @@ package com.yummsters.cafehub.domain.cafeAd.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.yummsters.cafehub.domain.payment.entity.Payment;
-import com.yummsters.cafehub.domain.payment.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +21,8 @@ import com.yummsters.cafehub.domain.cafeAd.dto.CafeAdReqDto;
 import com.yummsters.cafehub.domain.cafeAd.dto.SearchResDto;
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.cafeAd.service.CafeAdService;
+import com.yummsters.cafehub.domain.payment.entity.Payment;
+import com.yummsters.cafehub.domain.payment.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -99,5 +100,15 @@ public class CafeAdController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
+    @GetMapping("/unapprovedAds")
+    public ResponseEntity<List<Map<String, Object>>> getUnapprovedAds() {
+    	try {
+    		List<Map<String, Object>> unapprovedAds = cafeAdService.getUnapprovedAds();
+    		return new ResponseEntity<>(unapprovedAds, HttpStatus.OK);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    	}
+    }
 }
