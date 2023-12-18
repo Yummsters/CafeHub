@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class ReviewListRes {
+public class ReviewListResDto {
     // key를 위한 설정
     private Integer reviewNo;
 
@@ -21,11 +21,11 @@ public class ReviewListRes {
     private Integer likeCount;
     private String nickName;
 
-    public static ReviewListRes reviewToReviewListRes(Review review){
+    public static ReviewListResDto reviewToReviewListRes(Review review){
         if(review == null){
             return null;
         }else {
-            ReviewListRes.ReviewListResBuilder reviewListRes = ReviewListRes.builder();
+            ReviewListResDto.ReviewListResDtoBuilder reviewListRes = ReviewListResDto.builder();
             reviewListRes.reviewNo(review.getReviewNo());
             reviewListRes.thumbImg(review.getThumbImg());
             reviewListRes.title(review.getTitle());
