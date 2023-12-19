@@ -179,7 +179,7 @@ public class ReviewController {
 	
 	//희진 part ----------------------------------------------------------------
 	// 가게 리뷰 리스트 조회
-	@GetMapping("/review/storeList/{cafeNo}")
+	@GetMapping("/store/review/storeList/{cafeNo}")
 	public ResponseEntity<Object> storeList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
 								  @PathVariable("cafeNo") Integer cafeNo){
 		try{
