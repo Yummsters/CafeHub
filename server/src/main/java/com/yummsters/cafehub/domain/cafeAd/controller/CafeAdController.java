@@ -2,20 +2,30 @@ package com.yummsters.cafehub.domain.cafeAd.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.service.CafeService;
+import com.yummsters.cafehub.domain.cafeAd.dto.CafeAdInterface;
 import com.yummsters.cafehub.domain.cafeAd.dto.CafeAdReqDto;
 import com.yummsters.cafehub.domain.cafeAd.dto.SearchResDto;
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.cafeAd.service.CafeAdService;
-import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.payment.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -111,13 +121,23 @@ public class CafeAdController {
     }
     
     @GetMapping("/unapprovedAds")
-    public ResponseEntity<List<Map<String, Object>>> getUnapprovedAds() {
-    	try {
-    		List<Map<String, Object>> unapprovedAds = cafeAdService.getUnapprovedAds();
-    		return new ResponseEntity<>(unapprovedAds, HttpStatus.OK);
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    	}
+    public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(Pageable pageable) {
+        try {
+            Page<CafeAdInterface> unapprovedAds = cafeAdService.getUnapprovedAds(pageable);
+            return new ResponseEntity<>(unapprovedAds, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PutMapping("/approve/{cafeAdNo}")
+    public ResponseEntity<String> approveAd(@PathVariable Integer cafeAdNo) {
+        try {
+            cafeAdService.approveAd(cafeAdNo);
+            return new ResponseEntity<>("카페 광고 승인에 성공했습니다", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("카페 광고 승인에 실패했습니다", HttpStatus.BAD_REQUEST);
+        }
     }
 }
