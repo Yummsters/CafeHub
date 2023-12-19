@@ -54,7 +54,7 @@ const SearchPwResult = () => {
         .then((res) => {
             console.log(res);
             Toast.fire({
-                title: "비밀번호 재설정 완료!",
+                title: "비밀번호 재설정 완료되었습니다",
                 text: "로그인 페이지로 이동합니다",
                 icon: "success",
             });
@@ -69,16 +69,17 @@ const SearchPwResult = () => {
 
     return(
         <div className='searchId-container'>
+        <div className='searchPw-bg'>
         <div className='searchId-section'>
             <div className='searchId-title'>비밀번호 재설정</div> <br/>
             <form onSubmit={handleSubmit}>
             <div className='searchIdInputDiv'>
-                <label>비밀번호 {warning && <span className='searchId-AuthPhone'>{warning}</span>}<br/>
+                <label>새 비밀번호 {warning && <span className='searchId-AuthPhone'>{warning}</span>}<br/>
                 <input type="password" id="password" name="password" onChange={handleChange} /></label>
             </div>
               <br/><br/>
             <div className='searchIdInputDiv'>
-              <label> 비밀번호 확인</label>
+              <label> 새 비밀번호 확인</label>
               <input type="password" id="passwordCheck" name="passwordCheck" onChange={handleChange} />
             </div>
             <div className='searchId-button'>
@@ -86,6 +87,7 @@ const SearchPwResult = () => {
             </div>
             <div className='searchInfo'> <a href="/login">회원가입/로그인</a></div>
             </form>
+        </div>
         </div>
         </div>
     );
