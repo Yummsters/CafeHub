@@ -72,7 +72,13 @@ public class Member {
     private Cafe cafe;
     @Column
     private Integer cafeno;
+    @Column
+    private Integer badgeNo;
 
+    
+    
+    
+    
     public void setName(String name) {
         this.name = name;
     }

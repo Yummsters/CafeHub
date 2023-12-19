@@ -1,8 +1,6 @@
 package com.yummsters.cafehub.domain.cafe.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.yummsters.cafehub.domain.cafe.service.CafeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.dto.ModifyCafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
-import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 
 @RestController
 public class CafeController {

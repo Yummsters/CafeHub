@@ -189,10 +189,12 @@ public class CafeServiceImpl implements CafeService {
 	    if (modifyCafeDto.getTel() != null) {
 	        cafe.setTel(modifyCafeDto.getTel());
 	    }
+
 	    if (modifyCafeDto.getTagName() != null) {
             StoreTag storeTagMod = storeTagRepository.findByStoreTagNo(Integer.parseInt(modifyCafeDto.getTagName())+1);
 	        cafe.setStoreTag(storeTagMod);
 	    }
+
 	    if (modifyCafeDto.getOperTime() != null) {
 	        cafe.setOperTime(modifyCafeDto.getOperTime());
 	    }

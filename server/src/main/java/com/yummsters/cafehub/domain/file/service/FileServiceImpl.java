@@ -21,8 +21,8 @@ public class FileServiceImpl implements FileService{
     @Override
     @Transactional
     public FileVo oneFileUpload(MultipartFile file, CafeAd cafeAd) throws Exception {
-        String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
-
+       // String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+    	String dir = "c:/soobin/upload/"; //수빈 업로드 경로
         FileVo fileVo = FileVo.builder()
                 .directory(dir)
                 .name(file.getOriginalFilename())
@@ -41,7 +41,8 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public void readThumbImg(Integer fileNum, OutputStream out) throws Exception {
-        String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+        //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+    	 String dir = "c:/soobin/upload/"; //수빈업로드경로
         FileInputStream fis = new FileInputStream(dir+fileNum);
         System.out.println(dir + fileNum);
         FileCopyUtils.copy(fis, out);

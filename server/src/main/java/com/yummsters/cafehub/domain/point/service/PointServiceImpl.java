@@ -98,15 +98,26 @@ public class PointServiceImpl implements PointService{
     @Override
     public void pointUp(Integer memNo) throws Exception {
     	 try {
-    		 System.out.println("포인트성공했나");
     	        Point point = checkPoint(memNo);
     	        point.plusPoint(1);
     	        pointRepository.save(point);
     	    } catch (Exception e) {
-    	    	 System.out.println("실패한건가...");
     	        e.printStackTrace(); 
     	    }
     }
+    //회원 포인트 사용
+    @Override
+    public void pointDown(Integer memNo) throws Exception {
+    	try {
+    		Point point = checkPoint(memNo);
+    		point.usePoint(10);
+    		pointRepository.save(point);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		 throw e;
+    	}
+    }
+    
 
     // 포인트 정산 신청 승인
     @Override
