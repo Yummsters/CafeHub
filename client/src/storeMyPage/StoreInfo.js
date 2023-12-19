@@ -4,7 +4,9 @@ import storeInfoStyle from './storeInfoStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import {getCookie} from '../components/Cookie';
 const { daum } = window;
+
 const StoreInfo = () => {
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -17,8 +19,6 @@ const StoreInfo = () => {
     const [warnings, setWarnings] = useState({ businessNo: false });
     const [isBusinessNoChanged, setIsBusinessNoChanged] = useState(true);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [tagName, setTagName] = useState([]);
-    const [picture, setPicture] = useState("");
     const [owner, setOwner] = useState({
         name: "", id: "", password: "", passwordCk: "", phone: "", email: "",
         storeName: "", storePhone: "", storeNum: "", location: "", time: ""
@@ -71,13 +71,12 @@ const StoreInfo = () => {
                         businessNo: cafeData.businessNo,
                         operTime: cafeData.operTime,
                         thumbImg: cafeData.thumbImg,
-
-
+                        storeTag : cafeData.storeTag.storeTagNo
                     });
+                    setSelectedTags([cafeData.storeTag.storeTagNo-1]);
                 } else {
                     console.error('카페 정보가 없습니다.');
                 }
-
             })
             .catch((error) => {
                 console.error('카페 정보 가져오기 실패:', error);
@@ -161,8 +160,6 @@ const StoreInfo = () => {
         }));
     }
 
-
-
     const StoreInfo = async (e) => {
         e.preventDefault();
         if (!isBusinessNoChanged) {
@@ -173,6 +170,7 @@ const StoreInfo = () => {
             });
             return;
         }
+        console.log("tag = " + selectedTags);
 
         const formData = new FormData();
         formData.append('cafeName', cafe.cafeName);
@@ -180,6 +178,7 @@ const StoreInfo = () => {
         formData.append('businessNo', cafe.businessNo);
         formData.append('address', cafe.address);
         formData.append('operTime', cafe.operTime);
+        formData.append('tagName',selectedTags);
      
         // 이미지 파일이 선택된 경우에만 추가
     if (selectedFile) {
@@ -191,6 +190,7 @@ const StoreInfo = () => {
             const response = await axios.put(`http://localhost:8080/cafe/store/${cafeNo}`, formData, {
                 headers: {
                     Authorization: accessToken,
+                    Refresh : getCookie("refreshToken"),
                     'Content-Type': 'multipart/form-data', // 중요: FormData를 보낼 때 Content-Type을 설정해야 합니다.
                 },
             });
@@ -211,19 +211,19 @@ const StoreInfo = () => {
         }
     };
 
-
-
-
-    const [tagList, setTagList] = useState([
-        '#카공',
-        '#애견 동반',
-        '#TakoOut',
-        '#노키즈존',
-        '#베이커리',
-        '#이색',
-        '#커피 전문',
-        '#주류 판매',
-    ]);
+    const [tagList, setTagList] = useState([]);
+    useEffect(()=>{
+        axios.get(`http://localhost:8080/storeTagList`)
+        .then(res=>{
+            console.log(res);
+            console.log(res.data);
+            setTagList([...res.data]);
+            console.log(tagList);
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    },[])
 
     // swal
     const MyToast = Swal.mixin({
@@ -297,7 +297,6 @@ const StoreInfo = () => {
             .then(res => {
                 const resPoint = res.data;
                 console.log(resPoint);
-                console.log(res);
                 setPoint(resPoint);
             })
             .catch(err => {
@@ -332,9 +331,27 @@ const StoreInfo = () => {
         }
     }
 
+    const [selectedTags, setSelectedTags] = useState([]);
 
-
-
+    const tagClick = (i) =>{
+        let updatedTags;
+        console.log(i);
+    
+        if (selectedTags.includes(i)) {
+            updatedTags = selectedTags.filter((item) => item !== i);
+        } else {
+            updatedTags = [...selectedTags, i];
+        }
+        if (updatedTags.length > 1) {
+            Swal.fire({
+                title: '1개까지 선택 가능합니다',
+                icon: 'error',
+                confirmButtonText: '확인',
+            });
+        } else {
+            setSelectedTags(updatedTags);
+        }
+    };
 
 
     return (
@@ -424,14 +441,16 @@ const StoreInfo = () => {
                             </button> </div><br />
 
                         {/* 사장님 선택 태그 */}
-                        <div className='storeInfo-tag'>
-                            {tagList.length !== 0 &&
-                                tagList.map((tag, index) =>
-                                    <span className='storeInfo-tagList' key={index}>
-                                        <button className='storeInfo-tag1' id={`tag${index}`} name={tag}> {tag} </button>
-                                        {index % 3 === 2 ? <><br /></> : ""}
-                                    </span>)}
-                        </div>
+                        <div className='StoreInfo-tag'>
+                        {tagList.map((tags, i) => (
+                            <div
+                                key={i}
+                                className={selectedTags.includes(i) ? 'selectTags' : 'tags'}
+                                onClick={() => tagClick(i)}>
+                                {tags.storeTagName}
+                            </div>
+                        ))}
+                    </div>   
                         <div className='storeInfo-button'>
                             <button type="button" onClick={StoreInfo}> 정보 수정 </button>
                         </div> <br />

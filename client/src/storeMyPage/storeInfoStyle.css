@@ -183,3 +183,18 @@ body, button, input{
 .storeInfo-tag{
     margin-left: 20px;
 }
+
+.selectTags,
+.tags:hover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 144px;
+    height: 45px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 2px solid #F59A23;
+    margin: 10px 10px 10px 0;
+    background: #F59A23;
+    color: #FFF;
+}
