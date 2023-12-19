@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import signUpStoreStyle from './signUpStoreStyle.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useDispatch, useSelector } from 'react-redux';
+import { CheckoutPage } from '../payment/CheckoutPage';
 const { daum } = window;
 
 const SignUpStore = () => {
@@ -17,22 +19,51 @@ const SignUpStore = () => {
     const [randomCode, setRandomCode] = useState(0);
     const [tagName, setTagName] = useState([]);
 
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
+    // 페이먼트 관련
+    const [memNo, setMemNo] = useState(0);
+    const payment = useSelector(state=>state.persistedReducer.payment);
+    const [paymentModal, setPaymentModal] = useState(false);
+    const paymentData = {price: 5000, orderName: "입점비", memNo: memNo};
+    const dispatch = useDispatch();
+    const openModal = () => {
+        setPaymentModal(true);
+    };
+
+    // 페이먼트 관련
+    useEffect(() => {
+        if(payment.memNo !== null) {
+            if(payment.isSuccess) { // memNo이 존재(직전에회원가입)하고 결제완료된 경우 컬럼 update
+                axios.put(`http://localhost:8080/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
+                .then((res) => {
+                    console.log(res.data)
+                    toast.fire({
+                        title: '가입 및 가게등록이 완료되었습니다',
+                        icon: 'error',
+                    })
+                    dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '', memNo: null }});
+                    setTimeout(() => {
+                        window.location.href="/login";
+                    }, 2000);
+                })
+                .catch((error) => console.log(error))
+            } else { // memNo이 존재(직전에 회원가입)하고 결제실패한 경우 가입된 정보 삭제
+                axios.delete(`http://localhost:8080/signUpStore/${payment.memNo}`)
+                .then((res) => {
+                    console.log(res.data);
+                    dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '', memNo: null }});
+                    toast.fire({
+                        title: '가입 및 가게등록에 실패했습니다',
+                        text: '사유: 결제 오류',
+                        icon: 'error',
+                    })
+                })
+            }
         }
-    })
+    }, [])
 
     useEffect(()=>{
         axios.get(`http://localhost:8080/storeTagList`)
         .then(res=>{
-            console.log(res);
             console.log(res.data);
             setTagName([...res.data]);
             console.log(tagName);
@@ -42,8 +73,6 @@ const SignUpStore = () => {
         })
     },[])
 
-
-
     // 유효성 정규표현식
     const inputRegexs = {
         idRegex: /^[a-z0-9]{5,12}$/,
@@ -52,26 +81,6 @@ const SignUpStore = () => {
         emailRegex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
         businessNoRegex: /^[0-9]+$/
     };
-
-
-    useEffect(() => {
-        const signUpStore = document.querySelector('.signUpStore');
-
-        if (signUpStore) {
-            window.addEventListener('scroll', function () {
-                const scrollTop = window.scrollY;
-
-                if (scrollTop > 30) {
-                    signUpStore.style.top = `${scrollTop}px`;
-                } else {
-                    signUpStore.style.top = '20px';
-                }
-
-            });
-        } else {
-            console.error("Element with class 'signUpStore' not found.");
-        }
-    }, [])
 
     const changeMember = (e) => {
         const { name, value } = e.target;
@@ -115,8 +124,6 @@ const SignUpStore = () => {
 
         validUserCheck(name, value);
     };
-
-
 
     // 유효성 검증
     const validUserCheck = (name, value) => {
@@ -175,12 +182,10 @@ const SignUpStore = () => {
         }).open();
     }
 
-  
-
     // swal
     const toast = Swal.mixin({
         toast: true,
-        position: 'top-right',
+        position: 'top',
         showConfirmButton: false,
         timer: 1500
     })
@@ -400,27 +405,18 @@ const SignUpStore = () => {
             try {
                 const formData = new FormData();
                 formData.append('cafeName', store.cafeName);
-                console.log("카페이름 :  ", store.cafeName);
                 formData.append('tel', store.tel);
-
                 formData.append('address', store.address);
-                console.log("주소 : ", store.address);
                 formData.append('lat', store.latitude);
-                console.log("주소 : ", store.latitude);
                 formData.append('lng', store.longitude);
-                console.log("주소 : ", store.longitude);
                 formData.append('businessNo', store.businessNo);
                 formData.append('operTime', store.operTime);
                 formData.append('tagName', JSON.stringify(selectedTags));
-                console.log('태그보내짐?', JSON.stringify(selectedTags));
-
-
-                console.log(selectedFile);
 
                 if (selectedFile) {
                     formData.append('file', selectedFile);
                 }else{
-                    Toast.fire({
+                    toast.fire({
                         title: '썸네일을 선택하세요',
                         icon: 'error',
                     });
@@ -431,25 +427,20 @@ const SignUpStore = () => {
                     .then((cafeResponse) => {
                         console.log(cafeResponse);
                         const cafeNo = cafeResponse.data;
-                        console.log("들어오나", store.cafeName);
 
                         // 회원가입
                         axios.post(`http://localhost:8080/signUpStore/${cafeNo}`, member)
-                            .then(() => {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: '회원가입이 완료되었습니다 ',
-                                });
-
-                                setTimeout(() => {
-                                    window.location.href = "/login?showLoginPage=STORE";
-                                }, 1000);
+                            .then((res) => {
+                                console.log(res.data);
+                                setMemNo(res.data.memNo);
+                                dispatch({type:"payment", payload: { isSuccess: false, memNo: res.data.memNo }}); // 결제 전 새로고침하는 경우 회원가입 방지
+                                openModal();
                             })
                             .catch((error) => {
                                 console.log(error);
-                                Toast.fire({
+                                toast.fire({
                                     icon: 'error',
-                                    title: '가입이 불가능한 아이디입니다 다시 확인해 주세요',
+                                    title: '입력한 정보를 확인해주세요',
                                 });
                             });
                     })
@@ -462,7 +453,7 @@ const SignUpStore = () => {
             } finally {
             }
         } else {
-            Toast.fire({
+            toast.fire({
                 icon: 'error',
                 title: '인증 여부를 다시 확인해주세요',
             });
@@ -473,8 +464,6 @@ const SignUpStore = () => {
         
         e.preventDefault();
         const { name, value } = e.target;
-
-        console.log("이거다" + member.id);
 
         if (member.id) {
             axios.get(`http://localhost:8080/id/${member.id}`)
@@ -533,7 +522,6 @@ const SignUpStore = () => {
     }
     const fileChange = (e) => {
         const file = e.target.files[0];
-        console.log('잘가져오나' + file);
         if (file) {
             setSelectedFile(file);
             const thumbnailURL = URL.createObjectURL(file);
@@ -546,7 +534,6 @@ const SignUpStore = () => {
 
     const tagClick = (i) => {
         let updatedTags;
-        console.log(i);
 
         if (selectedTags.includes(i)) {
             updatedTags = selectedTags.filter((item) => item !== i);
@@ -705,7 +692,6 @@ const SignUpStore = () => {
                     </div> <br />
                 </form>
             </div>
-
             <div className='signUpStore-right-section'>
                 <div className='signUpStore'>
                     <div className='signUpStore-storeName'> {store.storeName ? store.storeName : '가게 이름'}</div>
@@ -716,9 +702,9 @@ const SignUpStore = () => {
                     <div className='signUpStore-time'>운영 시간 : {store.operTime ? store.operTime : '시간을 입력하세요.'}</div>
                 </div>
             </div>
+            {paymentModal && (<CheckoutPage paymentData={paymentData} />)}
         </div>
     );
 }
-
 
 export default SignUpStore;

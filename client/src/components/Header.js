@@ -54,11 +54,13 @@ const Header = () => {
         e.preventDefault();
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
-        dispatch({ type: "accessToken", payload: "" });
-        dispatch({ type: "isLogin", payload: false });
-        dispatch({ type: "member", payload: "" });
-        dispatch({ type: "cafe", payload: "" });
-        removeCookie("refreshToken");
+        dispatch({type:"accessToken", payload:""});
+        dispatch({type:"isLogin", payload:false});
+        dispatch({type:"member", payload:""});
+        dispatch({type:"cafe", payload:""});
+        dispatch({type:"payment", payload:""})
+
+      removeCookie("refreshToken");
 
         Toast.fire({
             icon: 'success',

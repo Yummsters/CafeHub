@@ -44,8 +44,14 @@ const SearchId = () => {
             }
         })
         .then((res) => {
-            console.log(res.data);
-            navigate('/searchIdResult', { state: { result: res.data } });
+            Toast.fire({
+                title: "회원정보를 찾고 있습니다",
+                text: "결과 페이지로 이동합니다",
+                icon: "success",
+            });
+            setTimeout(() => {
+                navigate('/searchIdResult', { state: { result: res.data } });
+            }, 1500);
         })
         .catch((error) => {
             console.log(error);
@@ -58,25 +64,27 @@ const SearchId = () => {
 
     return(
         <div className='searchId-container'>
-        <div className='searchId-section'>
-            <div className='searchId-title'>아이디 찾기</div> <br/>
-            <form onSubmit={handleSubmit}>
-            <div className='searchIdInputDiv'>
-                <label>이름 <br/>
-                <input type="text" id="name" name="name" onChange={handleChange} /></label>
+            <div className='searchId-bg'>
+                <div className='searchId-section'>
+                    <div className='searchId-title'>아이디 찾기</div> <br/>
+                    <form onSubmit={handleSubmit}>
+                    <div className='searchIdInputDiv'>
+                        <label>이름 <br/>
+                        <input type="text" id="name" name="name" onChange={handleChange} /></label>
+                    </div>
+                    <br/><br/>
+                    <div className='searchIdInputDiv'>
+                    <label> 휴대폰 번호  
+                    {warning && <span className='searchId-AuthPhone'>{warning}</span>}<br/>
+                    <input type="text" id="phone" name="phone" onChange={handleChange} /></label>
+                    </div>
+                    <div className='searchId-button'>
+                        <button type="submit"> 확인 </button>
+                    </div>
+                    <div className='searchInfo'> <a href="/login">회원가입/로그인</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchPw">비밀번호 찾기</a></div>
+                    </form>
+                </div>
             </div>
-              <br/><br/>
-            <div className='searchIdInputDiv'>
-              <label> 휴대폰 번호  
-              {warning && <span className='searchId-AuthPhone'>{warning}</span>}<br/>
-              <input type="text" id="phone" name="phone" onChange={handleChange} /></label>
-            </div>
-            <div className='searchId-button'>
-                <button type="submit"> 확인 </button>
-            </div>
-            <div className='searchInfo'> <a href="/login">회원가입/로그인</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchPw">비밀번호 찾기</a></div>
-            </form>
-        </div>
         </div>
     );
 }

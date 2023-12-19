@@ -5,11 +5,11 @@ import Swal from 'sweetalert2';
 
 
 // 커서 관련하여 매끄럽지 않은 부분 수정 필요
-const SignUp_User = () => {
-    const [member, setMember] = useState({ name: "", nickname: "", id: "", password: "", passwordConfirm: "", phone: "", phoneConfirm: "", email: "" });
-    const [valid, setValid] = useState({ id: false, password: false, email: false, phone: false })
-    const [check, setCheck] = useState({ nickname: false, id: false, email: false })
-    const [warnings, setWarnings] = useState({ name: false, nickname: false, id: false, password: false, passwordConfirm: false, phone: false, phoneConfirm: false, email: false });
+const SignUp_User = () =>{
+    const [member, setMember] = useState({name : "", nickname : "", id : "", password : "", passwordConfirm : "", phone : "", phoneConfirm : "", email : ""});
+    const [valid, setValid] = useState({ id : false, password : false, email : false, phone : false})
+    const [check, setCheck] = useState({nickname : false, id : false, email : false, phone : false})
+    const [warnings, setWarnings] = useState({name : false, nickname : false, id : false, password : false, passwordConfirm : false, phone : false, phoneConfirm : false, email : false});
 
     const Toast = Swal.mixin({
         toast: true,
@@ -275,94 +275,147 @@ const SignUp_User = () => {
         }
     }
 
+    
+    // 휴대폰 인증
+    const [randomCode, setRandomCode] = useState(0);
+    const sendPhoneCode = () => {
+        const random = Math.floor(Math.random() * 9000) + 1000;
+        setRandomCode(random);
+        console.log("Random code set:", random);
+        console.log(member.phone);
+        // axios.get(`http://localhost:8080/check/sendSMS?phone=${member.phone}&code=${random}`)
+        // .then((res) => {
+        //     console.log(res.data);
+        //     toast.fire({
+        //         title: '인증번호가 발송되었습니다',
+        //         icon: 'success',
+        //     });
+        // })
+        // .catch((error) => {
+        //     console.log(error);
+        // });
+    }
+
+    // 인증번호 일치여부 -> 확인버튼
+    const phoneCodeCheck = () => {
+        if (member.phoneConfirm == randomCode) {
+            Toast.fire({
+                title: "휴대폰 번호 인증 성공!",
+                icon: "success",
+            }) 
+            setCheck({...check, phone: true})
+            
+        } else {
+            Toast.fire({
+                title: "인증번호가 틀렸습니다",
+                text: "확인 후 다시 입력해주세요",
+                icon: "error",
+            })
+            setCheck({...check, phone: false})
+        }
+    };
+
+    console.log(check)
+
+
     return (
         <div className='signUpUser-container'>
-            <div className='signUpUser-left-section'>
-                <div className='signUpUer-title'>SignUp</div> <br />
-                <form>
-                    <div className='signUpUserInputDiv'>
-                        <label>이름
-                            <span className='signUpUser-auth'>
-                                {warnings.name && "이름을 입력하세요"}
-                            </span> <br />
-                            <input type="text" place="이름을 입력하세요" id="name" name="name" value={member.name} onChange={changeMember} />
-                        </label>
-                    </div> <br />
-                    <div className='signUpUserInputDiv'>
-                        <label>닉네임
-                            <span className='signUpUser-auth' id="checkNickname">
-                                {warnings.nickname && "닉네임을 입력하세요"}
-                                {member.nickname ? (!check.nickname ? "사용 불가능한 닉네임입니다" : "사용 가능한 닉네임입니다") : ""}
-                            </span><br />
-                            <input type="text" id="nickname" name="nickname" onChange={changeMember} onFocus={getNicknameCheck} onBlur={getNicknameCheck} /></label>
-                    </div> <br />
-                    <div className='signUpUserInputDiv'>
-                        <label htmlFor="id">아이디
-                            <span className='signUpUser-auth' id="checkId">
-                                {warnings.id ? "아이디를 입력하세요" :
-                                    (member.id && !valid.id ? "5~12자 이내로 작성하세요" : "")}
-                                {member.id && !(member.id && !valid.id) ? (!check.id ? "사용 불가능한 아이디입니다" : "사용 가능한 아이디입니다") : ""}
-                            </span><br />
-                            <input type="text" id="id" name="id" onChange={changeMember} onBlur={getIdCheck} />
-                        </label>
-                    </div> <br />
-                    <div className='signUpUserInputDiv'>
-                        <label>비밀번호
-                            <span className='signUpUser-auth'>
-                                {warnings.password && "비밀번호를 입력하세요"}
-                                {member.password && !valid.password ? "소문자/숫자/특수문자 포함 8~20자로 작성하세요" : ""}
-                            </span><br />
-                            <input type="password" id="password" name="password" onChange={changeMember} />
-                        </label>
-                    </div> <br />
-                    <div className='signUpUserInputDiv'>
-                        <label>비밀번호 확인
-                            <span className='signUpUser-auth'>
-                                {warnings.passwordConfirm && "비밀번호를 확인하세요"}
-                                {member.passwordConfirm && (member.password !== member.passwordConfirm) ? "비밀번호가 일치하지 않습니다" : ""}
-                            </span><br />
-                            <input type="password" id="passwordCk" name="passwordConfirm" onChange={changeMember} />
-                        </label>
-                    </div> <br />
-                    <div className='signUpUserInputDiv-phone'>
-                        <label> 휴대폰 번호
-                            <span className='signUpUser-auth'>
-                                {warnings.phone && "휴대폰 번호를 입력하세요"}
-                                {member.phone && !valid.phone ? "하이픈(-) 제외 숫자로 작성하세요" : ""}
-                                {/*휴대폰 인증 관련 문구 추가 필요 */}
-                            </span><br />
-                            <input type="text" id="phone" name="phone" onChange={changeMember} />
-                        </label>
-                    </div>
-                    <div className='searchPhoneAuthNum'>
-                        <button type="button" href="#"> 휴대폰 <br /> 인증 </button>
-                    </div> <br />
-                    <div className='signUpUserInputDiv'>
-                        <label>인증번호
-                            <span className='signUpUser-auth'>
-                                {/*휴대폰 인증 관련 문구 추가 필요 */}
-                                {warnings.phoneConfirm && "인증번호를 입력하세요"}
-                            </span><br />
-                            <input type="text" id="authNum" name="phoneConfirm" onChange={changeMember} />
-                        </label>
-                    </div> <br />
-                    <div className='signUpUserInputDiv'>
-                        <label>이메일
-                            <span className='signUpUser-auth' id="checkEmail">
-                                {warnings.email ? "이메일을 입력하세요" :
-                                    (member.email && !valid.email ? "이메일 형식을 확인하세요" : "")}
-                                {member.email && !(member.email && !valid.email) ? (check.email ? '사용 가능한 이메일입니다' : '사용 불가능한 이메일입니다') : ""}
-                            </span><br />
-                            <input type="text" id="email" name="email" onChange={changeMember} onBlur={getEmailCheck} />
-                        </label>
-                    </div> <br />
-                    <div className='signUpUser-button'>
-                        <button onClick={handleClick}> SignUp </button>
-                    </div>
-                </form>
+          <div className='signUpUser-left-section'>
+            <div className='signUpUer-title'>SignUp</div> <br/>
+            <form>
+            <div className='signUpUserInputDiv'>
+                <label>이름 
+                    <span className='signUpUser-auth'>
+                        {warnings.name && "이름을 입력하세요"}
+                    </span> <br/>
+                <input type="text" place="이름을 입력하세요" id="name" name="name" value = {member.name} onChange={changeMember} />
+                </label>
+            </div> <br/>
+
+            <div className='signUpUserInputDiv'>
+                <label>닉네임 
+                    <span className='signUpUser-auth' id="checkNickname">
+                        {warnings.nickname && "닉네임을 입력하세요"}
+                        {member.nickname ? (!check.nickname ? "사용 불가능한 닉네임입니다" : "사용 가능한 닉네임입니다"):""}
+                        </span><br/>
+                <input type="text" id="nickname" name="nickname" onChange={changeMember} onFocus={getNicknameCheck} onBlur={getNicknameCheck}/></label>
+            </div> <br/>
+            <div className='signUpUserInputDiv'>
+                <label htmlFor="id">아이디 
+                <span className='signUpUser-auth' id="checkId">
+                    {warnings.id ? "아이디를 입력하세요"  : 
+                    (member.id && !valid.id ? "5~12자 이내로 작성하세요" : "")}
+                    {member.id && !(member.id && !valid.id) ? (!check.id ? "사용 불가능한 아이디입니다" : "사용 가능한 아이디입니다") : ""}
+                </span><br/>
+                <input type="text" id="id" name="id" onChange={changeMember} onBlur={getIdCheck}/>
+                </label>
+            </div> <br/>
+
+            <div className='signUpUserInputDiv'>
+                <label>비밀번호 
+                    <span className='signUpUser-auth'>
+                        {warnings.password && "비밀번호를 입력하세요"}
+                        {member.password && !valid.password ? "소문자/숫자/특수문자 포함 8~20자로 작성하세요": ""}
+                    </span><br/>
+                <input type="password" id="password" name="password" onChange={changeMember}/>
+                </label>
+            </div> <br/>
+
+            <div className='signUpUserInputDiv'>
+                <label>비밀번호 확인 
+                    <span className='signUpUser-auth'>
+                        {warnings.passwordConfirm && "비밀번호를 확인하세요"}
+                        {member.passwordConfirm && (member.password !== member.passwordConfirm) ? "비밀번호가 일치하지 않습니다": ""}
+                    </span><br/>
+                <input type="password" id="passwordCk" name="passwordConfirm" onChange={changeMember}/>
+                </label>
+            </div> <br/>
+
+            <div className='signUpUserInputDiv-phone'>
+                <label> 휴대폰 번호   
+                    <span className='signUpUser-auth'>
+                    {warnings.phone && "휴대폰 번호를 입력하세요"}
+                    {member.phone && !valid.phone ? "하이픈(-) 제외 숫자로 작성하세요" : ""}
+                </span><br />  
+                <input type="text" id="phone" name="phone" onChange={changeMember} /></label>
             </div>
-            <div className='signUpUser-right-section' />
-        </div>
+            <div className='searchPhoneAuthNum'>
+                <button type="button" onClick={sendPhoneCode}> 휴대폰 <br />인증 </button> 
+            </div> <br />
+
+            <div className='signUpUserInputDiv-phone'>
+                <label>인증번호
+                    <span className='signUpUser-auth'>
+                        {warnings.phoneConfirm && "인증번호를 입력하세요"}
+                    </span><br/>
+                <input type="text" id="authNum" name="phoneConfirm" onChange={changeMember}/>
+                </label>
+            </div>
+            <div className='searchStoreAuthNum'>
+                <button type="button" onClick={phoneCodeCheck}> 확인 </button>
+            </div> 
+            <br/>
+
+            <div className='signUpUserInputDiv'>
+                <label>이메일 
+                    <span className='signUpUser-auth' id="checkEmail">
+                        {warnings.email ? "이메일을 입력하세요" : 
+                        (member.email && !valid.email ? "이메일 형식을 확인하세요" : "")}
+                        {member.email && !(member.email && !valid.email) ? (check.email ? '사용 가능한 이메일입니다' : '사용 불가능한 이메일입니다') : ""}
+                    </span><br/>
+                <input type="text" id="email" name="email" onChange={changeMember} onBlur={getEmailCheck}/>
+                </label>
+            </div> <br/>
+            
+            <div className='signUpUser-button'>
+                <button onClick={handleClick}> SignUp </button>
+            </div>
+
+            </form>
+            </div>
+
+          <div className='signUpUser-right-section'/>
+    </div>
     );
 }
 
