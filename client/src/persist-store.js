@@ -11,7 +11,7 @@ export const initialState = {
     member:{memNo:'', name : '', nickname : '', email:'', social : null, status : true, memberType:null},
     accessToken:'',
     cafe:{cafeNo:'', cafeName:'', thumbImg: null, address:'', isPaid:false, paidDate : null},
-    payment: {isSuccess: false, paymentKey: ''}
+    payment: {isSuccess: false, paymentKey: '', memNo: null}
 }
 
 const reducer = (currentState,action) => {

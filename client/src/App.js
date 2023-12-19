@@ -81,9 +81,7 @@ function App() {
               <Route exact path='/reviewDetail/:reviewNo' element={<DefaultLayout><ReviewDetail/></DefaultLayout>}/>
               <Route exact path='/oauth2/redirect/:accessToken/:refreshToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
               <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
-
-              {/*로그인 한 사람 모두 사용 가능 */}
-              <Route exact path='/payment/success' element={!IsLoginCheck() ? <DefaultLayout><Success/></DefaultLayout> : <Navigate to="/"/>}/>
+              <Route exact path='/payment/success' element={<DefaultLayout><Success/></DefaultLayout>}/>
 
               {/* 로그인 하지 않은 사람만 사용 가능 */}
               <Route exact path='/login' element={IsLoginCheck() ? <DefaultLayout><LoginPage/></DefaultLayout> : <Navigate to="/"/>}/>

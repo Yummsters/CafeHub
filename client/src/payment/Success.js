@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 const Success = () => { // response 객체를 가지고 와서 추출하여 사용.
-    const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+    const member = useSelector(state=>state.persistedReducer.member);
+    const memNo = member.memNo;
     const params = new URLSearchParams(window.location.search);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -16,8 +17,8 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
         paymentKey: params.get('paymentKey'),
         amount: params.get('amount'),
         orderName: params.get('orderName'),
-        memNo: memNo
-    }
+        memNo: member && member.memNo ? member.memNo : params.get('memNo')
+      }
 
     const onClick = () => {
       navigate(-1);
@@ -29,7 +30,7 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
         .then((res) => {
             console.log(res);
             setIsSuccess(true);
-            dispatch({type:"payment", payload: { isSuccess: true, paymentKey: paymentData.paymentKey }});
+            dispatch({type:"payment", payload: { isSuccess: true, paymentKey: paymentData.paymentKey, memNo: paymentData.memNo }});
         })
         .catch((error) => {
             console.log(error);

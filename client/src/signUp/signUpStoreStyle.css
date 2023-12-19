@@ -112,17 +112,17 @@ body, button, input{
 /* 오른쪽 가게 미리보기 */
 .signUpStore{
     width: 400px;
-    height: 504px;
+    height: 500px;
     background-color: #f3f3f3cc;
     border-radius: 20px;
-    margin:30px auto;
+    margin: 30px auto;
     text-align: center;
-    position: absolute;
-    right: 40px;
+    position: sticky;
+    top:50px;
 }
 
 .signUpStore-storeName{
-    margin-top: 30px;
+    padding-top: 30px;
     font-size:30px;
 }
 
