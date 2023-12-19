@@ -61,7 +61,6 @@ const SignUpStore = () => {
         }
     }, [])
 
-
     useEffect(()=>{
         axios.get(`http://localhost:8080/storeTagList`)
         .then(res=>{
@@ -336,8 +335,6 @@ const SignUpStore = () => {
             authNum: member.authNum.trim() === '',
            
         }));
-        
-
 
         if (!check.id) {
             axios.get(`http://localhost:8080/id/${member.id}`)
@@ -403,8 +400,6 @@ const SignUpStore = () => {
                 })
         }
      
-
-
         if (submitSignUP) {
             
             try {
