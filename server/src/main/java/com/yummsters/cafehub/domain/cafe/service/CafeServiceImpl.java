@@ -160,6 +160,7 @@ public class CafeServiceImpl implements CafeService {
 		Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
 		return unpaidCafesDtoPage;
 	}
+
 	// 수빈 part---------------------------------------------------------------------------
 	
 	

@@ -12,6 +12,7 @@ public class SearchResDto {
     private String description;
     private String menu;
     private boolean isApproved;
+    private String paymentKey;
 
     public static SearchResDto CafeAdToSearchResDto(CafeAd cafeAd){
         if(cafeAd == null){
@@ -22,6 +23,9 @@ public class SearchResDto {
             searchResDto.menu(cafeAd.getMenu());
             searchResDto.isApproved(cafeAd.isApproved());
             searchResDto.fileVo(cafeAd.getFileVo());
+            if (cafeAd.getPayment() != null) {
+                searchResDto.paymentKey(cafeAd.getPayment().getPaymentKey());
+            }
             return searchResDto.build();
         }
     }

@@ -12,7 +12,7 @@ public class CafeAdReqDto {
     private String description;
     private String menu;
 
-    public static CafeAd cafeAdReqDto(CafeAdReqDto cafeAdReqDto, Cafe cafe, Payment payment){
+    public static CafeAd cafeAdReqDto(CafeAdReqDto cafeAdReqDto, Cafe cafe){
         if(cafeAdReqDto == null){
             return null;
         }else{
@@ -20,7 +20,6 @@ public class CafeAdReqDto {
             cafeAd.description(cafeAdReqDto.getDescription());
             cafeAd.menu(cafeAdReqDto.getMenu());
             cafeAd.cafe(cafe);
-            cafeAd.payment(payment);
             return cafeAd.build();
         }
     }

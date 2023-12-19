@@ -52,4 +52,6 @@ public class CafeAd {
     public void addFile(FileVo fileVo) {
         this.fileVo = fileVo;
     }
+    public void updatePaid(boolean isPaid) { this.isPaid = isPaid; }
+    public void addPayment(Payment payment) { this.payment = payment; }
 }

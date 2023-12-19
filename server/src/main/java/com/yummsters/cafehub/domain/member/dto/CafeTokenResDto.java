@@ -26,7 +26,6 @@ public class CafeTokenResDto {
             cafeResponse.thumbImg(cafe.getThumbImg());
             cafeResponse.address(cafe.getAddress());
             cafeResponse.isPaid(cafe.isPaid());
-            cafeResponse.paidDate(cafe.getPaidDate());
             return cafeResponse.build();
         }
     }

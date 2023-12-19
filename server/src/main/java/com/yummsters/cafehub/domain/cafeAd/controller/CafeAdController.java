@@ -7,13 +7,7 @@ import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.payment.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
@@ -49,8 +43,7 @@ public class CafeAdController {
     @PostMapping("/{cafeNo}")
     public ResponseEntity<Object> cafeAdSub(@PathVariable("cafeNo") Integer cafeNo,
                                             @ModelAttribute CafeAdReqDto cafeAdReqDto,
-                                            @RequestParam("thumbImg") MultipartFile thumbImg,
-                                            @RequestParam("paymentKey") String paymentKey) throws Exception {
+                                            @RequestParam("thumbImg") MultipartFile thumbImg) throws Exception {
         Cafe cafe = null;
         try{
             cafe = cafeService.searchCafe(cafeNo);
@@ -59,15 +52,7 @@ public class CafeAdController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
-        Payment payment = null;
-        try{
-            payment = paymentService.searchPaymentKey(paymentKey);
-        }catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-
-        CafeAd cafeAd = CafeAdReqDto.cafeAdReqDto(cafeAdReqDto, cafe, payment);
+        CafeAd cafeAd = CafeAdReqDto.cafeAdReqDto(cafeAdReqDto, cafe);
 
         try{
             CafeAd responseCafeAd = cafeAdService.cafeAdSub(cafeAd, thumbImg);
@@ -76,6 +61,30 @@ public class CafeAdController {
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 선진 part ----------------------------------------------------
+    // 광고신청 취소 (미결제)
+    @DeleteMapping("/{cafeNo}")
+    public ResponseEntity<Object> deleteAd(@PathVariable("cafeNo") Integer cafeNo){
+        try{
+            boolean isDelete = cafeAdService.deleteCafeAd(cafeNo);
+            return new ResponseEntity<>(isDelete, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+    // 결제 후 paymentKey 추가 및 isPaid true로 변경
+    @PutMapping("/{cafeNo}/{paymentKey}")
+    public ResponseEntity<Object> updateAd(@PathVariable("cafeNo") Integer cafeNo,
+                                           @PathVariable("paymentKey") String paymentKey){
+        try{
+            CafeAd updateCafeAd = cafeAdService.paymentCafeAd(cafeNo, paymentKey);
+            SearchResDto responseDto = SearchResDto.CafeAdToSearchResDto(updateCafeAd);
+            return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
     
