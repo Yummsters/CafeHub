@@ -17,7 +17,7 @@ const UserInfo = ({sideTab}) => {
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
   const [userInputMsg, setUserInputMsg] = useState({name: '', email:'', nickname:'', phone:''});
-  const [saveCheck, setSaveCheck] = useState({email: false, nickname: false, phone: false})
+  const [saveCheck, setSaveCheck] = useState({name: true, email: true, nickname: true, phone: true})
 
   const [pwInput, setPwInput] = useState('');
   const [pwMatch, setPwMatch] = useState(true);
@@ -44,6 +44,7 @@ const UserInfo = ({sideTab}) => {
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(true);
   }
+  console.log(saveCheck);
 
   const save = () => { // 저장버튼 클릭 시 input readOnly
     const isUnchanged = Object.keys(updateUser).every((key) => updateUser[key] === member[key]);
@@ -97,26 +98,35 @@ const UserInfo = ({sideTab}) => {
   let emailTimer;
   let nicknameTimer;
   let phoneTimer;
+  let nameTimer;
   
   const inputChange = (e) => {
     const { name, value } = e.target;
     
     if (member[name] !== value) {
-      clearTimeout(name === 'email' ? emailTimer : name === 'nickname' ? nicknameTimer : phoneTimer);
-  
-      if (name === 'email') {
-        emailTimer = setTimeout(() => emailCheck(name, value), 500);
+      clearTimeout(name === 'email' ? emailTimer : name === 'nickname' ? nicknameTimer : name === 'name' ? nameTimer : phoneTimer);
+      if (name === 'name') {
+        nameTimer = setTimeout(() => nameCheck(name, value), 300);
+      } else if (name === 'email') {
+        emailTimer = setTimeout(() => emailCheck(name, value), 300);
       } else if (name === 'nickname') {
-        nicknameTimer = setTimeout(() => nicknameCheck(name, value), 500);
+        nicknameTimer = setTimeout(() => nicknameCheck(name, value), 300);
       } else if (name === 'phone') {
-        phoneTimer = setTimeout(() => phoneCheck(name, value), 500);
+        phoneTimer = setTimeout(() => phoneCheck(name, value), 300);
       }
-      setSaveCheck({ ...saveCheck, [name]: false }); 
+      setSaveCheck({ ...saveCheck, [name]: false }); // 기존 정보와 input 값이 달라지면 false
     } else {
-      setSaveCheck({ ...saveCheck, [name]: true }); // input값 변경하지 않으면 제출가능 true로 유지
+      setSaveCheck({ ...saveCheck, [name]: true });
       setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
     }
     setUpdateUser({ ...updateUser, [name]: value });
+  };
+
+  // 수정 - 이름 관련
+  const nameCheck = (name, value) => {
+    setTimeout(() => {
+      if (name === 'name' && value.trim() !== '') setSaveCheck({...saveCheck, [name]: true});
+      }, 500);
   };
 
   // 수정 - 이메일 관련
@@ -430,17 +440,17 @@ const UserInfo = ({sideTab}) => {
             </div>
             <div>
               <p>이름</p>
-              <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
               {editMode ? <span className='userInfoMsg'></span> : <span></span>}
             </div>
             <div>
               <p>이메일</p>
-              <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
               {editMode ? <span className='userInfoMsg'>{userInputMsg.email}</span> : <span></span>}
             </div>
             <div>
               <p>닉네임</p>
-              <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode ? 'inputB' : 'inputN'} />
+              <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
               {editMode ? <span className='userInfoMsg'>{userInputMsg.nickname}</span> : <span></span>}
             </div>
             <div>
@@ -452,10 +462,15 @@ const UserInfo = ({sideTab}) => {
                     {saveCheck.phone ? "인증 완료" : "휴대폰 인증"}
                   </button>
               </span> : <span></span>}
+
             </div>
           </div>
+          {social !== 'NORMAL' && (
+          <p className='socialInfo'>소셜로그인 회원은 전화번호를 등록해야 포인트 적립이 가능합니다</p>
+          )}
         </div>
         
+        {social === 'NORMAL' && (
         <div className='pwBox'>
                 <div className='pwTitle'>
                     <p>비밀번호 수정</p>
@@ -483,6 +498,7 @@ const UserInfo = ({sideTab}) => {
                     )}
                 </div>
             </div>
+            )}
             <div className='resign'  onClick={openWithdrawalModal}>탈퇴</div>
 
             
