@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.cafe.entity;
 
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.tag.entity.StoreTag;
 import lombok.*;
 
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "member")
 public class Cafe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +31,6 @@ public class Cafe {
     private String operTime;
     @Column
     private String thumbImg;
-    @Column
-   private String tagName;
-    // 태그 이름 칼럼을 없애고, 원투원매핑 필요 >> 아래 임의로 만들어두었는데, 참고하실거면 참고하기!
-    // 만약 원투원매핑하게 된다면 dto에 있는 tagName도 없애야 합니다!
     @Column
     private String lat;
     @Column
@@ -54,6 +50,13 @@ public class Cafe {
     @OneToOne
     @JoinColumn(name = "storeTagNo")
     private StoreTag storeTag;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "paymentKey", referencedColumnName = "paymentKey")
+    private Payment payment;
+
+
+    public void updatePaid(boolean isPaid) { this.isPaid = isPaid; }
+    public void addPayment(Payment payment) { this.payment = payment; }
     
     public Integer getCafeNo() {
         return cafeNo;
@@ -68,7 +71,7 @@ public class Cafe {
                 .address(address)
                 .operTime(operTime)
                 .thumbImg(thumbImg)
-                .tagName(tagName)
+                .storeTag(storeTag)
                 .lat(lat)
                 .lng(lng)
                 .isPaid(isPaid)

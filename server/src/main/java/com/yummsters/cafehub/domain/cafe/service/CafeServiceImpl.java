@@ -10,6 +10,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.yummsters.cafehub.domain.tag.entity.StoreTag;
+import com.yummsters.cafehub.domain.tag.repository.StoreTagRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,7 +29,6 @@ import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 import com.yummsters.cafehub.domain.userMyPage.entity.WishCafe;
 import com.yummsters.cafehub.domain.userMyPage.repository.WishCafeRepository;
@@ -43,6 +44,7 @@ public class CafeServiceImpl implements CafeService {
     private final WishCafeRepository wishRepository;
     private final MemberRepository memberRepository;
     private final FileVoRepository fileVoRepository;
+    private final StoreTagRepository storeTagRepository;
 
     @Value("${kakaomap-key}")
     private String apiKey;
@@ -172,6 +174,7 @@ public class CafeServiceImpl implements CafeService {
 	public Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files)throws Exception {
 	    // 기존 카페 정보 가져오기
 	    Cafe cafe = cafeRepository.findByCafeNo(cafeNo);
+        System.out.println("mod" + modifyCafeDto.getTagName());
 
 	    // 카페 정보 업데이트
 	    if (modifyCafeDto.getThumbImg() != null) {
@@ -187,7 +190,8 @@ public class CafeServiceImpl implements CafeService {
 	        cafe.setTel(modifyCafeDto.getTel());
 	    }
 	    if (modifyCafeDto.getTagName() != null) {
-	        cafe.setTagName(modifyCafeDto.getTagName());
+            StoreTag storeTagMod = storeTagRepository.findByStoreTagNo(Integer.parseInt(modifyCafeDto.getTagName())+1);
+	        cafe.setStoreTag(storeTagMod);
 	    }
 	    if (modifyCafeDto.getOperTime() != null) {
 	        cafe.setOperTime(modifyCafeDto.getOperTime());
@@ -195,7 +199,9 @@ public class CafeServiceImpl implements CafeService {
 
 	    if (files != null && !files.isEmpty()) {
 	        String dir = "c:/soobin/upload/";
-	        String fileNums = "";
+            //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
+
+            String fileNums = "";
 
 	        for (MultipartFile file : files) {
 	            if (!file.isEmpty()) {

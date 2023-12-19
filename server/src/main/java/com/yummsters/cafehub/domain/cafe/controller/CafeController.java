@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.yummsters.cafehub.domain.cafe.service.CafeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +29,7 @@ import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 @RestController
 public class CafeController {
     @Autowired
-    private CafeServiceImpl service;
+    private CafeService service;
 
     @GetMapping("/mapData") // 카페 데이터 저장
     public ResponseEntity<String> saveCafe() {

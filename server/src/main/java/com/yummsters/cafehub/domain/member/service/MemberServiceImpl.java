@@ -1,20 +1,21 @@
 package com.yummsters.cafehub.domain.member.service;
 
-import com.yummsters.cafehub.domain.member.dto.ModifyReqDto;
-import com.yummsters.cafehub.domain.member.dto.ModifyResDto;
+import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
+import com.yummsters.cafehub.domain.member.dto.*;
 
 import java.io.File;
 import java.util.List;
 
+import com.yummsters.cafehub.domain.payment.entity.Payment;
+import com.yummsters.cafehub.domain.payment.repository.PaymentRepository;
+import com.yummsters.cafehub.domain.tag.entity.StoreTag;
+import com.yummsters.cafehub.domain.tag.repository.StoreTagRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
 import com.yummsters.cafehub.domain.file.service.FileService;
-import com.yummsters.cafehub.domain.member.dto.SearchPwDto;
 import com.yummsters.cafehub.domain.member.dto.SignUpStoreDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
@@ -22,9 +23,7 @@ import com.yummsters.cafehub.domain.member.entity.Social;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.point.repository.PointRepository;
-import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
-import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +32,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
+    private final PaymentRepository paymentRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PointRepository pointRepository;  
     private final CafeRepository cafeRepository;
     private final FileVoRepository fileVoRepository;
+    private final StoreTagRepository storeTagRepository;
 
   // 아이디 중복 체크
     @Override
@@ -252,6 +253,34 @@ public class MemberServiceImpl implements MemberService{
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.matches(password, member.getPassword());
     }
+    // 사장 회원가입 결제정보 추가
+    @Override
+    public Cafe paymentSignUp(SignUpPayDto signUpPayDto) throws Exception {
+        Cafe cafe = cafeRepository.findByMember_memNo(signUpPayDto.getMemNo());
+        if(cafe == null) throw new Exception("존재하지 않는 카페입니다");
+        cafe.updatePaid(true);
+        Payment payment = paymentRepository.findByPaymentKey(signUpPayDto.getPaymentKey());
+        if(payment == null) throw new Exception("결제정보가 존재하지 않습니다");
+        cafe.addPayment(payment);
+        return cafeRepository.save(cafe);
+    }
+    // 사장 회원가입 결제 실패 시 회원가입 취소
+    @Override
+    public Boolean deleteSignUp(Integer memNo) throws Exception {
+        Member member = memberRepository.findByMemNo(memNo);
+        if(member != null) {
+            Point point = pointRepository.findByMember_MemNo(memNo);
+            if (point != null) pointRepository.delete(point); // 포인트 삭제
+            Cafe cafe = cafeRepository.findByMember_memNo(memNo);
+            if (cafe != null) {
+                memberRepository.delete(member); // 멤버 삭제
+                cafeRepository.delete(cafe); // 카페 삭제
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     // 수빈 part ----------------------------------------------------------
     //카페정보생성
@@ -260,7 +289,7 @@ public class MemberServiceImpl implements MemberService{
         try {
             if (files != null && !files.isEmpty()) {
                 String dir = "c:/soobin/upload/"; // 업로드 경로
-                // String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
+                //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
 
                 String fileNums = "";
 
@@ -286,8 +315,7 @@ public class MemberServiceImpl implements MemberService{
                     fileNums += fileVo.getFileNum();
                 }
 
-                System.out.println("카페 이름: " + signUpStore.getCafeName());
-                System.out.println("전화번호: " + signUpStore.getTel());
+                StoreTag storeTag = storeTagRepository.findByStoreTagNo(signUpStore.getTagName().charAt(1)-'0'+1);
 
                 Cafe cafeEntity = Cafe.builder()
                         .cafeName(signUpStore.getCafeName())
@@ -299,7 +327,7 @@ public class MemberServiceImpl implements MemberService{
                         .lng(signUpStore.getLng())
                         .isExisting(true)
                         .thumbImg(fileNums)
-                        .tagName(signUpStore.getTagName())
+                        .storeTag(storeTag)
                         .build();
 
                 System.out.println("카페 엔터티: " + cafeEntity);

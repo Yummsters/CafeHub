@@ -42,4 +42,14 @@ public class ReviewAuth {
         this.cafe = cafe;
         
     }
+
+    @Override
+    public String toString() {
+        return "ReviewAuth{" +
+                "reviewAuthNo=" + reviewAuthNo +
+                ", regDate=" + regDate +
+                ", member=" + member +
+                ", cafe=" + cafe +
+                '}';
+    }
 }
