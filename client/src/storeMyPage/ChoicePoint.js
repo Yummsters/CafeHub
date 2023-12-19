@@ -3,16 +3,16 @@ import { useParams } from "react-router";
 import {useSelector} from 'react-redux';
 import { Button } from "reactstrap";
 import Swal from 'sweetalert2';
-import { useState } from "react";
 import { useNavigate } from 'react-router';
-import { getCookie } from "../components/Cookie";
-
-
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { useDispatch } from 'react-redux';
+import {tokenCreate, tokenExpried} from '../login/TokenCheck';
 
 // 포인트 및 리뷰권한 테이블 생성 후 로직 추가 필요
 const ChoicePoint = () => {
     const {memNo} = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
 
@@ -21,38 +21,43 @@ const ChoicePoint = () => {
         toast: true,
         position: 'top',
         showConfirmButton: false,
-        timer: 1000,
+        timer: 800,
         timerProgressBar: true,
         didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer)
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
-
     // 포인트 적립
     const pointSave = (e) =>{
         e.preventDefault();
-        axios.post(`http://localhost:8080/point/save/${memNo}/cafe/${cafeNo}`,{
+        axios.post(`http://localhost:8080/store/point/save/${memNo}/cafe/${cafeNo}`,null,{
             headers : {
                 Authorization :accessToken,
                 Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
-            console.log(res);
-            Toast.fire({
-                icon: 'success',
-                title: '보유 커피콩 : '+res.data
-            }).then(()=>{
-                navigate("/keypad");
+            tokenCreate(dispatch, setCookie, res.headers)
+            .then(()=>{
+                Toast.fire({
+                    icon: 'success',
+                    title: '보유 커피콩 : '+res.data
+                }).then(()=>{
+                    navigate("/keypad");
+                })
             })
         })
         .catch(err=>{
             console.log(err);
-            Toast.fire({
-                icon: 'error',
-                title: err.name
-            })
+            if(err.response !== undefined){
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+            }else{
+                Toast.fire({
+                    icon: 'error',
+                    title: err
+                })
+            }
         })
     }
 
@@ -61,7 +66,7 @@ const ChoicePoint = () => {
         e.preventDefault();
 
        // 회원 포인트 조회 후 저장
-       axios.get(`http://localhost:8080/point/${memNo}`,
+       axios.get(`http://localhost:8080/member/point/${memNo}`,
        {
            headers : {
                 Authorization :accessToken,
@@ -70,25 +75,29 @@ const ChoicePoint = () => {
        })
        .then(res=>{
            const point = res.data;
-
-            if(point === 0){
-                Toast.fire({
-                    icon: 'error',
-                    title: '사용가능한 포인트가 없습니다'
-                })
-            }else{
-                navigate("/usePoint/"+memNo);
-            }
+           tokenCreate(dispatch, setCookie, res.headers)
+            .then(()=>{
+                if(point === 0){
+                    Toast.fire({
+                        icon: 'error',
+                        title: '사용가능한 포인트가 없습니다'
+                    })
+                }else{
+                    navigate("/usePoint/"+memNo);
+                }
+            })
        })
        .catch(err =>{
-           console.log(err);
-           Toast.fire({
-            icon: 'error',
-            title: '현재 포인트 사용이 불가능합니다 관리자에게 문의하세요'
+        console.log(err);
+            if(err.response !== undefined){
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+            }else{
+                Toast.fire({
+                    icon: 'error',
+                    title: '현재 포인트 사용이 불가능합니다 관리자에게 문의하세요'
+                })
+            }
         })
-       })
-
-       
     }
 
     const backPoint = () =>{

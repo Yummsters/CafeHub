@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import StoreSideTab from '../components/StoreSideTab';
 
 
+
 const UserInfo = ({sideTab}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -320,10 +321,15 @@ const UserInfo = ({sideTab}) => {
 
   // 모달 관련---------------------------------------
   const openWithdrawalModal = () => {
-    setIsWithdrawalModalOpen(true);
-    setPwInput('');
-    setPwMatch(true);
-    setWithdrawalConfirmed(false);
+    if(sideTab === 'store'){
+      navigate('/storeClose')
+    }else{
+      setIsWithdrawalModalOpen(true);
+      setPwInput('');
+      setPwMatch(true);
+      setWithdrawalConfirmed(false);
+    }
+    
   };
 
   const closeWithdrawalModal = () => {
