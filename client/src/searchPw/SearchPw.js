@@ -34,30 +34,26 @@ const SearchPw = () => {
 
   // 회원 정보 확인 후 휴대폰 인증번호 발송
   const sendPhoneCode = () => {
-    // 회원정보 확인
-    axios.post("http://localhost:8080/searchPw", {
+    axios.post("http://localhost:8080/searchPw", { // 회원정보 확인
       id: data.id,
       phone: data.phone,
     })
     .then((res) => {
-      console.log(res.data + "ok");
       // 회원정보 일치하는 경우 휴대폰 인증번호 발송
       const random = Math.floor(Math.random() * 9000) + 1000;
       setRandomCode(random);
-      console.log("Random code set:", random);
-      console.log(data.phone);
-      // axios.get(`http://localhost:8080/check/sendSMS?phone=${data.phone}&code=${random}`)
-      // .then((res) => {
-      //     console.log(res.data);
-      //     Toast.fire({
-      //         title: '인증번호가 발송되었습니다',
-      //         icon: 'success',
-      //     });
+      axios.get(`http://localhost:8080/check/sendSMS?phone=${data.phone}&code=${random}`)
+      .then((res) => {
+          console.log(res.data);
+          Toast.fire({
+              title: '인증번호가 발송되었습니다',
+              icon: 'success',
+          });
           setPhoneAuth(true);
-      // })
-      // .catch((error) => {
-      //     console.log(error);
-      // });
+      })
+      .catch((error) => {
+          console.log(error);
+      });
     })
     .catch((error) => {
       console.log(error);
@@ -73,7 +69,7 @@ const SearchPw = () => {
   const phoneCodeCheck = () => {
     if (data.authNum == randomCode) {
       Toast.fire({
-        title: "휴대폰 번호 인증 성공!",
+        title: "휴대폰 번호 인증 완료되었습니다",
         icon: "success",
       });
       setPhoneCheck(true);
@@ -85,8 +81,6 @@ const SearchPw = () => {
     }
   };
 
-  console.log('인증버튼' + phoneAuth)
-  console.log('확인버튼' + phoneCheck)
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!data.id || !data.phone) {
@@ -115,11 +109,19 @@ const SearchPw = () => {
       });
       return;
     }
-    navigate("/searchPwResult", { state: { result: data.id } });
+    Toast.fire({
+      title: "인증 되었습니다",
+      text: "비밀번호 재설정 페이지로 이동합니다",
+      icon: "success",
+    });
+    setTimeout(() => {
+      navigate("/searchPwResult", { state: { result: data.id } });
+    }, 1500);
   };
 
   return (
     <div className="searchPw-container">
+      <div className='searchPw-bg'>
       <div className="searchPw-section">
         <div className="searchPw-title">비밀번호 찾기</div> <br />
         <form>
@@ -151,8 +153,8 @@ const SearchPw = () => {
             <button type="button" onClick={handleSubmit}>확인</button>
           </div>
           <div className='searchInfo'> <a href="/login">회원가입/로그인</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchId">아이디 찾기</a></div>
-
         </form>
+      </div>
       </div>
     </div>
   );
