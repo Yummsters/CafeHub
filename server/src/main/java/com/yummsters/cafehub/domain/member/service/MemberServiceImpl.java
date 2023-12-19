@@ -289,7 +289,7 @@ public class MemberServiceImpl implements MemberService{
         try {
             if (files != null && !files.isEmpty()) {
                 String dir = "c:/soobin/upload/"; // 업로드 경로
-                // String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
+                //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
 
                 String fileNums = "";
 

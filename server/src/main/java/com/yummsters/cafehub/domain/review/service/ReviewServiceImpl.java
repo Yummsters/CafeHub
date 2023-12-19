@@ -1,8 +1,11 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.io.File;
+import java.util.HashMap;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +20,7 @@ import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.service.PointService;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
+import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
 import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.entity.LikeReview;
@@ -264,5 +268,27 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public Page<Review> getReviewsByMember(Member member, Pageable pageable) throws Exception {
 		return reviewRepository.findAllByMember(member, pageable);
+	}
+
+	@Override
+	public List<ReviewInterface> findReviewsByMemNo(Integer memNo) throws Exception {
+	    if (memNo == null || memNo == 0) {
+	        // 로그인하지 않은 회원이거나 리뷰를 작성하지 않은 회원의 경우
+	        return reviewRepository.findReviewsByMemberNoWithoutReviews();
+	    } else {
+	        // 로그인한 회원인 경우
+	        if (hasNoReviews(memNo)) {
+	            // 리뷰를 작성하지 않은 회원인 경우
+	            return reviewRepository.findReviewsByMemberNoWithoutReviews();
+	        } else {
+	            // 리뷰를 작성한 회원인 경우
+	            return reviewRepository.findReviewsByMemberNoWithReviews(memNo);
+	        }
+	    }
+	}
+
+	@Override
+	public boolean hasNoReviews(Integer memNo) throws Exception {
+		return reviewRepository.countByMember_MemNo(memNo) == 0;
 	}
 }
