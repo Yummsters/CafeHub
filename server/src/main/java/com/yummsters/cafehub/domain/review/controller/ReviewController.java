@@ -164,7 +164,19 @@ public class ReviewController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
+	// 메인 추천 리뷰 노출
+	@GetMapping("/reviewList/member/{memNo}")
+	public ResponseEntity<List<ReviewInterface>> getReviewsByMemNo(@PathVariable Integer memNo) {
+	    try {
+	        List<ReviewInterface> reviews = reviewService.findReviewsByMemNo(memNo);
+	        return new ResponseEntity<>(reviews, HttpStatus.OK);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
+	}
+	
 	//희진 part ----------------------------------------------------------------
 	// 가게 리뷰 리스트 조회
 	@GetMapping("/review/storeList/{cafeNo}")
@@ -205,7 +217,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 작성 및 수정 기한에 따른 스케줄러 설정
-	@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
+	//@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
 	public void  deleteReviewAuth() throws Exception {
 		reviewService.deleteReviewAuth();
 	}

@@ -30,7 +30,15 @@ public class PaymentServiceImpl implements PaymentService{
     private String secretKey;
     @Override
     public void paymentConfirm(Map<String, Object> paymentData) throws Exception {
-        Integer memNo = (Integer) paymentData.get("memNo");
+        Object memNoObj = paymentData.get("memNo");
+        Integer memNo = 0;
+        if (memNoObj instanceof String) { // 사장 회원가입 시 String으로 넘어옴
+            String memNoStr = (String) memNoObj;
+            memNo = Integer.parseInt(memNoStr);
+        } else if (memNoObj instanceof Integer) {
+             memNo = (Integer) memNoObj;
+        }
+
         Member member = memberRepository.findByMemNo(memNo);
 
         // secretKey Encoding
@@ -96,11 +104,6 @@ public class PaymentServiceImpl implements PaymentService{
     public void paymentCancel(Map<String, Object> paymentData) throws Exception { // 환불은 광고 등록만 가능
         Integer cafeNo = (Integer) paymentData.get("cafeNo");
         CafeAd cafeAd = cafeAdRepository.findByCafe_CafeNo(cafeNo);
-
-
-//        String paymentKey = cafeAd.getPayment().getPaymentKey();
-//        Payment payment = paymentRepository.findByPaymentKey(paymentKey);
-//        System.out.println(paymentKey);
 
         String paymentKey;
 
