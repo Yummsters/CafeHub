@@ -4,8 +4,8 @@ import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { getCookie } from '../components/Cookie';
 import { CheckoutPage } from '../payment/CheckoutPage';
+import { getCookie } from '../components/Cookie';
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
@@ -13,11 +13,6 @@ const StoreBanner = () => {
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-
-    // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
-    const cafe= useSelector(state => state.persistedReducer.cafe);
-    const cafeNo = cafe.cafeNo;
-  
     const paySuccess = useSelector(state=>state.persistedReducer.payment.isSuccess);
     const paymentKey = useSelector(state=>state.persistedReducer.payment.paymentKey);
     const [paymentModal, setPaymentModal] = useState(false);
@@ -26,6 +21,10 @@ const StoreBanner = () => {
     const openModal = () => {
         setPaymentModal(true);
     };
+
+    // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
+    const cafe= useSelector(state => state.persistedReducer.cafe);
+    const cafeNo = cafe.cafeNo;
 
     const inputRef = useRef(null);
 
@@ -56,27 +55,47 @@ const StoreBanner = () => {
 
         axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
             headers : {
-                Authorization :accessToken,
+                Authorization : accessToken,
                 Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
             console.log(res);
-            if(res.data.approved){ // 광고가 존재하면서 승인이 되어 있는 경우
-                setIsAdExist(true);
-                setIsApprove(true);
-                setCafeAd(res.data);
-                descrInput.disabled = true;
-                menuInput.disabled = true;
+            if(res.data.paymentKey === null) { // 결제 확인 안 된 경우
+                if(paySuccess) { // 결제테이블에 있는 경우
+                    axios.put(`http://localhost:8080/cafeAd/${cafeNo}/${paymentKey}`)
+                    .then((res) => {
+                        console.log(res.data);
+                        dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
+                        window.location.reload();
+                    })
+                    .catch((error) => console.log(error))
+                    
+                } else {
+                    axios.delete(`http://localhost:8080/cafeAd/${cafeNo}`, {
+                        headers : {
+                            Authorization : accessToken
+                        }
+                    })
+                    .then((res) => console.log(res.data));
+                }
+            } else { // 결제 확인 완료된 경우
+                if(res.data.approved){ // 광고가 존재하면서 승인이 되어 있는 경우
+                    setIsAdExist(true);
+                    setIsApprove(true);
+                    setCafeAd(res.data);
+                    descrInput.disabled = true;
+                    menuInput.disabled = true;
 
-            } else{ // 광고가 존재하면서 승인이 안되어 있는 경우
-                setIsAdExist(true); 
-                setIsApprove(false);
-                setCafeAd(res.data); // 광고 내용 저장
-                setFileNum(res.data.fileVo.fileNum); // 파일 번호 저장
-                
-                descrInput.disabled = true;
-                menuInput.disabled = true;
+                } else{ // 광고가 존재하면서 승인이 안되어 있는 경우
+                    setIsAdExist(true); 
+                    setIsApprove(false);
+                    setCafeAd(res.data); // 광고 내용 저장
+                    setFileNum(res.data.fileVo.fileNum); // 파일 번호 저장
+                    
+                    descrInput.disabled = true;
+                    menuInput.disabled = true;
+                }
             }
         })
         .catch(err=>{ // 광고가 존재하지 않거나, 이미 광고 기간이 끝난 경우
@@ -119,9 +138,44 @@ const StoreBanner = () => {
 
     const submitAd = (e) =>{
         e.preventDefault();
-        if(submitCheck) {
-            openModal();
-            dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
+        if(submitCheck) { // 광고 신청 등록
+            var descrInput = document.getElementById("description");
+            var menuInput = document.getElementById("menu");
+
+            const formData = new FormData();
+            formData.append("description",cafeAd.description);
+            formData.append("menu", cafeAd.menu);
+            formData.append("thumbImg", thumbImg);
+            formData.append("paymentKey", paymentKey);
+
+            console.log(formData);
+            console.log(paymentKey);
+
+            axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
+            {
+                headers : {
+                    Authorization : accessToken,
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then(res=>{
+                console.log(res);
+                console.log(res.data);
+                setIsAdExist(true); 
+                setIsApprove(false);
+                setCafeAd(res.data);
+                descrInput.disabled = true;
+                menuInput.disabled = true;
+                openModal();
+
+            })
+            .catch(err=>{
+                console.log(err);
+                Toast.fire({
+                    icon: 'error',
+                    title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
+                })
+            })
         } else {
             Toast.fire({
                 icon: 'error',
@@ -141,11 +195,6 @@ const StoreBanner = () => {
             axios.post("http://localhost:8080/payment/refund", data)
             .then((res) => {
                 console.log(res);
-                if(res.data) {
-                    Toast.fire({
-                        title: "취소가 완료되었습니다"
-                    })
-                }
                 resolve(res.data);
             })
             .catch((error) => {
@@ -179,65 +228,22 @@ const StoreBanner = () => {
                     allowOutsideClick: () => !Swal.isLoading()
                   }).then((result) => {
                     if (result.isConfirmed) {
-                      Swal.fire({
-                        title: "작성된 내용이 없습니다",
-                      });
+                        axios.delete(`http://localhost:8080/cafeAd/${cafeNo}`, {
+                            headers : {
+                                Authorization : accessToken
+                            }
+                        })
+                        .then((res) => {
+                            console.log(res.data);
+                            Swal.fire({
+                              title: "취소가 완료되었습니다",
+                            });
+                        })
                     }
                   });
              }
           });
     }
-
-    useEffect(() => {
-        if(paySuccess) {
-            var descrInput = document.getElementById("description");
-            var menuInput = document.getElementById("menu");
-
-            const formData = new FormData();
-            formData.append("description",cafeAd.description);
-            formData.append("menu", cafeAd.menu);
-            formData.append("thumbImg", thumbImg);
-            formData.append("paymentKey", paymentKey);
-
-            console.log(formData);
-            console.log(paymentKey);
-
-            axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
-            {
-                headers : {
-                    Authorization :accessToken,
-                    Refresh : getCookie("refreshToken"),
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then(res=>{
-
-                setIsAdExist(true); 
-                setIsApprove(false);
-                setCafeAd(res.data);
-                descrInput.disabled = true;
-                menuInput.disabled = true;
-                dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
-                Toast.fire({
-                    icon: 'success',
-                    title: '광고 신청이 완료되었습니다'
-                }).then(()=>{
-                    window.location.reload();
-                })
-            })
-            .catch(err=>{
-                refund("광고신청실패")
-                .then((res) => {console.log(res)})
-                .catch((error)=>{console.log(error)})
-                dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
-                console.log(err);
-                Toast.fire({
-                    icon: 'error',
-                    title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
-                })
-            })
-        }
-    }, [])
 
     return (
         <div className='storeBanner-container'>
@@ -255,7 +261,7 @@ const StoreBanner = () => {
                         <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
-                            <div className='storeBanner-title'>{cafe.cafeName},</div>
+                            <div className='storeBanner-title'>{cafe.title},</div>
                             <div className='storeBanner-description'>
                                 <br />{cafeAd.description}
                             </div>
