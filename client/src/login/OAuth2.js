@@ -3,13 +3,11 @@ import { useParams, useNavigate } from 'react-router';
 import {useDispatch} from 'react-redux';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { getCookie, setCookie } from '../components/Cookie';
 
 const OAuth2 = () => {
     const dispatch = useDispatch();
     const {accessToken, refreshToken} = useParams();
-    console.log(accessToken);
-    console.log(refreshToken);
     const navigate = useNavigate();
     const [member, setMember] = useState({memNo:'', name : '', nickname : '', email:'', social : '', status : true, memberType:''});
 
@@ -22,7 +20,7 @@ const OAuth2 = () => {
         toast: true,
         position: 'top',
         showConfirmButton: false,
-        timer: 1000,
+        timer: 800,
         timerProgressBar: true,
         didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -38,7 +36,6 @@ const OAuth2 = () => {
             }
         })
         .then(res=>{
-            console.log(res);
             setMember(res.data);
             dispatch({type:"member", payload:res.data});
             Toast.fire({
@@ -49,24 +46,25 @@ const OAuth2 = () => {
             }); 
         })
         .catch(err =>{
-            console.log(err);
             const errStatus = err.response.data.status;
             // 로그인 에러
-        if(errStatus === 401){
-            Toast.fire({
-              icon: 'error',
-              title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
-          })
-          navigate('/signUpUser');
-          } else if(errStatus === 880){
-            Toast.fire({
-              icon: 'error',
-              title: '탈퇴한 회원입니다'
-          })}else{
-            Toast.fire({
-              icon: 'error',
-              title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
-          })}
+            if(errStatus === 401){
+                Toast.fire({
+                icon: 'error',
+                title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
+                })
+                navigate('/signUpUser');
+            } else if(errStatus === 880){
+                Toast.fire({
+                    icon: 'error',
+                    title: '탈퇴한 회원입니다'
+                })
+            }else{
+                Toast.fire({
+                    icon: 'error',
+                    title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
+                })
+            }
         })
     }, [])
 

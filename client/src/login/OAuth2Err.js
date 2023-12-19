@@ -10,13 +10,14 @@ const OAuth2Err = () => {
         toast: true,
         position: 'top',
         showConfirmButton: false,
-        timer: 1000,
+        timer: 800,
         timerProgressBar: true,
         didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer)
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
+    
     useEffect(()=>{
         Toast.fire({
             icon: 'error',
@@ -45,8 +46,7 @@ const OAuth2Err = () => {
         <form>
         <div className='loginInputDiv'>
             <label>아이디 
-              <span className='login-auth'>
-                  
+              <span className='login-auth'> 
                 </span><br/>
             <input type="text" id="id" name="id"/> </label>
         </div>
@@ -54,7 +54,6 @@ const OAuth2Err = () => {
         <div className='loginInputDiv'>
           <label> 비밀번호
             <span className='login-auth'>
-             
             </span><br/>
           <input type="password" id="password" name="password"/></label>
         </div>

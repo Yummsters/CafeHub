@@ -6,6 +6,9 @@ import { useParams } from "react-router";
 import { useNavigate } from 'react-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { useDispatch } from 'react-redux';
+import {tokenCreate, tokenExpried} from '../login/TokenCheck';
 
 const UsePoint = () =>{
     const [point, setPoint] = useState(''); // 입력 포인트
@@ -13,23 +16,32 @@ const UsePoint = () =>{
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const {memNo} = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
 
     const [cafeNo,setCafeNo] = useState(1);
 
     useEffect(()=>{
         // 회원 포인트 조회 후 저장
-        axios.get(`http://localhost:8080/point/${memNo}`,
+        axios.get(`http://localhost:8080/member/point/${memNo}`,
         {
             headers : {
-                Authorization : accessToken
+                Authorization : accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
         .then(res=>{
             console.log(res.data);
-            setMyPoint(res.data);
+            tokenCreate(dispatch, setCookie, res.headers)
+            .then(()=>{
+                setMyPoint(res.data);
+            })
         })
         .catch(err =>{
             console.log(err);
+            if(err.response !== undefined){
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+            }
         })
     },[])
 
@@ -77,28 +89,32 @@ const UsePoint = () =>{
             })
         }else{
             //
-            axios.post(`http://localhost:8080/point/use/${memNo}/cafe/${cafeNo}/${point}`,{
-                },{
+            axios.post(`http://localhost:8080/store/point/use/${memNo}/cafe/${cafeNo}/${point}`,null,{
                 headers : {
-                    Authorization : accessToken
+                    Authorization : accessToken,
+                    Refresh : getCookie("refresh")
                 }
             })
             .then(res=>{
-                console.log(res);
-                Toast.fire({
-                    icon: 'success',
-                    title: '보유 커피콩 : '+res.data
-                }).then(()=>{
-                    navigate("/keypad");
+                tokenCreate(dispatch, setCookie, res.headers)
+                .then(()=>{
+                    Toast.fire({
+                        icon: 'success',
+                        title: '보유 커피콩 : '+res.data
+                    }).then(()=>{
+                        navigate("/keypad");
+                    })
                 })
             })
             .catch(err=>{
-                console.log(err);
-                console.log(err.data);
-                Toast.fire({
-                    icon: 'error',
-                    title: err.name
-                })
+                if(err.response !== undefined){
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }else{
+                    Toast.fire({
+                        icon: 'error',
+                        title: err.name
+                    })
+                }
             })
         }
     }

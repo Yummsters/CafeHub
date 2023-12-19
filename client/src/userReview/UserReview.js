@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Table, Pagination, PaginationLink } from "reactstrap";
 import { useParams } from "react-router";
 import {useSelector} from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import './userReviewStyle.css';
 import axios from 'axios';
 
 const UserReview = () => {
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [reviewList, setReviewList] = useState([]);
     const [pageInfo, setPageInfo] = useState({page : 1, size : 5, totalElements : 1, totalPages : 1});
     const [page, setPage] = useState(1);
@@ -21,6 +27,10 @@ const UserReview = () => {
     },[])
 
     const getPage = (page) => {
+        if(isLogin){
+            normalCheck(dispatch, accessToken);
+        }
+        
         setPage(page);
         setCurPage(page);
 
@@ -44,7 +54,10 @@ const UserReview = () => {
     }
 
     const reviewDetail = (reviewNo) =>{
-        window.location.href = '/reviewDetail/'+reviewNo;
+        if(isLogin){
+            normalCheck(dispatch, accessToken);
+        }
+        navigate('/reviewDetail/'+reviewNo);
     }
 
     return (
