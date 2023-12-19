@@ -6,7 +6,9 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
@@ -134,4 +136,10 @@ public class ReplyServiceImpl implements ReplyService {
             throw new Exception("베스트 댓글을 가져오는 중에 오류가 발생했습니다.");
         }
     }
+
+	// 회원 댓글 조회
+	@Override
+	public Page<Reply> findMyReply(Integer page, Integer size, Integer memNo) {
+		return replyRepository.findByMember_MemNo(PageRequest.of(page, size, Sort.by("regDate").descending()), memNo);
+	}
 }

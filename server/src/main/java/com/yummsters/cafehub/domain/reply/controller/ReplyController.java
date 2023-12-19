@@ -1,8 +1,13 @@
 package com.yummsters.cafehub.domain.reply.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.yummsters.cafehub.domain.reply.dto.MyReplyListResDto;
+import com.yummsters.cafehub.domain.reply.entity.Reply;
+import com.yummsters.cafehub.global.response.MultiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -107,4 +112,24 @@ public class ReplyController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+	// 회원 댓글 조회
+	@GetMapping("/user/reply/{memNo}")
+	public ResponseEntity<Object> getMyReply(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
+										@PathVariable("memNo") Integer memNo){
+		try{
+			Page<Reply> responsePage = replyService.findMyReply(page-1, size, memNo);
+			List<Reply> responseList = responsePage.getContent();
+			List<MyReplyListResDto> responseLists = new ArrayList<>();
+
+			for(Reply reply : responseList){
+				responseLists.add(MyReplyListResDto.replyToMyReplyListRes(reply));
+			}
+			return new ResponseEntity<>(new MultiResponseDto<>(responseLists, responsePage), HttpStatus.OK);
+
+		}catch (Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 }
