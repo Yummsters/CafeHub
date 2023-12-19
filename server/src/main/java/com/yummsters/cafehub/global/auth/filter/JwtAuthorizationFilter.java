@@ -66,7 +66,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 return;
             }
 
-            creatToken(response, refreshId);// 새로운 토큰 생성
+            String newAccess = creatToken(response, refreshId);// 새로운 토큰 생성
+            String checkAccess =   JWT.require(Algorithm.HMAC256(JwtProvider.SECRET)).build().verify(newAccess)
+                    .getClaim("id").asString();
+
+            if(checkAccess != null){
+                Member member = memberRepository.findById(checkAccess);
+                System.out.println(member);
+                PrincipalDetails principalDetails = new PrincipalDetails(member);
+                Authentication authentication = new UsernamePasswordAuthenticationToken
+                        (principalDetails, null, principalDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+            chain.doFilter(request, response);
+
             return;
         } catch (Exception e) {
             response.sendError(601, "ERROR");
@@ -84,7 +98,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     // 토큰 재생성
-    private void creatToken(HttpServletResponse response, String refreshId){
+    private String creatToken(HttpServletResponse response, String refreshId){
         Member member = memberRepository.findById(refreshId);
 
         String accessToken = JWT.create()
@@ -103,5 +117,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         response.addHeader("Access-Control-Expose-Headers", JwtProvider.REFRESH_STRING);
         response.addHeader(JwtProvider.HEADER_STRING, JwtProvider.TOKEN_PREFIX+accessToken);
         response.addHeader(JwtProvider.REFRESH_STRING, JwtProvider.TOKEN_PREFIX+refreshToken);
+
+        return accessToken;
     }
 }
