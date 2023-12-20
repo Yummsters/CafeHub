@@ -24,6 +24,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [bestReply, setBestReply] = useState(null);
   const [replyLike, setReplyLike] = useState(false);
   const [replyLikeCount, setReplyLikeCount] = useState(0);
+  const [pickBadgeName, setPickBadge] = useState([]);
   const dispatch = useDispatch;
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -393,6 +394,22 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
 
+  useEffect(() => {
+    if (review && review.memNo) {
+      if (isLogin) {
+        normalCheck(dispatch, accessToken);
+      }
+      axios.get(`${url}/getMemberBadge/${review.memNo}`)
+      .then((res) => {
+          const badgeName = res.data.badgeName || ''; 
+          setPickBadge([badgeName]);
+          console.log(res.data + "dmd")
+      })
+      .catch(error => {
+          console.error('에러 발생:', error);
+      });
+    }
+  }, [review])
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -422,16 +439,17 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
+                {review.length > 0 && (
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
-              </div>
+                )}
+                </div>
               <div className="infoR">
-                <span>{review.nickname}</span>&nbsp;|&nbsp;
+                <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
             </div>
             <div className="detailContent"><Viewer initialValue={review.content || ''} /></div>
-
 
             <div id="detailMap"></div>
 
