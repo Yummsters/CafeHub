@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
         return pricessOAuth2User(userRequest, oAuth2User);
     }
 
-    private OAuth2User pricessOAuth2User(OAuth2UserRequest userRequest,OAuth2User oAuth2User) {
+    private OAuth2User pricessOAuth2User(OAuth2UserRequest userRequest,OAuth2User oAuth2User) throws OAuth2AuthenticationException{
         OAuth2MemberInfo oAuth2MemberInfo = null;
         if(userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
             oAuth2MemberInfo = new KakaoMemberInfo(oAuth2User.getAttribute("response"));
@@ -38,11 +39,15 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
         }
 
         // 회원가입 여부 확인
-        Member member = memberRepository.findByEmail(oAuth2MemberInfo.getEmail());
+        Member member = memberRepository.findById(oAuth2MemberInfo.getProvider()+oAuth2MemberInfo.getProviderId());
 
-        if(member == null){
+        if(memberRepository.existsByEmail(oAuth2MemberInfo.getEmail())){
+            throw new OAuth2AuthenticationException(new OAuth2Error("존재 회원"), "존재 회원");
+        }else if(memberRepository.existsByNickname(oAuth2MemberInfo.getNickname())){
+            throw new OAuth2AuthenticationException(new OAuth2Error("존재 닉네임"), "존재 닉네임");
+        }else if(member == null){
             member = Member.builder()
-                    .id("Kakao 로그인 유저"+oAuth2MemberInfo.getNickname())
+                    .id(oAuth2MemberInfo.getProvider()+oAuth2MemberInfo.getProviderId())
                     .password("Kakao 로그인 유저")
                     .name(oAuth2MemberInfo.getNickname())
                     .nickname(oAuth2MemberInfo.getNickname())
@@ -52,6 +57,7 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
                     .social(Social.KAKAO)
                     .phone("Kakao 로그인 유저")
                     .build();
+
             memberRepository.save(member);
 
             // 포인트 정보 생성

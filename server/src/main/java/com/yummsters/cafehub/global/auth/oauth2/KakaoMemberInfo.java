@@ -10,6 +10,16 @@ public class KakaoMemberInfo implements OAuth2MemberInfo {
     }
 
     @Override
+    public String getProvider() {
+        return "Kakao";
+    }
+
+    @Override
+    public String getProviderId() {
+        return String.valueOf(attributes.get("id"));
+    }
+
+    @Override
     public String getEmail() {
         return (String)(((Map<String,Object>)attributes.get("kakao_account")).get("email"));
     }

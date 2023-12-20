@@ -4,6 +4,7 @@ import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.global.auth.filter.JwtAuthenticationFilter;
 import com.yummsters.cafehub.global.auth.filter.JwtAuthorizationFilter;
+import com.yummsters.cafehub.global.auth.oauth2.OAuth2LoginFailHandler;
 import com.yummsters.cafehub.global.auth.oauth2.OAuth2LoginSuccessHandler;
 import com.yummsters.cafehub.global.auth.oauth2.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final MemberMapper memberMapper;
     private final PrincipalOauth2UserService principalOauth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailHandler oAuth2LoginFailHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncode(){
@@ -48,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userInfoEndpoint().userService(principalOauth2UserService)  // 회원 정보 처리
                 .and()
                 .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler(oAuth2LoginFailHandler)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/member/**").access("hasRole('STORE') or hasRole('USER') or hasRole('MANAGER')") // 권한 부여 확인용 임시 코드

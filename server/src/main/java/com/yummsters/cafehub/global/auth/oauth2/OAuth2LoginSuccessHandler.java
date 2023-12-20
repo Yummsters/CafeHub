@@ -48,7 +48,7 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
                 response.sendRedirect(targetUrl);
             }
         } catch (Exception e) {
-            response.sendRedirect("http://localhost:3000/oauth2Error");
+            response.sendRedirect("http://localhost:3000/oauth2Error/880");
         }
     }
 }
