@@ -64,6 +64,14 @@ public class CafeAd {
    /* public void addThumbImg(String thumbImg) {
         this.thumbImg = thumbImg;
     }*/
+    
+    public void setApproved(boolean isApproved) {
+        this.isApproved = isApproved;
+    }
+
+    public void setAuthDate(LocalDateTime authDate) {
+        this.authDate = authDate;
+    }
 
     public void addFile(FileVo fileVo) {
         this.fileVo = fileVo;
