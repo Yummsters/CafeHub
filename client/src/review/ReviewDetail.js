@@ -391,15 +391,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
             <p className="detailTitle">{review.title}</p>
-            {/* <div className="detailLine" /> */}
-
             <div className="detailInfo">
               <div className="infoL">
                 <p>
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                <p>{review.tagNames.map((tag, i) => <span key={i}>#{tag}&nbsp;</span>)}</p>
+                <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
               </div>
               <div className="infoR">
                 <span>{review.nickname}</span>&nbsp;|&nbsp;
