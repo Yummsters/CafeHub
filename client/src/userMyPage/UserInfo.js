@@ -7,8 +7,7 @@ import { useNavigate } from 'react-router';
 import { getCookie, removeCookie} from '../components/Cookie';
 import Swal from 'sweetalert2';
 import StoreSideTab from '../components/StoreSideTab';
-
-
+import { url } from '../config.js'
 
 const UserInfo = ({sideTab}) => {
   const navigate = useNavigate();
@@ -43,17 +42,12 @@ const UserInfo = ({sideTab}) => {
   })
   //배지--------------------------------------------
   useEffect(() => {
-    axios.get(`http://localhost:8080/getMemberBadge/${member.memNo}`)
+    axios.get(`${url}/getMemberBadge/${member.memNo}`)
         .then(response => {
             console.log(response.data);
-
-          
             const badgeName = response.data.badgeName || ''; 
             setPickBadge([badgeName]);
-
-          
             console.log([badgeName]);
-
         })
         .catch(error => {
             console.error('에러 발생:', error);
@@ -86,7 +80,7 @@ const UserInfo = ({sideTab}) => {
       return;
     }
 
-    axios.put("http://localhost:8080/member/modifyInfo", updateUser,{
+    axios.put(`${url}/member/modifyInfo`, updateUser,{
         headers : {
             Authorization :accessToken,
             Refresh : getCookie("refreshToken")
@@ -156,7 +150,7 @@ const UserInfo = ({sideTab}) => {
         setUserInputMsg({ ...userInputMsg, [name]: '이메일 형식을 확인하세요' });
         setSaveCheck({ ...saveCheck, [name]: false });
       } else {
-          axios.get(`http://localhost:8080/email/${value}`)
+          axios.get(`${url}/email/${value}`)
             .then(res => {
               console.log(res.data);
               if (res.data) {
@@ -180,7 +174,7 @@ const UserInfo = ({sideTab}) => {
   // 수정 - 닉네임 관련
   const nicknameCheck = (name, value) => {
     if (name === 'nickname' && value.trim() !== '') {
-      axios.get(`http://localhost:8080/nickname/${value}`)
+      axios.get(`${url}/nickname/${value}`)
         .then(res => {
           console.log(res.data);
           if (res.data) {
@@ -221,7 +215,7 @@ const UserInfo = ({sideTab}) => {
     console.log("Random code set:", random);
     console.log(updateUser.phone);
     // 입력한 번호로 랜덤 코드 발송
-    // axios.get(`http://localhost:8080/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
+    // axios.get(`${url}/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
     // .then((res) => {
     //     console.log(res.data);
         // swal로 인증번호 입력 받고 확인
@@ -282,7 +276,7 @@ const UserInfo = ({sideTab}) => {
   // 현재 비밀번호 확인
   useEffect(() => { 
     if (password.pw !== '') {
-      axios.post("http://localhost:8080/member/password", {id: member.id, password: password.pw}, 
+      axios.post(`${url}/member/password`, {id: member.id, password: password.pw}, 
           {
             headers : {
               Authorization :accessToken,
@@ -328,7 +322,7 @@ const UserInfo = ({sideTab}) => {
         return;
       }
 
-    axios.put(`http://localhost:8080/resetPw/${member.id}`, { password: password.newPw })
+    axios.put(`${url}/resetPw/${member.id}`, { password: password.newPw })
         .then((res) => {
             console.log(res);
             Toast.fire({
@@ -366,7 +360,7 @@ const UserInfo = ({sideTab}) => {
 
   const handleWithdrawal = (e) => {    
     // 자체 로그인 회원 탈퇴
-    axios.post(`http://localhost:8080/member/delete/normal/${member.memNo}`,{
+    axios.post(`${url}/member/delete/normal/${member.memNo}`,{
       password : pwInput
     },
     {
@@ -403,7 +397,7 @@ const UserInfo = ({sideTab}) => {
 
   const handleSocialWithdrawal = (e) => {    
     // 소셜 로그인 회원 탈퇴
-    axios.post(`http://localhost:8080/member/delete/social/${member.memNo}`,{
+    axios.post(`${url}/member/delete/social/${member.memNo}`,{
       email : emailInput
     },
     {

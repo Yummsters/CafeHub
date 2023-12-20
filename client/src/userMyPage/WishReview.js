@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import axios from "axios";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { url } from '../config.js'
 
 const WishReview = () => {
   const [wishReviewList, setWishReviewList] = useState([]);
@@ -47,7 +48,7 @@ const WishReview = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
+      .get(`${url}/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",

@@ -5,6 +5,7 @@ import { CheckoutPage } from '../payment/CheckoutPage';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import { url } from '../config.js'
 
 const UserPoint = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -74,7 +75,7 @@ const UserPoint = () => {
             allowOutsideClick: false, // Prevent closing by clicking outside
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.post(`http://localhost:8080/buyBadge/${member.memNo}/${selectedBadge.badgeNo}`)
+                axios.post(`${url}/buyBadge/${member.memNo}/${selectedBadge.badgeNo}`)
                     .then((res) => {
                         console.log('뱃지를 성공적으로 구매했습니다:', res.data);
     
@@ -109,7 +110,7 @@ const UserPoint = () => {
             allowOutsideClick: false, // Prevent closing by clicking outside
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.post(`http://localhost:8080/pickBadge/${member.memNo}/${selectedBadge.memberBadgeNo}`)
+                axios.post(`${url}/pickBadge/${member.memNo}/${selectedBadge.memberBadgeNo}`)
                     .then((res) => {
                         console.log('뱃지를 성공적으로 달았습니다:', res.data);
     
@@ -131,7 +132,7 @@ const UserPoint = () => {
     
     
     useEffect(() => {
-        axios.get(`http://localhost:8080/point/${member.memNo}`,
+        axios.get(`${url}/point/${member.memNo}`,
             {
                 headers: {
                     Authorization: accessToken
@@ -145,7 +146,7 @@ const UserPoint = () => {
             })
     }, [])
     useEffect(() => {
-        axios.get(`http://localhost:8080/badgeList`)
+        axios.get(`${url}/badgeList`)
             .then(res => {
                 console.log(res.data);
                 setBadge([...res.data]);
@@ -157,7 +158,7 @@ const UserPoint = () => {
     useEffect(() => {
 
         if (member && member.memNo) {
-            axios.get(`http://localhost:8080/badge/${member.memNo}`)
+            axios.get(`${url}/badge/${member.memNo}`)
                 .then(response => {
                     console.log(response.data);
                     setUserBadges(response.data);
@@ -168,7 +169,7 @@ const UserPoint = () => {
         }
     }, []);
     useEffect(() => {
-        axios.get(`http://localhost:8080/getMemberBadge/${member.memNo}`)
+        axios.get(`${url}/getMemberBadge/${member.memNo}`)
             .then(response => {
              
                 const badgeName = response.data.badgeName || ''; 
@@ -183,7 +184,7 @@ const UserPoint = () => {
 
     useEffect(() => {
         if (paySuccess) {
-            axios.post(`http://localhost:8080/point/buyPoint/${member.memNo}/${price / 100}`,
+            axios.post(`${url}/point/buyPoint/${member.memNo}/${price / 100}`,
                 {
                     headers: {
                         Authorization: accessToken
