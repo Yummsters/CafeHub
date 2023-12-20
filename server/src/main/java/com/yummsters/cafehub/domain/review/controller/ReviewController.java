@@ -150,10 +150,13 @@ public class ReviewController {
 	                Map<String, Object> reviewData = new HashMap<>();
 	                reviewData.put("thumbImg", review.getThumbImg());
 	                reviewData.put("title", review.getTitle());
+	                reviewData.put("subtitle", review.getSubTitle());
 	                reviewData.put("cafeName", review.getCafe().getCafeName());
 	                reviewData.put("likeCount", review.getLikeCount());
 	                reviewData.put("regDate", review.getRegDate());
 	                reviewData.put("nickname", review.getMember().getNickname());
+	                reviewData.put("memNo", review.getMember().getMemNo());
+	                reviewData.put("badgeNo", review.getMember().getBadgeNo());
 	                reviewData.put("reviewNo", review.getReviewNo());
 	                return reviewData;
 	            }

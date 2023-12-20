@@ -22,7 +22,12 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	Review findByReviewNo(Integer reviewNo);
 
 	// 혜리 part ----------------------------------------------------------------
-	Page<Review> findAllByTitleContainsOrderByReviewNoDesc(String title, Pageable pageable);
+	@Query(value = "SELECT * "
+			+ "FROM review r "
+			+ "JOIN cafe c ON r.cafe_no = c.cafe_no "
+			+ "WHERE r.title like %:keyword% OR c.cafe_name like %:keyword% "
+			+ "ORDER BY r.review_no DESC", nativeQuery = true)
+	Page<Review> findAllByTitleContainsOrderByReviewNoDesc(@Param("keyword")String keyword, Pageable pageable);
 	Page<Review> findAllByMember(Member member, Pageable pageable);
     @Query(value = "SELECT r.title, "
     		+ "r.thumb_img as thumbImg, "
