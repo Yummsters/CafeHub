@@ -15,4 +15,5 @@ public interface ReplyService {
 	void addReReply(Integer replyNo, ReplyDto replyDto) throws Exception;
 	Page<ReplyInterface> getRepliesByReviewNo(Integer memNo, Integer reivewNo, Pageable pageable) throws Exception;
 	ReplyInterface getBestReplyByReviewNo(Integer memNo, Integer reviewNo) throws Exception;
+	Page<Reply> findMyReply(Integer page, Integer size, Integer memNo);
 }

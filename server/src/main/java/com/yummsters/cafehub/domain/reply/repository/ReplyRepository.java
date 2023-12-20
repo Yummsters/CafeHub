@@ -3,6 +3,7 @@ package com.yummsters.cafehub.domain.reply.repository;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 //import java.util.List;
@@ -59,4 +60,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 			+ "ORDER BY IFNULL(parent_reply_no, r.reply_no) DESC, depth, r.reply_no"
 			, nativeQuery = true)
 	Page<ReplyInterface> findReplyList(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo, Pageable pageable);
+
+	Page<Reply> findByMember_MemNo(PageRequest pageRequest, Integer memNo);
 }
