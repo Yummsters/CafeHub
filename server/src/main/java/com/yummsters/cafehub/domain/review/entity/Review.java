@@ -42,6 +42,8 @@ public class Review {
 	@ManyToOne
 	@JoinColumn(name = "cafeNo") // 외래키
 	private Cafe cafe;
+    @Column
+    private String subTitle;
 	@Column
 	private Integer likeCount;
 	@Column
