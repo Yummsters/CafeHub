@@ -40,13 +40,30 @@ public class MemberBadges {
 	    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	    private LocalDateTime regDate;
 	    
+	    
+	    public Integer getBadgeNo() {
+	        return badge.getBadgeNo();
+	    }
+	   
+	    
 	    public MemberBadgeDto toDTO() {
 	        return MemberBadgeDto.builder()
 	                .memberBadgeNo(memberBadgeNo)
 	                .memNo(memNo)
 	                .badgeNo(badge.getBadgeNo())
+	                .badgeName(badge.getBadgeName())
 	                .regDate(regDate)
 	                .build();
+	    }
+	    
+	    @Override
+	    public String toString() {
+	        return "MemberBadges{" +
+	                "memberBadgeNo=" + memberBadgeNo +
+	                ", memNo=" + memNo +
+	                ", badge=" + badge.toString() + 
+	                ", regDate=" + regDate +
+	                '}';
 	    }
 
 }

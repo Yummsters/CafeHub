@@ -1,10 +1,12 @@
 package com.yummsters.cafehub.domain.badge.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,10 @@ import com.yummsters.cafehub.domain.badge.dto.MemberBadgeDto;
 import com.yummsters.cafehub.domain.badge.entity.Badge;
 import com.yummsters.cafehub.domain.badge.entity.MemberBadges;
 import com.yummsters.cafehub.domain.badge.repository.BadgeRepository;
+import com.yummsters.cafehub.domain.badge.repository.MemberBadgeRepository;
 import com.yummsters.cafehub.domain.badge.service.BageService;
+import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BadgeController {
 	private final BadgeRepository badgeRepository;
-	private final BageService bageService;
+	private final MemberBadgeRepository memberBadgeRepository;
+	private final BageService badgeService;
+    private final MemberRepository memberRepository;
     //배지만들기
     @PostMapping("/bage/{badgeName}")
     public void BadgeName(@PathVariable("badgeName") String badgeName) throws Exception {
@@ -35,12 +42,20 @@ public class BadgeController {
             throw new Exception("이미 존재하는 배지");
         }
     }
+   
+    //배지 목록 조회
+    @GetMapping("/badgeList")
+    public ResponseEntity<Object> badgeList(){
+        List<Badge> responseList = badgeRepository.findAll();
+        return new ResponseEntity<>(responseList, HttpStatus.OK);
+   }
+  
     //구매한 배지 가져오기
-    @GetMapping("/bage/{memNo}")
+    @GetMapping("/badge/{memNo}")
     public ResponseEntity<Object> getBadge(@PathVariable Integer memNo) {
         try {
-            List<MemberBadges> memberBadgesList = bageService.getBadge(memNo);
-
+            List<MemberBadges> memberBadgesList = badgeService.getBadge(memNo);
+           
             if (!memberBadgesList.isEmpty()) {
                 List<MemberBadgeDto> memberBadgeDtoList = memberBadgesList.stream()
                         .map(MemberBadges::toDTO)
@@ -59,7 +74,7 @@ public class BadgeController {
     @PostMapping("/buyBadge/{memNo}/{badgeNo}")
     public ResponseEntity<Object> buyBadge(@PathVariable Integer memNo, @PathVariable Integer badgeNo) {
         try {
-            MemberBadges boughtBadge = bageService.buyBadge(memNo, badgeNo);
+            MemberBadges boughtBadge = badgeService.buyBadge(memNo, badgeNo);
 
             if (boughtBadge != null) {
                 MemberBadgeDto memberBadgeDto = boughtBadge.toDTO();
@@ -72,6 +87,60 @@ public class BadgeController {
         }
     
     }
+    //배지 선택하기
+    @PostMapping("/pickBadge/{memNo}/{badgeNo}")
+    public ResponseEntity<Object> pickBadge(@PathVariable Integer memNo, @PathVariable Integer badgeNo) {
+        try {
+            MemberBadges boughtBadge = badgeService.pickBadge(memNo, badgeNo);
+
+            if (boughtBadge != null) {
+                MemberBadgeDto memberBadgeDto = boughtBadge.toDTO();
+
+                return new ResponseEntity<>(memberBadgeDto, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+  //회원 배지 불러오기
+    @GetMapping("/getMemberBadge/{memNo}")
+    public ResponseEntity<Object> getMemberBadge(@PathVariable Integer memNo) {
+        try {
+            MemberBadgeDto memberBadgeDto = badgeService.getMemberBadge(memNo);
+            return new ResponseEntity<>(memberBadgeDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    } 
+    //배지 30일 만료  
+//    @Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
+//    public void deleteBadges() {
+//        try {
+//           
+//            List<MemberBadges> list = memberBadgeRepository.findAllByRegDateIsBefore(LocalDateTime.now().minusDays(30));
+//            for(MemberBadges memberBadges : list) {
+//            	 Integer memberBadge = memberRepository.findByMemNo(memberBadges.getMemNo()).getBadgeNo();
+//                 Integer memberBadgesBadge = memberBadges.getBadgeNo();  }
+//            if (memberBadge.equals(memberBadgesBadge)) {
+//                // 동일한 경우
+//                Badge defaultBadge = badgeRepository.findByBadgeNo(9); // 기본 배지 번호 9
+//                Member member = memberRepository.findByMemNo(memberBadges.getMemNo());
+//                member.getBadgeNo().setBadgeNo(defaultBadge.getBadgeNo());
+//                memberRepository.save(member);
+//            } else {
+//                // 동일하지 않은 경우
+//               
+//                  }
+//        
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    
 
     
 }
