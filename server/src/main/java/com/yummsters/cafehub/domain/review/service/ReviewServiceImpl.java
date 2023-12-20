@@ -97,6 +97,7 @@ public class ReviewServiceImpl implements ReviewService {
 			System.out.println("getMemNo" + review.getMemNo());
 		}
 		Review reviewEntity = review.toEntity();
+		reviewEntity.setSubTitle(reviewEntity.getCafe().getCafeName() + " " +  reviewEntity.getTitle());
 		reviewRepository.save(reviewEntity);
 		return reviewEntity.getReviewNo();
 	}
@@ -134,6 +135,7 @@ public class ReviewServiceImpl implements ReviewService {
 	    }
 	    if (reviewModifyDto.getTitle() != null) {
 	        review.setTitle(reviewModifyDto.getTitle());
+			review.setSubTitle(review.getCafe().getCafeName() + " " + reviewModifyDto.getTitle());
 	    }
 	    if (reviewModifyDto.getContent() != null) {
 	        review.setContent(reviewModifyDto.getContent());
