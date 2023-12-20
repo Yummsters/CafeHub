@@ -54,10 +54,6 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
     }
    }, [selectCafe, currentPage])
 
-
-   console.log("Access Token:", accessToken);
-   console.log("Refresh Token:", getCookie("refreshToken"));
-
   const toggleWish = () => {    
     if (memNo !== undefined) {
       axios.post(`${url}/member/cafeWish/${memNo}/${selectCafe.cafeNo}`, null, {

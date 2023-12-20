@@ -75,7 +75,6 @@ const MapLayout = ({ cafes }) => {
               }
           })
           .then((res) => {
-            console.log(res);
             tokenCreate(dispatch, setCookie, res.headers)
               .then((r)=>{
                   setWish(res.data);
