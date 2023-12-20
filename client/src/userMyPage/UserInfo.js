@@ -27,6 +27,7 @@ const UserInfo = ({sideTab}) => {
   const [editMode, setEditMode] = useState(false);
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
+  const [pickBadgeName, setPickBadge] = useState([]);
   
   // swal
   const Toast = Swal.mixin({
@@ -40,7 +41,24 @@ const UserInfo = ({sideTab}) => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
+  //배지--------------------------------------------
+  useEffect(() => {
+    axios.get(`http://localhost:8080/getMemberBadge/${member.memNo}`)
+        .then(response => {
+            console.log(response.data);
 
+          
+            const badgeName = response.data.badgeName || ''; 
+            setPickBadge([badgeName]);
+
+          
+            console.log([badgeName]);
+
+        })
+        .catch(error => {
+            console.error('에러 발생:', error);
+        });
+}, []);
   // 수정 관련---------------------------------------
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(true);
@@ -427,7 +445,7 @@ const UserInfo = ({sideTab}) => {
 
       <div className='userInfoBox'>
         <div className='nicknameBox'>
-          <p><img src="/img/house.png" alt="house" />{member.nickname} 님</p>
+          <p><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" />{member.nickname} 님</p>
         </div>
         <div className='infoBox'>
           <div className='infoTitle'>

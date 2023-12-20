@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import searchId from '../searchId/searchIdStyle.css';
 import {useState} from 'react';
 import Swal from 'sweetalert2';
+import { url } from '../config.js'
 
 const SearchPwResult = () => {
     const [data, setData] = useState({});
@@ -50,7 +51,7 @@ const SearchPwResult = () => {
             return;
         }
 
-        axios.put(`http://localhost:8080/resetPw/${id}`, { password: data.password })
+        axios.put(`${url}/resetPw/${id}`, { password: data.password })
         .then((res) => {
             console.log(res);
             Toast.fire({

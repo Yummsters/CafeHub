@@ -80,7 +80,7 @@ function App() {
               <Route exact path='/userReview/:nickname' element={<DefaultLayout><UserReview/></DefaultLayout>}/>
               <Route exact path='/reviewDetail/:reviewNo' element={<DefaultLayout><ReviewDetail/></DefaultLayout>}/>
               <Route exact path='/oauth2/redirect/:accessToken/:refreshToken' element={<DefaultLayout><OAuth2/></DefaultLayout>}/>
-              <Route exact path='/oauth2Error' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
+              <Route exact path='/oauth2Error/:errorCode' element={<DefaultLayout><OAuth2Err/></DefaultLayout>}/>
               <Route exact path='/payment/success' element={<DefaultLayout><Success/></DefaultLayout>}/>
 
               {/* 로그인 하지 않은 사람만 사용 가능 */}
