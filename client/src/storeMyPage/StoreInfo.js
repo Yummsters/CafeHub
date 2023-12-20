@@ -1,15 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+
 import storeInfoStyle from './storeInfoStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import {getCookie} from '../components/Cookie';
+import {getCookie, removeCookie, setCookie} from '../components/Cookie';
+import { useDispatch } from 'react-redux';
+import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 const { daum } = window;
 
 const StoreInfo = () => {
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const [point, setPoint] = useState(0);
     const [fileNum, setFileNum] = useState(0);
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
@@ -289,18 +296,24 @@ const StoreInfo = () => {
 
     // 가게 포인트 조회
     useEffect(() => {
-        axios.get(`http://localhost:8080/point/${memNo}`, {
+        axios.get(`http://localhost:8080/member/point/${memNo}`, {
             headers: {
-                Authorization: accessToken
+                Authorization: accessToken,
+                Refresh : getCookie("refreshToken")
             }
         })
             .then(res => {
                 const resPoint = res.data;
-                console.log(resPoint);
-                setPoint(resPoint);
+                tokenCreate(dispatch, setCookie, res.headers)
+                .then(()=>{
+                    setPoint(resPoint);
+                })
             })
             .catch(err => {
                 console.log(err);
+                if(err.response !== undefined){
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
             })
     }, [])
 
@@ -311,22 +324,29 @@ const StoreInfo = () => {
                 title: '100개 이상부터 정산 신청이 가능합니다'
             })
         } else {
-            axios.post(`http://localhost:8080/point/calculate/${memNo}`, {
+            axios.post(`http://localhost:8080/store/point/calculate/${memNo}`, null, {
                 headers: {
-                    Authorization: accessToken
+                    Authorization: accessToken,
+                    Refresh : getCookie("refreshToken")
                 }
             })
                 .then(res => {
                     console.log(res);
                     console.log(res.data);
+                    tokenCreate(dispatch, setCookie, res.headers)
+                .then(()=>{
                     setPoint(res.data);
                     MyToast.fire({
                         icon: 'success',
                         title: '포인트 정산 신청이 완료되었습니다'
                     })
                 })
+                })
                 .catch(err => {
                     console.log(err);
+                    if(err.response !== undefined){
+                        tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                    }
                 })
         }
     }
