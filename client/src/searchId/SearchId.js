@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import searchId from './searchIdStyle.css';
 import {useState} from 'react';
 import Swal from 'sweetalert2';
+import { url } from '../config.js'
 
 const SearchId = () => {
     const [data, setData] = useState({ name: '', phone: '' });
@@ -37,7 +38,7 @@ const SearchId = () => {
             return; 
         }
 
-        axios.get('http://localhost:8080/searchId', { 
+        axios.get(`${url}/searchId`, { 
             params: {
                 name: data.name,
                 phone: data.phone
