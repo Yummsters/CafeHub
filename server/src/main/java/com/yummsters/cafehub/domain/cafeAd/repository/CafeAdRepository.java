@@ -23,11 +23,12 @@ public interface CafeAdRepository extends JpaRepository<CafeAd, Integer> {
     		+ "c.thumb_img AS thumbImg, "
             + "ca.description AS description, "
             + "ca.menu AS menu, "
-            + "ca.reg_date AS regDate "
+            + "ca.reg_date AS regDate, "
+            + "ca.is_approved AS isApproved, "
+            + "ca.cafe_ad_no AS cafeAdNo "
             + "FROM cafe_ad ca "
-            + "JOIN cafe c "
-            + "WHERE ca.cafe_no = c.cafe_no "
-            + "AND ca.is_approved = false", nativeQuery = true)
+            + "JOIN cafe c ON ca.cafe_no = c.cafe_no "
+            + "WHERE ca.is_approved = 0", nativeQuery = true)
      Page<CafeAdInterface> findUnapprovedAds(Pageable pageable);
     @Transactional
     @Modifying

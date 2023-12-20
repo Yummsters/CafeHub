@@ -121,9 +121,10 @@ public class CafeAdController {
     }
     
     @GetMapping("/unapprovedAds")
-    public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(Pageable pageable) {
+    public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<CafeAdInterface> unapprovedAds = cafeAdService.getUnapprovedAds(pageable);
+            Page<CafeAdInterface> unapprovedAds = cafeAdService.getUnapprovedAds(PageRequest.of(page, size));
             return new ResponseEntity<>(unapprovedAds, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
