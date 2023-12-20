@@ -5,12 +5,15 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ReviewList = () => {
+    const member = useSelector(state => state.persistedReducer.member);
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchKeyword, setSearchKeyword] = useState('');
     const [reviews, setReviews] = useState([]);
     const [inputKeyword, setInputKeyword] = useState(''); //input에 입력될 내용, 키워드
+    const [pickBadgeName, setPickBadge] = useState([]);
 
     const handleSearchChange = (e) => {
         setInputKeyword(e.target.value);
@@ -38,7 +41,7 @@ const ReviewList = () => {
         console.log(searchParams.get('page'));
         setSearchKeyword(searchParams.get('search') ?? '');
         setInputKeyword(searchParams.get('search') ?? '');
-        searchParams.get('page') && setPageInfo({...pageInfo, currentPage: parseInt(searchParams.get('page'))});
+        searchParams.get('page') && setPageInfo({ ...pageInfo, currentPage: parseInt(searchParams.get('page')) });
     }, [searchParams]);
 
     useEffect(() => {
@@ -65,6 +68,17 @@ const ReviewList = () => {
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
                 let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
                 setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
+
+                response.data.content.forEach((review) => {
+                    axios.get(`http://localhost:8080/getMemberBadge/${review.memNo}`)
+                        .then(badgeResponse => {
+                            const badgeName = badgeResponse.data.badgeName || '';
+                            setPickBadge((prev) => [...prev, badgeName]);
+                        })
+                        .catch(error => {
+                            console.error('뱃지를 불러오지 못했습니다.:', error);
+                        });
+                })
             })
             .catch((error) => {
                 console.error('리뷰 가져오기 오류:', error);
@@ -105,7 +119,7 @@ const ReviewList = () => {
                         <tbody>
                             {reviews.map((review) => (
                                 <tr key={review.reviewNo}>
-                                    <th scope='row' style={{width:"100px"}}>
+                                    <th scope='row' style={{ width: "100px" }}>
                                         <img className='listImg' src={review.thumbImg} alt='' />
                                     </th>
                                     <td colSpan={10}>
@@ -117,9 +131,9 @@ const ReviewList = () => {
                                     </td>
                                     <td colSpan={2}>
                                         <div className='writeInfo'>
-                                        <a href={`/userReview/${review.nickname}`}>
-                                            <img src='/img/cookies.png' alt='' />
-                                            {review.nickname}</a> | 추천 {review.likeCount}
+                                            <a href={`/userReview/${review.nickname}`}>
+                                                <img className='badgeImg' src={`/img/${pickBadgeName[0]}`} alt='' />
+                                                {review.nickname}</a> | 추천 {review.likeCount}
                                         </div>
                                         <div className='dateTime'>{review.regDate}</div>
                                     </td>
