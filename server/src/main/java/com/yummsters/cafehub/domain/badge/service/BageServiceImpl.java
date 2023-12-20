@@ -103,28 +103,21 @@ public class BageServiceImpl implements BageService {
             throw new Exception("서비스에서 오류 발생: " + e.getMessage());
         }
     }
-	
 	@Override
-	public void assignBadge(Integer memNo, Badge badge) throws Exception {
-	    try {
-	        // 기존에 부여된 동일한 배지가 있는지 확인
-	        List<MemberBadges> existingBadges = memberBadgeRepository.findByMemNoAndBadge(memNo, badge);
+	public Member defaultBadge(Integer memNo) throws Exception {
+	    Optional<Member> optionalMember = memberRepository.findById(memNo);
 
-	        // 없으면 새로 부여
-	        if (existingBadges.isEmpty()) {
-	            MemberBadges newBadge = MemberBadges.builder()
-	                .memNo(memNo)
-	                .badge(badge)
-	                .regDate(LocalDateTime.now())
-	                .build();
+	    if (optionalMember.isPresent()) {
+	        Member member = optionalMember.get();
+	        member.setBadgeNo(9);
+	        memberRepository.save(member);
 
-	            memberBadgeRepository.save(newBadge);
-	        }
-	    } catch (Exception e) {
-	        // 예외 처리 로직을 추가하세요.
-	        e.printStackTrace(); // 또는 다른 예외 처리 방법을 선택하세요.
+	        return member;
+	    } else {
+	        throw new Exception("해당 사용자를 찾을 수 없습니다.");
 	    }
 	}
+
 }
 
 

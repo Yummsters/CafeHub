@@ -1,7 +1,9 @@
 package com.yummsters.cafehub.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yummsters.cafehub.domain.badge.entity.Badge;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.member.dto.DefaultBadgeDto;
 import com.yummsters.cafehub.domain.member.dto.ModifyReqDto;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -75,6 +77,9 @@ public class Member {
     @Column(name="badge_no")
     private Integer badgeNo;
 
+    public void setBadgeNo(Badge badge) {
+        
+    }
     
     public void setBadgeNo(Integer badgeNo) {
         this.badgeNo = badgeNo;
@@ -112,6 +117,13 @@ public class Member {
         this.regDate = null;
     }
 
+    public DefaultBadgeDto toDTO() {
+        return DefaultBadgeDto.builder()
+                .memNo(this.memNo)
+                .badgeNo(this.badgeNo)
+               
+                .build();
+    }
     public void setCafeno(Integer cafeno) {
         this.cafeno = cafeno;
     }
