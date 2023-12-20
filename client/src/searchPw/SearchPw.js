@@ -2,7 +2,8 @@ import axios from "axios";
 import searchPw from "./searchPwStyle.css";
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { url } from '../config.js'
 
 const SearchPw = () => {
   const [data, setData] = useState({});
@@ -34,7 +35,7 @@ const SearchPw = () => {
 
   // 회원 정보 확인 후 휴대폰 인증번호 발송
   const sendPhoneCode = () => {
-    axios.post("http://localhost:8080/searchPw", { // 회원정보 확인
+    axios.post(`${url}/searchPw`, { // 회원정보 확인
       id: data.id,
       phone: data.phone,
     })
@@ -42,7 +43,8 @@ const SearchPw = () => {
       // 회원정보 일치하는 경우 휴대폰 인증번호 발송
       const random = Math.floor(Math.random() * 9000) + 1000;
       setRandomCode(random);
-      axios.get(`http://localhost:8080/check/sendSMS?phone=${data.phone}&code=${random}`)
+      console.log(random);
+      axios.get(`${url}/check/sendSMS?phone=${data.phone}&code=${random}`)
       .then((res) => {
           console.log(res.data);
           Toast.fire({
