@@ -1,7 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import MapCafeInfo from "./MapCafeInfo";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from 'react-router';
+import { url } from '../config.js'
+import { getCookie, setCookie, removeCookie } from "../components/Cookie.js";
+import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import Swal from 'sweetalert2';
 
 const { kakao } = window;
 
@@ -9,7 +14,23 @@ const MapLayout = ({ cafes }) => {
   const [selectCafe, setSelectCafe] = useState(null);
   const [wish, setWish] = useState(false);
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+    // swal
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 800,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+  
   useEffect(() => {
     var mapContainer = document.getElementById("mapView"),
       mapOption = {
@@ -21,7 +42,6 @@ const MapLayout = ({ cafes }) => {
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
     cafes.forEach((cafe) => {
-      console.log(cafe.existing);
       var imageSrc = cafe.existing
           ? "/img/marker_in.png"
           : "/img/marker_out.png", // 마커이미지 주소
@@ -45,16 +65,33 @@ const MapLayout = ({ cafes }) => {
       kakao.maps.event.addListener(marker, "click", function () {
         // 클릭한 카페 정보 상태에 저장
         setSelectCafe(cafe);
-        console.log(cafe);
 
         // 클릭한 카페에 대해 현재 회원의 찜 여부
-        axios.get(`http://localhost:8080/cafeIsWish/${memNo}/${cafe.cafeNo}`) 
-        .then((res) => {
-            setWish(res.data);
+        if (memNo != null) { 
+          axios.get(`${url}/member/cafeIsWish/${memNo}/${cafe.cafeNo}`, {
+              headers : {
+                  Authorization :accessToken,
+                  Refresh : getCookie("refreshToken")
+              }
           })
+          .then((res) => {
+            console.log(res);
+            tokenCreate(dispatch, setCookie, res.headers)
+              .then((r)=>{
+                  setWish(res.data);
+              })
+            })
           .catch((error) => {
-            console.error(error);
-          });
+            if(error.response !== undefined){
+                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: error
+                })
+            }
+          })
+        }
       });
     });
     if (navigator.geolocation) {
@@ -64,7 +101,6 @@ const MapLayout = ({ cafes }) => {
         const lon = position.coords.longitude; // 경도
         const locPosition = new kakao.maps.LatLng(lat, lon); // 사용자 위치
         map.setCenter(locPosition); // 지도 중심 좌표 설정
-        console.log(locPosition);
       });
     }
   }, [cafes]);
