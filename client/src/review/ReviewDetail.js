@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation, useParams } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { url } from '../config.js'
 
 const { kakao } = window;
 
@@ -64,7 +65,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const ReviewDelete = async (reviewNo) => {
     try {
-      await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
+      await axios.delete(`${url}/review/${reviewNo}/delete`);
       console.log("리뷰 삭제 성공");
       Swal.fire({
         text: '리뷰가 삭제되었습니다',
@@ -113,7 +114,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const handleReplySubmit = () => {
     if(replyContent.length > 0) {
     axios
-      .post(`http://localhost:8080/replyWrite/${memNo}/${reviewNo}`, {
+      .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
         content: replyContent,
       })
       .then((res) => {
@@ -138,7 +139,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const fetchReplies = () => {
     axios
-      .get(`http://localhost:8080/reply/${reviewNo}/list`, {
+      .get(`${url}/reply/${reviewNo}/list`, {
         params: {
           page: pageInfo.currentPage - 1,
           size: pageInfo.repliesPerPage,
@@ -179,10 +180,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReReplySubmit = (parentReplyNo) => {
     if (selectedReply && reReplyContent) {
-      axios.get(`http://localhost:8080/member/${memNo}`)
+      axios.get(`${url}/member/${memNo}`)
         .then((response) => {
           const member = response.data;
-          axios.post(`http://localhost:8080/reply/${selectedReply.replyNo}/reReply`, {
+          axios.post(`${url}/reply/${selectedReply.replyNo}/reReply`, {
             parentReplyNo: parentReplyNo,
             content: reReplyContent,
             writerNo: member.memNo, // writerNo 대신 memNo 사용
@@ -216,7 +217,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const ReplyDelete = async (replyNo) => {
     try {
-      await axios.delete(`http://localhost:8080/replyDelete/${replyNo}`);
+      await axios.delete(`${url}/replyDelete/${replyNo}`);
       console.log("댓글 삭제 성공");
       Swal.fire({
         text: '댓글이 삭제되었습니다',
@@ -279,7 +280,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toggleLike = () => {
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
+      axios.post(`${url}/like/${memNo}/${reviewNo}`)
         .then((res) => {
 
           setLike(res.data.toggleLike);
@@ -298,7 +299,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const replyToggleLike = (replyNo) => {
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
+      axios.post(`${url}/replyLike/${memNo}/${replyNo}`)
         .then((res) => {
           const index = replies.findIndex((reply) => reply.replyNo == replyNo);
           const reply = { ...replies[index] };
@@ -318,7 +319,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toggleWish = () => {
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
+      axios.post(`${url}/wish/${memNo}/${reviewNo}`)
         .then((res) => {
           setWish(res.data);
           console.log(res.data);
@@ -334,7 +335,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const getBestReply = () => {
     //베스트 댓글 가져오기
     axios
-      .get(`http://localhost:8080/reply/${reviewNo}/best`, {
+      .get(`${url}/reply/${reviewNo}/best`, {
         params: {
           memNo: memNo,
         }
@@ -349,7 +350,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   useEffect(() => { // 디테일 가져오기
     axios
-      .get(`http://localhost:8080/review/${reviewNo}`, { headers: { memNo } })
+      .get(`${url}/review/${reviewNo}`, { headers: { memNo } })
       .then((res) => {
 
         setReview(res.data.review);
