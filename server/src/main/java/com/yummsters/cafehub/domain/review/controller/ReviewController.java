@@ -137,6 +137,24 @@ public class ReviewController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+
+	@GetMapping("/review/storeList/{cafeNo}")
+	public ResponseEntity<Object> getStoreList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
+											@PathVariable("cafeNo") Integer cafeNo){
+		try{
+			Page<Review> reviewPage = reviewService.storeReviewPage(page-1, size, cafeNo);
+			List<Review> responseList = reviewPage.getContent();
+			List<ReviewListResDto> responseLists = new ArrayList<>();
+
+			for(Review review : responseList){
+				responseLists.add(ReviewListResDto.reviewToReviewListRes(review));
+			}
+			return new ResponseEntity<>(new MultiResponseDto<>(responseLists, reviewPage), HttpStatus.OK);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
 	
 	//혜리 part ----------------------------------------------------------------
 	@GetMapping("/reviewList")
