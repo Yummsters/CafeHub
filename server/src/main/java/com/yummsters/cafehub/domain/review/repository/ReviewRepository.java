@@ -38,16 +38,19 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             + "ORDER BY r.like_count DESC LIMIT 12", nativeQuery = true)
     List<ReviewInterface> findReviewsByMemberNoWithoutReviews();
     @Query(value = "SELECT r.title, "
-    		+ "r.thumb_img as thumbImg, "
-    		+ "c.cafe_name as cafeName"
+    		+ "	r.thumb_img as thumbImg, "
+    		+ "	c.cafe_name as cafeName "
             + "FROM review r "
+            + "JOIN review_to_tag rtt ON r.review_no = rtt.review_no "
             + "JOIN cafe c ON r.cafe_no = c.cafe_no "
-            + "WHERE r.tag_name in "
-            + "(SELECT rt.tag_name "
-            + "FROM review r2 "
-            + "JOIN review_tag rt ON r2.tag_name = rt.tag_name "
-            + "WHERE r2.writer =:memNo "
-            + "ORDER BY COUNT(rt.tag_no) DESC) "
+            + "WHERE rtt.tag_no = ("
+            + "	SELECT rtt2.tag_no "
+            + "	FROM review r2 "
+            + "	JOIN review_to_tag rtt2 ON r2.review_no = rtt2.review_no "
+            + "	WHERE r2.writer =:memNo "
+            + " GROUP BY rtt2.tag_no "
+            + " ORDER BY count(r2.review_no) DESC LIMIT 1"
+            + ") "
             + "ORDER BY r.like_count DESC LIMIT 12", nativeQuery = true)
     List<ReviewInterface> findReviewsByMemberNoWithReviews(@Param("memNo")Integer memNo);
     Integer countByMember_MemNo(Integer memNo);
