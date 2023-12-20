@@ -88,7 +88,7 @@ const WishStore = () => {
             {wishStoreList.length !== 0 &&
                 wishStoreList.map((store, index) => (
                 <span className="wishStore-stores" key={index} onClick={() => onClick(store.cafeNo)}>
-                <img src={store.thumbImg} alt=""/>
+                <img src={store.thumbImg ? `${url}/common/thumbImg/${store.thumbImg}` : '/img/Review1.png'} alt=""/>
                 <div className="image-text">{store.cafeName}</div>
                 {index % 4 === 3 ? (<><br /></>) : ("")}
                 </span>

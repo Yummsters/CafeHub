@@ -74,7 +74,7 @@ const WishReview = () => {
         {wishReviewList.length !== 0 &&
           wishReviewList.map((review, index) => (
             <span className="wishReview-reviews" key={review.reviewNo} onClick={() => openModal(review.reviewNo)}>
-              <img src={review.thumbImg} alt=""/>
+              <img src={`${url}/common/thumbImg/${review.thumbImg}`} alt=""/>
               <div className="image-text">{review.cafeName}
                 <p className="ReviewWriter">{review.nickname}</p></div>
               {index % 4 === 3 ? (<><br /></>) : ("")}
