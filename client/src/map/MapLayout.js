@@ -64,13 +64,14 @@ const MapLayout = ({ cafes }) => {
         const lon = position.coords.longitude; // 경도
         const locPosition = new kakao.maps.LatLng(lat, lon); // 사용자 위치
         map.setCenter(locPosition); // 지도 중심 좌표 설정
+        console.log(locPosition);
       });
     }
   }, [cafes]);
 
   return (
-    <div style={{ display: "flex" }}>
-      <div id="mapView" style={{ flex: selectCafe ? 3 : "none" }}></div>
+    <div className="mapView">
+      <div id="mapView" style={{ flex: selectCafe ? 2 : "none" }}></div>
       <MapCafeInfo selectCafe={selectCafe} setSelectCafe={setSelectCafe} wish={wish} setWish={setWish}/>
     </div>
   );

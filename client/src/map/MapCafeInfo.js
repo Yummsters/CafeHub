@@ -73,7 +73,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
     }
 
   return (
-    <div style={{ flex: selectCafe ? 1 : 0 }}>
+    <div style={{ flex: selectCafe ? 1 : 0}}>
     {selectCafe && (
       <div className={!wishModal ? "map_box" : "modalCafe"}>
         {!wishModal && (
@@ -106,7 +106,6 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
 
         <div className="store_review">
             <div className="review"><img src="/img/review.png" alt=""/>리뷰</div>
-            
             {reviewList.length > 0 ? (
             <Table hover>
               <div className="maplistbox">
