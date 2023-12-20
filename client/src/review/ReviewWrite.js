@@ -18,6 +18,7 @@ const ReviewWrite = () => {
     const [review, setReview] = useState({ title: '', content: '', writer: '', reg_date: '', cafeNo: '' });
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
+    const [tagName, setTagName] = useState([]);
     const [selectTag, setSelectTag] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [cafes, setCafes] = useState([]);
@@ -40,7 +41,7 @@ const ReviewWrite = () => {
             axios.get(`http://localhost:8080/member`, {
                 headers: {
                     Authorization: accessToken,
-                    Refresh : getCookie("refreshToken"),
+                    Refresh: getCookie("refreshToken"),
                     'Content-Type': 'application/json'
                 }
             })
@@ -101,15 +102,9 @@ const ReviewWrite = () => {
             console.error('Error fetching cafe list:', error);
         }
     };
-
-    const change = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setReview({ ...review, [name]: value });
-    };
     const handleEditorChange = (content) => {
         console.log(content);
-      };
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -177,20 +172,17 @@ const ReviewWrite = () => {
             });
     };
 
-    const tagName = [
-        '#카공',
-        '#인스타 감성',
-        '#고양이',
-        '#드로잉',
-        '#이색',
-        '#주류판매',
-        '#뷰 맛집',
-        '#브런치',
-        '#인테리어 맛집',
-        '#대형',
-        '#디저트',
-        '#자연 친화적',
-    ];
+    useEffect(() => {
+        axios.get(`http://localhost:8080/reviewTagList`)
+            .then(res => {
+                console.log(res.data);
+                setTagName([...res.data]);
+                console.log("태그이름" + tagName);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }, [])
     const [selectedTags, setSelectedTags] = useState([]);
 
     const tagClick = (i) => {
@@ -212,7 +204,22 @@ const ReviewWrite = () => {
             setSelectedTags(updatedTags);
         }
     };
+    const change = (e) => {
+        const name = e.target.name;
+        let value = e.target.value;
 
+        // 제목 글자수 제한
+        if (name === 'title' && value.length > 15) {
+            value = value.slice(0, 15); // 15자로 제한
+            Swal.fire({
+                title: '제목은 15자 이하로 입력해주세요',
+                icon: 'warning',
+                confirmButtonText: '확인',
+            });
+        }
+
+        setReview({ ...review, [name]: value });
+    };
     const handleFileChange = (e) => {
         const file = e.target.files[0];
 
@@ -220,7 +227,7 @@ const ReviewWrite = () => {
             setSelectedFile(file);
             const thumbnailURL = URL.createObjectURL(file);
             setThumbnail(thumbnailURL);
-            setIsFileSelected(true);
+            // setIsFileSelected(true);
         }
     };
     const resetForm = () => {
@@ -234,8 +241,8 @@ const ReviewWrite = () => {
         setSelectedReviewAuthNo('');
         setSelectedCafeNo('');
         //content초기화
-       
-    editorRef.current.getInstance().setMarkdown('');
+
+        editorRef.current.getInstance().setMarkdown('');
     };
 
     return (
@@ -244,7 +251,7 @@ const ReviewWrite = () => {
                 <div className='reviewTitle'>
 
                     <select
-                        value={`${selectedReviewAuthNo},${selectedCafeNo}`}
+                        value={selectedReviewAuthNo && selectedCafeNo ? `${selectedReviewAuthNo},${selectedCafeNo}` : ''}
                         onChange={(e) => {
                             const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
                             setSelectedReviewAuthNo(selectedReviewAuthNo);
@@ -273,22 +280,22 @@ const ReviewWrite = () => {
                 </div>
                 <hr className='line' />
                 <div className='thumbnail'>
-                    <p className='review-thum'>썸네일 선택 &nbsp;&nbsp;&nbsp;</p>
+                    {/* <p className='review-thum'>썸네일 선택 &nbsp;&nbsp;&nbsp;</p> */}
                     {!isFileSelected && (
-                        <label className='review-img'>
-                            사진 선택
+                        <label className='review-img' >
+                            썸네일 선택
                             <input type='file' name='thumbImg' onChange={handleFileChange} />
                         </label>
-                    )}
-                    {thumbnail && <img className='thumbnail-preview' src={thumbnail} alt='Thumbnail Preview' />}
+                    )}&nbsp;&nbsp;&nbsp;
+                    {thumbnail && <img className='thumbnail-preview' src={thumbnail} alt='Thumbnail Preview'/>}
                 </div>
                 <div className='editor'>
                     <Editor
-                     onChange={handleEditorChange}
+                        onChange={handleEditorChange}
                         className='custom-editor'
                         ref={editorRef}
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
-                       // placeholder='Please Enter Text.'
+                        // placeholder='Please Enter Text.'
                         previewStyle='vertical'
                         height='500px'
                         initialEditType='wysiwyg'
@@ -326,7 +333,7 @@ const ReviewWrite = () => {
                             key={i}
                             className={selectedTags.includes(i) ? 'selectTag' : 'tag'}
                             onClick={() => tagClick(i)}>
-                            {tag}
+                            {tag.tagName}
                         </div>
                     ))}
                 </div>
