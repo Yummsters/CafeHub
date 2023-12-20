@@ -77,18 +77,18 @@ const StoreReview = () => {
         <div className='storeReview-container'>
             <StoreSideTab />
             <div className='storeReviewListBox'>
-                <br /><label className='listTitle'>리뷰 조회</label><br /><br />
+                <br /><label className='storeReview-listTitle'>리뷰 조회</label><br /><br />
                 <div className='storeReview-table'>
                     <Table hover>
                         <tbody>
                             {reviewList.length == 0 ? <sapn className="storeReview0">조회된 댓글이 없습니다.</sapn> : reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <th scope="row" style={{ width: "150px" }}> <img className='listImg' src={`http://localhost:8080/thumbImg/${list.thumbImg}`} alt='' /></th>
-                                        <td colSpan={8}><div className='listMiniTitle'>{list.title}</div>
-                                            <div className='reviewUser'>{list.nickName}</div></td>
-                                        <td colSpan={4}><div className='reviewLikeCount'>추천 {list.likeCount}</div>
-                                            <div className='dateTime'>작성일 {list.regDate}</div></td>
+                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`http://localhost:8080/thumbImg/${list.thumbImg}`} alt='' /></th>
+                                        <td colSpan={11}><div className='storeReview-listMiniTitle'>{list.title}</div>
+                                            <div className='storeReview-reviewUser'>{list.nickName}</div></td>
+                                        <td colSpan={1}><div className='storeReview-reviewLikeCount'>추천 {list.likeCount}</div>
+                                            <div className='storeReview-dateTime'>작성일 {list.regDate}</div></td>
                                     </tr>
                                 )
                             })}
