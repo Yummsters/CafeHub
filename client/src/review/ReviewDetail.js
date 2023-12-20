@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useLocation, useParams } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { url } from '../config.js'
+import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
+import { getCookie, removeCookie, setCookie } from "../components/Cookie";
 
 const { kakao } = window;
 
@@ -22,7 +24,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [bestReply, setBestReply] = useState(null);
   const [replyLike, setReplyLike] = useState(false);
   const [replyLikeCount, setReplyLikeCount] = useState(0);
+  const dispatch = useDispatch;
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const isLogin = useSelector(state => state.persistedReducer.isLogin);
+
 
   const location = useLocation();
   const listReviewNo = location.state?.reviewNo
@@ -280,22 +286,30 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toggleLike = () => {
     if (memNo !== undefined) {
-      axios.post(`${url}/like/${memNo}/${reviewNo}`)
-        .then((res) => {
-
-          setLike(res.data.toggleLike);
-          setLikeCount(res.data.likeCount);
-          console.log(res.data);
+      axios.post(`${url}/member/like/${memNo}/${reviewNo}`, null,
+      {
+          headers : {
+               Authorization :accessToken,
+               Refresh : getCookie("refreshToken")
+          }
+      })
+      .then((res) => {
+        tokenCreate(dispatch, setCookie, res.headers)
+        .then(()=>{
+            setLike(res.data.toggleLike);
+            setLikeCount(res.data.likeCount);
         })
-        .catch((error) => {
-          console.error("에러:" + error);
-        });
+      })
+      .catch((error) => {
+        console.error("toggleLike 에러:" + error);
+        if(error.response !== undefined){
+          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+        }
+      });
     } else {
       showSwal()
     }
   };
-
-  console.log(replies);
 
   const replyToggleLike = (replyNo) => {
     if (memNo !== undefined) {
@@ -319,14 +333,25 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toggleWish = () => {
     if (memNo !== undefined) {
-      axios.post(`${url}/wish/${memNo}/${reviewNo}`)
-        .then((res) => {
+      axios.post(`${url}/member/wish/${memNo}/${reviewNo}`, null,
+      {
+          headers : {
+               Authorization :accessToken,
+               Refresh : getCookie("refreshToken")
+          }
+      })
+      .then((res) => {
+        tokenCreate(dispatch, setCookie, res.headers)
+        .then(()=>{
           setWish(res.data);
-          console.log(res.data);
         })
-        .catch((error) => {
-          console.error("에러:" + error);
-        });
+      })
+      .catch((error) => {
+        console.error("toggleWish 에러:" + error);
+        if(error.response !== undefined){
+          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+        }
+      });
     } else {
       showSwal()
     }
@@ -349,16 +374,15 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   useEffect(() => { // 디테일 가져오기
-    axios
-      .get(`${url}/review/${reviewNo}`, { headers: { memNo } })
+    if (isLogin) {
+      normalCheck(dispatch, accessToken);
+    }
+    axios.get(`http://localhost:8080/review/${reviewNo}?memNo=${memNo}`)
       .then((res) => {
-
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
-
-        console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
