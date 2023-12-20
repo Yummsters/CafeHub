@@ -18,6 +18,7 @@ public class MemberBadgeDto {
 	    private Integer memberBadgeNo;	  
 	    private Integer memNo;
 	    private Integer badgeNo;
+	    private String badgeName;
 	    private LocalDateTime regDate;
 
 	   
@@ -26,7 +27,7 @@ public class MemberBadgeDto {
 			 return MemberBadges.builder()
 					    .memberBadgeNo(memberBadgeNo)
 			            .memNo(memNo)
-			            .badge(Badge.builder().badgeNo(badgeNo).build())
+			            .badge(Badge.builder().badgeNo(badgeNo).badgeName(badgeName).build())
 			            .regDate(regDate)
 			            .build();
 		}
