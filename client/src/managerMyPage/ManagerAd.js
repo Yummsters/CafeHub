@@ -16,15 +16,18 @@ const ManagerAd = () => {
     totalPages: 1
   });
 
+  console.log(pageInfo);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/cafeAd/unapprovedAds?page=${pageInfo.currentPage}`);
+        const response = await axios.get(`http://localhost:8080/cafeAd/unapprovedAds?page=${pageInfo.currentPage - 1}`);
         setAds(response.data.content);
-        setPageInfo((prev) => ({
-          ...prev,
-          totalPages: response.data.totalPages
-        }));
+        console.log(response.data);
+        let totalPages = response.data.totalPages;
+        let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
+        let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
+        setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -33,6 +36,9 @@ const ManagerAd = () => {
     fetchData();
   }, [pageInfo.currentPage]);
 
+  useEffect(() => {
+    setPageInfo((prev) => ({...prev, currentPage: parseInt(searchParams.get('page') ?? 1)}))
+  }, [searchParams]);
 
   const handlePageChange = (pageNumber) => {
     setSearchParams((prev) => {
@@ -48,9 +54,7 @@ const ManagerAd = () => {
       await axios.put(`http://localhost:8080/cafeAd/approve/${cafeAdNo}`);
 
       // Update the local state after successful approval
-      setAds((prevAds) => prevAds.map((ad) =>
-        ad.cafeAdNo === cafeAdNo ? { ...ad, isApproved: true, authDate: new Date() } : ad
-      ));
+      setAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
     } catch (error) {
       console.error('Error approving ad:', error);
     }
@@ -64,7 +68,7 @@ const ManagerAd = () => {
         <Table hover>
           <tbody>
             {ads.map((ad) => (
-              <tr key={ad.cafeAdNo}>
+              <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
                 <th scope="row">
                   <img className='listImg' src={ad.thumbImg} alt='' />
                 </th>
