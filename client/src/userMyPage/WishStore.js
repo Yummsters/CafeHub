@@ -14,22 +14,35 @@ const {kakao} = window;
 const WishStore = () => {
   const [wishStoreList, setWishStoreList] = useState([]);
   const [cafeNo, setCafeNo] = useState(0);
+  const [wish, setWish] = useState(true);
   const [selectCafe, setSelectCafe] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
-  const accessToken = useSelector(
-    (state) => state.persistedReducer.accessToken
-  );
+  const accessToken = useSelector((state) => state.persistedReducer.accessToken);
 
   const onClick = (cafeNo) => {
     setCafeNo(cafeNo);
     setShowModal(true);
+    document.body.style.overflow = 'hidden'; // 부모페이지 스크롤 비활성화
   }
 
   const closeModal = () => {
     setShowModal(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   useEffect(() => {
@@ -48,11 +61,10 @@ const WishStore = () => {
       });
   }, [cafeNo, currentPage]);
   
-  useEffect(() => { // 디테일 지도
+  useEffect(() => { // 디테일 지도(모달)
     if (showModal && cafeNo !== 0) {
       axios.get(`${url}/map/${cafeNo}`)
       .then((res) => {
-        console.log(res.data.lat + "안됨")
         setSelectCafe(res.data);
       })
       .catch((error) => {
@@ -61,7 +73,7 @@ const WishStore = () => {
     }
   }, [cafeNo]);
 
-  useEffect(() => {
+  useEffect(() => { // 모달 띄울 카페 지도
     if (showModal && cafeNo !== 0 && selectCafe && selectCafe.lat && selectCafe.lng) {
       const mapContainer = document.getElementById("mapView2");
       const mapOption = {
@@ -84,29 +96,48 @@ const WishStore = () => {
         <div className="wishStore-title">
           <img src="/img/star.png" alt="" /> <span> 찜한 가게 </span>
         </div>
-          <div>
-            {wishStoreList.length !== 0 &&
+            {wishStoreList.length !== 0 ?
                 wishStoreList.map((store, index) => (
                 <span className="wishStore-stores" key={index} onClick={() => onClick(store.cafeNo)}>
                 <img src={store.thumbImg ? `${url}/common/thumbImg/${store.thumbImg}` : '/img/Review1.png'} alt=""/>
                 <div className="image-text">{store.cafeName}</div>
-                {index % 4 === 3 ? (<><br /></>) : ("")}
+                {/* {index % 4 === 3 ? (<><br /></>) : ("")} */}
                 </span>
-            ))}
-          </div>
+            )) : <div className="noWish">찜한 가게가 없습니다</div>}
+
+            {wishStoreList.length !== 0  && (
+              <div className="pagination-container">
+                <Pagination>
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink previous onClick={prevPage} />
+                  </PaginationItem>
+                  {[...Array(totalPages)].map((_, index) => (
+                      <PaginationItem key={index} active={currentPage === index + 1}>
+                        <PaginationLink onClick={() => setCurrentPage(index + 1)}>
+                          {index + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink next onClick={nextPage} />
+                  </PaginationItem>
+                </Pagination>
+              </div>
+          )}
 
         {showModal && selectCafe && (
           <div className="modalBox">
-              <img className="closeBtn" onClick={closeModal} src="/img/X.png" alt=""/>
-            <div className="cafeModalContent">
-
+              <img className="closeBtn" onClick={closeModal} src="/img/X.png" width={"70px"} alt=""/>
+              <div className="cafeModalContent">
               <div className='modalMap'>
                 <div id="mapView2"></div>
-                <MapCafeInfo wishModal={true} selectCafe={selectCafe} wishCafeNo = {cafeNo}/>
+                <MapCafeInfo wishModal={true} selectCafe={selectCafe} wishCafeNo={cafeNo} wish={wish} setWish={setWish}/>
               </div>
             </div>
           </div>
         )}
+
+        
               
       </div>
     </div>

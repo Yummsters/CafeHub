@@ -375,7 +375,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   useEffect(() => { // 디테일 가져오기
-    if (isLogin) {
+    if(isLogin) {
       normalCheck(dispatch, accessToken);
     }
     axios.get(`http://localhost:8080/review/${reviewNo}?memNo=${memNo}`)
@@ -389,27 +389,20 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         console.error("에러:" + error);
       });
 
-    fetchReplies();
+    axios.get(`${url}/getMemberBadge/${memNo}`)
+    .then(response => {
 
+        const badgeName = response.data.badgeName || '';
+        setPickBadge([badgeName]);
+
+    })
+    .catch(error => {
+        console.error('에러 발생:', error);
+    });
+
+    fetchReplies();
     getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
-
-  useEffect(() => {
-    if (review && review.memNo) {
-      if (isLogin) {
-        normalCheck(dispatch, accessToken);
-      }
-      axios.get(`${url}/getMemberBadge/${review.memNo}`)
-      .then((res) => {
-          const badgeName = res.data.badgeName || ''; 
-          setPickBadge([badgeName]);
-          console.log(res.data + "dmd")
-      })
-      .catch(error => {
-          console.error('에러 발생:', error);
-      });
-    }
-  }, [review])
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -439,12 +432,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                {review.length > 0 && (
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
-                )}
                 </div>
               <div className="infoR">
-                <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</span>&nbsp;|&nbsp;
+                <span><img className='writerBadge' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
@@ -460,29 +451,19 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               </div>
 
                 {memNo == review.memNo && (
-
                   <div className="detailBtnBox">
-
                     <div className="Gbtn" onClick={ReviewModify}>수정</div>
-
-
                     <div className="Obtn" onClick={handleReviewDelete}>삭제</div>
                   </div>
-
                 )}
                 <div className="detailLine" />
-
-
-
                 {/* 댓글 */}
                 <div className="reply">
                   <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
                   <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
                 </div></>
             )}
-
             <div className="detailLine" />
-
             {bestReply && (
               <div key={bestReply.replyNo} className="replyInfo">
                 <div className="infoT">

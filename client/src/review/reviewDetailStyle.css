@@ -185,6 +185,11 @@
 }
 
 .detailContent p, .detailContent {
-    font-size: large;
+    font-size: 20px;
     text-align: center;
+}
+
+.infoR .writerBadge {
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
