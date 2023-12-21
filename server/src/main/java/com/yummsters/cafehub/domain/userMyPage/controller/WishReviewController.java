@@ -25,7 +25,7 @@ public class WishReviewController {
     @GetMapping("member/wishStoreList/{memNo}")
     public ResponseEntity<Object> getCafeReview(@PathVariable Integer memNo,
                                                 @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "12") int size) {
+                                                @RequestParam(defaultValue = "9") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             MultiResponseDto<WishCafeDto> wishCafeList = wishReviewService.getWishCafeList(memNo, pageable);
@@ -39,7 +39,7 @@ public class WishReviewController {
     @GetMapping("member/wishReviewList/{memNo}")
     public ResponseEntity<Object> getWishReview(@PathVariable Integer memNo,
                                                 @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "12") int size) {
+                                                @RequestParam(defaultValue = "9") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             MultiResponseDto<WishReviewDto> wishReviewList = wishReviewService.getWishReviewList(memNo, pageable);
