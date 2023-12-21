@@ -43,8 +43,6 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
         })
     }, [])
 
-    console.log(typeof price)
-
     return (
     <div>
       <div className='paymentModal'>
