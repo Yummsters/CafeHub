@@ -4,15 +4,17 @@ import UserSideTab from '../components/UserSideTab';
 import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import { useNavigate } from 'react-router';
-import { getCookie, removeCookie} from '../components/Cookie';
+import { getCookie, removeCookie, setCookie} from '../components/Cookie';
 import Swal from 'sweetalert2';
 import StoreSideTab from '../components/StoreSideTab';
 import { url } from '../config.js'
+import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck.js';
 
 const UserInfo = ({sideTab}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const member = useSelector(state=>state.persistedReducer.member);
+  const isLogin = useSelector(state=>state.persistedReducer.isLogin);
   const social = useSelector(state=>state.persistedReducer.member.social);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const [updateUser, setUpdateUser] = useState({ ...member }) // 로그인 멤버 정보 복제
@@ -40,24 +42,26 @@ const UserInfo = ({sideTab}) => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
-  //배지--------------------------------------------
+
+  // 배지--------------------------------------------
   useEffect(() => {
+    if (isLogin) {
+      normalCheck(dispatch, accessToken);
+    }
     axios.get(`${url}/getMemberBadge/${member.memNo}`)
         .then(response => {
-            console.log(response.data);
             const badgeName = response.data.badgeName || ''; 
             setPickBadge([badgeName]);
-            console.log([badgeName]);
         })
         .catch(error => {
             console.error('에러 발생:', error);
         });
 }, []);
+
   // 수정 관련---------------------------------------
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
     setEditMode(true);
   }
-  console.log(saveCheck);
 
   const save = () => { // 저장버튼 클릭 시 input readOnly
     const isUnchanged = Object.keys(updateUser).every((key) => updateUser[key] === member[key]);
@@ -80,23 +84,28 @@ const UserInfo = ({sideTab}) => {
       return;
     }
 
-    axios.put(`${url}/member/modifyInfo`, updateUser,{
+    axios.put(`${url}/member/modifyInfo`, updateUser, {
         headers : {
             Authorization :accessToken,
             Refresh : getCookie("refreshToken")
         }
     })
     .then((res) => {
-      console.log(res.data);
-      dispatch({type:"member", payload: updateUser});
-      setEditMode(false);
-      Toast.fire({
-        icon: 'success',
-        title: '정상적으로 수정되었습니다',
-      });
+      tokenCreate(dispatch, setCookie, res.headers)
+      .then(()=>{
+        dispatch({type:"member", payload: updateUser});
+        setEditMode(false);
+        Toast.fire({
+          icon: 'success',
+          title: '정상적으로 수정되었습니다',
+        });
+      })
     })
     .catch((error) => {
       console.log(error);
+      if(error.response !== undefined){
+        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+      }
     })
   };
 
@@ -108,99 +117,98 @@ const UserInfo = ({sideTab}) => {
   }, [editMode]);
 
   // 입력값 관련
-  let emailTimer;
-  let nicknameTimer;
-  let phoneTimer;
-  let nameTimer;
-  
   const inputChange = (e) => {
-    const { name, value } = e.target;
-    
-    if (member[name] !== value) {
-      clearTimeout(name === 'email' ? emailTimer : name === 'nickname' ? nicknameTimer : name === 'name' ? nameTimer : phoneTimer);
-      if (name === 'name') {
-        nameTimer = setTimeout(() => nameCheck(name, value), 300);
-      } else if (name === 'email') {
-        emailTimer = setTimeout(() => emailCheck(name, value), 300);
-      } else if (name === 'nickname') {
-        nicknameTimer = setTimeout(() => nicknameCheck(name, value), 300);
-      } else if (name === 'phone') {
-        phoneTimer = setTimeout(() => phoneCheck(name, value), 300);
-      }
-      setSaveCheck({ ...saveCheck, [name]: false }); // 기존 정보와 input 값이 달라지면 false
-    } else {
-      setSaveCheck({ ...saveCheck, [name]: true });
-      setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
-    }
-    setUpdateUser({ ...updateUser, [name]: value });
+      const { name, value } = e.target;
+      if (name === 'name') nameCheck(name, value);
+      if (name === 'email') emailCheck(name, value);
+      if (name === 'nickname') nicknameCheck(name, value);
+      if (name === 'phone') phoneCheck(name, value);
+      setUpdateUser({ ...updateUser, [name]: value });
   };
 
   // 수정 - 이름 관련
   const nameCheck = (name, value) => {
-    setTimeout(() => {
-      if (name === 'name' && value.trim() !== '') setSaveCheck({...saveCheck, [name]: true});
-      }, 500);
+    if (member[name] !== value) {
+      if (name === 'name' && value.trim() !== '' && value.length > 1) {
+        setUserInputMsg({ ...userInputMsg, [name]: ''});
+        setSaveCheck({...saveCheck, [name]: true});
+      } else {
+        setUserInputMsg({ ...userInputMsg, [name]: '이름을 입력하세요' });
+        setSaveCheck({...saveCheck, [name]: false});
+      }
+    } else {
+      setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
+      setSaveCheck({...saveCheck, [name]: true})
+    }
   };
 
   // 수정 - 이메일 관련
   const emailCheck = (name, value) => {
-    setTimeout(() => {
-    if (name === 'email' && value.trim() !== '') {
-      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-        setUserInputMsg({ ...userInputMsg, [name]: '이메일 형식을 확인하세요' });
-        setSaveCheck({ ...saveCheck, [name]: false });
-      } else {
+    if (name === 'email' && value.trim() !== '') { // 값이 입력 되었을 때
+      if (member[name] !== value) {
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) { // 유효성에 맞지 않으면
+          setUserInputMsg({ ...userInputMsg, [name]: '이메일 형식을 확인하세요' });
+          setSaveCheck({ ...saveCheck, [name]: false });
+        } else { // 유효성 검사 통과하면 중복 검사
           axios.get(`${url}/email/${value}`)
-            .then(res => {
-              console.log(res.data);
-              if (res.data) {
-                setUserInputMsg({ ...userInputMsg, [name]: '사용불가능한 이메일입니다' });
-                setSaveCheck({ ...saveCheck, [name]: false });
-              } else {
-                setUserInputMsg({ ...userInputMsg, [name]: '사용가능한 이메일입니다' });
-                setSaveCheck({ ...saveCheck, [name]: true });
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            });
-          }
-        } else {
-          setUserInputMsg({ ...userInputMsg, [name]: '' });
+          .then(res => {
+            if (res.data) { // 중복된 경우
+              setUserInputMsg({ ...userInputMsg, [name]: '사용불가능한 이메일입니다' });
+              setSaveCheck({ ...saveCheck, [name]: false });
+            } else {
+              setUserInputMsg({ ...userInputMsg, [name]: '사용가능한 이메일입니다' });
+              setSaveCheck({ ...saveCheck, [name]: true });
+            }
+          })
+          .catch(err => { console.log(err); });
         }
-      }, 500);
-  };
+       } else {
+          setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
+          setSaveCheck({...saveCheck, [name]: true})
+        }
+    };
+  }
 
   // 수정 - 닉네임 관련
   const nicknameCheck = (name, value) => {
-    if (name === 'nickname' && value.trim() !== '') {
-      axios.get(`${url}/nickname/${value}`)
-        .then(res => {
-          console.log(res.data);
-          if (res.data) {
-            setUserInputMsg({ ...userInputMsg, [name]: "사용불가능한 닉네임입니다" });
-            setSaveCheck({ ...saveCheck, [name]: false });
-          } else {
-            setUserInputMsg({ ...userInputMsg, [name]: "사용가능한 닉네임입니다" });
-            setSaveCheck({ ...saveCheck, [name]: true });
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    if (member[name] !== value) {
+      if (name === 'nickname' && value.trim() !== '' && value.length > 1) { // 값이 입력 되었을 때
+        axios.get(`${url}/nickname/${value}`) // 중복 검사
+          .then(res => {
+            console.log(res.data);
+            if (res.data) {
+              setUserInputMsg({ ...userInputMsg, [name]: "사용불가능한 닉네임입니다" });
+              setSaveCheck({ ...saveCheck, [name]: false });
+            } else {
+              setUserInputMsg({ ...userInputMsg, [name]: "사용가능한 닉네임입니다" });
+              setSaveCheck({ ...saveCheck, [name]: true });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      } else {
+        setUserInputMsg({ ...userInputMsg, [name]: "닉네임을 입력하세요" });
+      }
     } else {
-      setUserInputMsg({ ...userInputMsg, [name]: "" });
+      setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
+      setSaveCheck({...saveCheck, [name]: true})
     }
   };
 
   // 수정 - 휴대폰 관련
   const phoneCheck = (name, value) => {
-    if (name === 'phone' && !/^[0-9]+$/.test(value) && value.trim() !== '') {
-      setUserInputMsg({...userInputMsg, [name]: "하이픈(-) 없이 작성하세요"});
-      setSaveCheck({...saveCheck, [name]: false})
+    if (member[name] !== value) {
+      if (name === 'phone' && !/^[0-9]+$/.test(value) && value.trim() !== '') {
+        setUserInputMsg({...userInputMsg, [name]: "하이픈(-) 없이 작성하세요"});
+        setSaveCheck({...saveCheck, [name]: false})
+      } else {
+        setUserInputMsg({...userInputMsg, [name]:"휴대폰 인증이 필요합니다"});
+        setSaveCheck({...saveCheck, [name]: false})
+      }
     } else {
-      setUserInputMsg({...userInputMsg, [name]:""});
-      setSaveCheck({...saveCheck, [name]: false})
+      setUserInputMsg({ ...userInputMsg, [name]: "기존과 동일한 정보입니다" });
+      setSaveCheck({...saveCheck, [name]: true})
     }
   };
 
@@ -236,6 +244,7 @@ const UserInfo = ({sideTab}) => {
         allowOutsideClick: () => !Swal.isLoading()
       }).then((result) => {
         if (result.isConfirmed) {
+          setUserInputMsg({ ...userInputMsg, phone: "" });
           Toast.fire({
             title: "휴대폰 번호 인증 완료",
             icon: "success"
@@ -256,46 +265,42 @@ const UserInfo = ({sideTab}) => {
 
   const handlePassword = (e) => { // input 입력 값 저장 
     const { name, value } = e.target;
-    setPassword((prevPassword) => {
-      const updatedPassword = { ...prevPassword, [name]: value };
-      // 새 비밀번호 유효성
-      if (name === 'newPw' && !/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/.test(value) && value.trim() !== '') {
-        setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: '소문자/숫자/특수문자 포함 8~20자' }));
-      } else {
-        setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: '' }));
-      }
-      // 새 비밀번호 일치 여부
-      if (name === 'newPwCheck') {
-        setPasswordMsg((prevMsg) => ({ ...prevMsg, [name]: value !== updatedPassword.newPw ? '비밀번호가 일치하지 않습니다' : '' }));
-      }
+    setPassword({ ...password, [name]: value });
 
-      return updatedPassword;
-    });
+    originPw(name, value);
+    newPw(name, value);
+    newPwMatch(name, value);
   };
 
   // 현재 비밀번호 확인
-  useEffect(() => { 
-    if (password.pw !== '') {
-      axios.post(`${url}/member/password`, {id: member.id, password: password.pw}, 
-          {
-            headers : {
-              Authorization :accessToken,
-              'Content-Type': 'application/json'
-          }
-      })
+  const originPw = (name, value) => {
+    if (name === 'pw' && value.trim() !== '' && value.length > 7) {
+      axios.post(`${url}/password`, {id: member.id, password: value})
       .then((res) => {
         console.log(res.data);
-        if(res.data === true) {
-          setPasswordMatch(true);
-        } else {
-          setPasswordMatch(false);
-        }
+        if(res.data === true) { setPasswordMatch(true); } 
+        else { setPasswordMatch(false); }
       })
-      .catch((error) => {
-        console.log(error);
-      })
-    };
-  }, [password.pw])
+      .catch((error) => { console.log(error); })
+    }
+  }
+
+  const newPw = (name, value) => {
+    if (name === 'newPw' && !/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/.test(value) && value.trim() !== '') {
+      setPasswordMsg({ ...passwordMsg, [name]: '소문자/숫자/특수문자 포함 8~20자' });
+    } else {
+      setPasswordMsg({ ...passwordMsg, [name]: '' });
+    }
+  }
+
+  const newPwMatch = (name, value) => {
+    if (name === 'newPwCheck' && value !== password.newPw) {
+      setPasswordMsg({ ...passwordMsg, [name]: '비밀번호가 일치하지 않습니다' });
+    } else {
+      setPasswordMsg({ ...passwordMsg, [name]: '' });
+    }
+  }
+
 
   const pwSubmit = () => {
       if (passwordMsg.newPw !== '' || passwordMsg.newPwCheck !== '') {
@@ -323,20 +328,20 @@ const UserInfo = ({sideTab}) => {
       }
 
     axios.put(`${url}/resetPw/${member.id}`, { password: password.newPw })
-        .then((res) => {
-            console.log(res);
-            Toast.fire({
-                title: "비밀번호 재설정 완료!",
-                icon: "success",
-            });
-        })
-        .catch((error) => {
-            console.log(error);
-            Toast.fire({
-              title: "비밀번호 재설정 실패",
-              icon: "error",
+      .then((res) => {
+          console.log(res);
+          Toast.fire({
+              title: "비밀번호 재설정 완료!",
+              icon: "success",
           });
-        })
+      })
+      .catch((error) => {
+          console.log(error);
+          Toast.fire({
+            title: "비밀번호 재설정 실패",
+            icon: "error",
+        });
+      })
     setPassword({ pw: '', newPw: '', newPwCheck: '' }); // 제출 후 필드 초기화
     setPasswordMatch(false);
   }
@@ -458,17 +463,17 @@ const UserInfo = ({sideTab}) => {
             </div>
             <div>
               <p>이름</p>
-              <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onChange={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
-              {editMode ? <span className='userInfoMsg'></span> : <span></span>}
+              <input type="text" name="name" value={updateUser.name} readOnly={!editMode} onInput={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
+              {editMode ? <span className='userInfoMsg'>{userInputMsg.name}</span> : <span></span>}
             </div>
             <div>
               <p>이메일</p>
-              <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onChange={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
+              <input type="text" name="email" value={updateUser.email} readOnly={!editMode} onInput={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
               {editMode ? <span className='userInfoMsg'>{userInputMsg.email}</span> : <span></span>}
             </div>
             <div>
               <p>닉네임</p>
-              <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onChange={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
+              <input type="text" name="nickname" value={updateUser.nickname} readOnly={!editMode} onInput={inputChange} className={editMode && social === 'NORMAL' ? 'inputB' : 'inputN'} />
               {editMode ? <span className='userInfoMsg'>{userInputMsg.nickname}</span> : <span></span>}
             </div>
             <div>
@@ -497,19 +502,19 @@ const UserInfo = ({sideTab}) => {
                 <div className='pwContent'>
                     <div>
                         <p>현재 비밀번호</p>
-                        <input type="password" name="pw" value={password.pw} onChange={handlePassword} />
+                        <input type="password" name="pw" value={password.pw} onInput={handlePassword} />
                         <span className='userInfoMsg'>{passwordMatch ? "" : password.pw.trim() === "" ? "" : "현재 비밀번호와 일치하지 않습니다"} </span>
                     </div>
                     {passwordMatch && (
                     <>
                       <div>
                           <p>새 비밀번호</p>
-                          <input type="password" name="newPw" value={password.newPw} onChange={handlePassword} />
+                          <input type="password" name="newPw" value={password.newPw} onInput={handlePassword} />
                           <span className='userInfoMsg'>{passwordMsg.newPw}</span>
                       </div>
                       <div>
                           <p>새 비밀번호 확인</p>
-                          <input type="password" name="newPwCheck" value={password.newPwCheck} onChange={handlePassword} />
+                          <input type="password" name="newPwCheck" value={password.newPwCheck} onInput={handlePassword} />
                           <span className='userInfoMsg'>{passwordMsg.newPwCheck}</span>
                       </div>
                     </>
