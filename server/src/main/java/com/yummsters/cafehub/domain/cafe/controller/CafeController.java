@@ -50,7 +50,7 @@ public class CafeController {
         }
     }
 
-    @GetMapping("/cafeIsWish/{memNo}/{cafeNo}") // 특정 카페의 찜 여부
+    @GetMapping("member/cafeIsWish/{memNo}/{cafeNo}") // 특정 카페의 찜 여부
     public ResponseEntity<Boolean> isWish(@PathVariable Integer memNo, @PathVariable Integer cafeNo) {
         try {
             Boolean isWish = service.isWishCafe(memNo, cafeNo);
@@ -61,7 +61,7 @@ public class CafeController {
         }
     }
 
-    @PostMapping("/cafeWish/{memNo}/{cafeNo}") // 특정 카페 찜하기
+    @PostMapping("member/cafeWish/{memNo}/{cafeNo}") // 특정 카페 찜하기
     public ResponseEntity<Boolean> isWishCafe(@PathVariable Integer memNo, @PathVariable Integer cafeNo) {
         try {
             Boolean toggleWish = service.toggleWishCafe(memNo, cafeNo);

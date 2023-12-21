@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.reply.dto.MyReplyListResDto;
@@ -197,7 +201,9 @@ public class ReviewController {
 	// ----------------------------------------------------------------------
 	@GetMapping("/review/{reviewNo}")
 	public ResponseEntity<Object> getReviewDetail(@PathVariable Integer reviewNo,
-			@RequestHeader(required = false) Integer memNo) {
+
+												  @RequestParam(required = false) Integer memNo) {
+
 		try {
 			Map<String, Object> res = new HashMap<>();
 			ReviewDetailDto review = reviewService.reviewDetail(reviewNo);
@@ -215,7 +221,7 @@ public class ReviewController {
 		}
 	}
 
-	@PostMapping("/like/{memNo}/{reviewNo}")
+	@PostMapping("member/like/{memNo}/{reviewNo}")
 	public ResponseEntity<Object> isLikeReview(@PathVariable Integer memNo, @PathVariable Integer reviewNo) {
 		try {
 			Map<String, Object> res = new HashMap<>();
@@ -230,7 +236,7 @@ public class ReviewController {
 		}
 	}
 
-	@PostMapping("/wish/{memNo}/{reviewNo}")
+	@PostMapping("member/wish/{memNo}/{reviewNo}")
 	public ResponseEntity<Boolean> isWishReview(@PathVariable Integer memNo, @PathVariable Integer reviewNo) {
 		try {
 			Boolean toggleWish = reviewService.toggleWishReview(memNo, reviewNo);
@@ -241,26 +247,51 @@ public class ReviewController {
 		}
 	}
 
+
 	// 혜리 part ----------------------------------------------------------------
+	@GetMapping("/review/storeList/{cafeNo}")
+	public ResponseEntity<Object> getStoreList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
+											@PathVariable("cafeNo") Integer cafeNo){
+		try{
+			Page<Review> reviewPage = reviewService.storeReviewPage(page-1, size, cafeNo);
+			List<Review> responseList = reviewPage.getContent();
+			List<ReviewListResDto> responseLists = new ArrayList<>();
+
+			for(Review review : responseList){
+				responseLists.add(ReviewListResDto.reviewToReviewListRes(review));
+			}
+			return new ResponseEntity<>(new MultiResponseDto<>(responseLists, reviewPage), HttpStatus.OK);
+		}catch (Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
+
 	@GetMapping("/reviewList")
 	public ResponseEntity<Page<Map<String, Object>>> getReviewList(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "") String search) {
 		try {
 			Page<Review> reviewsPage = reviewService.getReviewList(search, PageRequest.of(page, size));
-			Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
-				@Override
-				public Map<String, Object> apply(Review review) {
-					Map<String, Object> reviewData = new HashMap<>();
-					reviewData.put("thumbImg", review.getThumbImg());
-					reviewData.put("title", review.getTitle());
-					reviewData.put("cafeName", review.getCafe().getCafeName());
-					reviewData.put("likeCount", review.getLikeCount());
-					reviewData.put("regDate", review.getRegDate());
-					reviewData.put("nickname", review.getMember().getNickname());
-					reviewData.put("reviewNo", review.getReviewNo());
-					return reviewData;
-				}
-			});
+<
+	        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
+	            @Override
+	            public Map<String, Object> apply(Review review) {
+	                Map<String, Object> reviewData = new HashMap<>();
+	                reviewData.put("thumbImg", review.getThumbImg());
+	                reviewData.put("title", review.getTitle());
+	                reviewData.put("subtitle", review.getSubTitle());
+	                reviewData.put("cafeName", review.getCafe().getCafeName());
+	                reviewData.put("likeCount", review.getLikeCount());
+	                reviewData.put("regDate", review.getRegDate());
+	                reviewData.put("nickname", review.getMember().getNickname());
+	                reviewData.put("memNo", review.getMember().getMemNo());
+	                reviewData.put("badgeNo", review.getMember().getBadgeNo());
+	                reviewData.put("reviewNo", review.getReviewNo());
+	                return reviewData;
+	            }
+	        });
+
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

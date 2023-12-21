@@ -65,7 +65,7 @@ public class ReviewModifyDto {
 					 .reviewNo(reviewNo)
 			            .title(title)
 			            .content(content)
-			            .tagName(tagName)
+			   //         .tagName(tagName)
 			            .thumbImg(thumbImg)
 			            .member(writer)
 			            .cafe(cafeNo)

@@ -1,12 +1,12 @@
 package com.yummsters.cafehub.domain.review.service;
 
 import java.io.File;
-import java.util.HashMap;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
+import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
+import com.yummsters.cafehub.domain.tag.repository.ReviewTagRepository;
+import com.yummsters.cafehub.domain.tag.repository.ReviewToTagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +48,8 @@ public class ReviewServiceImpl implements ReviewService {
 	private final WishReviewRepository wishRepository;
 	private final ReviewAuthRepository reviewAuthRepository;
 	private final PointService pointService;
+	private final ReviewToTagRepository reviewToTagRepository;
+	private final ReviewTagRepository reviewTagRepository;
 
 	// 수빈 part
 	// ----------------------------------------------------------------------
@@ -96,12 +98,24 @@ public class ReviewServiceImpl implements ReviewService {
 			pointService.pointUp(review.getMemNo());
 			
 		}
+
 		Review reviewEntity = review.toEntity();
 		reviewEntity.setSubTitle(reviewEntity.getCafe().getCafeName() + " " +  reviewEntity.getTitle());
+
 		reviewRepository.save(reviewEntity);
+
+		// 리뷰 태그 저장
+		String tagString = review.getTagName();
+		String[] tagList = tagString.substring(1, tagString.length()-1).split(",");
+		for(String tag : tagList){
+			ReviewToTag reviewToTag = ReviewToTag.builder()
+					.review(reviewRepository.findByThumbImg(reviewEntity.getThumbImg()))
+					.reviewTag(reviewTagRepository.findByTagNo(Integer.parseInt(tag)+1)).build();
+			reviewToTagRepository.save(reviewToTag);
+		}
+
 		return reviewEntity.getReviewNo();
 	}
-
 
 	// 리뷰 권한 삭제
 	@Override
@@ -141,7 +155,7 @@ public class ReviewServiceImpl implements ReviewService {
 	        review.setContent(reviewModifyDto.getContent());
 	    }
 	    if (reviewModifyDto.getTagName() != null) {
-	        review.setTagName(reviewModifyDto.getTagName());
+	        //review.setTagName(reviewModifyDto.getTagName());
 	    }
 
 	    if (files != null && !files.isEmpty()) {
@@ -248,7 +262,7 @@ public class ReviewServiceImpl implements ReviewService {
 	// 가게 리뷰 리스트 조회
 	@Override
 	public Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo) {
-		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").ascending()), cafeNo);
+		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").descending()), cafeNo);
 	}
 
 	// 닉네임 사용자의 리뷰 조회

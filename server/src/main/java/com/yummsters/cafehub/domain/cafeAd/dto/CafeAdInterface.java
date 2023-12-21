@@ -3,7 +3,7 @@ package com.yummsters.cafehub.domain.cafeAd.dto;
 import java.time.LocalDateTime;
 
 public interface CafeAdInterface {
-	String getCafeAdno();
+	String getCafeAdNo();
 	boolean getIsApproved();
 	LocalDateTime getAuthDate();
 	String getThumbImg();
