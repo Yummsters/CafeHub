@@ -23,6 +23,4 @@ public class ReviewTag {
     private Integer tagNo;
     @Column
     private String tagName;
-    @OneToMany(mappedBy = "reviewTag")
-    private List<ReviewToTag> reviewTags = new ArrayList<>();
 }

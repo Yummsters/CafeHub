@@ -67,7 +67,6 @@ public class ReviewDto {
 				 .reviewNo(reviewNo)
 		            .title(title)
 		            .content(content)
-		            .tagName(tagName)
 		            .thumbImg(thumbImg)
 		            .member(writer)
 		            .cafe(cafeNo)
