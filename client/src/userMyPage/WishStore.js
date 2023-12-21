@@ -8,6 +8,7 @@ import { Table, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import MapCafeInfo from "../map/MapCafeInfo";
+import { url } from '../config.js'
 const {kakao} = window;
 
 const WishStore = () => {
@@ -32,7 +33,7 @@ const WishStore = () => {
   };
 
   useEffect(() => {
-      axios.get(`http://localhost:8080/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
+      axios.get(`${url}/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
         headers: {
             Authorization: accessToken,
             "Content-Type": "application/json",
@@ -49,7 +50,7 @@ const WishStore = () => {
   
   useEffect(() => { // 디테일 지도
     if (showModal && cafeNo !== 0) {
-      axios.get(`http://localhost:8080/map/${cafeNo}`)
+      axios.get(`${url}/map/${cafeNo}`)
       .then((res) => {
         console.log(res.data.lat + "안됨")
         setSelectCafe(res.data);
@@ -87,7 +88,7 @@ const WishStore = () => {
             {wishStoreList.length !== 0 &&
                 wishStoreList.map((store, index) => (
                 <span className="wishStore-stores" key={index} onClick={() => onClick(store.cafeNo)}>
-                <img src={store.thumbImg} alt=""/>
+                <img src={store.thumbImg ? `${url}/common/thumbImg/${store.thumbImg}` : '/img/Review1.png'} alt=""/>
                 <div className="image-text">{store.cafeName}</div>
                 {index % 4 === 3 ? (<><br /></>) : ("")}
                 </span>

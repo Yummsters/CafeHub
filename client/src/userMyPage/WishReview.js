@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import axios from "axios";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { url } from '../config.js'
 
 const WishReview = () => {
   const [wishReviewList, setWishReviewList] = useState([]);
@@ -47,7 +48,7 @@ const WishReview = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
+      .get(`${url}/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
         headers: {
           Authorization: accessToken,
           "Content-Type": "application/json",
@@ -73,7 +74,7 @@ const WishReview = () => {
         {wishReviewList.length !== 0 &&
           wishReviewList.map((review, index) => (
             <span className="wishReview-reviews" key={review.reviewNo} onClick={() => openModal(review.reviewNo)}>
-              <img src={review.thumbImg} alt=""/>
+              <img src={`${url}/common/thumbImg/${review.thumbImg}`} alt=""/>
               <div className="image-text">{review.cafeName}
                 <p className="ReviewWriter">{review.nickname}</p></div>
               {index % 4 === 3 ? (<><br /></>) : ("")}
