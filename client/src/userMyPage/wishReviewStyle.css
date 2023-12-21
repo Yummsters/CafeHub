@@ -131,6 +131,6 @@
     margin: 50px;
   }
 
-  .reviewModalContent::-webkit-scrollbar, .modalCafe::-webkit-scrollbar {
+  .reviewModalContent::-webkit-scrollbar, .modalCafe::-webkit-scrollbar, .map_box::-webkit-scrollbar{
     display: none;
   }

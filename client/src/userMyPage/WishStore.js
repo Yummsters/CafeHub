@@ -4,11 +4,13 @@ import UserSideTab from "../components/UserSideTab";
 import { useEffect, useState } from "react";
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Table, Pagination, PaginationItem, PaginationLink } from "reactstrap";
-import { useSelector } from "react-redux";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import MapCafeInfo from "../map/MapCafeInfo";
 import { url } from '../config.js'
+import { normalCheck } from "../login/TokenCheck.js";
+import { useNavigate } from "react-router";
 const {kakao} = window;
 
 const WishStore = () => {
@@ -21,6 +23,9 @@ const WishStore = () => {
   const [totalPages, setTotalPages] = useState(1);
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
   const accessToken = useSelector((state) => state.persistedReducer.accessToken);
+  const isLogin = useSelector((state) => state.persistedReducer.isLogin);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const onClick = (cafeNo) => {
     setCafeNo(cafeNo);
@@ -46,6 +51,9 @@ const WishStore = () => {
   };
 
   useEffect(() => {
+    if (isLogin) {
+      normalCheck(dispatch, accessToken);
+    }
       axios.get(`${url}/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
         headers: {
             Authorization: accessToken,
@@ -94,7 +102,7 @@ const WishStore = () => {
       <UserSideTab />
       <div className="wishStore-list">
         <div className="wishStore-title">
-          <img src="/img/star.png" alt="" /> <span> 찜한 가게 </span>
+          <img src="/img/y_star.png" alt="" width={"30px"}/> <span> 찜한 가게 </span>
         </div>
             {wishStoreList.length !== 0 ?
                 wishStoreList.map((store, index) => (

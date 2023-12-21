@@ -91,12 +91,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
     {selectCafe && (
       <div className={!wishModal ? "map_box" : "modalCafe"}>
         {!wishModal && (
-          <img
-            className="x"
-            src="/img/X.png"
-            alt="close"
-            onClick={() => setSelectCafe(null)}
-          />
+          <img className="x" src="/img/Xb.png" alt="close" onClick={() => setSelectCafe(null)} />
         )}
 
         <div className="storebox">

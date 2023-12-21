@@ -2,11 +2,12 @@ import ReviewDetail from "../review/ReviewDetail";
 import wishReviewStyle from "./wishReviewStyle.css";
 import { useState } from "react";
 import UserSideTab from "../components/UserSideTab";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import axios from "axios";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { url } from '../config.js'
+import { normalCheck } from "../login/TokenCheck.js";
 
 const WishReview = () => {
   const [wishReviewList, setWishReviewList] = useState([]);
@@ -16,7 +17,9 @@ const WishReview = () => {
   const [totalPages, setTotalPages] = useState(1);
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
   const accessToken = useSelector((state) => state.persistedReducer.accessToken);
-  
+  const isLogin = useSelector((state) => state.persistedReducer.isLogin);
+  const dispatch = useDispatch()
+
   const openModal = (reviewNo) => { 
     setWishReviewNo(reviewNo);
     document.body.style.overflow = 'hidden'; // 부모페이지 스크롤 비활성화
@@ -41,6 +44,9 @@ const WishReview = () => {
   };
 
   useEffect(() => {
+    if (isLogin) {
+      normalCheck(dispatch, accessToken);
+    }
     axios.get(`${url}/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
         headers: {
           Authorization: accessToken,
@@ -69,7 +75,7 @@ const WishReview = () => {
       <UserSideTab />
       <div className="wishReview-list">
         <div className="wishReview-title">
-          <img src="/img/star.png" alt="" /> <span> 찜한 리뷰 </span>
+          <img src="/img/y_star.png" alt=""  width={"30px"}/> <span> 찜한 리뷰 </span>
         </div>
         {wishReviewList.length !== 0 ?
           wishReviewList.map((review, index) => (
