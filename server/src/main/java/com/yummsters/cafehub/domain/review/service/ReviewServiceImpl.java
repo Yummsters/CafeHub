@@ -249,7 +249,7 @@ public class ReviewServiceImpl implements ReviewService {
 	// 가게 리뷰 리스트 조회
 	@Override
 	public Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo) {
-		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").ascending()), cafeNo);
+		return reviewRepository.findAllByCafe_CafeNo(PageRequest.of(page, size, Sort.by("regDate").descending()), cafeNo);
 	}
 
 	// 닉네임 사용자의 리뷰 조회
