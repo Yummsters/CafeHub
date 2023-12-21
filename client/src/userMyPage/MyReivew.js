@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useNavigate } from 'react-router';
+import { url } from '../config.js'
+
 const MyReview = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [reviews, setReviews] = useState([]);
@@ -44,7 +46,7 @@ const MyReview = () => {
         setPage(page);
         setCurPage(page);
 
-        axios.get(`http://localhost:8080/myReview/${memNo}?page=${page}&size=5`, {
+        axios.get(`${url}/myReview/${memNo}?page=${page}&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -75,7 +77,7 @@ const MyReview = () => {
         setPage1(page1);
         setCurPage1(page1);
 
-        axios.get(`http://localhost:8080/myReviewAuth/${memNo}?page=${page1}&size=5`, {
+        axios.get(`${url}/myReviewAuth/${memNo}?page=${page1}&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -104,7 +106,7 @@ const MyReview = () => {
     useEffect(() => {
         reviews.forEach((review) => {
             axios
-                .get(`http://localhost:8080/common/upload/${review.thumbImg}`, {
+                .get(`${url}/common/upload/${review.thumbImg}`, {
                     responseType: 'arraybuffer',
                 })
                 .then((response) => {
@@ -125,7 +127,7 @@ const MyReview = () => {
     }, [reviews]);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/getMemberBadge/${memNo}`)
+        axios.get(`${url}/getMemberBadge/${memNo}`)
             .then(response => {
                 const badgeName = response.data.badgeName || '';
                 setPickBadge([badgeName]);
@@ -163,7 +165,7 @@ const MyReview = () => {
                                                 className='listImg'
                                                 id='listImg'
                                                 style={{
-                                                    backgroundImage: `url(http://localhost:8080/common/upload/${list.thumbImg})`,
+                                                    backgroundImage: `url(${url}/common/upload/${list.thumbImg})`,
                                                     marginLeft: '22px',
                                                     verticalAlign: 'middle',
                                                     borderRadius: '10px',

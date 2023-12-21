@@ -5,6 +5,7 @@ import StoreSideTab from '../components/StoreSideTab';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import {getCookie} from '../components/Cookie';
+import { url } from '../config.js'
 const { daum } = window;
 
 const StoreInfo = () => {
@@ -58,7 +59,7 @@ const StoreInfo = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/cafe/${cafeNo}`)
+            .get(`${url}/cafe/${cafeNo}`)
             .then((res) => {
                 console.log(res.data);
                 const cafeData = res.data;
@@ -86,7 +87,7 @@ const StoreInfo = () => {
     useEffect(() => {
         // Fetch cafe image
         if (cafe.thumbImg) {
-            axios.get(`http://localhost:8080/common/upload/${cafe.thumbImg}`, {
+            axios.get(`${url}/common/upload/${cafe.thumbImg}`, {
                 responseType: 'blob',
             })
 
@@ -110,7 +111,7 @@ const StoreInfo = () => {
 
     const businessNo = () => { // 사업자번호 확인
 
-        axios.post(`http://localhost:8080/business/${cafe.businessNo}`)
+        axios.post(`${url}/business/${cafe.businessNo}`)
             .then((res) => {
                 console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
@@ -187,7 +188,7 @@ const StoreInfo = () => {
 
         try {
             // 서버로 요청을 보낼 때는 formData를 config 객체에 넣어서 보냅니다.
-            const response = await axios.put(`http://localhost:8080/cafe/store/${cafeNo}`, formData, {
+            const response = await axios.put(`${url}/cafe/store/${cafeNo}`, formData, {
                 headers: {
                     Authorization: accessToken,
                     Refresh : getCookie("refreshToken"),
@@ -213,7 +214,7 @@ const StoreInfo = () => {
 
     const [tagList, setTagList] = useState([]);
     useEffect(()=>{
-        axios.get(`http://localhost:8080/storeTagList`)
+        axios.get(`${url}/storeTagList`)
         .then(res=>{
             console.log(res);
             console.log(res.data);
@@ -289,7 +290,7 @@ const StoreInfo = () => {
 
     // 가게 포인트 조회
     useEffect(() => {
-        axios.get(`http://localhost:8080/point/${memNo}`, {
+        axios.get(`${url}/point/${memNo}`, {
             headers: {
                 Authorization: accessToken
             }
@@ -311,7 +312,7 @@ const StoreInfo = () => {
                 title: '100개 이상부터 정산 신청이 가능합니다'
             })
         } else {
-            axios.post(`http://localhost:8080/point/calculate/${memNo}`, {
+            axios.post(`${url}/point/calculate/${memNo}`, {
                 headers: {
                     Authorization: accessToken
                 }

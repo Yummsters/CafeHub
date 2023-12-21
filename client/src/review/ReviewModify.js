@@ -10,6 +10,7 @@ import Prism from 'prismjs';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
+import { url } from '../config.js'
 
 const ReviewModify = () => {
     const [selectTag, setSelectTag] = useState([]);
@@ -33,7 +34,7 @@ const ReviewModify = () => {
     
     
 
-    const thumbnailUrl = thumbImg ? `http://localhost:8080/common/thumbImg/${thumbImg}` : '';
+    const thumbnailUrl = thumbImg ? `${url}/common/thumbImg/${thumbImg}` : '';
     console.log("썸" + thumbnailUrl);
     
 
@@ -83,7 +84,7 @@ const ReviewModify = () => {
         // 다른 필요한 데이터도 필요에 따라 추가...
     
         try {
-            const response = await axios.post(`http://localhost:8080/reviewmodify/${review.reviewNo}`, formData);
+            const response = await axios.post(`${url}/reviewmodify/${review.reviewNo}`, formData);
             
             Swal.fire({
                 title: '수정 성공!',
@@ -105,7 +106,7 @@ const ReviewModify = () => {
     useEffect(() => {
 
         axios
-            .get(`http://localhost:8080/review/${review.reviewNo}`)
+            .get(`${url}/review/${review.reviewNo}`)
             .then((response) => {
                 setThumbImg(response.data.review.thumbImg || ''); 
 
@@ -147,7 +148,7 @@ const ReviewModify = () => {
     ];
     const fetchCafeList = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/reviewauth/${memNo}`);
+            const response = await axios.get(`${url}/reviewauth/${memNo}`);
 
             setCafes(response.data);
             console.log('Cafes:', response.data);
@@ -190,7 +191,7 @@ const uploadImages = (blob, callback) => {
 
     axios({
         method: 'POST',
-        url: 'http://localhost:8080/common/fileUpload',
+        url: `${url}/common/fileUpload`,
         data: formData,
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -277,7 +278,7 @@ const uploadImages = (blob, callback) => {
 
                                 axios({
                                     method: 'POST',
-                                    url: 'http://localhost:8080/common/fileUpload',
+                                    url: `${url}/common/fileUpload`,
                                     data: formData,
                                     headers: {
                                         'Content-Type': 'multipart/form-data',

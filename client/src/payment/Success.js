@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { url } from '../config.js'
 
 const Success = () => { // response 객체를 가지고 와서 추출하여 사용.
     const member = useSelector(state=>state.persistedReducer.member);
@@ -26,7 +27,7 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
     }
 
     useEffect(() => {
-        axios.post('http://localhost:8080/payment/result', paymentData)
+        axios.post(`${url}/payment/result`, paymentData)
         .then((res) => {
             console.log(res);
             setIsSuccess(true);

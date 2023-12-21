@@ -44,7 +44,7 @@ const UserPoint = () => {
                 cancelReason: cancelReason,
                 paymentKey: payment.paymentKey
             };
-            axios.post("http://localhost:8080/payment/refund", data)
+            axios.post(`${url}/payment/refund`, data)
             .then((res) => {
                 console.log(res);
                 resolve(res.data);
@@ -169,7 +169,7 @@ const UserPoint = () => {
             allowOutsideClick: false, 
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.post(`http://localhost:8080/defaultBadge/${member.memNo}`)
+                axios.post(`${url}/defaultBadge/${member.memNo}`)
                 .then((res) => {
                     console.log('뱃지를 성공적으로 달았습니다:', res.data);
 

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { url } from '../config.js'
 const { kakao } = window;
 
 const MainMap = () => {
   const [cafes, setCafes] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/mapMarker')
+    axios.get(`${url}/mapMarker`)
     .then(response => {
       setCafes(response.data);
       console.log(response.data);
