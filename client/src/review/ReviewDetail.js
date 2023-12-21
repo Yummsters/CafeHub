@@ -439,9 +439,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                {review.length > 0 && (
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
-                )}
                 </div>
               <div className="infoR">
                 <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</span>&nbsp;|&nbsp;
