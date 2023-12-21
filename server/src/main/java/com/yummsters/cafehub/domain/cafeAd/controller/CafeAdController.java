@@ -101,26 +101,17 @@ public class CafeAdController {
     }
     
     //혜리 part-------------------------------------------------------
+    //Main1
     @GetMapping("/approvedAds")
-    public ResponseEntity<List<CafeAdReqDto>> getApprovedAds() {
+    public ResponseEntity<List<CafeAdInterface>> getApprovedAds() {
         try {
-            List<CafeAd> approvedAds = cafeAdService.getApprovedAds();
-            List<CafeAdReqDto> responseDtoList = new ArrayList<>();
-
-            for (CafeAd cafeAd : approvedAds) {
-                CafeAdReqDto cafeAdReqDto = CafeAdReqDto.builder()
-                        .description(cafeAd.getDescription())
-                        .menu(cafeAd.getMenu())
-                        .build();
-                responseDtoList.add(cafeAdReqDto);
-            }
-
-            return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+        	List<CafeAdInterface> approvedAds = cafeAdService.getApprovedAds();
+            return new ResponseEntity<>(approvedAds, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+    //managerConfirm
     @GetMapping("/unapprovedAds")
     public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -132,7 +123,7 @@ public class CafeAdController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+    //managerAd
     @PutMapping("/approve/{cafeAdNo}")
     public ResponseEntity<String> approveAd(@PathVariable Integer cafeAdNo) {
         try {

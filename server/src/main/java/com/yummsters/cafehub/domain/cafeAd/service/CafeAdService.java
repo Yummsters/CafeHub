@@ -16,7 +16,7 @@ public interface CafeAdService {
     boolean deleteCafeAd(Integer cafeNo) throws Exception;
     CafeAd paymentCafeAd(Integer cafeNo, String paymentKey) throws Exception;
   //혜리 part-------------------------------------------------------
-    List<CafeAd> getApprovedAds() throws Exception;
+    List<CafeAdInterface> getApprovedAds() throws Exception;
     Page<CafeAdInterface> getUnapprovedAds(Pageable pageable) throws Exception;
     void approveAd(Integer cafeadNo) throws Exception;
     void deleteOldRecords() throws Exception;
