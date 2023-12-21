@@ -335,7 +335,7 @@ const UserPoint = () => {
                 </CheckoutPage>
                 </>
             )}
-            </>
+        </>
     );
 };
 
