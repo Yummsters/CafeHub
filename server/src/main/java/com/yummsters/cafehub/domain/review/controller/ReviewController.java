@@ -15,14 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -94,7 +87,7 @@ public class ReviewController {
 	// 선진 part ----------------------------------------------------------------------
 	@GetMapping("/review/{reviewNo}")
 	public ResponseEntity<Object> getReviewDetail(@PathVariable Integer reviewNo,
-												@RequestHeader(required = false) Integer memNo) {
+												  @RequestParam(required = false) Integer memNo) {
 		try {
 			Map<String, Object> res = new HashMap<>();
 			ReviewDetailDto review = reviewService.reviewDetail(reviewNo);
@@ -112,7 +105,7 @@ public class ReviewController {
 		}
 	}
 
-	@PostMapping("/like/{memNo}/{reviewNo}")
+	@PostMapping("member/like/{memNo}/{reviewNo}")
 	public ResponseEntity<Object> isLikeReview(@PathVariable Integer memNo, @PathVariable Integer reviewNo) {
 		try {
 			Map<String,Object> res = new HashMap<>();
@@ -127,7 +120,7 @@ public class ReviewController {
 		}
 	}
 
-	@PostMapping("/wish/{memNo}/{reviewNo}")
+	@PostMapping("member/wish/{memNo}/{reviewNo}")
 	public ResponseEntity<Boolean> isWishReview(@PathVariable Integer memNo, @PathVariable Integer reviewNo) {
 		try {
 			Boolean toggleWish = reviewService.toggleWishReview(memNo, reviewNo);
