@@ -1,15 +1,21 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { Pagination, PaginationItem, PaginationLink, Table } from "reactstrap";
 import Swal from "sweetalert2";
+import { url } from '../config.js'
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import {tokenCreate, tokenExpried} from '../login/TokenCheck';
 
 const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wishCafeNo }) => {
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
   const [reviewList, setReviewList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
   const cafeNo = selectCafe?.cafeNo || wishCafeNo;
   
@@ -37,9 +43,8 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
 
    useEffect(() => { 
     if(selectCafe !== null) {
-      axios.get(`http://localhost:8080/review/storeList/${cafeNo}?page=${currentPage}&size=5`)
+      axios.get(`${url}/review/storeList/${cafeNo}?page=${currentPage}&size=5`)
       .then((res) => {
-        console.log(res.data);
         setReviewList(res.data.data);
         setTotalPages(res.data.pageInfo.totalPages);
       })
@@ -49,15 +54,24 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
     }
    }, [selectCafe, currentPage])
 
-  const toggleWish = () => {
+  const toggleWish = () => {    
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/cafeWish/${memNo}/${selectCafe.cafeNo}`)
+      axios.post(`${url}/member/cafeWish/${memNo}/${selectCafe.cafeNo}`, null, {
+          headers : {
+            Authorization :accessToken,
+            Refresh : getCookie("refreshToken")
+        }
+      })
       .then((res) => {
-        setWish(res.data);
-        console.log(res.data);
+        tokenCreate(dispatch, setCookie, res.headers)
+        .then(()=>{
+            setWish(res.data);
+        })
       })
       .catch((error) => {
-        console.error("에러:" + error);
+        if(error.response !== undefined){
+          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+      }
       });
     } else {
         Swal.mixin({
@@ -73,7 +87,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
     }
 
   return (
-    <div style={{ flex: selectCafe ? 1 : 0 }}>
+    <div style={{ flex: selectCafe ? 1 : 0}}>
     {selectCafe && (
       <div className={!wishModal ? "map_box" : "modalCafe"}>
         {!wishModal && (
@@ -106,17 +120,15 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
 
         <div className="store_review">
             <div className="review"><img src="/img/review.png" alt=""/>리뷰</div>
-            
             {reviewList.length > 0 ? (
             <Table hover>
               <div className="maplistbox">
                 <tbody>
-                  <br />
                   {reviewList.map((review, index) => (
                   <tr key={index}>
                     <Link to={`/reviewDetail/${review.reviewNo}`} state={{ reviewNo: `${review.reviewNo}` }} >
                     <div className="map-list">
-                      <img className="map-listImg" src={review.thumbImg} alt="" />
+                      <img className="map-listImg" src={`${url}/common/thumbImg/${review.thumbImg}`} alt="" />
                       <div className="map-listTitle">
                       {review.title}
                         <div className="map-writeInfo">{review.nickName}</div>
