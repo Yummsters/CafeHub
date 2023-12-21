@@ -99,6 +99,11 @@ tbody td {
     margin-right: 10px;
 }
 
+.badgeImg {
+  width: 24px;
+  margin-right: 5px;
+}
+
 .dateTime {
     text-align: right; /* 우측 정렬 설정 */
     font-size: 14px; /* 원하는 텍스트 크기로 설정 */

@@ -54,7 +54,7 @@ const Main2 = () => {
         <Slider {...settings}>
           {reviews.map((review, index) => (
             <div className='card' key={index}>
-              <img className='cardImg' src={review.thumbImg} alt='카드 이미지' />
+              <img className='cardImg' src={`/img/${review.thumbImg}.png`} alt='카드 이미지' />
               <br />
               <span className='cardrecommend'>
                 <div className='cardTitle'>{review.title}</div>
