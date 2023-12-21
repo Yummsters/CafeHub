@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useLocation, useParams } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { url } from '../config.js'
+import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
+import { getCookie, removeCookie, setCookie } from "../components/Cookie";
 
 const { kakao } = window;
 
@@ -21,7 +24,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [bestReply, setBestReply] = useState(null);
   const [replyLike, setReplyLike] = useState(false);
   const [replyLikeCount, setReplyLikeCount] = useState(0);
+  const [pickBadgeName, setPickBadge] = useState([]);
+  const dispatch = useDispatch;
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const isLogin = useSelector(state => state.persistedReducer.isLogin);
+
 
   const location = useLocation();
   const listReviewNo = location.state?.reviewNo
@@ -64,7 +72,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const ReviewDelete = async (reviewNo) => {
     try {
-      await axios.delete(`http://localhost:8080/review/${reviewNo}/delete`);
+      await axios.delete(`${url}/review/${reviewNo}/delete`);
       console.log("리뷰 삭제 성공");
       Swal.fire({
         text: '리뷰가 삭제되었습니다',
@@ -113,7 +121,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const handleReplySubmit = () => {
     if(replyContent.length > 0) {
     axios
-      .post(`http://localhost:8080/replyWrite/${memNo}/${reviewNo}`, {
+      .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
         content: replyContent,
       })
       .then((res) => {
@@ -138,7 +146,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const fetchReplies = () => {
     axios
-      .get(`http://localhost:8080/reply/${reviewNo}/list`, {
+      .get(`${url}/reply/${reviewNo}/list`, {
         params: {
           page: pageInfo.currentPage - 1,
           size: pageInfo.repliesPerPage,
@@ -179,10 +187,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReReplySubmit = (parentReplyNo) => {
     if (selectedReply && reReplyContent) {
-      axios.get(`http://localhost:8080/member/${memNo}`)
+      axios.get(`${url}/member/${memNo}`)
         .then((response) => {
           const member = response.data;
-          axios.post(`http://localhost:8080/reply/${selectedReply.replyNo}/reReply`, {
+          axios.post(`${url}/reply/${selectedReply.replyNo}/reReply`, {
             parentReplyNo: parentReplyNo,
             content: reReplyContent,
             writerNo: member.memNo, // writerNo 대신 memNo 사용
@@ -216,7 +224,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const ReplyDelete = async (replyNo) => {
     try {
-      await axios.delete(`http://localhost:8080/replyDelete/${replyNo}`);
+      await axios.delete(`${url}/replyDelete/${replyNo}`);
       console.log("댓글 삭제 성공");
       Swal.fire({
         text: '댓글이 삭제되었습니다',
@@ -279,26 +287,34 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toggleLike = () => {
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/like/${memNo}/${reviewNo}`)
-        .then((res) => {
-
-          setLike(res.data.toggleLike);
-          setLikeCount(res.data.likeCount);
-          console.log(res.data);
+      axios.post(`${url}/member/like/${memNo}/${reviewNo}`, null,
+      {
+          headers : {
+               Authorization :accessToken,
+               Refresh : getCookie("refreshToken")
+          }
+      })
+      .then((res) => {
+        tokenCreate(dispatch, setCookie, res.headers)
+        .then(()=>{
+            setLike(res.data.toggleLike);
+            setLikeCount(res.data.likeCount);
         })
-        .catch((error) => {
-          console.error("에러:" + error);
-        });
+      })
+      .catch((error) => {
+        console.error("toggleLike 에러:" + error);
+        if(error.response !== undefined){
+          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+        }
+      });
     } else {
       showSwal()
     }
   };
 
-  console.log(replies);
-
   const replyToggleLike = (replyNo) => {
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/replyLike/${memNo}/${replyNo}`)
+      axios.post(`${url}/replyLike/${memNo}/${replyNo}`)
         .then((res) => {
           const index = replies.findIndex((reply) => reply.replyNo == replyNo);
           const reply = { ...replies[index] };
@@ -318,14 +334,25 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toggleWish = () => {
     if (memNo !== undefined) {
-      axios.post(`http://localhost:8080/wish/${memNo}/${reviewNo}`)
-        .then((res) => {
+      axios.post(`${url}/member/wish/${memNo}/${reviewNo}`, null,
+      {
+          headers : {
+               Authorization :accessToken,
+               Refresh : getCookie("refreshToken")
+          }
+      })
+      .then((res) => {
+        tokenCreate(dispatch, setCookie, res.headers)
+        .then(()=>{
           setWish(res.data);
-          console.log(res.data);
         })
-        .catch((error) => {
-          console.error("에러:" + error);
-        });
+      })
+      .catch((error) => {
+        console.error("toggleWish 에러:" + error);
+        if(error.response !== undefined){
+          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+        }
+      });
     } else {
       showSwal()
     }
@@ -334,7 +361,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const getBestReply = () => {
     //베스트 댓글 가져오기
     axios
-      .get(`http://localhost:8080/reply/${reviewNo}/best`, {
+      .get(`${url}/reply/${reviewNo}/best`, {
         params: {
           memNo: memNo,
         }
@@ -348,16 +375,15 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   useEffect(() => { // 디테일 가져오기
-    axios
-      .get(`http://localhost:8080/review/${reviewNo}`, { headers: { memNo } })
+    if (isLogin) {
+      normalCheck(dispatch, accessToken);
+    }
+    axios.get(`http://localhost:8080/review/${reviewNo}?memNo=${memNo}`)
       .then((res) => {
-
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
-
-        console.log(res.data);
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -368,6 +394,22 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
 
+  useEffect(() => {
+    if (review && review.memNo) {
+      if (isLogin) {
+        normalCheck(dispatch, accessToken);
+      }
+      axios.get(`${url}/getMemberBadge/${review.memNo}`)
+      .then((res) => {
+          const badgeName = res.data.badgeName || ''; 
+          setPickBadge([badgeName]);
+          console.log(res.data + "dmd")
+      })
+      .catch(error => {
+          console.error('에러 발생:', error);
+      });
+    }
+  }, [review])
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -391,24 +433,23 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
             <p className="detailTitle">{review.title}</p>
-            {/* <div className="detailLine" /> */}
-
             <div className="detailInfo">
               <div className="infoL">
                 <p>
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                <p>{review.tagNames.map((tag, i) => <span key={i}>#{tag}&nbsp;</span>)}</p>
-              </div>
+                {review.length > 0 && (
+                <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
+                )}
+                </div>
               <div className="infoR">
-                <span>{review.nickname}</span>&nbsp;|&nbsp;
+                <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
             </div>
             <div className="detailContent"><Viewer initialValue={review.content || ''} /></div>
-
 
             <div id="detailMap"></div>
 
