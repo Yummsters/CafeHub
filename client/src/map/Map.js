@@ -3,15 +3,15 @@ import './mapStyle.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MapLayout from './MapLayout';
 import axios from 'axios';
+import { url } from '../config.js'
 
 const Map = () => {
   const [cafes, setCafes] = useState([]);
   
   useEffect(() => {
-    axios.get('http://localhost:8080/mapMarker')
+    axios.get(`${url}/mapMarker`)
     .then(response => {
       setCafes(response.data);
-      console.log(response.data);
     })
     .catch(error => {
       console.error('에러:', error);

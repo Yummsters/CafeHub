@@ -18,7 +18,7 @@ const UserPoint = () => {
     const [selectedBadges, setSelectedBadges] = useState([]);
     const [userBadges, setUserBadges] = useState([]);
     const [pickBadgeName, setPickBadge] = useState([]);
-   
+
 
     // swal
     const toast = Swal.mixin({
@@ -61,10 +61,15 @@ const UserPoint = () => {
 
     const badgeClick = (badgeIndex) => {
         const selectedBadge = badgeName[badgeIndex];
-    
-        console.log('선택한 뱃지 번호:', selectedBadge.badgeNo);
-    
-        // 스웨트알트를 이용해 확인 다이얼로그를 띄웁니다.
+
+        if (myPoint < 10) {
+            toast.fire({
+                icon: 'info',
+                title: '포인트를 충전해주세요'
+            });
+            return;
+        }
+
         Swal.fire({
             title: '배지를 구매하시겠습니까?',
             text: '이용기간은 30일 입니다',
@@ -72,18 +77,15 @@ const UserPoint = () => {
             showCancelButton: true,
             confirmButtonText: '네',
             cancelButtonText: '아니오',
-            allowOutsideClick: false, // Prevent closing by clicking outside
+            allowOutsideClick: false, 
         }).then((result) => {
             if (result.isConfirmed) {
                 axios.post(`${url}/buyBadge/${member.memNo}/${selectedBadge.badgeNo}`)
                     .then((res) => {
                         console.log('뱃지를 성공적으로 구매했습니다:', res.data);
-    
-                        Swal.fire({
-                            title: '배지 구매 성공!',
-                            text: '뱃지를 성공적으로 구매했습니다',
+                        toast.fire({
                             icon: 'success',
-                            confirmButtonText: '확인',
+                            title:  '배지 구매 성공!'
                         }).then(() => {
                             window.location.reload();
                         });
@@ -94,31 +96,25 @@ const UserPoint = () => {
             }
         });
     };
-   
+
     const userBadgeClick = (badgeIndex) => {
         const selectedBadge = userBadges[badgeIndex];
-        
-        console.log('선택한 뱃지 번호:', selectedBadge.memberBadgeNo);
-        
-        // 스웨트알트를 이용해 확인 다이얼로그를 띄웁니다.
+
         Swal.fire({
             title: '배지를 착용하시겠습니까?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: '네',
             cancelButtonText: '아니오',
-            allowOutsideClick: false, // Prevent closing by clicking outside
+            allowOutsideClick: false, 
         }).then((result) => {
             if (result.isConfirmed) {
                 axios.post(`${url}/pickBadge/${member.memNo}/${selectedBadge.memberBadgeNo}`)
                     .then((res) => {
-                        console.log('뱃지를 성공적으로 달았습니다:', res.data);
-    
-                        Swal.fire({
-                            title: '배지 달기 성공!',
-                            text: '뱃지를 성공적으로 달았습니다',
+                    
+                        toast.fire({
                             icon: 'success',
-                            confirmButtonText: '확인',
+                            title:  '배지 달기 성공!'
                         }).then(() => {
                             window.location.reload();
                         });
@@ -129,10 +125,37 @@ const UserPoint = () => {
             }
         });
     };
-    
-    
+    const defaultBadge = () => {
+       
+        Swal.fire({
+            title: '배지를 착용하시겠습니까?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '네',
+            cancelButtonText: '아니오',
+            allowOutsideClick: false, 
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.post(`http://localhost:8080/defaultBadge/${member.memNo}`)
+                .then((res) => {
+                    console.log('뱃지를 성공적으로 달았습니다:', res.data);
+
+                    toast.fire({
+                        icon: 'success',
+                        title:  '배지 달기 성공!'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                })
+                    .catch((error) => {
+                        console.error('뱃지 착용 중 오류 발생:', error);
+                    });
+            }
+        });
+    };
+
     useEffect(() => {
-        axios.get(`${url}/point/${member.memNo}`,
+        axios.get(`${url}/member/point/${member.memNo}`,
             {
                 headers: {
                     Authorization: accessToken
@@ -171,16 +194,16 @@ const UserPoint = () => {
     useEffect(() => {
         axios.get(`${url}/getMemberBadge/${member.memNo}`)
             .then(response => {
-             
-                const badgeName = response.data.badgeName || ''; 
+
+                const badgeName = response.data.badgeName || '';
                 setPickBadge([badgeName]);
-    
+
             })
             .catch(error => {
                 console.error('에러 발생:', error);
             });
     }, []);
-    
+
 
     useEffect(() => {
         if (paySuccess) {
@@ -205,9 +228,9 @@ const UserPoint = () => {
             <UserSideTab />
             <div className='userPointBox'>
                 <div className='nicknameBox'>
-                <p><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" /></p>
+                    <p><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" /></p>
                     <p>{member.nickname} 님의 보유 커피콩</p>
-                    <p><img src="/img/countPoint.png" alt="house"  width={"40px"} /></p>
+                    <p><img src="/img/countPoint.png" alt="house" width={"40px"} /></p>
                     <p>{myPoint}개</p>
                 </div>
 
@@ -216,8 +239,8 @@ const UserPoint = () => {
                     <div className='pointContent'>
                         {coffeeData.map((coffee, index) => (
                             <div className={`${selectPrice === index ? 'selectBox' : 'coffeeBox'}`} onClick={() => priceClick(coffee.price, index)} key={index}>
-                               <p><img src="/img/coffeebeans.png" alt="coffebeans" width={"40px"} />
-                                &nbsp;×&nbsp;{coffee.beansCount}</p>
+                                <p><img src="/img/coffeebeans.png" alt="coffebeans" width={"40px"} />
+                                    &nbsp;×&nbsp;{coffee.beansCount}</p>
                                 <div>{coffee.price}원</div>
 
                             </div>
@@ -253,7 +276,7 @@ const UserPoint = () => {
                                                 />
                                             );
                                         } else {
-                                            return null; // 이미 구매한 배지는 표시하지 않음
+                                            return null; 
                                         }
                                     })}
 
@@ -270,7 +293,7 @@ const UserPoint = () => {
                         <div className='badgeContent2'>
                             <div className='badgeBox'>
                                 <div className='badgeRow1'>
-                                    {userBadges.map((badge, i) => ( // 상태 이름 변경
+                                    {userBadges.map((badge, i) => ( 
                                         <img
                                             key={i}
                                             src={`/img/${badge.badgeName}`}
@@ -279,6 +302,12 @@ const UserPoint = () => {
                                             alt={`배지 ${i + 1}`}
                                         />
                                     ))}
+                                    <img
+                                        src={`/img/9.png`}
+                                        className='badgeImage'
+                                        onClick={defaultBadge}
+                                        alt={`기본 배지`}
+                                    />
 
                                 </div>
                             </div>

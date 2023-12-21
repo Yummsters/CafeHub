@@ -31,7 +31,7 @@ const SignUpStore = () => {
 
     // 페이먼트 관련
     useEffect(() => {
-        if(payment.memNo !== null) {
+        if(payment && payment.memNo !== null) {
             if(payment.isSuccess) { // memNo이 존재(직전에회원가입)하고 결제완료된 경우 컬럼 update
                 axios.put(`http://localhost:8080/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
                 .then((res) => {
