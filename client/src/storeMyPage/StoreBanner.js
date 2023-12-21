@@ -6,6 +6,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { CheckoutPage } from '../payment/CheckoutPage';
 import { getCookie } from '../components/Cookie';
+import { url } from '../config.js'
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
@@ -30,7 +31,7 @@ const StoreBanner = () => {
         }, 2000);
     }
     const failCafeAd = (icon, title, text) => {
-        axios.delete(`http://localhost:8080/cafeAd/${cafeNo}`)
+        axios.delete(`${url}/cafeAd/${cafeNo}`)
         .then((res) => {
             console.log(res.data);
             dispatch({type:"payment", payload:''});
@@ -73,7 +74,7 @@ const StoreBanner = () => {
         var menuInput = document.getElementById("menu");
         // 사진 선택도 안되도록 막는 로직 추가 필요
 
-        axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
+        axios.get(`${url}/cafeAd/${cafeNo}`,{
             headers : {
                 Authorization : accessToken,
                 Refresh : getCookie("refreshToken")
@@ -83,7 +84,7 @@ const StoreBanner = () => {
             console.log(res);
             if (res.data.paymentKey === null) {
                 if (payment.isSuccess) {
-                    axios.put(`http://localhost:8080/cafeAd/${cafeNo}/${payment.paymentKey}`)
+                    axios.put(`${url}/cafeAd/${cafeNo}/${payment.paymentKey}`)
                     .then((res) => {
                         console.log(res.data);
                         dispatch({ type:"payment", payload:'' });
@@ -173,7 +174,7 @@ const StoreBanner = () => {
             console.log(formData);
             console.log(payment.paymentKey);
 
-            axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
+            axios.post(`${url}/cafeAd/${cafeNo}`,formData ,
             {
                 headers : {
                     Authorization : accessToken,
@@ -229,7 +230,7 @@ const StoreBanner = () => {
                             paymentKey: payment.paymentKey
                         };
                         console.log('data' + data);
-                        axios.post("http://localhost:8080/payment/refund", data)
+                        axios.post(`${url}/payment/refund`, data)
                         .then((res) => {
                             console.log(res);
                         })
@@ -262,7 +263,7 @@ const StoreBanner = () => {
                             style={{ display: 'none' }}
                             ref={inputRef}
                         />
-                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `${url}/common/upload/${fileNum}`})`}}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
                         </div>
                         <div className='storeBanner-info'>
                             <div className='storeBanner-title'>{cafe.title},</div>
