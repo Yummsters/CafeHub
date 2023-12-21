@@ -19,7 +19,6 @@ const UserPoint = () => {
     const [userBadges, setUserBadges] = useState([]);
     const [pickBadgeName, setPickBadge] = useState([]);
 
-
     // swal
     const toast = Swal.mixin({
         toast: true,
@@ -28,23 +27,57 @@ const UserPoint = () => {
         timer: 1500
     })
 
-    // 테스트
-    // const { updatePaymentInfo } = useContext(PaymentContext);
-    const paySuccess = useSelector(state => state.persistedReducer.payment.isSuccess);
-
+    // 페이먼트 관련
+    const payment = useSelector(state => state.persistedReducer.payment);
     const [paymentModal, setPaymentModal] = useState(false);
     const paymentData = { price: price, orderName: "포인트구매" };
     const paymentOpen = () => {
-        if (paymentData.price === 0) {
-            toast.fire({
-                icon: 'info',
-                title: '충전할 금액을 선택해 주세요'
-            })
-            return;
-        }
         setPaymentModal(true);
     }
-    // 테스트 끝
+    const paymentClose = () => {
+        setPaymentModal(false);
+    }
+
+    const refund = (cancelReason) => {
+        return new Promise((resolve, reject) => {
+            const data = {
+                cancelReason: cancelReason,
+                paymentKey: payment.paymentKey
+            };
+            axios.post("http://localhost:8080/payment/refund", data)
+            .then((res) => {
+                console.log(res);
+                resolve(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                reject(error);
+            })
+        })
+    }
+
+    useEffect(() => {
+        if (payment.isSuccess) {
+            axios.post(`${url}/buyPoint/${member.memNo}/${Number(payment.price) / 100}`)
+            .then((res) => {
+                console.log(res.data);
+                dispatch({ type:"payment", payload:"" })
+                toast.fire({
+                    icon: 'success',
+                    title: '포인트 적립이 완료되었습니다'
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+                refund('포인트등록실패')
+                dispatch({ type:"payment", payload:"" })
+                toast.fire({
+                    icon: 'error',
+                    title: '포인트 적립에 실패했습니다'
+                });
+            })
+        }
+    }, [])
 
     const coffeeData = [
         { beansCount: 10, price: 1000 },
@@ -168,22 +201,21 @@ const UserPoint = () => {
                 console.log(error);
             })
     }, [])
+
     useEffect(() => {
         axios.get(`${url}/badgeList`)
             .then(res => {
-                console.log(res.data);
                 setBadge([...res.data]);
             })
             .catch(err => {
                 console.log(err);
             })
     }, [])
-    useEffect(() => {
 
+    useEffect(() => {
         if (member && member.memNo) {
             axios.get(`${url}/badge/${member.memNo}`)
                 .then(response => {
-                    console.log(response.data);
                     setUserBadges(response.data);
                 })
                 .catch(error => {
@@ -191,6 +223,7 @@ const UserPoint = () => {
                 });
         }
     }, []);
+
     useEffect(() => {
         axios.get(`${url}/getMemberBadge/${member.memNo}`)
             .then(response => {
@@ -203,34 +236,16 @@ const UserPoint = () => {
                 console.error('에러 발생:', error);
             });
     }, []);
-
-
-    useEffect(() => {
-        if (paySuccess) {
-            axios.post(`${url}/point/buyPoint/${member.memNo}/${price / 100}`,
-                {
-                    headers: {
-                        Authorization: accessToken
-                    }
-                })
-                .then((res) => {
-                    console.log(res.data);
-                    dispatch({ type: "payment", payload: { price: 0, isSuccess: false } });
-                })
-                .catch((error) => {
-                    console.log(error);
-                })
-        }
-    }, [])
-
+    
     return (
+        <>
         <div className='mypage'>
             <UserSideTab />
             <div className='userPointBox'>
                 <div className='nicknameBox'>
                     <p><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" /></p>
                     <p>{member.nickname} 님의 보유 커피콩</p>
-                    <p><img src="/img/countPoint.png" alt="house" width={"40px"} /></p>
+                    <p>&nbsp;&nbsp;&nbsp;<img src="/img/countPoint.png" alt="house" width={"40px"} /></p>
                     <p>{myPoint}개</p>
                 </div>
 
@@ -242,17 +257,13 @@ const UserPoint = () => {
                                 <p><img src="/img/coffeebeans.png" alt="coffebeans" width={"40px"} />
                                     &nbsp;×&nbsp;{coffee.beansCount}</p>
                                 <div>{coffee.price}원</div>
-
                             </div>
                         ))}
                     </div>
-
-                    <button className='beanPurchaseBtn' onClick={paymentOpen}>{price}원 결제</button>
-                    {paymentModal && (
-                        <CheckoutPage paymentData={paymentData} />)}
+                    <div className='coffeebeanPayment'>
+                        <button className='beanPurchaseBtn' onClick={paymentOpen}>{price}원 결제</button>
+                    </div>
                 </div>
-
-
                 <div className='badgeWrap'>
                     <div className='notOwnBadgeBox'>
                         <div className='ownTitle'>
@@ -317,6 +328,14 @@ const UserPoint = () => {
 
             </div>
         </div>
+            {paymentModal && (
+                <>
+                <CheckoutPage paymentData={paymentData}>
+                    <button className='beanPurchaseBtn' onClick={paymentClose}>취소</button>
+                </CheckoutPage>
+                </>
+            )}
+            </>
     );
 };
 
