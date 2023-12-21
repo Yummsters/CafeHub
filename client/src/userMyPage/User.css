@@ -12,7 +12,18 @@ tbody tr {
     margin: 50px auto;
     height: 700px;
   }
+.myreviewbadge{
+  width: 24px;
+  height: 24px;
+}
 
+.myreview-pagination {
+  padding: 40px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color :#F59A23;
+}
 .listBox{
     margin:50px auto;
     width: 1000px;
@@ -34,7 +45,11 @@ tbody tr {
     width: 550px;
     margin: 0 30px 0 30px;
   }
-
+  .reviewpage{
+    position:relative;
+    top:100px;
+    
+  }
   .rightBox {
     width: 350px;
   }
@@ -49,16 +64,19 @@ tbody tr {
     font-weight: bold;
     margin-left: 150px;
   }
-
+ 
   .cafeList {
     font-size: 30px;
     font-weight: bold;
   }
-
+  
   .listImg {
     margin-left: 22px;
     vertical-align: middle;
     border-radius: 10px;
+  }
+  .trauth{
+    height: 97px;
   }
   
   .listMiniTitle {
@@ -138,4 +156,46 @@ tbody tr {
 }
 
 
-  
+
+
+.myReview-Page{
+  position : absolute;
+  bottom : 2px;
+  transform: translateX(-50%);
+  left: 50%;
+}
+.myReview-Button {
+  border: none;
+  cursor: pointer;  
+  transition: background-color 0.3s ease; 
+  height: 33px;
+  color :black !important;
+}
+.myreview0 {
+  text-align: center;
+font-size: 20px;
+margin: 50px;
+}
+.myReview-Button.current-page {
+  color: #F59A23 !important;
+}
+
+.myReview-Button:active {
+  border: none;
+  background-color: none !important;
+  color :#F59A23  !important;
+  height: 33px;
+}
+
+.myReview-Button:disabled {
+  border: none;
+  color: #D9D9D9 !important;
+  background: none;
+  font-weight: bolder;
+}
+.myReview-Page{
+  position : absolute;
+  bottom : 2px;
+  transform: translateX(-50%);
+  left: 50%;
+}
