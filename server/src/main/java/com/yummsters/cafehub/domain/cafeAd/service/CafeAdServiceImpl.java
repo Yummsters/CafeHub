@@ -110,4 +110,9 @@ public class CafeAdServiceImpl implements CafeAdService {
             throw new Exception("CafeAd not found with id: " + cafeAdNo);
         }
     }
+
+	@Override
+	public void deleteOldRecords() throws Exception {
+		cafeAdRepository.deleteOldRecords(LocalDateTime.now().minusDays(7));
+	}
 }

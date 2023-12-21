@@ -34,4 +34,8 @@ public interface CafeAdRepository extends JpaRepository<CafeAd, Integer> {
     @Query(value = "UPDATE cafe_ad ca SET ca.is_approved AS isApproved = true, ca.auth_date AS authDate = CURRENT_TIMESTAMP "
     		+ "WHERE ca.cafe_ad_no AS cafeAdNo = :cafeAdNo", nativeQuery = true)
     void approveAd(@Param("cafeAdNo") Integer cafeAdNo);
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM cafe_ad ca WHERE ca.auth_date < :sevenDaysAgo", nativeQuery = true)
+    void deleteOldRecords(@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo);
 }

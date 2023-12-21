@@ -19,4 +19,5 @@ public interface CafeAdService {
     List<CafeAd> getApprovedAds() throws Exception;
     Page<CafeAdInterface> getUnapprovedAds(Pageable pageable) throws Exception;
     void approveAd(Integer cafeadNo) throws Exception;
+    void deleteOldRecords() throws Exception;
 }
