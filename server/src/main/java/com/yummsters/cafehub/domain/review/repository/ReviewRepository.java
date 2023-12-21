@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	// 수빈 part ----------------------------------------------------------------
 	Review findByReviewNo(Integer reviewNo);
-
+	Page<Review> findByMember_MemNo(PageRequest pageRequest, Integer memNo);
 	// 혜리 part ----------------------------------------------------------------
 	@Query(value = "SELECT * "
 			+ "FROM review r "

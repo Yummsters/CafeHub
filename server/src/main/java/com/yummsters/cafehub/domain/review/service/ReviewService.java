@@ -31,6 +31,9 @@ public interface ReviewService {
 	void deleteReviewAuth(Integer reviewAuthNo) throws Exception; //리뷰 권한 삭제
 	void deleteReview(Integer reviewNo) throws Exception; //리뷰 삭제
 	Integer modifyReview(Integer reviewNo, ReviewModifyDto reviewModifyDto, List<MultipartFile> files) throws Exception; //리뷰 수정
+	Page<Review> findMyReview(Integer page, Integer size, Integer memNo);
+	Page<ReviewAuth> findMyReviewAuth(Integer page, Integer size, Integer memNo);
+		
 	// 희진 part
 	Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo);
 	Page<Review> userReviewPage(Integer page, Integer size, String nickname);

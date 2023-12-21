@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.service.PointService;
+import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
@@ -77,8 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 				// 리뷰에 썸네일 이미지를 직접 추가
 				File uploadFile = new File(dir + fileVo.getFileNum());
-				System.out.println("File Path: " + uploadFile.getAbsolutePath());
-
+				
 				file.transferTo(uploadFile);
 
 				// file번호 목록 만들기
@@ -96,7 +96,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 			// 포인트 적립
 			pointService.pointUp(review.getMemNo());
-			System.out.println("getMemNo" + review.getMemNo());
+			
 		}
 
 		Review reviewEntity = review.toEntity();
@@ -190,6 +190,19 @@ public class ReviewServiceImpl implements ReviewService {
 
 	    return review.getReviewNo();
 	}
+
+	//리뷰 관리
+	@Override
+	public Page<Review> findMyReview(Integer page, Integer size, Integer memNo) {
+		return reviewRepository.findByMember_MemNo(PageRequest.of(page, size, Sort.by("regDate").descending()), memNo);
+	}
+	//리뷰 작성 가능 카페
+	@Override
+	public Page<ReviewAuth> findMyReviewAuth(Integer page, Integer size, Integer memNo) {
+	    return reviewAuthRepository.findByMember_MemNo(PageRequest.of(page, size, Sort.by("regDate").descending()), memNo);
+	}
+
+
 
 
 	

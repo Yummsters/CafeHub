@@ -28,23 +28,23 @@ public class FileUploadController {
     @PostMapping("/fileUpload")
     public ResponseEntity<String> handleFileUpload(@RequestParam("images") MultipartFile file) {
         String imageUrl = generateImageUrl(file);
-        // 클라이언트에게 URL 반환
+     
         return ResponseEntity.ok(imageUrl);
     }
 
     private String generateImageUrl(MultipartFile file) {
-        // 이미지 URL을 생성하는 로직
+       
         String fileName = file.getOriginalFilename();
         try {
-            // 파일을 지정된 디렉토리에 저장
+           
             file.transferTo(new File(UPLOAD_DIRECTORY + fileName));
-            System.out.println("서버 이미지 업로드 성공 " + fileName);
+            
         } catch (IOException e) {
-            // 예외가 발생한 경우 적절히 처리
+           
             e.printStackTrace();
             return "서버 이미지 업로드 실패";
         }
-        // 클라이언트에게 URL 반환
+       
         return BASE_URL + fileName;
     }
 
@@ -52,7 +52,6 @@ public class FileUploadController {
     public ResponseEntity<Resource> getFile(@PathVariable String filename) throws IOException {
         // URL 디코딩
         String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8.toString());
-        // 파일을 읽어올 Resource 생성
         Resource fileResource = new FileSystemResource(UPLOAD_DIRECTORY + decodedFilename);
 
         return ResponseEntity.ok()
@@ -69,9 +68,9 @@ public class FileUploadController {
     @GetMapping("/upload/{fileNum}")
     public void searchThumbImg(@PathVariable("fileNum") Integer fileNum, HttpServletResponse response){
         try {
-            System.out.println("파일 출력");
+            
             fileService.readThumbImg(fileNum, response.getOutputStream());
-            System.out.println(response.getOutputStream());
+          
         } catch(Exception e) {
             e.printStackTrace();
         }
