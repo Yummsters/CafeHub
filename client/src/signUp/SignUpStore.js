@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckoutPage } from '../payment/CheckoutPage';
+import { url } from '../config.js'
 const { daum } = window;
 
 const SignUpStore = () => {
@@ -37,7 +38,7 @@ const SignUpStore = () => {
     useEffect(() => {
         if(payment && payment.memNo !== null) {
             if(payment.isSuccess) { // memNo이 존재(직전에회원가입)하고 결제완료된 경우 컬럼 update
-                axios.put(`http://localhost:8080/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
+                axios.put(`${url}/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
                 .then((res) => {
                     console.log(res.data)
                     toast.fire({
@@ -57,7 +58,7 @@ const SignUpStore = () => {
     }, [])
 
     const failSignup = () => {
-        axios.delete(`http://localhost:8080/signUpStore/${payment.memNo}`)
+        axios.delete(`${url}/signUpStore/${payment.memNo}`)
         .then((res) => {
             console.log(res.data);
             dispatch({type:"payment", payload:''});
@@ -71,7 +72,7 @@ const SignUpStore = () => {
 
 
     useEffect(()=>{
-        axios.get(`http://localhost:8080/storeTagList`)
+        axios.get(`${url}/storeTagList`)
         .then(res=>{
             console.log(res.data);
             setTagName([...res.data]);
@@ -201,7 +202,7 @@ const SignUpStore = () => {
 
     const businessNo = () => { // 사업자번호 확인
        
-        axios.post(`http://localhost:8080/business/${store.businessNo}`)
+        axios.post(`${url}/business/${store.businessNo}`)
             .then((res) => {
                 console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
@@ -241,7 +242,7 @@ const SignUpStore = () => {
         setRandomCode(random);
         console.log("Random code set:", random);
         console.log(member.phone);
-        // axios.get(`http://localhost:8080/check/sendSMS?phone=${member.phone}&code=${randomCode}`)
+        // axios.get(`${url}/check/sendSMS?phone=${member.phone}&code=${random}`)
         // .then((res) => {
         //     console.log(res.data);
         //     toast.fire({
@@ -289,7 +290,7 @@ const SignUpStore = () => {
         }));
 
         if (member.email) {
-            axios.get(`http://localhost:8080/email/${member.email}`)
+            axios.get(`${url}/email/${member.email}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -346,7 +347,7 @@ const SignUpStore = () => {
         }));
 
         if (!check.id) {
-            axios.get(`http://localhost:8080/id/${member.id}`)
+            axios.get(`${url}/id/${member.id}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -365,7 +366,7 @@ const SignUpStore = () => {
         }
 
         if (!check.nickname) {
-            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -387,7 +388,7 @@ const SignUpStore = () => {
         }
 
         if (check.email) {
-            axios.get(`http://localhost:8080/email/${member.email}`)
+            axios.get(`${url}/email/${member.email}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -432,13 +433,13 @@ const SignUpStore = () => {
                 }
 
                 // 카페 생성
-                axios.post('http://localhost:8080/cafe/store', formData)
+                axios.post(`${url}/cafe/store`, formData)
                     .then((cafeResponse) => {
                         console.log(cafeResponse);
                         const cafeNo = cafeResponse.data;
 
                         // 회원가입
-                        axios.post(`http://localhost:8080/signUpStore/${cafeNo}`, member)
+                        axios.post(`${url}/signUpStore/${cafeNo}`, member)
                             .then((res) => {
                                 console.log(res.data);
                                 setMemNo(res.data.memNo);
@@ -474,7 +475,7 @@ const SignUpStore = () => {
         const { name, value } = e.target;
 
         if (member.id) {
-            axios.get(`http://localhost:8080/id/${member.id}`)
+            axios.get(`${url}/id/${member.id}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -506,7 +507,7 @@ const SignUpStore = () => {
         }));
 
         if (member.nickname) {
-            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
