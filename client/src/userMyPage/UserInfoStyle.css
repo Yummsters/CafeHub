@@ -22,7 +22,6 @@
 
 .nicknameBox p {
     font-size: 35px;
-    padding-left: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -69,7 +68,6 @@
 }
 
 .resign {
-    /* text-decoration: underline; */
     text-align: right;
     margin-bottom: 75px;
 }
