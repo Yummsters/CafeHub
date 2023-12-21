@@ -25,3 +25,21 @@
 .footer_info > p {
     padding: 0 10px;
 }
+
+.logo {
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: 1200px) {
+    .footerBox {
+        height: fit-content;
+    }
+    .footerContent {
+        flex-direction: row;
+        padding: 30px 0;
+        justify-content: space-around
+    }
+    .footer_info {
+        flex-direction: column;
+    }
+}
