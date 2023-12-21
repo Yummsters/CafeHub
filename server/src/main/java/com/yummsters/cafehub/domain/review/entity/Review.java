@@ -54,6 +54,10 @@ public class Review {
 	@JoinColumn(name="pointNo")
 	private Point point;
 
+	private String tagName;
+	 public void setTagName(String tagName) {
+	        this.tagName = tagName;
+	    }
    @Override
    public String toString() {
        return String.format("[%d,%s,%s,%s,%d,%d,%d,%s]",

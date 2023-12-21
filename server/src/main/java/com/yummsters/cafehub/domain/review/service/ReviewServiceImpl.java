@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.yummsters.cafehub.domain.tag.entity.ReviewTag;
 import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
 import com.yummsters.cafehub.domain.tag.repository.ReviewTagRepository;
 import com.yummsters.cafehub.domain.tag.repository.ReviewToTagRepository;
@@ -64,8 +65,8 @@ public class ReviewServiceImpl implements ReviewService {
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 
 		if (files != null && files.size() != 0) {
-			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
-			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+			//String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
+			String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
 
 			String fileNums = "";
 
@@ -75,10 +76,9 @@ public class ReviewServiceImpl implements ReviewService {
 
 				fileVoRepository.save(fileVo);
 
-				// 리뷰에 썸네일 이미지를 직접 추가
+				
 				File uploadFile = new File(dir + fileVo.getFileNum());
-				System.out.println("File Path: " + uploadFile.getAbsolutePath());
-
+				
 				file.transferTo(uploadFile);
 
 				// file번호 목록 만들기
@@ -88,15 +88,12 @@ public class ReviewServiceImpl implements ReviewService {
 
 			}
 
-			// 파일 번호 목록을 썸네일 이미지로 사용
 			review.setThumbImg(fileNums);
 
-			// 리뷰 작성 후 리뷰 권한 삭제
 			deleteReviewAuth(review.getReviewAuthNo());
 
-			// 포인트 적립
 			pointService.pointUp(review.getMemNo());
-			System.out.println("getMemNo" + review.getMemNo());
+			
 		}
 
 		Review reviewEntity = review.toEntity();
@@ -140,10 +137,11 @@ public class ReviewServiceImpl implements ReviewService {
 	// 리뷰 수정
 	@Override
 	public Integer modifyReview(Integer reviewNo, ReviewModifyDto reviewModifyDto, List<MultipartFile> files) throws Exception {
-	    // 기존 리뷰 정보 가져오기
+	   
 	    Review review = reviewRepository.findByReviewNo(reviewNo);
+	    List<ReviewToTag> existingReviewToTags = reviewToTagRepository.findByReview(review);
+	    reviewToTagRepository.deleteAll(existingReviewToTags);
 
-	    // 리뷰 정보 업데이트
 	    if (reviewModifyDto.getThumbImg() != null) {
 	        review.setThumbImg(reviewModifyDto.getThumbImg());
 	    }
@@ -155,7 +153,7 @@ public class ReviewServiceImpl implements ReviewService {
 	        review.setContent(reviewModifyDto.getContent());
 	    }
 	    if (reviewModifyDto.getTagName() != null) {
-	        //review.setTagName(reviewModifyDto.getTagName());
+	        review.setTagName(reviewModifyDto.getTagName());
 	    }
 
 	    if (files != null && !files.isEmpty()) {
@@ -172,7 +170,7 @@ public class ReviewServiceImpl implements ReviewService {
 	                        .data(file.getBytes())
 	                        .build();
 
-	                // 파일 업로드
+	               
 	                fileVoRepository.save(fileVo);
 
 	                File uploadFile = new File(dir + fileVo.getFileNum());
@@ -181,18 +179,41 @@ public class ReviewServiceImpl implements ReviewService {
 	                fileNums += (fileNums.isEmpty() ? "" : ",") + fileVo.getFileNum();
 	            }
 	        }
-	        // 파일 번호 목록을 썸네일 이미지로 사용
+	        
 	        review.setThumbImg(fileNums);
 	    }
+	 // 새로운 태그 추가
+	    String tagString = review.getTagName();
+	    if (tagString != null && !tagString.isEmpty()) {
+	        
+	        tagString = tagString.replace("[", "").replace("]", "").trim();
+	        String[] tagList = tagString.split(",");
 
-	    // 리뷰 정보 저장
+	        for (String tag : tagList) {
+	            try {
+	                
+	                int tagNo = Integer.parseInt(tag.trim());
+	            
+	                ReviewTag reviewTag = reviewTagRepository.findByTagNo(tagNo);
+
+	                if (reviewTag != null) {
+	                    ReviewToTag reviewToTag = ReviewToTag.builder()
+	                            .review(review)
+	                            .reviewTag(reviewTag)
+	                            .build();
+	                    reviewToTagRepository.save(reviewToTag);
+	                }
+	            } catch (NumberFormatException e) {
+	                // 예외 처리
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+
 	    reviewRepository.save(review);
 
 	    return review.getReviewNo();
 	}
-
-
-	
 
 
 	// 선진 part
