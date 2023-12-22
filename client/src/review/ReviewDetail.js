@@ -173,6 +173,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("Error while sending the request:", error.message);
         }
       });
+      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+      .then((res) => {
+          const badgeName = res.data.badgeName || ''; 
+          setPickBadge([badgeName]);
+      })
+      .catch(error => {
+          console.error('에러 발생:', error);
+      });
   };
 
   const handlePageChange = (pageNumber) => {
@@ -372,6 +380,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
       });
+      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+      .then((res) => {
+          const badgeName = res.data.badgeName || ''; 
+          setPickBadge([badgeName]);
+      })
+      .catch(error => {
+          console.error('에러 발생:', error);
+      });
   }
 
   useEffect(() => { // 디테일 가져오기
@@ -444,7 +460,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 )}
                 </div>
               <div className="infoR">
-                <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</span>&nbsp;|&nbsp;
+                <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="배지" />{review.nickname}</span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
@@ -487,7 +503,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               <div key={bestReply.replyNo} className="replyInfo">
                 <div className="infoT">
                   <p>
-                    <img src="/img/house.png" alt="house" /> {bestReply.nickname}
+                    <img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
@@ -543,7 +559,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <div className="infoT">
                   <p>
                     {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                    <img src="/img/house.png" alt="house" /> {reply.nickname}
+                    <img src={`/img/${pickBadgeName[0]}`} alt="house" /> {reply.nickname}
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
