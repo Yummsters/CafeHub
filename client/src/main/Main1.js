@@ -4,108 +4,74 @@ import { Input } from 'reactstrap';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import axios from 'axios';
 
 const Main1 = () => {
+
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [cafeAds, setCafeAds] = useState([]);
     const [setting] = useState({
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 3000,
         dots: true,
-        initialSlide:2,
-      });
+        initialSlide: 2,
+    });
 
-      const [searchKeyword, setSearchKeyword] = useState('');
-
-      const handleSearchChange = (e) => {
+    const handleSearchChange = (e) => {
         setSearchKeyword(e.target.value);
-      };
+    };
 
-      const handleSearch = () => {
-        //검색 아이콘 클릭 시 reveiwList 페이지로 이동
+    const handleSearch = () => {
         window.location.href = `/reviewList?search=${encodeURIComponent(searchKeyword)}`;
-      };
+    };
 
     useEffect(() => {
-        const handleResize = () => {
-        
-        };
-    
+        const handleResize = () => { };
         window.addEventListener('resize', handleResize);
-        handleResize(); 
-    
+        handleResize();
         return () => {
-          window.removeEventListener('resize', handleResize);
+            window.removeEventListener('resize', handleResize);
         };
-      }, []);
+    }, []);
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/cafeAd/approvedAds`)
+            .then((response) => {
+                console.log(response);
+                setCafeAds(response.data);
+            })
+            .catch(error => {
+                console.error('카페 광고 가져오기 오류:', error);
+            })
+    }, []);
 
     return (
         <div className='Main'>
-         
-                <div className='searchbox'>
-                    <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange}/>
-                    < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색"/>
-                </div>
-              <Slider {...setting}>
-            <div className='banner'>
-                < img className="bannerImg" src='/img/우드슬랩1.png' /> 
-               
-                <div className="bannerbox">
-                    <span className="top-text">
-                        선진언니바보,<br />
-                    </span>
-                    <span className="middle-text">
-                        매일 갓 구운 빵을<br />
-                         파는 카페<br />
-                    </span>
 
-                    <span className="last-text">
-                        대표 메뉴 : 소금빵, 솔트슈페너, 쑥쑥라떼<br />
-                        서울 금천구 가산디지털1로 58  에이스한솔타워 제 101호
-                    </span>
-                </div>
-
+            <div className='searchbox'>
+                <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange} />
+                < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색" />
             </div>
-            <div className='banner'>
-                < img className="bannerImg" src='/img/우드슬랩2.png' /> 
-               
-                <div className="bannerbox">
-                    <span className="top-text">
-                        히진언니바보,<br />
-                    </span>
-                    <span className="middle-text">
-                        매일 갓 구운 빵을<br />
-                         파는 카페<br />
-                    </span>
+            <Slider {...setting}>
 
-                    <span className="last-text">
-                        대표 메뉴 : 소금빵, 솔트슈페너, 쑥쑥라떼<br />
-                        서울 금천구 가산디지털1로 58  에이스한솔타워 제 101호
-                    </span>
-                </div>
+                {cafeAds.map((ad, index) => (
+                    <div key={index} className='banner'>
+                        <img className="bannerImg" src={`/img/${ad.thumbImg}.png`} alt='' />
 
-            </div>
-            <div className='banner'>
-                < img className="bannerImg" src='/img/우드슬랩3.png'/> 
-               
-                <div className="bannerbox">
-                    <span className="top-text">
-                        혜리언니바보,<br />
-                    </span>
-                    <span className="middle-text">
-                        매일 갓 구운 빵을<br />
-                         파는 카페<br />
-                    </span>
-
-                    <span className="last-text">
-                        대표 메뉴 : 소금빵, 솔트슈페너, 쑥쑥라떼<br />
-                        서울 금천구 가산디지털1로 58  에이스한솔타워 제 101호
-                    </span>
-                </div>
-
-            </div>
+                        <div className="bannerbox">
+                            <div className="top-text">{ad.cafeName},</div>
+                            <div className="middle-text"><br/>{ad.description}</div>
+                            <div className="last-text">
+                                <div className="adMenuList">{ad.menu}</div>
+                                <div className="adAddress">{ad.address}</div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </Slider>
-            
+
         </div >
     );
 };
