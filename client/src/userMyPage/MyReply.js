@@ -46,9 +46,6 @@ const User5 = () => {
     }, [])
 
     const getPage = (page) => {
-        if (isLogin) {
-            normalCheck(dispatch, accessToken);
-        }
         setPage(page);
         setCurPage(page);
 
@@ -59,6 +56,8 @@ const User5 = () => {
             }
         })
             .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
                 console.log(res.data);
                 const list = res.data.data;
                 const resPageInfo = res.data.pageInfo;
@@ -73,8 +72,12 @@ const User5 = () => {
 
                 console.log(replyList);
             })
+            })
             .catch(err => {
                 console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
             })
     }
 
@@ -82,8 +85,7 @@ const User5 = () => {
         if (isLogin) {
             normalCheck(dispatch, accessToken);
         }
-        navigate('/reviewDetail/' + reviewNo);
-    }
+        navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});    }
 
     const replyDeleteCheck = (e, replyNo) => {
         e.stopPropagation();
@@ -139,17 +141,18 @@ const User5 = () => {
             <UserSideTab />
             <div className='myReplylistBox'>
                 <br /><label className='myreplylistTitle'>댓글 관리</label><br /><br />
+                {replyList.length == 0 && <div className="myreply0">작성한 댓글이 없습니다</div>}
                 <div className='myReply-table'>
                     <Table hover>
                         <tbody>
-                            {replyList.length == 0 ? <sapn className="myreply0">조회된 댓글이 없습니다.</sapn> : replyList.map(list => {
+                            {replyList.length != 0 && replyList.map(list => {
                                 return (
                                     <tr key={list.replyNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <td colSpan={10} >
-                                            <div className='myReply-listMiniTitle'>{list.content}</div>
+                                        <td colSpan={8} >
+                                            <div className='myReply-listMiniTitle'>{list.content.length >30 ? list.content.slice(0, 30)+'...' : list.content }</div>
                                             <div className='myReply-description1'>원글: {list.title}</div>
                                         </td>
-                                        <td colSpan={2}>
+                                        <td colSpan={4}>
                                             <img className='myReply-replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''
                                                 onClick={(e) => replyDeleteCheck(e, list.replyNo)} /><br />
                                             <div className='myReply-dateTime'>작성일 {list.regDate}</div>
@@ -159,7 +162,7 @@ const User5 = () => {
                         </tbody>
                     </Table>
                 </div>
-                <Pagination className="myReply-Page">
+                { replyList.length != 0 && <Pagination className="myReply-Page">
                     <PaginationLink
                         className='myReply-Button'
                         onClick={() => { getPage(page - 1); setCurPage(page - 2); }}
@@ -203,7 +206,7 @@ const User5 = () => {
                         disabled={page >= pageInfo.totalPages}>
                         &gt;
                     </PaginationLink>
-                </Pagination>
+                </Pagination>}
             </div>
         </div>
     );

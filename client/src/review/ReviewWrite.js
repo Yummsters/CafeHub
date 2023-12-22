@@ -184,6 +184,7 @@ const ReviewWrite = () => {
                 console.log(err);
             })
     }, [])
+
     const [selectedTags, setSelectedTags] = useState([]);
 
     const tagClick = (i) => {

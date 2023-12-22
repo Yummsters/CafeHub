@@ -79,10 +79,11 @@ const StoreReview = () => {
             <StoreSideTab />
             <div className='storeReviewListBox'>
                 <br /><label className='storeReview-listTitle'>리뷰 조회</label><br /><br />
+                {reviewList.length == 0 &&  <div className="storeReview0">작성된 리뷰가 없습니다</div>}
                 <div className='storeReview-table'>
                     <Table hover>
                         <tbody>
-                            {reviewList.length == 0 ? <sapn className="storeReview0">조회된 댓글이 없습니다.</sapn> : reviewList.map(list => {
+                            {reviewList.length != 0 && reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
                                         <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`${url}/thumbImg/${list.thumbImg}`} alt='' /></th>
@@ -96,6 +97,7 @@ const StoreReview = () => {
                         </tbody>
                     </Table>
                 </div>
+                {reviewList.length != 0 &&  
                 <Pagination className="storeReview-Page">
                     <PaginationLink
                         className='storeReview-Button'
@@ -142,6 +144,7 @@ const StoreReview = () => {
                         &gt;
                     </PaginationLink>
                 </Pagination>
+}
             </div>
         </div>
     );

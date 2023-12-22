@@ -4,9 +4,10 @@ import { useParams } from "react-router";
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { normalCheck } from '../login/TokenCheck';
+import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
 import './userReviewStyle.css';
 import axios from 'axios';
+import { removeCookie, setCookie } from '../components/Cookie';
 import { url } from '../config.js'
 
 const UserReview = () => {
@@ -31,26 +32,29 @@ const UserReview = () => {
     }, [])
 
     const getPage = (page) => {
-        if (isLogin) {
-            normalCheck(dispatch, accessToken);
-        }
         setPage(page);
         setCurPage(page);
         axios.get(`${url}/userReview/${nickname}?page=${page}&&size=5`)
             .then(res => {
-                const list = res.data.data;
-                const resPageInfo = res.data.pageInfo;
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
+                        const list = res.data.data;
+                        const resPageInfo = res.data.pageInfo;
 
-                setReviewList([...list]);
-                setPageInfo({
-                    page: resPageInfo.page,
-                    size: resPageInfo.size,
-                    totalElements: resPageInfo.totalElements,
-                    totalPages: resPageInfo.totalPages
-                });
+                        setReviewList([...list]);
+                        setPageInfo({
+                            page: resPageInfo.page,
+                            size: resPageInfo.size,
+                            totalElements: resPageInfo.totalElements,
+                            totalPages: resPageInfo.totalPages
+                        });
+                    })
             })
             .catch(err => {
                 console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
             })
     }
 
@@ -65,6 +69,7 @@ const UserReview = () => {
         <div className='userReview-container'>
             <div className='userReviewListBox'>
                 <br /><label className='listTitle'>{nickname}님이 작성한 리뷰</label><br /><br />
+                {reviewList.length == 0 && <div className="storeReview0">작성한 리뷰가 없습니다</div>}
                 <div className='userReview-table'>
                     <Table hover>
                         <tbody>
@@ -82,52 +87,54 @@ const UserReview = () => {
                         </tbody>
                     </Table>
                 </div>
-                <Pagination className="storeReview-Page">
-                    <PaginationLink
-                        className='storeReview-Button'
-                        onClick={() => { getPage(page - 1); setCurPage(page - 2); }}
-                        disabled={page === 1}>
-                        &lt;
-                    </PaginationLink>
-                    <PaginationLink
-                        className={`storeReview-Button ${firstNum === page ? 'current-page' : ''}`}
-                        onClick={() => getPage(firstNum)}
-                        aria-current={page === firstNum ? "page" : null}>
-                        {firstNum}
-                    </PaginationLink>
-                    {Array(total).fill().map((_, i) => {
+                {reviewList.length != 0 &&
+                    <Pagination className="storeReview-Page">
+                        <PaginationLink
+                            className='storeReview-Button'
+                            onClick={() => { getPage(page - 1); setCurPage(page - 2); }}
+                            disabled={page === 1}>
+                            &lt;
+                        </PaginationLink>
+                        <PaginationLink
+                            className={`storeReview-Button ${firstNum === page ? 'current-page' : ''}`}
+                            onClick={() => getPage(firstNum)}
+                            aria-current={page === firstNum ? "page" : null}>
+                            {firstNum}
+                        </PaginationLink>
+                        {Array(total).fill().map((_, i) => {
 
-                        if (i <= 2) {
-                            let pageNum = firstNum + 1 + i;
-                            return (
-                                <PaginationLink
-                                    className={`storeReview-Button ${pageNum === page ? 'current-page' : ''}`}
-                                    key={i + 1}
-                                    onClick={() => { getPage(firstNum + 1 + i) }}
-                                    aria-current={page === firstNum + 1 + i ? "page" : null}>
-                                    {firstNum + 1 + i}
-                                </PaginationLink>
-                            )
-                        } else if (i >= 3) {
-                            let pageNum = lastNum;
-                            return (
-                                <PaginationLink
-                                    className={`storeReview-Button ${pageNum === page ? 'current-page' : ''}`}
-                                    key={i + 1}
-                                    onClick={() => getPage(lastNum)}
-                                    aria-current={page === lastNum ? "page" : null}>
-                                    {lastNum}
-                                </PaginationLink>
-                            )
-                        }
-                    })}
-                    <PaginationLink
-                        className='storeReview-Button'
-                        onClick={() => { getPage(page + 1); setCurPage(page); }}
-                        disabled={page >= pageInfo.totalPages}>
-                        &gt;
-                    </PaginationLink>
-                </Pagination>
+                            if (i <= 2) {
+                                let pageNum = firstNum + 1 + i;
+                                return (
+                                    <PaginationLink
+                                        className={`storeReview-Button ${pageNum === page ? 'current-page' : ''}`}
+                                        key={i + 1}
+                                        onClick={() => { getPage(firstNum + 1 + i) }}
+                                        aria-current={page === firstNum + 1 + i ? "page" : null}>
+                                        {firstNum + 1 + i}
+                                    </PaginationLink>
+                                )
+                            } else if (i >= 3) {
+                                let pageNum = lastNum;
+                                return (
+                                    <PaginationLink
+                                        className={`storeReview-Button ${pageNum === page ? 'current-page' : ''}`}
+                                        key={i + 1}
+                                        onClick={() => getPage(lastNum)}
+                                        aria-current={page === lastNum ? "page" : null}>
+                                        {lastNum}
+                                    </PaginationLink>
+                                )
+                            }
+                        })}
+                        <PaginationLink
+                            className='storeReview-Button'
+                            onClick={() => { getPage(page + 1); setCurPage(page); }}
+                            disabled={page >= pageInfo.totalPages}>
+                            &gt;
+                        </PaginationLink>
+                    </Pagination>
+                }
             </div>
         </div>
     );
