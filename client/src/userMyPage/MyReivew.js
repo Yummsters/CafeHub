@@ -251,7 +251,7 @@ const MyReview = () => {
                     <br /><label className='cafeList'>리뷰 작성 가능 카페</label><br /><br />
                         <Table hover>
                         <tbody>
-                            {authList.length == 0 ? <sapn className="myreview0">조회된 작성 가는 카페가 없습니다</sapn> : authList.map(auth => {
+                            {authList.length == 0 ? <sapn className="myreview0">리뷰 작성 가능한 카페가 없습니다</sapn> : authList.map(auth => {
                                 return (
 
                                     <tr className='trauth'>
