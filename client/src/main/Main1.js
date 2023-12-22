@@ -58,7 +58,7 @@ const Main1 = () => {
 
                 {cafeAds.map((ad, index) => (
                     <div key={index} className='banner'>
-                        <img className="bannerImg" src={ad.thumbImg} alt='' />
+                        <img className="bannerImg" src={`/img/${ad.thumbImg}.png`} alt='' />
 
                         <div className="bannerbox">
                             <div className="top-text">{ad.cafeName},</div>
