@@ -6,6 +6,8 @@ import com.yummsters.cafehub.domain.payment.entity.Payment;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 public class CafeAdReqDto {
@@ -20,6 +22,7 @@ public class CafeAdReqDto {
             cafeAd.description(cafeAdReqDto.getDescription());
             cafeAd.menu(cafeAdReqDto.getMenu());
             cafeAd.cafe(cafe);
+            cafeAd.regDate(LocalDateTime.now());
             return cafeAd.build();
         }
     }

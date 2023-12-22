@@ -56,7 +56,7 @@ public class PointController {
     }
 
     // 사장 포인트 정산 신청
-    @PostMapping("/store/calculate/{memNo}")
+    @PostMapping("/store/point/calculate/{memNo}")
     public ResponseEntity<Object> requestPointCal(@PathVariable("memNo") Integer memNo){
         try{
             Integer resPoint = pointService.calPoint(memNo);
@@ -88,7 +88,7 @@ public class PointController {
     }
 
     // 포인트 정산 승인
-    @PostMapping("/{memNo}")
+    @PostMapping("/manager/point/{memNo}")
     public ResponseEntity<Object> permitPoint(@PathVariable("memNo") Integer memNo){
         try{
             boolean resPermit = pointService.permitPoint(memNo);

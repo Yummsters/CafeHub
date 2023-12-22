@@ -7,6 +7,7 @@ import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.dto.CafeTokenResDto;
 import com.yummsters.cafehub.domain.member.dto.TokenResDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
+import com.yummsters.cafehub.domain.member.entity.MemberType;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.global.auth.dto.LoginReqDto;
 import com.yummsters.cafehub.global.auth.jwt.JwtProvider;
@@ -56,18 +57,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             }
         }
 
+        if(member.getMemberType().equals(MemberType.MANAGER)){
+            return authentication;
+        }
         // 사용자, 사장님에 따른 로그인 구분
-        if(!dbMemberType.equals(loginReqDto.getMemberType().toString())){
-            try{
-                if(dbMemberType.equals("USER")) {
-                    response.sendError(991, "사장님이 아닙니다. 사용자 로그인을 이용하세요." );
-                } else{
+        if (!dbMemberType.equals(loginReqDto.getMemberType().toString())) {
+            try {
+                if (dbMemberType.equals("USER")) {
+                    response.sendError(991, "사장님이 아닙니다. 사용자 로그인을 이용하세요.");
+                } else {
                     response.sendError(990, "사용자가 아닙니다. 사장님 로그인을 이용하세요.");
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
+
+
         return authentication;
     }
 
@@ -85,7 +91,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String refreshToken = JWT.create()
                 .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME*24))
+                .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProvider.EXPIRATION_TIME*10))
                 .withClaim("id", principalDetails.getUsername())
                 .sign(Algorithm.HMAC256(JwtProvider.SECRET));
 
