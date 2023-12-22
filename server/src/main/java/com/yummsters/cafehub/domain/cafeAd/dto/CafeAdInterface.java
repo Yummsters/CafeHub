@@ -4,11 +4,12 @@ import java.time.LocalDateTime;
 
 public interface CafeAdInterface {
 	String getCafeAdNo();
-	boolean getIsApproved();
+	Integer getIsApproved();
 	LocalDateTime getAuthDate();
 	String getThumbImg();
 	String getCafeName();
 	String getDescription();
 	String getMenu();
 	String getRegDate();
+	String getAddress();
 }
