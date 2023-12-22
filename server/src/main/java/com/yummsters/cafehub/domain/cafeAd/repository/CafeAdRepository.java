@@ -23,11 +23,11 @@ public interface CafeAdRepository extends JpaRepository<CafeAd, Integer> {
     		+ "ca.thumb_img AS thumbImg, "
     		+ "ca.description AS description, "
     		+ "ca.menu AS menu, "
-    		+ "ca.auth_date AS authDate"
+    		+ "ca.auth_date AS authDate "
     		+ "FROM cafe_ad ca "
     		+ "JOIN cafe c ON ca.cafe_no = c.cafe_no "
     		+ "WHERE ca.is_approved = 1 "
-    		+ "ORDER BY auth_date LIMIT 3", nativeQuery = true)
+    		+ "ORDER BY ca.auth_date LIMIT 3", nativeQuery = true)
     List<CafeAdInterface> findApprovedAds();
     
     @Query(value = "SELECT c.cafe_name AS cafeName, "

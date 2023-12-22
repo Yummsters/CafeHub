@@ -101,11 +101,16 @@ public class CafeAdController {
     
     //혜리 part-------------------------------------------------------
     @GetMapping("/cafeAd/approvedAds")
-    public ResponseEntity<List<CafeAdReqDto>> getApprovedAds() {
+    public ResponseEntity<List<CafeAdInterface>> getApprovedAds() {
         try {
         	List<CafeAdInterface> approvedAds = cafeAdService.getApprovedAds();
+        	System.out.println("===============");
+        	for(CafeAdInterface ca : approvedAds) {
+        		System.out.println(ca.getIsApproved());
+        	}
             return new ResponseEntity<>(approvedAds, HttpStatus.OK);
         } catch (Exception e) {
+        	e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
