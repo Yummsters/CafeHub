@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import { url } from '../config.js'
 
 const UsePoint = () =>{
     const [point, setPoint] = useState(''); // 입력 포인트
@@ -23,7 +24,7 @@ const UsePoint = () =>{
 
     useEffect(()=>{
         // 회원 포인트 조회 후 저장
-        axios.get(`http://localhost:8080/member/point/${memNo}`,
+        axios.get(`${url}/member/point/${memNo}`,
         {
             headers : {
                 Authorization : accessToken,
@@ -89,7 +90,7 @@ const UsePoint = () =>{
             })
         }else{
             //
-            axios.post(`http://localhost:8080/store/point/use/${memNo}/cafe/${cafeNo}/${point}`,null,{
+            axios.post(`${url}/store/point/use/${memNo}/cafe/${cafeNo}/${point}`,null,{
                 headers : {
                     Authorization : accessToken,
                     Refresh : getCookie("refresh")

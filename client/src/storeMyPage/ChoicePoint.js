@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import { url } from '../config.js'
 
 // 포인트 및 리뷰권한 테이블 생성 후 로직 추가 필요
 const ChoicePoint = () => {
@@ -31,7 +32,7 @@ const ChoicePoint = () => {
     // 포인트 적립
     const pointSave = (e) =>{
         e.preventDefault();
-        axios.post(`http://localhost:8080/store/point/save/${memNo}/cafe/${cafeNo}`,null,{
+        axios.post(`${url}/store/point/save/${memNo}/cafe/${cafeNo}`,null,{
             headers : {
                 Authorization :accessToken,
                 Refresh : getCookie("refreshToken")
@@ -66,7 +67,7 @@ const ChoicePoint = () => {
         e.preventDefault();
 
        // 회원 포인트 조회 후 저장
-       axios.get(`http://localhost:8080/member/point/${memNo}`,
+       axios.get(`${url}/member/point/${memNo}`,
        {
            headers : {
                 Authorization :accessToken,

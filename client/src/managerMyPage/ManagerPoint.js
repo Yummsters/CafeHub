@@ -8,6 +8,7 @@ import ManagerSideTab from '../components/ManagerSideTab';
 import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useNavigate } from 'react-router';
+import { url } from '../config.js'
 
 const Manager2 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -46,7 +47,7 @@ const Manager2 = () => {
     const getPage = (page) => {
         setPage(page);
 
-        axios.get(`http://localhost:8080/manager/list?page=${page}&&size=5`,
+        axios.get(`${url}/point/list?page=${page}&&size=5`,
             {
                 headers: {
                     Authorization: accessToken,
@@ -80,7 +81,8 @@ const Manager2 = () => {
         console.log("들어감");
         const memNo = e.target.id;
 
-        axios.post(`http://localhost:8080/manager/point/${memNo}`, null, {
+
+        axios.post(`${url}/point/${memNo}`, null, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -115,9 +117,9 @@ const Manager2 = () => {
                     <tbody>
                         {pointList.length != 0 && pointList.map(list => {
                             return (
-                                <tr key={list.memNo}>
-                                    <th scope="row"><img className='managerPoint-thumb' src={`http://localhost:8080/common/uplooad/${list.thumbImg}`} alt='' /></th>
-                                    <td colSpan={3}> <div className='listMiniTitle' >{list.cafeName}</div></td>
+                                <tr key={list.memNo}> 
+                                    <th scope="row"><img className='managerPoint-thumb' src={`${url}/common/uplooad/${list.thumbImg}`} alt=''/></th>
+                                    <td colSpan={2}> <div className='listMiniTitle' >{list.cafeName}</div></td>
                                     <td colSpan={2}><div className='dateTime'>신청일 {list.refDate}</div></td>
                                     <td colSpan={1}> <img className='managerPoint-bean' src='/img/coffeebeans.png' alt='' style={{ width: "40px" }} /></td>
                                     <td colSpan={2}> {list.refPointCount}개 </td>

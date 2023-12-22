@@ -4,6 +4,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { url } from '../config.js'
 
 const Main2 = () => {
   const [settings] = useState({
@@ -21,7 +22,7 @@ const Main2 = () => {
   useEffect(() => {
       const fetchReviews = async () => {
         try {
-          const response = await axios.get(`http://localhost:8080/reviewList/member/${memNo??0}`);
+          const response = await axios.get(`${url}/reviewList/member/${memNo??0}`);
           setReviews(response.data);
         } catch (error) {
           console.error('리뷰 목록 조회 실패', error);

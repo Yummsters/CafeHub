@@ -8,6 +8,7 @@ import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
 import './userReviewStyle.css';
 import axios from 'axios';
 import { removeCookie, setCookie } from '../components/Cookie';
+import { url } from '../config.js'
 
 const UserReview = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -33,7 +34,7 @@ const UserReview = () => {
     const getPage = (page) => {
         setPage(page);
         setCurPage(page);
-        axios.get(`http://localhost:8080/userReview/${nickname}?page=${page}&&size=5`)
+        axios.get(`${url}/userReview/${nickname}?page=${page}&&size=5`)
             .then(res => {
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
@@ -75,7 +76,7 @@ const UserReview = () => {
                             {reviewList.length != 0 && reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <th scope="row" style={{ width: "150px" }}> <img className='listImg' src={`http://localhost:8080/thumbImg/${list.thumbImg}`} alt='' /></th>
+                                        <th scope="row" style={{ width: "150px" }}> <img className='listImg' src={`${url}/thumbImg/${list.thumbImg}`} alt='' /></th>
                                         <td colSpan={8}><div className='listMiniTitle'>{list.title}</div>
                                             <div className='reviewUser'>{list.cafeName}</div></td>
                                         <td colSpan={4}><div className='reviewLikeCount'>추천 {list.likeCount}</div>

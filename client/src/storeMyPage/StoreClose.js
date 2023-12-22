@@ -6,7 +6,7 @@ import { removeCookie} from '../components/Cookie';
 import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-
+import { url } from '../config.js'
 
 const StoreClose = () => {
     const [isTerminationModalOpen, setIsTerminationModalOpen] = useState(true);
@@ -39,7 +39,7 @@ const StoreClose = () => {
     const handleWithdrawal = (e) => {  
         console.log(pwInput);  
         // 자체 로그인 회원 탈퇴
-        axios.post(`http://localhost:8080/member/delete/normal/${memNo}`,{
+        axios.post(`${url}/member/delete/normal/${memNo}`,{
           password : pwInput
         },
         {

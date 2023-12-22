@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import { url } from '../config.js'
 
 
 
@@ -45,7 +46,7 @@ const Keypad = () => {
     const phoneSubmit = (e) => {
         e.preventDefault();
         setPhone('010');
-        axios.get(`http://localhost:8080/member/phone/${phone}`, {
+        axios.get(`${url}/member/phone/${phone}`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")

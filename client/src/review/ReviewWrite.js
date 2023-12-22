@@ -12,6 +12,7 @@ import 'prismjs/themes/prism.css';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { getCookie } from '../components/Cookie';
+import { url } from '../config.js'
 
 const ReviewWrite = () => {
     const [editorInstance, setEditorInstance] = useState(null);
@@ -38,7 +39,7 @@ const ReviewWrite = () => {
             console.log(getCookie("refreshToken"));
 
             // 토큰을 이용한 사용자 정보 가져오기
-            axios.get(`http://localhost:8080/member`, {
+            axios.get(`${url}/member`, {
                 headers: {
                     Authorization: accessToken,
                     Refresh: getCookie("refreshToken"),
@@ -72,7 +73,7 @@ const ReviewWrite = () => {
 
         axios({
             method: 'POST',
-            url: 'http://localhost:8080/common/fileUpload',
+            url: '${url}/common/fileUpload',
             data: formData,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -94,7 +95,7 @@ const ReviewWrite = () => {
 
     const fetchCafeList = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/reviewauth/${memNo}`);
+            const response = await axios.get(`${url}/reviewauth/${memNo}`);
 
             setCafes(response.data);
             console.log('Cafes:', response.data);
@@ -146,7 +147,7 @@ const ReviewWrite = () => {
         }
 
         axios
-            .post('http://localhost:8080/reviewwrite', formData)
+            .post(`${url}/reviewwrite`, formData)
             .then((res) => {
                 console.log(res);
                 let reviewNo = res.data;
@@ -173,7 +174,7 @@ const ReviewWrite = () => {
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/reviewTagList`)
+        axios.get(`${url}/reviewTagList`)
             .then(res => {
                 console.log(res.data);
                 setTagName([...res.data]);
@@ -307,7 +308,7 @@ const ReviewWrite = () => {
 
                                 axios({
                                     method: 'POST',
-                                    url: 'http://localhost:8080/common/fileUpload',
+                                    url: `${url}/common/fileUpload`,
                                     data: formData,
                                     headers: {
                                         'Content-Type': 'multipart/form-data',
@@ -334,7 +335,7 @@ const ReviewWrite = () => {
                             key={i}
                             className={selectedTags.includes(i) ? 'selectTag' : 'tag'}
                             onClick={() => tagClick(i)}>
-                            {tag.tagName}
+                            {review.tagNames}
                         </div>
                     ))}
                 </div>

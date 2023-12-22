@@ -8,6 +8,7 @@ import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { url } from '../config.js'
 
 const StoreReview = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -35,7 +36,7 @@ const StoreReview = () => {
     const getPage = (page) => {
         setPage(page);
         setCurPage(page);
-        axios.get(`http://localhost:8080/store/review/storeList/${cafeNo}?page=${page}&&size=5`,
+        axios.get(`${url}/store/review/storeList/${cafeNo}?page=${page}&&size=5`,
             {
                 headers: {
                     Authorization: accessToken,
@@ -85,7 +86,7 @@ const StoreReview = () => {
                             {reviewList.length != 0 && reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`http://localhost:8080/thumbImg/${list.thumbImg}`} alt='' /></th>
+                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`${url}/thumbImg/${list.thumbImg}`} alt='' /></th>
                                         <td colSpan={11}><div className='storeReview-listMiniTitle'>{list.title}</div>
                                             <div className='storeReview-reviewUser'>{list.nickName}</div></td>
                                         <td colSpan={1}><div className='storeReview-reviewLikeCount'>추천 {list.likeCount}</div>

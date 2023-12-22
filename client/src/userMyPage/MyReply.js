@@ -10,7 +10,7 @@ import UserSideTab from '../components/UserSideTab';
 import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
 import axios from 'axios';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
-
+import { url } from '../config.js'
 
 const User5 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -49,7 +49,7 @@ const User5 = () => {
         setPage(page);
         setCurPage(page);
 
-        axios.get(`http://localhost:8080/user/reply/${memNo}?page=${page}&&size=5`, {
+        axios.get(`${url}/user/reply/${memNo}?page=${page}&&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -109,7 +109,7 @@ const User5 = () => {
     const replyDelete = (replyNo) => {
         console.log(replyNo);
 
-        axios.delete(`http://localhost:8080/replyDelete/${replyNo}`, {
+        axios.delete(`${url}/replyDelete/${replyNo}`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
