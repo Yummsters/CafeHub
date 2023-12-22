@@ -334,7 +334,7 @@ const ReviewWrite = () => {
                             key={i}
                             className={selectedTags.includes(i) ? 'selectTag' : 'tag'}
                             onClick={() => tagClick(i)}>
-                            {tag.tagName}
+                            {review.tagNames}
                         </div>
                     ))}
                 </div>
