@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -102,27 +103,19 @@ public class CafeAdController {
     @GetMapping("/cafeAd/approvedAds")
     public ResponseEntity<List<CafeAdReqDto>> getApprovedAds() {
         try {
-            List<CafeAd> approvedAds = cafeAdService.getApprovedAds();
-            List<CafeAdReqDto> responseDtoList = new ArrayList<>();
-
-            for (CafeAd cafeAd : approvedAds) {
-                CafeAdReqDto cafeAdReqDto = CafeAdReqDto.builder()
-                        .description(cafeAd.getDescription())
-                        .menu(cafeAd.getMenu())
-                        .build();
-                responseDtoList.add(cafeAdReqDto);
-            }
-
-            return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+        	List<CafeAdInterface> approvedAds = cafeAdService.getApprovedAds();
+            return new ResponseEntity<>(approvedAds, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
+  //managerConfirm
     @GetMapping("/cafeAd/unapprovedAds")
-    public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(Pageable pageable) {
+    public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<CafeAdInterface> unapprovedAds = cafeAdService.getUnapprovedAds(pageable);
+            Page<CafeAdInterface> unapprovedAds = cafeAdService.getUnapprovedAds(PageRequest.of(page, size));
             return new ResponseEntity<>(unapprovedAds, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,5 +131,10 @@ public class CafeAdController {
         } catch (Exception e) {
             return new ResponseEntity<>("카페 광고 승인에 실패했습니다", HttpStatus.BAD_REQUEST);
         }
+    }
+    
+    @Scheduled(fixedDelay = 7 * 24 * 60 * 60 * 1000, initialDelay = 7 * 24 * 60 * 60 * 1000)
+    public void deleteCafeAd() throws Exception {
+    	cafeAdService.deleteOldRecords();
     }
 }

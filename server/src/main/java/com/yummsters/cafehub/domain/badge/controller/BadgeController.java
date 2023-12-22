@@ -18,6 +18,7 @@ import com.yummsters.cafehub.domain.badge.entity.MemberBadges;
 import com.yummsters.cafehub.domain.badge.repository.BadgeRepository;
 import com.yummsters.cafehub.domain.badge.repository.MemberBadgeRepository;
 import com.yummsters.cafehub.domain.badge.service.BageService;
+import com.yummsters.cafehub.domain.member.dto.DefaultBadgeDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 
@@ -30,6 +31,7 @@ public class BadgeController {
 	private final MemberBadgeRepository memberBadgeRepository;
 	private final BageService badgeService;
     private final MemberRepository memberRepository;
+    private final DefaultBadgeDto defaultBadgeDto;
     //배지만들기
     @PostMapping("/bage/{badgeName}")
     public void BadgeName(@PathVariable("badgeName") String badgeName) throws Exception {
@@ -45,10 +47,12 @@ public class BadgeController {
    
     //배지 목록 조회
     @GetMapping("/badgeList")
-    public ResponseEntity<Object> badgeList(){
-        List<Badge> responseList = badgeRepository.findAll();
+    public ResponseEntity<Object> badgeList() {
+        
+        List<Badge> responseList = badgeRepository.findByBadgeNoNot(9);
+
         return new ResponseEntity<>(responseList, HttpStatus.OK);
-   }
+    }
   
     //구매한 배지 가져오기
     @GetMapping("/badge/{memNo}")
@@ -115,29 +119,47 @@ public class BadgeController {
         }
     } 
     //배지 30일 만료  
-//    @Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
-//    public void deleteBadges() {
-//        try {
-//           
-//            List<MemberBadges> list = memberBadgeRepository.findAllByRegDateIsBefore(LocalDateTime.now().minusDays(30));
-//            for(MemberBadges memberBadges : list) {
-//            	 Integer memberBadge = memberRepository.findByMemNo(memberBadges.getMemNo()).getBadgeNo();
-//                 Integer memberBadgesBadge = memberBadges.getBadgeNo();  }
-//            if (memberBadge.equals(memberBadgesBadge)) {
-//                // 동일한 경우
-//                Badge defaultBadge = badgeRepository.findByBadgeNo(9); // 기본 배지 번호 9
-//                Member member = memberRepository.findByMemNo(memberBadges.getMemNo());
-//                member.getBadgeNo().setBadgeNo(defaultBadge.getBadgeNo());
-//                memberRepository.save(member);
-//            } else {
-//                // 동일하지 않은 경우
-//               
-//                  }
-//        
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
+    public void deleteBadges() {
+        try {
+            List<MemberBadges> list = memberBadgeRepository.findAllByRegDateIsBefore(LocalDateTime.now().minusDays(30));
+            for (MemberBadges memberBadges : list) {
+                Integer memberBadge = memberRepository.findByMemNo(memberBadges.getMemNo()).getBadgeNo();
+                Integer memberBadgesBadge = memberBadges.getBadgeNo();
+                if (memberBadge.equals(memberBadgesBadge)) {
+                    // 동일한 경우
+                	Badge defaultBadge = badgeRepository.findByBadgeNo(9); 
+                	Member member = memberRepository.findByMemNo(memberBadges.getMemNo());
+                	member.setBadgeNo(defaultBadge.getBadgeNo()); // 기본 배지로 설정
+                	memberRepository.save(member);
+                	memberBadgeRepository.delete(memberBadges); //members에있는 배지 지움
+                } else {
+                	 memberBadgeRepository.delete(memberBadges);
+                	 
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //기본배지선택
+    @PostMapping("/defaultBadge/{memNo}")
+    public ResponseEntity<Object> defaultBadge(@PathVariable Integer memNo) {
+        try {
+            Member member = badgeService.defaultBadge(memNo);
+
+            if (member != null) {
+            	DefaultBadgeDto defaultBadgeDto = member.toDTO();  // MemberDto를 사용하는 경우에 대한 가정입니다.
+
+                return new ResponseEntity<>(defaultBadgeDto, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 
     

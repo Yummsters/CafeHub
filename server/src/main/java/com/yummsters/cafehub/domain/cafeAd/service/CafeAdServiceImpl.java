@@ -88,9 +88,8 @@ public class CafeAdServiceImpl implements CafeAdService {
 
 	// 혜리 part-------------------------------------------------------
 	@Override
-	public List<CafeAd> getApprovedAds() throws Exception {
-		LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7); // 7일 이전까지의 승인된 광고
-		return cafeAdRepository.findByIsApprovedAndAuthDateBefore(true, cutoffDate);
+	public List<CafeAdInterface> getApprovedAds() throws Exception {
+		return cafeAdRepository.findApprovedAds();
 	}
 
 	@Override
@@ -110,4 +109,9 @@ public class CafeAdServiceImpl implements CafeAdService {
             throw new Exception("CafeAd not found with id: " + cafeAdNo);
         }
     }
+
+	@Override
+	public void deleteOldRecords() throws Exception {
+		cafeAdRepository.deleteOldRecords(LocalDateTime.now().minusDays(7));
+	}
 }

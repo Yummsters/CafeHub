@@ -81,6 +81,7 @@ public class MemberServiceImpl implements MemberService{
                     .email(member.getEmail())
                     .phone(member.getPhone())
                     .social(Social.NORMAL)
+                    .badgeNo(9)
                     .build();
 
         memberRepository.save(member);

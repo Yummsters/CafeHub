@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.point.entity.Point;
@@ -44,7 +45,7 @@ public class Review {
     private String subTitle;
 	@Column
 	private Integer likeCount;
-	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime regDate;
     @Column
     private boolean modPossible;
@@ -54,6 +55,10 @@ public class Review {
 	@JoinColumn(name="pointNo")
 	private Point point;
 
+	private String tagName;
+	 public void setTagName(String tagName) {
+	        this.tagName = tagName;
+	    }
    @Override
    public String toString() {
        return String.format("[%d,%s,%s,%s,%d,%d,%d,%s]",

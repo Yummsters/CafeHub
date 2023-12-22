@@ -174,7 +174,7 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/member/password") // userinfo 현재 비밀번호 일치 확인
+    @PostMapping("/password") // userinfo 현재 비밀번호 일치 확인
     public ResponseEntity<Object> matchPassword(@RequestBody SearchPwDto searchPwDto) {
         String id = searchPwDto.getId();
         String phone = searchPwDto.getPassword();
