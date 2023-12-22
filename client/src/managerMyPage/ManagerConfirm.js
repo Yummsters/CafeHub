@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import './Manager.css';
 import ManagerSideTab from '../components/ManagerSideTab';
 import axios from 'axios';
+import { url } from '../config.js'
 
 const ManagerConfirm = () => {
     const [pageInfo, setPageInfo] = useState({
@@ -23,7 +24,7 @@ const ManagerConfirm = () => {
     }, [searchParams]);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/managerConfirm`, {
+        axios.get(`${url}/managerConfirm`, {
             params: {
                 page: pageInfo.currentPage - 1,
                 size: pageInfo.cafesPerPage,

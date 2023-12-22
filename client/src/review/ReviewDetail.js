@@ -378,7 +378,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     if(isLogin) {
       normalCheck(dispatch, accessToken);
     }
-    axios.get(`http://localhost:8080/review/${reviewNo}?memNo=${memNo}`)
+    axios.get(`${url}/review/${reviewNo}?memNo=${memNo}`)
       .then((res) => {
         setReview(res.data.review);
         setLike(res.data.isLike);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import signUpUserStyle from './signUpUserStyle.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-
+import { url } from '../config.js'
 
 // 커서 관련하여 매끄럽지 않은 부분 수정 필요
 const SignUp_User = () =>{
@@ -47,7 +47,7 @@ const SignUp_User = () =>{
 
         // 제출 전 다시 체크
         if (!check.id) {
-            axios.get(`http://localhost:8080/id/${member.id}`)
+            axios.get(`${url}/id/${member.id}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -66,7 +66,7 @@ const SignUp_User = () =>{
         }
 
         if (!check.nickname) {
-            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -87,7 +87,7 @@ const SignUp_User = () =>{
         }
 
         if (check.email) {
-            axios.get(`http://localhost:8080/email/${member.email}`)
+            axios.get(`${url}/email/${member.email}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -109,7 +109,7 @@ const SignUp_User = () =>{
         }
 
         if (submitSignUP) {
-            axios.post(`http://localhost:8080/signUpUser`, member)
+            axios.post(`${url}/signUpUser`, member)
                 .then(res => {
                     Toast.fire({
                         icon: 'success',
@@ -189,7 +189,7 @@ const SignUp_User = () =>{
         const { name, value } = e.target;
 
         if (member.id) {
-            axios.get(`http://localhost:8080/id/${member.id}`)
+            axios.get(`${url}/id/${member.id}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -221,7 +221,7 @@ const SignUp_User = () =>{
         }));
 
         if (member.nickname) {
-            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -253,7 +253,7 @@ const SignUp_User = () =>{
         }));
 
         if (member.email) {
-            axios.get(`http://localhost:8080/email/${member.email}`)
+            axios.get(`${url}/email/${member.email}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -283,7 +283,7 @@ const SignUp_User = () =>{
         setRandomCode(random);
         console.log("Random code set:", random);
         console.log(member.phone);
-        // axios.get(`http://localhost:8080/check/sendSMS?phone=${member.phone}&code=${random}`)
+        // axios.get(`${url}/check/sendSMS?phone=${member.phone}&code=${random}`)
         // .then((res) => {
         //     console.log(res.data);
         //     toast.fire({

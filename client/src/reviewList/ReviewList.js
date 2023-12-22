@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { url } from '../config.js'
 
 const ReviewList = () => {
     const member = useSelector(state => state.persistedReducer.member);
@@ -49,13 +50,13 @@ const ReviewList = () => {
         // let url = '';
         // if (searchKeyword) {
         //     //검색어가 있는 경우에만 검색 API 호출
-        //     url = `http://localhost:8080/searchList/${searchKeyword}`;
+        //     url = `${url}/searchList/${searchKeyword}`;
         // } else {
         //     //검색어가 없는 경우 기존 리뷰 목록 API 호출
-        //     url = `http://localhost:8080/reviewList`;
+        //     url = `${url}/reviewList`;
         // }
         axios
-            .get(`http://localhost:8080/reviewList`, {
+            .get(`${url}/reviewList`, {
                 params: {
                     search: searchKeyword,
                     page: pageInfo.currentPage - 1,
@@ -70,7 +71,7 @@ const ReviewList = () => {
                 setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
 
                 response.data.content.forEach((review) => {
-                    axios.get(`http://localhost:8080/getMemberBadge/${review.memNo}`)
+                    axios.get(`${url}/getMemberBadge/${review.memNo}`)
                         .then(badgeResponse => {
                             const badgeName = badgeResponse.data.badgeName || '';
                             setPickBadge((prev) => [...prev, badgeName]);

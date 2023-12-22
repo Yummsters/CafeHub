@@ -5,6 +5,7 @@ import './Manager.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import ManagerSideTab from '../components/ManagerSideTab';
+import { url } from '../config.js'
 
 const Manager2 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -39,7 +40,7 @@ const Manager2 = () => {
     // 페이지 조회
     const getPage = (page) => {
         setPage(page);
-        axios.get(`http://localhost:8080/point/list?page=${page}&&size=5`,
+        axios.get(`${url}/point/list?page=${page}&&size=5`,
         {
             headers : {
                 Authorization : accessToken
@@ -67,7 +68,7 @@ const Manager2 = () => {
         console.log("들어감");
         const memNo = e.target.id;
 
-        axios.post(`http://localhost:8080/point/${memNo}`,{
+        axios.post(`${url}/point/${memNo}`,{
             headers : {
                 Authorization : accessToken
             }
@@ -96,7 +97,7 @@ const Manager2 = () => {
                         {pointList.length != 0 && pointList.map(list =>{
                             return (
                                 <tr key={list.memNo}> 
-                                    <th scope="row"><img className='managerPoint-thumb' src={`http://localhost:8080/common/uplooad/${list.thumbImg}`} alt=''/></th>
+                                    <th scope="row"><img className='managerPoint-thumb' src={`${url}/common/uplooad/${list.thumbImg}`} alt=''/></th>
                                     <td colSpan={2}> <div className='listMiniTitle' >{list.cafeName}</div></td>
                                     <td colSpan={2}><div className='dateTime'>신청일 {list.refDate}</div></td>
                                     <td colSpan={2}> <img className='managerPoint-bean' src='/img/coffeebeans.png' alt=''/></td>

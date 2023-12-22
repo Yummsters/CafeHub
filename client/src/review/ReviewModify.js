@@ -10,6 +10,7 @@ import Prism from 'prismjs';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
+import { url } from '../config.js'
 
 const ReviewModify = () => {
     const [selectTag, setSelectTag] = useState([]);
@@ -30,7 +31,6 @@ const ReviewModify = () => {
     const [cafes, setCafes] = useState([]);
     const [imagePreview, setImagePreview] = useState(null);
     const [selectedTagNames, setSelectedTagNames] = useState([]);
-
     const [tagName, setTagName] = useState([]);
 
     const initialState = {
@@ -103,8 +103,7 @@ const ReviewModify = () => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/reviewmodify/${review.reviewNo}`, formData);
-
+            const response = await axios.post(`${url}/reviewmodify/${review.reviewNo}`, formData);
             Swal.fire({
                 title: '수정 성공!',
                 text: '리뷰가 성공적으로 등록되었습니다',
@@ -125,7 +124,7 @@ const ReviewModify = () => {
     useEffect(() => {
 
         axios
-            .get(`http://localhost:8080/review/${review.reviewNo}`)
+            .get(`${url}/review/${review.reviewNo}`)
             .then((response) => {
                 setThumbImg(response.data.review.thumbImg || '');
                 console.log(response.data);
@@ -193,7 +192,7 @@ const ReviewModify = () => {
 
     const fetchCafeList = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/reviewauth/${memNo}`);
+            const response = await axios.get(`${url}/reviewauth/${memNo}`);
 
             setCafes(response.data);
             console.log('Cafes:', response.data);
@@ -202,9 +201,49 @@ const ReviewModify = () => {
         }
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+    
+        if (file) {
+            setSelectedFile(file);
+    
+            uploadImages(file, (response) => {
+                console.log('이미지 업로드 결과:', response);
+                setIsFileSelected(true);
+                 // 이미지 프리뷰 업데이트
+                 setImagePreview(URL.createObjectURL(file));
+           
+            });
+        }
+    };
+   
 
+ // 이미지 업로드 성공 후 처리
+const uploadImages = (blob, callback) => {
+    let formData = new FormData();
+    formData.append('images', blob);
 
-
+    axios({
+        method: 'POST',
+        url: `${url}/common/fileUpload`,
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+        .then((response) => {
+            console.log('이미지 업로드 성공 맞나', response.data);
+            const fileNum = response.data.filenum; // 파일의 filenum을 가져옴
+            setThumbImg(fileNum); // 썸네일 이미지 업데이트
+            callback(response.data);
+        })
+        .catch((error) => {
+            console.error('이미지 업로드 실패', error);
+            console.error('서버 응답 데이터:', error.response.data); // 서버 응답 데이터 출력
+  
+            callback('image_load_fail');
+        });
+};
     useEffect(() => {
         if (review.thumbImg) {
             const imageUrl = `http://localhost:8080/common/upload/${review.thumbImg}`;
@@ -306,7 +345,7 @@ const ReviewModify = () => {
 
                                 axios({
                                     method: 'POST',
-                                    url: 'http://localhost:8080/common/fileUpload',
+                                    url: `${url}/common/fileUpload`,
                                     data: formData,
                                     headers: {
                                         'Content-Type': 'multipart/form-data',
