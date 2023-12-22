@@ -120,7 +120,7 @@ const ReviewList = () => {
                             {reviews.map((review) => (
                                 <tr key={review.reviewNo}>
                                     <th scope='row' style={{ width: "100px" }}>
-                                        <img className='listImg' src={review.thumbImg} alt='' />
+                                        <img className='listImg' src={`/img/${review.thumbImg}.png`} alt='' />
                                     </th>
                                     <td colSpan={10}>
                                         <Link to={`/reviewDetail/${review.reviewNo}`}
