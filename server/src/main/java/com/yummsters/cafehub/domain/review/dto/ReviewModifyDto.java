@@ -59,13 +59,13 @@ public class ReviewModifyDto {
 		        this.pointCount = pointCount;
 		    }
 		 
+		 
 		public Review toEntity() {
 
 			 return Review.builder()
 					 .reviewNo(reviewNo)
 			            .title(title)
 			            .content(content)
-			   //         .tagName(tagName)
 			            .thumbImg(thumbImg)
 			            .member(writer)
 			            .cafe(cafeNo)
