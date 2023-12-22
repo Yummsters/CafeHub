@@ -132,7 +132,7 @@ const Header = () => {
         <>
             <div className='navBox'>
                 <div className='navContent'>
-                    <div className='logo' onClick={logoClick} style={{ cursor: "pointer" }}>Café<span className="hub">Hub</span></div>
+                    <div className='logo' onClick={logoClick} style={{ cursor: "pointer" }}>Cafe<span className="hub">Hub</span></div>
                     <div className='center'>
                         <p><a href="#Main2" onClick={cafeRecommendClick}>카페 리뷰 추천</a></p>
                         <p><a href="/reviewList" onClick={cafeReview}>리뷰 게시판</a></p>

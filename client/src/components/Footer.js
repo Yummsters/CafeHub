@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <div className='footerBox'>
             <div className='footerContent'>
-                <div className='logo'>Café<span className="hub">Hub</span></div>
+                <div className='logo'>Cafe<span className="hub">Hub</span></div>
                 <div className='footer_info'>
                     <p>상호명 및 서비스 제공 : (주)카페허브</p>
                     <p>대표이사 : 김희진, 서혜리, 조수빈, 허선진</p>
