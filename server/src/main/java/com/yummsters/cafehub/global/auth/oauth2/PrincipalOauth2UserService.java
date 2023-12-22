@@ -41,9 +41,9 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
         // 회원가입 여부 확인
         Member member = memberRepository.findById(oAuth2MemberInfo.getProvider()+oAuth2MemberInfo.getProviderId());
 
-        if(memberRepository.existsByEmail(oAuth2MemberInfo.getEmail())){
+        if(member == null && memberRepository.existsByEmail(oAuth2MemberInfo.getEmail())){
             throw new OAuth2AuthenticationException(new OAuth2Error("존재 회원"), "존재 회원");
-        }else if(memberRepository.existsByNickname(oAuth2MemberInfo.getNickname())){
+        }else if(member == null && memberRepository.existsByNickname(oAuth2MemberInfo.getNickname())){
             throw new OAuth2AuthenticationException(new OAuth2Error("존재 닉네임"), "존재 닉네임");
         }else if(member == null){
             member = Member.builder()

@@ -33,14 +33,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cafeAd")
 public class CafeAdController {
     private final CafeAdService cafeAdService;
     private final CafeService cafeService;
     private final PaymentService paymentService;
 
     // 광고 신청 조회
-    @GetMapping("/{cafeNo}")
+    @GetMapping("/store/cafeAd/{cafeNo}")
     public ResponseEntity<Object> searchAd(@PathVariable("cafeNo") Integer cafeNo){
         try{
             CafeAd responseSearchCafe = cafeAdService.searchCafeAd(cafeNo);
@@ -52,7 +51,7 @@ public class CafeAdController {
     }
 
     // 광고 신청
-    @PostMapping("/{cafeNo}")
+    @PostMapping("/store/cafeAd/{cafeNo}")
     public ResponseEntity<Object> cafeAdSub(@PathVariable("cafeNo") Integer cafeNo,
                                             @ModelAttribute CafeAdReqDto cafeAdReqDto,
                                             @RequestParam("thumbImg") MultipartFile thumbImg) throws Exception {
@@ -78,7 +77,7 @@ public class CafeAdController {
 
     // 선진 part ----------------------------------------------------
     // 광고신청 취소 (미결제)
-    @DeleteMapping("/{cafeNo}")
+    @DeleteMapping("/cafeAd/{cafeNo}")
     public ResponseEntity<Object> deleteAd(@PathVariable("cafeNo") Integer cafeNo){
         try{
             boolean isDelete = cafeAdService.deleteCafeAd(cafeNo);
@@ -88,7 +87,7 @@ public class CafeAdController {
         }
     }
     // 결제 후 paymentKey 추가 및 isPaid true로 변경
-    @PutMapping("/{cafeNo}/{paymentKey}")
+    @PutMapping("/cafeAd/{cafeNo}/{paymentKey}")
     public ResponseEntity<Object> updateAd(@PathVariable("cafeNo") Integer cafeNo,
                                            @PathVariable("paymentKey") String paymentKey){
         try{
@@ -101,9 +100,8 @@ public class CafeAdController {
     }
     
     //혜리 part-------------------------------------------------------
-    //Main1
-    @GetMapping("/approvedAds")
-    public ResponseEntity<List<CafeAdInterface>> getApprovedAds() {
+    @GetMapping("/cafeAd/approvedAds")
+    public ResponseEntity<List<CafeAdReqDto>> getApprovedAds() {
         try {
         	List<CafeAdInterface> approvedAds = cafeAdService.getApprovedAds();
             return new ResponseEntity<>(approvedAds, HttpStatus.OK);
@@ -111,8 +109,9 @@ public class CafeAdController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    //managerConfirm
-    @GetMapping("/unapprovedAds")
+
+  //managerConfirm
+    @GetMapping("/cafeAd/unapprovedAds")
     public ResponseEntity<Page<CafeAdInterface>> getUnapprovedAds(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
@@ -123,8 +122,8 @@ public class CafeAdController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    //managerAd
-    @PutMapping("/approve/{cafeAdNo}")
+    
+    @PutMapping("/cafeAd/approve/{cafeAdNo}")
     public ResponseEntity<String> approveAd(@PathVariable Integer cafeAdNo) {
         try {
             cafeAdService.approveAd(cafeAdNo);
