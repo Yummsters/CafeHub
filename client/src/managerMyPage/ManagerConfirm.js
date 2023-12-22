@@ -24,7 +24,7 @@ const ManagerConfirm = () => {
     }, [searchParams]);
 
     useEffect(() => {
-        axios.get(`${url}/managerConfirm`, {
+        axios.get(`${url}/manager/managerConfirm`, {
             params: {
                 page: pageInfo.currentPage - 1,
                 size: pageInfo.cafesPerPage,
