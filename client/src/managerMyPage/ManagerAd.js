@@ -71,7 +71,7 @@ const ManagerAd = () => {
             {ads.map((ad) => (
               <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
                 <th scope="row">
-                  <img className='listImg' src={ad.thumbImg} alt='' />
+                  <img className='listImg' src={`/img/${ad.thumbImg}.png`} alt='' />
                 </th>
                 <td colSpan={11}>
                   <div className='listMiniTitle'>{ad.cafeName}</div>
