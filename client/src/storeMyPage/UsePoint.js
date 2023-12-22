@@ -126,7 +126,7 @@ const UsePoint = () =>{
     return (
       <div className="useKeypad-container" style={{ height: '80vh' }}>
         <div className="closeBtn">
-                <img onClick={backPoint} src='/img/X.png' />
+                <img onClick={backPoint}  src='/img/Xb.png' style={{width : "50px"}} />
         </div>
         <p className='usePoint-public'>사용 가능 커피콩 : {myPoint*100}원 / {myPoint}개</p>
         <input className="keypadInput-usePoint" type="text" id="phone" name="phone" style={{ height: '20vh' }} value={point + "원"}/>

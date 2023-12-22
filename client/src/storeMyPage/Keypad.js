@@ -88,7 +88,7 @@ const Keypad = () => {
     return (
         <div className="keypad-container">
             <div className="closeBtn">
-                <img onClick={backPoint} src='/img/X.png' />
+                <img onClick={backPoint} src='/img/Xb.png' style={{width : "50px"}}/>
             </div>
             <input className="keypadInput" type="text" id="phoneNum" name="phoneNum" style={{ height: '20vh' }} value={phone} />
             <div className="keypadNum-section">

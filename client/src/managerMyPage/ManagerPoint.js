@@ -5,7 +5,7 @@ import './Manager.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import ManagerSideTab from '../components/ManagerSideTab';
-import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useNavigate } from 'react-router';
 

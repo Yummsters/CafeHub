@@ -1,12 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { normalCheck } from '../login/TokenCheck';
 
 const Main4 = () => {
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
+
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleReviewButtonClick = () => {
-        // ReviewWrite로 이동
-        navigate('/reviewwrite');
+        
+        if(isLogin){
+            navigate('/reviewwrite');
+        }else{
+            navigate('/login');
+        }
+
+       
     };
 
     return (

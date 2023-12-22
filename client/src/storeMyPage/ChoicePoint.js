@@ -107,7 +107,7 @@ const ChoicePoint = () => {
     return(
         <div className="choicePoint-container">
             <div className="closeBtn">
-                <img onClick={backPoint} src='/img/X.png' />
+                <img onClick={backPoint} src='/img/Xb.png' style={{width : "50px"}} />
              </div>
             <div className="choicePoint-title">커피콩 적립/사용</div>
             <div className="choiceButton-container">
