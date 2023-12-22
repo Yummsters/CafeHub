@@ -10,6 +10,7 @@ import Prism from 'prismjs';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
+import { url } from '../config.js'
 
 const ReviewModify = () => {
     const [selectTag, setSelectTag] = useState([]);
@@ -29,15 +30,11 @@ const ReviewModify = () => {
     const [selectedCafeNo, setSelectedCafeNo] = useState('');
     const [cafes, setCafes] = useState([]);
     const [imagePreview, setImagePreview] = useState(null);
-
-    
-    
-
-    const thumbnailUrl = thumbImg ? `http://localhost:8080/common/thumbImg/${thumbImg}` : '';
-    console.log("썸" + thumbnailUrl);
-    
+    const [selectedTagNames, setSelectedTagNames] = useState([]);
+    const [tagName, setTagName] = useState([]);
 
     const initialState = {
+        tagName: '',
         title: '',
         content: '',
         writer: '',
@@ -46,14 +43,14 @@ const ReviewModify = () => {
         thumbImg: '',
         cafeName: '',
         reviewNo: pathNamePart,
-        modDate : 3
+        modDate: 3
     };
-  
-      const [review, setReview] = useState(initialState);
+
+    const [review, setReview] = useState(initialState);
     // 초기화
     const handleReset = () => {
-    setReview(initialState);
-};
+        setReview(initialState);
+    };
 
 
     const change = (e) => {
@@ -66,7 +63,7 @@ const ReviewModify = () => {
     };
     const ReviewCahange = async (e) => {
         e.preventDefault();
-    
+
         const formData = new FormData();
         formData.append('title', review.title);
         const content = editorRef.current.getInstance().getHTML();
@@ -75,16 +72,38 @@ const ReviewModify = () => {
         formData.append('writer', memNo);
         formData.append('ReviewAuthNo', selectedReviewAuthNo);
         formData.append('cafeNo', selectedCafeNo);
-        
+        const serverTags = [
+            { tagNo: 1, tagName: '#카공' },
+            { tagNo: 2, tagName: '#인스타 감성' },
+            { tagNo: 3, tagName: '#고양이' },
+            { tagNo: 4, tagName: '#드로잉' },
+            { tagNo: 5, tagName: '#이색' },
+            { tagNo: 6, tagName: '#주류판매' },
+            { tagNo: 7, tagName: '#뷰 맛집' },
+            { tagNo: 8, tagName: '#브런치' },
+            { tagNo: 9, tagName: '#인테리어 맛집' },
+            { tagNo: 10, tagName: '#대형' },
+            { tagNo: 11, tagName: '#디저트' },
+            { tagNo: 12, tagName: '#자연친화적' },
+            
+        ];
+
+        // 선택된 태그의 번호로 변환
+        const tagNumbers = selectedTags.map(selectedTag => {
+            const serverTag = serverTags.find(tag => tag.tagName === selectedTag);
+            return serverTag ? serverTag.tagNo : null;
+        });
+
+        formData.append('tagName', JSON.stringify(tagNumbers.filter(tagNo => tagNo !== null)));
+
+        console.log("태그", JSON.stringify(tagNumbers.filter(tagNo => tagNo !== null)))
+
         if (selectedFile) {
             formData.append('files', selectedFile);
         }
-        
-        // 다른 필요한 데이터도 필요에 따라 추가...
-    
+
         try {
-            const response = await axios.post(`http://localhost:8080/reviewmodify/${review.reviewNo}`, formData);
-            
+            const response = await axios.post(`${url}/reviewmodify/${review.reviewNo}`, formData);
             Swal.fire({
                 title: '수정 성공!',
                 text: '리뷰가 성공적으로 등록되었습니다',
@@ -93,22 +112,22 @@ const ReviewModify = () => {
             }).then(() => {
                 navigate(`/reviewList`);
             });
-            
+
             console.log(response);
         } catch (err) {
             console.log(err);
         }
     };
-    
+
     const [editorInitialValue, setEditorInitialValue] = useState('');
     let encodedHTML;
     useEffect(() => {
 
         axios
-            .get(`http://localhost:8080/review/${review.reviewNo}`)
+            .get(`${url}/review/${review.reviewNo}`)
             .then((response) => {
-                setThumbImg(response.data.review.thumbImg || ''); 
-
+                setThumbImg(response.data.review.thumbImg || '');
+                console.log(response.data);
                 setReview({
                     title: response.data.review.title,
                     content: response.data.review.content,
@@ -116,38 +135,64 @@ const ReviewModify = () => {
                     cafeNo: response.data.review.cafeNo,
                     thumbImg: response.data.review.thumbImg,
                     reviewNo: response.data.review.reviewNo,
+                    tagNames: response.data.review.tagNames,
                     cafeName: response.data.review.cafeName,
-                    modDate : response.data.modDate
+                    modDate: response.data.modDate,
+
                 });
 
 
                 const htmlString = decodeURIComponent(response.data.review.content);
                 editorRef.current?.getInstance().setHTML(htmlString);
                 setSelectedCafeNo(response.data.review.cafeNo);
-                console.log(response.data.review.cafeNo);
+
+                setSelectedTags(response.data.review.tagNames || []);
+
+
             })
             .catch((error) => {
                 console.error('리뷰 정보 가져오기 실패:', error);
             });
     }, [token, review.reviewNo]);
 
-    const tags = [
-        '#카공',
-        '#인스타 감성',
-        '#고양이',
-        '#드로잉',
-        '#이색',
-        '#주류판매',
-        '#뷰 맛집',
-        '#브런치',
-        '#인테리어 맛집',
-        '#대형',
-        '#디저트',
-        '#자연 친화적 ',
-    ];
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/reviewTagList`)
+            .then(res => {
+               
+                setTagName([...res.data]);
+               
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }, [])
+
+    const [selectedTags, setSelectedTags] = useState([]);
+
+    const tagClick = (i) => {
+        let updatedTags;
+        console.log(i);
+
+        if (selectedTags.includes(i)) {
+            updatedTags = selectedTags.filter((item) => item !== i);
+        } else {
+            updatedTags = [...selectedTags, i];
+        }
+        if (updatedTags.length > 3) {
+            Swal.fire({
+                title: '3개까지 선택 가능합니다',
+                icon: 'error',
+                confirmButtonText: '확인',
+            });
+        } else {
+            setSelectedTags(updatedTags);
+        }
+    };
+
     const fetchCafeList = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/reviewauth/${memNo}`);
+            const response = await axios.get(`${url}/reviewauth/${memNo}`);
 
             setCafes(response.data);
             console.log('Cafes:', response.data);
@@ -155,16 +200,6 @@ const ReviewModify = () => {
             console.error('Error fetching cafe list:', error);
         }
     };
-
-
-    const tagClick = (i) => {
-        if (selectTag.includes(i)) {
-            setSelectTag(selectTag.filter((item) => item !== i));
-        } else {
-            setSelectTag([...selectTag, i]);
-        }
-    };
-
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -190,7 +225,7 @@ const uploadImages = (blob, callback) => {
 
     axios({
         method: 'POST',
-        url: 'http://localhost:8080/common/fileUpload',
+        url: `${url}/common/fileUpload`,
         data: formData,
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -210,10 +245,40 @@ const uploadImages = (blob, callback) => {
         });
 };
     useEffect(() => {
-        fetchCafeList();
-    }, [memNo]);
+        if (review.thumbImg) {
+            const imageUrl = `http://localhost:8080/common/upload/${review.thumbImg}`;
+            console.log('Image URL:', imageUrl);
+
+            axios.get(imageUrl, { responseType: 'blob' })
+                .then((res) => {
+                   
+                    const imageUrl = URL.createObjectURL(res.data);
+                   
+                    setReview((prevReview) => ({
+                        ...prevReview,
+                        imageUrl: imageUrl,
+                    }));
+                })
+                .catch((error) => {
+                    console.error('카페 사진 가져오기 실패:', error);
+                });
+        }
+    }, [review.thumbImg]);
 
 
+
+
+    const fileChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedFile(file);
+
+       
+        const imageUrl = URL.createObjectURL(file);
+        setReview((prevReview) => ({
+            ...prevReview,
+            imageUrl: imageUrl,
+        }));
+    }
 
 
     return (
@@ -246,25 +311,28 @@ const uploadImages = (blob, callback) => {
 
                 <hr className="line" />
 
-                  <div className="thumbnail">
-                    <p className="review-thum">썸네일 선택 &nbsp;&nbsp;&nbsp;</p>
+                <div className="thumbnail">
+                  
                     <label className="review-img">
-                        {' '}
-                        사진 선택 
-                        <input type="file" name="filename" onChange={handleFileChange} />
+                        썸네일 선택
+                        <input type="file" name="filename" onChange={fileChange} style={{ display: 'none' }} />
                     </label>&nbsp;&nbsp;
-                    <img className='thumbnail-preview' src={thumbnailUrl} alt='Thumbnail Preview' />
+                   
+                        {review.imageUrl && (
+                            <img src={review.imageUrl} alt="썸네일" style={{ width: "100px", height: "100px"}} />
+                        )}
+                    
 
                 </div>
 
 
                 <div className="editor">
                     <Editor
-                        //value={decodeURIComponent(editorInitialValue)} 
+                       
                         ref={editorRef}
                         onChange={handleEditorChange}
                         className="custom-editor"
-                        // ref={editorRef}
+                      
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
 
                         previewStyle="vertical"
@@ -277,7 +345,7 @@ const uploadImages = (blob, callback) => {
 
                                 axios({
                                     method: 'POST',
-                                    url: 'http://localhost:8080/common/fileUpload',
+                                    url: `${url}/common/fileUpload`,
                                     data: formData,
                                     headers: {
                                         'Content-Type': 'multipart/form-data',
@@ -297,20 +365,20 @@ const uploadImages = (blob, callback) => {
 
                 </div>
                 <div className="tagBox">
-                    {tags.map((tag, i) => (
+                    {tagName.map((tag, i) => (
                         <div
                             key={i}
-                            className={selectTag.includes(i) ? 'selectTag' : 'tag'}
-                            onClick={() => tagClick(i)}
-                        >
-                            {tag}
+                            className={selectedTags.includes(tag.tagName) ? 'selectTags' : 'tags'}
+                            onClick={() => tagClick(tag.tagName)}>
+                            {tag.tagName}
                         </div>
                     ))}
+
                 </div>
 
                 <div className="btnBox">
                     <div className="review-btn" onClick={handleReset}>초기화</div>
-                    <div className="review-btn" onClick ={ReviewCahange}>리뷰 수정</div>
+                    <div className="review-btn" onClick={ReviewCahange}>리뷰 수정</div>
                 </div>
             </div>
         </div>

@@ -40,7 +40,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
         setCurrentPage(currentPage - 1);
       }
     };
-
+    console.log(selectCafe)
    useEffect(() => { 
     if(selectCafe !== null) {
       axios.get(`${url}/review/storeList/${cafeNo}?page=${currentPage}&size=5`)
@@ -91,12 +91,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
     {selectCafe && (
       <div className={!wishModal ? "map_box" : "modalCafe"}>
         {!wishModal && (
-          <img
-            className="x"
-            src="/img/X.png"
-            alt="close"
-            onClick={() => setSelectCafe(null)}
-          />
+          <img className="x" src="/img/Xb.png" alt="close" onClick={() => setSelectCafe(null)} />
         )}
 
         <div className="storebox">
@@ -106,7 +101,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
         
         {selectCafe.thumbImg !== null ? ( 
           <div className="storeImg">
-            <img src={selectCafe.thumbImg} alt="" />
+            <img src={`${url}/common/thumbImg/${selectCafe.thumbImg}`} alt="" />
           </div>
         ) : null}
         <div className="storeLine" />

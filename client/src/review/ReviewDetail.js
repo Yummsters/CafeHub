@@ -195,7 +195,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReReplySubmit = (parentReplyNo) => {
     if (selectedReply && reReplyContent) {
-      axios.get(`${url}/member/${memNo}`)
+      axios.get(`${url}/member/${memNo}`,{
+          headers : {
+            Authorization : accessToken,
+            Refresh : getCookie('refreshToken')
+          }
+      })
         .then((response) => {
           const member = response.data;
           axios.post(`${url}/reply/${selectedReply.replyNo}/reReply`, {
@@ -391,10 +396,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   useEffect(() => { // 디테일 가져오기
-    if (isLogin) {
+    if(isLogin) {
       normalCheck(dispatch, accessToken);
     }
-    axios.get(`http://localhost:8080/review/${reviewNo}?memNo=${memNo}`)
+    axios.get(`${url}/review/${reviewNo}?memNo=${memNo}`)
       .then((res) => {
         setReview(res.data.review);
         setLike(res.data.isLike);
@@ -405,27 +410,20 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         console.error("에러:" + error);
       });
 
-    fetchReplies();
+    axios.get(`${url}/getMemberBadge/${memNo}`)
+    .then(response => {
 
+        const badgeName = response.data.badgeName || '';
+        setPickBadge([badgeName]);
+
+    })
+    .catch(error => {
+        console.error('에러 발생:', error);
+    });
+
+    fetchReplies();
     getBestReply();
   }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
-
-  useEffect(() => {
-    if (review && review.memNo) {
-      if (isLogin) {
-        normalCheck(dispatch, accessToken);
-      }
-      axios.get(`${url}/getMemberBadge/${review.memNo}`)
-      .then((res) => {
-          const badgeName = res.data.badgeName || ''; 
-          setPickBadge([badgeName]);
-          console.log(res.data + "dmd")
-      })
-      .catch(error => {
-          console.error('에러 발생:', error);
-      });
-    }
-  }, [review])
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -455,12 +453,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <img src="/img/house.png" alt="house" />
                   {review.cafeName}
                 </p>
-                {review.length > 0 && (
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
-                )}
                 </div>
               <div className="infoR">
-                <span><img className='badgeImage' src={`/img/${pickBadgeName[0]}`} alt="배지" />{review.nickname}</span>&nbsp;|&nbsp;
+                <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
@@ -476,34 +472,24 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               </div>
 
                 {memNo == review.memNo && (
-
                   <div className="detailBtnBox">
-
                     <div className="Gbtn" onClick={ReviewModify}>수정</div>
-
-
                     <div className="Obtn" onClick={handleReviewDelete}>삭제</div>
                   </div>
-
                 )}
                 <div className="detailLine" />
-
-
-
                 {/* 댓글 */}
                 <div className="reply">
                   <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
                   <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
                 </div></>
             )}
-
             <div className="detailLine" />
-
             {bestReply && (
               <div key={bestReply.replyNo} className="replyInfo">
                 <div className="infoT">
                   <p>
-                    <img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}
+                    <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
@@ -559,7 +545,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <div className="infoT">
                   <p>
                     {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                    <img src={`/img/${pickBadgeName[0]}`} alt="house" /> {reply.nickname}
+                    <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;

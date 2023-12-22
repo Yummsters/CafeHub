@@ -1,29 +1,54 @@
 import { useState, useRef, useEffect } from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { CheckoutPage } from '../payment/CheckoutPage';
-import { getCookie } from '../components/Cookie';
+import { url } from '../config.js'
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { useNavigate } from 'react-router';
 
 const StoreBanner = () => {
-    const [cafeAd, setCafeAd] = useState({description : '', menu : '', approved:false});
+    const [cafeAd, setCafeAd] = useState({ description: '', menu: '', approved: false });
     const [thumbImg, setThumbImg] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    const paySuccess = useSelector(state=>state.persistedReducer.payment.isSuccess);
-    const paymentKey = useSelector(state=>state.persistedReducer.payment.paymentKey);
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
+
+    // 페이먼트 관련
+    const payment = useSelector(state => state.persistedReducer.payment);
     const [paymentModal, setPaymentModal] = useState(false);
-    const paymentData = {price: 140000, orderName: "광고신청"};
+    const paymentData = { price: 140000, orderName: "광고신청" };
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const openModal = () => {
         setPaymentModal(true);
     };
+    const paymentClose = () => {
+        setPaymentModal(false);
+        failCafeAd('error', '광고 신청에 실패하였습니다.\n관리자에게 문의하세요', '사유: 결제 오류');
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    }
+    const failCafeAd = (icon, title, text) => {
+        axios.delete(`${url}/cafeAd/${cafeNo}`)
+            .then((res) => {
+                console.log(res.data);
+                dispatch({ type: "payment", payload: '' });
+                Toast.fire({
+                    icon: icon,
+                    title: title,
+                    text: text
+                })
+            })
+    }
 
     // 카페 정보는 리덕스에서 가져와서 사용 혹은 컨트롤러에서 가져오기
-    const cafe= useSelector(state => state.persistedReducer.cafe);
+    const cafe = useSelector(state => state.persistedReducer.cafe);
     const cafeNo = cafe.cafeNo;
 
     const inputRef = useRef(null);
@@ -32,14 +57,14 @@ const StoreBanner = () => {
     const [isAdExist, setIsAdExist] = useState(false); // 광고 신청 여부 조회
     const [isApprove, setIsApprove] = useState(false); // 광고 승인 여부 조회
 
-    const submitCheck = thumbImg && cafeAd.description !=='' && cafeAd.menu !==''; 
+    const submitCheck = thumbImg && cafeAd.description !== '' && cafeAd.menu !== '';
 
     // swal
     const Toast = Swal.mixin({
         toast: true,
         position: 'top',
         showConfirmButton: false,
-        timer: 900,
+        timer: 2000,
         timerProgressBar: true,
         didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -47,67 +72,79 @@ const StoreBanner = () => {
         }
     })
 
-    // 초기화 버튼, 광고 신청 / 취소 버튼 등 현재 isApprove와 isAdExist에 따른 결과 산출이 잘 되고 있는지 확인 필요
-    useEffect(()=>{
+    useEffect(() => {
         var descrInput = document.getElementById("description");
         var menuInput = document.getElementById("menu");
-        // 사진 선택도 안되도록 막는 로직 추가 필요
 
-        axios.get(`http://localhost:8080/cafeAd/${cafeNo}`,{
-            headers : {
-                Authorization : accessToken,
-                Refresh : getCookie("refreshToken")
+        axios.get(`${url}/store/cafeAd/${cafeNo}`, {
+            headers: {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
             }
         })
-        .then(res=>{
-            console.log(res);
-            if(res.data.paymentKey === null) { // 결제 확인 안 된 경우
-                if(paySuccess) { // 결제테이블에 있는 경우
-                    axios.put(`http://localhost:8080/cafeAd/${cafeNo}/${paymentKey}`)
-                    .then((res) => {
-                        console.log(res.data);
-                        dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '' }});
-                        window.location.reload();
-                    })
-                    .catch((error) => console.log(error))
-                    
-                } else {
-                    axios.delete(`http://localhost:8080/cafeAd/${cafeNo}`, {
-                        headers : {
-                            Authorization : accessToken
+            .then(res => {
+                console.log(res);
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
+                        if (res.data.paymentKey === null) {
+                            if (payment.isSuccess) {
+                                axios.put(`${url}/cafeAd/${cafeNo}/${payment.paymentKey}`)
+                                    .then((res) => {
+                                        console.log(res.data);
+                                        dispatch({ type: "payment", payload: '' });
+                                        Toast.fire({
+                                            icon: 'success',
+                                            title: '광고 신청이 완료되었습니다'
+                                        })
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 2000);
+                                    })
+                                    .catch((error) => console.log(error))
+                            } else {
+                                failCafeAd('error', '광고 신청에 실패하였습니다.\n관리자에게 문의하세요', '사유: 결제 오류');
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000);
+                            }
+                        } else {
+                            console.log(res.data);
+                            if (res.data.approved) { // 광고가 존재하면서 승인이 되어 있는 경우
+                                setIsAdExist(true);
+                                setIsApprove(true);
+                                setCafeAd(res.data);
+                                setFileNum(res.data.fileVo.fileNum); // 파일 번호 저장
+
+                                descrInput.disabled = true;
+                                menuInput.disabled = true;
+
+                            } else { // 광고가 존재하면서 승인이 안되어 있는 경우
+                                setIsAdExist(true);
+                                setIsApprove(false);
+                                setCafeAd(res.data); // 광고 내용 저장
+                                setFileNum(res.data.fileVo.fileNum); // 파일 번호 저장
+
+                                descrInput.disabled = true;
+                                menuInput.disabled = true;
+                            }
                         }
                     })
-                    .then((res) => console.log(res.data));
-                }
-            } else { // 결제 확인 완료된 경우
-                if(res.data.approved){ // 광고가 존재하면서 승인이 되어 있는 경우
-                    setIsAdExist(true);
-                    setIsApprove(true);
-                    setCafeAd(res.data);
-                    descrInput.disabled = true;
-                    menuInput.disabled = true;
-
-                } else{ // 광고가 존재하면서 승인이 안되어 있는 경우
-                    setIsAdExist(true); 
+            })
+            .catch(err => { // 광고가 존재하지 않거나, 이미 광고 기간이 끝난 경우
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                } else {
+                    console.log(err);
+                    console.log(err.data);
+                    setIsAdExist(false);
                     setIsApprove(false);
-                    setCafeAd(res.data); // 광고 내용 저장
-                    setFileNum(res.data.fileVo.fileNum); // 파일 번호 저장
-                    
-                    descrInput.disabled = true;
-                    menuInput.disabled = true;
+                    descrInput.disabled = false;
+                    menuInput.disabled = false;
+                    setCafeAd({ thumbImg: null, description: '', menu: '', approved: false });
                 }
-            }
-        })
-        .catch(err=>{ // 광고가 존재하지 않거나, 이미 광고 기간이 끝난 경우
-            console.log(err);
-            console.log(err.data);
-            setIsAdExist(false);
-            setIsApprove(false);
-            descrInput.disabled = false;
-            menuInput.disabled = false;
-            setCafeAd({thumbImg : null, description : '', menu : '', approved:false});
-        })
-    },[])
+
+            })
+    }, [])
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -119,7 +156,7 @@ const StoreBanner = () => {
     };
 
     const handleImageClick = () => {
-        if(!isAdExist) inputRef.current.click();
+        if (!isAdExist) inputRef.current.click();
     };
 
     const handleCafeAdChange = (e) => {
@@ -127,55 +164,63 @@ const StoreBanner = () => {
         const value = e.target.value;
         setCafeAd(prevState => ({ ...prevState, [id]: value }));
     };
-    
+
 
     const handleReset = (e) => {
         e.preventDefault();
-        setCafeAd(prevState => ({ ...prevState, description: '', menu: ''}));
+        setCafeAd(prevState => ({ ...prevState, description: '', menu: '' }));
         setThumbImg(null);
         setFileUrl(null);
     };
 
-    const submitAd = (e) =>{
+    const submitAd = (e) => {
         e.preventDefault();
-        if(submitCheck) { // 광고 신청 등록
+        if (submitCheck) { // 광고 신청 등록
             var descrInput = document.getElementById("description");
             var menuInput = document.getElementById("menu");
 
             const formData = new FormData();
-            formData.append("description",cafeAd.description);
+            formData.append("description", cafeAd.description);
             formData.append("menu", cafeAd.menu);
             formData.append("thumbImg", thumbImg);
-            formData.append("paymentKey", paymentKey);
+            formData.append("paymentKey", payment.paymentKey);
 
             console.log(formData);
-            console.log(paymentKey);
+            console.log(payment.paymentKey);
 
-            axios.post(`http://localhost:8080/cafeAd/${cafeNo}`,formData ,
-            {
-                headers : {
-                    Authorization : accessToken,
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then(res=>{
-                console.log(res);
-                console.log(res.data);
-                setIsAdExist(true); 
-                setIsApprove(false);
-                setCafeAd(res.data);
-                descrInput.disabled = true;
-                menuInput.disabled = true;
-                openModal();
-
-            })
-            .catch(err=>{
-                console.log(err);
-                Toast.fire({
-                    icon: 'error',
-                    title: '광고 신청에 실패하였습니다 관리자에게 문의하세요'
+            axios.post(`${url}/store/cafeAd/${cafeNo}`, formData,
+                {
+                    headers: {
+                        Authorization: accessToken,
+                        Refresh: getCookie("refreshToken"),
+                        'Content-Type': 'multipart/form-data'
+                    }
                 })
-            })
+                .then(res => {
+                    tokenCreate(dispatch, setCookie, res.headers)
+                        .then(() => {
+                            console.log(res.data);
+                            setIsAdExist(true);
+                            setIsApprove(false);
+                            setCafeAd(res.data);
+                            descrInput.disabled = true;
+                            menuInput.disabled = true;
+                            dispatch({ type: "payment", payload: { isSuccess: false } }); // 결제창 취소 경우 신청 방지
+                            openModal();
+                        })
+                })
+                .catch(err => {
+                    console.log(err);
+                    if (err.response !== undefined) {
+                        tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '광고 신청에 실패하였습니다\n관리자에게 문의하세요'
+                        })
+                    }
+
+                })
         } else {
             Toast.fire({
                 icon: 'error',
@@ -184,26 +229,7 @@ const StoreBanner = () => {
         }
     }
 
-    const refund = (cancelReason) => {
-        return new Promise((resolve, reject) => {
-            const data = {
-                cafeNo: cafeNo,
-                cancelReason: cancelReason,
-                paymentKey: paymentKey
-            };
-            console.log('data' + data);
-            axios.post("http://localhost:8080/payment/refund", data)
-            .then((res) => {
-                console.log(res);
-                resolve(res.data);
-            })
-            .catch((error) => {
-                console.log(error);
-                reject(error);
-            })
-        })
-    }
-
+    // 페이먼트 환불 관련
     const paymentCancel = () => {
         Swal.fire({
             title: "광고 신청을 취소하시겠습니까?",
@@ -211,7 +237,7 @@ const StoreBanner = () => {
             showCancelButton: true,
             confirmButtonText: "환불요청",
             cancelButtonText: "취소"
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: "취소하려는 이유를 작성해주세요",
@@ -221,28 +247,31 @@ const StoreBanner = () => {
                     cancelButtonText: "취소",
                     showLoaderOnConfirm: true,
                     preConfirm: (reason) => {
-                        refund(reason)
-                        .then((res) => {console.log(res)})
-                        .catch((error) => console.log(error));
+                        const data = {
+                            cafeNo: cafeNo,
+                            cancelReason: reason,
+                            paymentKey: payment.paymentKey
+                        };
+                        console.log('data' + data);
+                        axios.post(`${url}/payment/refund`, data)
+                            .then((res) => {
+                                console.log(res);
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            })
                     },
                     allowOutsideClick: () => !Swal.isLoading()
-                  }).then((result) => {
+                }).then((result) => {
                     if (result.isConfirmed) {
-                        axios.delete(`http://localhost:8080/cafeAd/${cafeNo}`, {
-                            headers : {
-                                Authorization : accessToken
-                            }
-                        })
-                        .then((res) => {
-                            console.log(res.data);
-                            Swal.fire({
-                              title: "취소가 완료되었습니다",
-                            });
-                        })
+                        failCafeAd('success', '광고 신청이 취소되었습니다', '카드사 취소 최대 3-7일 소요');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
                     }
-                  });
-             }
-          });
+                });
+            }
+        });
     }
 
     return (
@@ -258,15 +287,16 @@ const StoreBanner = () => {
                             style={{ display: 'none' }}
                             ref={inputRef}
                         />
-                        <div className='storeBanner-img' id='thumbImg' style={{backgroundImage : `url(${fileUrl || `http://localhost:8080/common/upload/${fileNum}`})`}}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+                        <div className='storeBanner-img' id='thumbImg' style={{ backgroundImage: `url(${fileUrl || `${url}/common/upload/${fileNum}`})` }}> {fileNum != null ? null : <div className='preview-text'>클릭해서 사진을 첨부하세요</div>}
+
                         </div>
                         <div className='storeBanner-info'>
-                            <div className='storeBanner-title'>{cafe.title},</div>
+                            <div className='storeBanner-title'>{cafe.cafeName},</div>
                             <div className='storeBanner-description'>
-                                <br />{cafeAd.description}
+                                <br /> {cafeAd.description ? cafeAd.description : '카페 설명을 입력하세요'}
                             </div>
                             <div className='storeBanner-menu'>
-                                <br />대표메뉴: {cafeAd.menu}
+                                <br />대표메뉴: {cafeAd.menu ? cafeAd.menu : '메뉴를 입력하세요'}
                             </div>
                             <div className='storeBanner-address'>
                                 {cafe.address}
@@ -276,20 +306,20 @@ const StoreBanner = () => {
 
                     <div className='storeBanner-input-description-wrap'>
                         <div className='storeBanner-input-description-box'>
-                            <label style={{display:"flex"}}>
-                            <div className='storeBanner-input-description-title'>
-                                <div style={{ fontSize: "20px" }}>카페 설명 입력</div>
-                                <div style={{ fontSize: "15px" }}>(최대 30자)</div>
-                            </div>
-                            <input
-                                type='text'
-                                className='storeBanner-input-description'
-                                id = 'description'
-                                value={cafeAd.description}
-                                onChange={handleCafeAdChange}
-                                style={{ fontSize: "20px" }}
-                                maxLength="30"
-                            /></label>
+                            <label style={{ display: "flex" }}>
+                                <div className='storeBanner-input-description-title'>
+                                    <div style={{ fontSize: "20px" }}>카페 설명 입력</div>
+                                    <div style={{ fontSize: "15px" }}>(최대 30자)</div>
+                                </div>
+                                <input
+                                    type='text'
+                                    className='storeBanner-input-description'
+                                    id='description'
+                                    value={cafeAd.description}
+                                    onChange={handleCafeAdChange}
+                                    style={{ fontSize: "20px" }}
+                                    maxLength="30"
+                                /></label>
                         </div>
                         {!(isAdExist || isApprove) && <button className='storeBanner-cancelBtn' onClick={handleReset}>초기화</button>}
                     </div>
@@ -298,28 +328,34 @@ const StoreBanner = () => {
 
                     <div className='storeBanner-input-menu-wrap'>
                         <div className='storeBanner-input-menu-box'>
-                            <label style={{display:"flex"}}>
-                            <div className='storeBanner-input-menu-title'>
-                                <div style={{ fontSize: "20px" }}>대표 메뉴 입력</div>
-                                <div style={{ fontSize: "15px" }}>(최대 3가지 권장)</div>
-                            </div>
-                            <input
-                                type='text'
-                                className='storeBanner-input-menu'
-                                id='menu'
-                                value={cafeAd.menu}
-                                onChange={handleCafeAdChange}
-                                style={{ fontSize: "20px" }}
-                            />
+                            <label style={{ display: "flex" }}>
+                                <div className='storeBanner-input-menu-title'>
+                                    <div style={{ fontSize: "20px" }}>대표 메뉴 입력</div>
+                                    <div style={{ fontSize: "15px" }}>(최대 3가지 권장)</div>
+                                </div>
+                                <input
+                                    type='text'
+                                    className='storeBanner-input-menu'
+                                    id='menu'
+                                    value={cafeAd.menu}
+                                    onChange={handleCafeAdChange}
+                                    style={{ fontSize: "20px" }}
+                                />
                             </label>
                         </div>
-                        {!isAdExist ? <button className='storeBanner-regBtn' onClick={submitAd}>광고 신청</button> :  (!isApprove ? <button className='storeBanner-regBtn' onClick={paymentCancel}>광고 취소</button> : '')}
+                        {!isAdExist ? <button className='storeBanner-regBtn' onClick={submitAd}>광고 신청</button> : (!isApprove ? <button className='storeBanner-regBtn' onClick={paymentCancel}>광고 취소</button> : '')}
                     </div>
 
                     <div className='hl' />
                 </div>
             </div>
-            {paymentModal && (<CheckoutPage paymentData={paymentData} />)}
+            {paymentModal && (
+                <>
+                    <CheckoutPage paymentData={paymentData}>
+                        <button className='beanPurchaseBtn' onClick={paymentClose}>취소</button>
+                    </CheckoutPage>
+                </>
+            )}
         </div>
     )
 }

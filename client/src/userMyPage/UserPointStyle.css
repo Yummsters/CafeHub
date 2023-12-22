@@ -20,7 +20,6 @@
 
 .nicknameBox p {
     font-size: 35px;
-    padding-left: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -169,7 +168,21 @@
     color: white;
     border: none;
     border-radius: 30px;
-    width: 250px;
+    width: 200px;
     height: 50px;
-    margin-bottom: 30px;
+    margin: 30px 10px;
+    font-size: 20px;
+}
+
+.paycancel {
+    background-color: #007355;
+}
+
+.coffeebeanPayment {
+    display: flex;
+    justify-content: center;
+}
+
+.payGreen {
+    background-color: #007355;
 }

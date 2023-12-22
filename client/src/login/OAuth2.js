@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { getCookie, setCookie } from '../components/Cookie';
+import { url } from '../config.js'
 
 const OAuth2 = () => {
     const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const OAuth2 = () => {
     })
 
     useEffect(()=> {
-        axios.get(`http://localhost:8080/member`,{
+        axios.get(`${url}/member`,{
             headers : {
                 Authorization :accessToken,
                 Refresh : getCookie("refreshToken")

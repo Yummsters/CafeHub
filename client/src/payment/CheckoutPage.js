@@ -9,10 +9,11 @@ import paymentStyle from './paymentStyle.css'
 const clientKey = process.env.REACT_APP_TOSSPAYMENT_CLIENTKEY;
 const secretKey = process.env.REACT_APP_TOSSPAYMENT_SECRETKEY;
 
-export function CheckoutPage({paymentData}) {
+export function CheckoutPage({paymentData, children}) {
   const member = useSelector(state=>state.persistedReducer.member);
   const paymentWidgetRef = useRef(null);
   const paymentMethodsWidgetRef = useRef(null);
+  const [paymentModal, setPaymentModal] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -52,7 +53,7 @@ export function CheckoutPage({paymentData}) {
     }
   };
 
-   console.log(paymentData.orderName);
+  console.log(paymentData.price);
 
   return (
     <>
@@ -60,7 +61,10 @@ export function CheckoutPage({paymentData}) {
       <div className='paymentModal-content'>
           <div id="payment-widget"/>
             <div className='purchaseWrap'>
-              <button className='purchaseBtn' onClick={onClick}>{paymentData.price}원 결제</button>
+              <div className="buttonContainer">
+                {children}
+                <button className='beanPurchaseBtn payGreen' onClick={onClick}>{paymentData.price}원 결제</button>
+              </div>
             </div>
       </div>
     </div>

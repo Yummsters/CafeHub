@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckoutPage } from '../payment/CheckoutPage';
+import { url } from '../config.js'
 const { daum } = window;
 
 const SignUpStore = () => {
@@ -28,41 +29,50 @@ const SignUpStore = () => {
     const openModal = () => {
         setPaymentModal(true);
     };
+    const paymentClose = () => {
+        setPaymentModal(false);
+        failSignup(); // 결제창 열린 후(등록 완료된 상태) -> 회원정보 삭제
+    }
 
     // 페이먼트 관련
     useEffect(() => {
         if(payment && payment.memNo !== null) {
             if(payment.isSuccess) { // memNo이 존재(직전에회원가입)하고 결제완료된 경우 컬럼 update
-                axios.put(`http://localhost:8080/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
+                axios.put(`${url}/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
                 .then((res) => {
                     console.log(res.data)
                     toast.fire({
                         title: '가입 및 가게등록이 완료되었습니다',
-                        icon: 'error',
+                        icon: 'success',
                     })
-                    dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '', memNo: null }});
+                    dispatch({ type:"payment", payload:"" })
                     setTimeout(() => {
                         window.location.href="/login";
                     }, 2000);
                 })
                 .catch((error) => console.log(error))
             } else { // memNo이 존재(직전에 회원가입)하고 결제실패한 경우 가입된 정보 삭제
-                axios.delete(`http://localhost:8080/signUpStore/${payment.memNo}`)
-                .then((res) => {
-                    console.log(res.data);
-                    dispatch({type:"payment", payload: { isSuccess: false, paymentKey: '', memNo: null }});
-                    toast.fire({
-                        title: '가입 및 가게등록에 실패했습니다',
-                        text: '사유: 결제 오류',
-                        icon: 'error',
-                    })
-                })
+                failSignup();
             }
         }
     }, [])
 
+    const failSignup = () => {
+        axios.delete(`${url}/signUpStore/${payment.memNo}`)
+        .then((res) => {
+            console.log(res.data);
+            dispatch({type:"payment", payload:''});
+            toast.fire({
+                title: '회원가입에 실패했습니다',
+                text: '사유: 결제 오류',
+                icon: 'error',
+            })
+        })
+    }
+
+
     useEffect(()=>{
-        axios.get(`http://localhost:8080/storeTagList`)
+        axios.get(`${url}/storeTagList`)
         .then(res=>{
             console.log(res.data);
             setTagName([...res.data]);
@@ -192,7 +202,7 @@ const SignUpStore = () => {
 
     const businessNo = () => { // 사업자번호 확인
        
-        axios.post(`http://localhost:8080/business/${store.businessNo}`)
+        axios.post(`${url}/business/${store.businessNo}`)
             .then((res) => {
                 console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
@@ -232,7 +242,7 @@ const SignUpStore = () => {
         setRandomCode(random);
         console.log("Random code set:", random);
         console.log(member.phone);
-        // axios.get(`http://localhost:8080/check/sendSMS?phone=${member.phone}&code=${randomCode}`)
+        // axios.get(`${url}/check/sendSMS?phone=${member.phone}&code=${random}`)
         // .then((res) => {
         //     console.log(res.data);
         //     toast.fire({
@@ -280,7 +290,7 @@ const SignUpStore = () => {
         }));
 
         if (member.email) {
-            axios.get(`http://localhost:8080/email/${member.email}`)
+            axios.get(`${url}/email/${member.email}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -337,7 +347,7 @@ const SignUpStore = () => {
         }));
 
         if (!check.id) {
-            axios.get(`http://localhost:8080/id/${member.id}`)
+            axios.get(`${url}/id/${member.id}`)
                 .then(res => {
                     if (res.data) {
                         setCheck((prevWarnings) => ({
@@ -356,7 +366,7 @@ const SignUpStore = () => {
         }
 
         if (!check.nickname) {
-            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -378,7 +388,7 @@ const SignUpStore = () => {
         }
 
         if (check.email) {
-            axios.get(`http://localhost:8080/email/${member.email}`)
+            axios.get(`${url}/email/${member.email}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -423,18 +433,18 @@ const SignUpStore = () => {
                 }
 
                 // 카페 생성
-                axios.post('http://localhost:8080/cafe/store', formData)
+                axios.post(`${url}/cafe/store`, formData)
                     .then((cafeResponse) => {
                         console.log(cafeResponse);
                         const cafeNo = cafeResponse.data;
 
                         // 회원가입
-                        axios.post(`http://localhost:8080/signUpStore/${cafeNo}`, member)
+                        axios.post(`${url}/signUpStore/${cafeNo}`, member)
                             .then((res) => {
                                 console.log(res.data);
                                 setMemNo(res.data.memNo);
                                 dispatch({type:"payment", payload: { isSuccess: false, memNo: res.data.memNo }}); // 결제 전 새로고침하는 경우 회원가입 방지
-                                openModal();
+                                openModal(); // 결제창
                             })
                             .catch((error) => {
                                 console.log(error);
@@ -450,8 +460,7 @@ const SignUpStore = () => {
 
             } catch (error) {
                 console.log(error);
-            } finally {
-            }
+            } 
         } else {
             toast.fire({
                 icon: 'error',
@@ -466,7 +475,7 @@ const SignUpStore = () => {
         const { name, value } = e.target;
 
         if (member.id) {
-            axios.get(`http://localhost:8080/id/${member.id}`)
+            axios.get(`${url}/id/${member.id}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -498,7 +507,7 @@ const SignUpStore = () => {
         }));
 
         if (member.nickname) {
-            axios.get(`http://localhost:8080/nickname/${member.nickname}`)
+            axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {
@@ -702,7 +711,13 @@ const SignUpStore = () => {
                     <div className='signUpStore-time'>운영 시간 : {store.operTime ? store.operTime : '시간을 입력하세요.'}</div>
                 </div>
             </div>
-            {paymentModal && (<CheckoutPage paymentData={paymentData} />)}
+            {paymentModal && (
+                <>
+                <CheckoutPage paymentData={paymentData}>
+                    <button className='beanPurchaseBtn' onClick={paymentClose}>취소</button>
+                </CheckoutPage>
+                </>
+            )}
         </div>
     );
 }

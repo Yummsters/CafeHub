@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { setCookie } from '../components/Cookie';
-
+import { url } from '../config.js'
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ const LoginPage = () => {
     }));
 
     if (submitUserCheck) {
-      axios.post(`http://localhost:8080/login`, userLogin)
+      axios.post(`${url}/login`, userLogin)
         .then(res => {
           // 토큰과 회원정보 저장
           dispatch({ type: "isLogin", payload: true });
@@ -148,7 +148,7 @@ const LoginPage = () => {
 
     console.log(submitStoreCheck);
     if (submitStoreCheck) {
-      axios.post(`http://localhost:8080/login`, storeLogin)
+      axios.post(`${url}/login`, storeLogin)
         .then(res => {
           // 토큰과 회원정보 저장
           dispatch({ type: "isLogin", payload: true });
@@ -230,7 +230,7 @@ const LoginPage = () => {
   }
 
   const handleKakaoOauthLogin = () => {
-    window.location.href = `http://localhost:8080/oauth2/authorization/kakao`;
+    window.location.href = `${url}/oauth2/authorization/kakao`;
   }
 
   const inputRegexs = {

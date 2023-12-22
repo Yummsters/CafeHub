@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { setCookie, getCookie, removeCookie } from '../components/Cookie';
+import { url } from '../config.js'
 
  // swal
  const Toast = Swal.mixin({
@@ -26,7 +27,7 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
                 navigate('/login');
             });  
         }else{
-            axios.get(`http://localhost:8080/member`,{
+            axios.get(`${url}/member`,{
                 headers : {
                     Authorization :accessToken,
                     Refresh : getCookie("refreshToken")
@@ -87,7 +88,7 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
 // 일반 버튼 관련 토큰 확인 처리
 export const normalCheck = (dispatch, accessToken) => {
     console.log("들어옴22")
-        axios.get(`http://localhost:8080/member`,{
+        axios.get(`${url}/member`,{
             headers : {
                 Authorization :accessToken,
                 Refresh : getCookie("refreshToken")
