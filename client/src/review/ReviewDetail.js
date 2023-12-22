@@ -173,6 +173,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("Error while sending the request:", error.message);
         }
       });
+      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+      .then((res) => {
+          const badgeName = res.data.badgeName || ''; 
+          setPickBadge([badgeName]);
+      })
+      .catch(error => {
+          console.error('에러 발생:', error);
+      });
   };
 
   const handlePageChange = (pageNumber) => {
@@ -377,6 +385,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
       });
+      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+      .then((res) => {
+          const badgeName = res.data.badgeName || ''; 
+          setPickBadge([badgeName]);
+      })
+      .catch(error => {
+          console.error('에러 발생:', error);
+      });
   }
 
   useEffect(() => { // 디테일 가져오기
@@ -473,7 +489,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               <div key={bestReply.replyNo} className="replyInfo">
                 <div className="infoT">
                   <p>
-                    <a href={`/userReview/${bestReply.nickname}`}><img src="/img/house.png" alt="house" /> {bestReply.nickname}</a>
+                    <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
@@ -529,7 +545,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <div className="infoT">
                   <p>
                     {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                    <a href={`/userReview/${reply.nickname}`}><img src="/img/house.png" alt="house" /> {reply.nickname}</a>
+                    <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
