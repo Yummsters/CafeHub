@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.review.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class ReviewDetailDto {
     private String content;
     private List<String> tagNames;
     private Integer likeCount;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDate;
     private boolean modPossible;
     private String thumbImg;

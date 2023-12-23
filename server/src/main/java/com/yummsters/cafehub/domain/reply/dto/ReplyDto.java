@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.reply.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.review.entity.Review;
@@ -27,6 +28,7 @@ public class ReplyDto {
 	private String writer;
 	private String nickname;
 	private Integer likeCount;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime regDate;
 	private Integer parentReplyNo;
 

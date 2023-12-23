@@ -32,7 +32,7 @@ public class PhoneCodeServiceImpl implements PhoneCodeService {
     public SingleMessageSentResponse sendPhoneCode(String phone, String code) throws Exception {
         Message message = new Message();
         message.setFrom(fromNumber); // 발신번호
-        message.setText("[CafeHub] 인증번호 : " + code + "// 수신번호\n타인 유출로 인한 피해 주의");
+        message.setText("[CafeHub] 인증번호 : " + code + "\n타인 유출로 인한 피해 주의");
         message.setTo(phone);
         return this.messageService.sendOne(new SingleMessageSendingRequest(message));
     }
