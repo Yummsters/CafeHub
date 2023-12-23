@@ -297,7 +297,7 @@ const StoreInfo = () => {
 
     // 가게 포인트 조회
     useEffect(() => {
-        axios.get(`${url}/point/${memNo}`, {
+        axios.get(`${url}/member/point/${memNo}`, {
 
             headers: {
                 Authorization: accessToken,
@@ -326,7 +326,7 @@ const StoreInfo = () => {
                 title: '100개 이상부터 정산 신청이 가능합니다'
             })
         } else {
-            axios.post(`${url}/point/calculate/${memNo}`, {
+            axios.post(`${url}/store/point/calculate/${memNo}`, null, {
                 headers: {
                     Authorization: accessToken,
                     Refresh : getCookie("refreshToken")

@@ -43,9 +43,9 @@ const MapLayout = ({ cafes }) => {
 
     cafes.forEach((cafe) => {
       var imageSrc = cafe.existing
-          ? "/img/marker_in.png"
-          : "/img/marker_out.png", // 마커이미지 주소
-        imageSize = new kakao.maps.Size(60, 60), // 마커이미지의 크기
+          ? "/img/marker_in.png" // 입점카페
+          : "/img/marker_basic.png", // 기본카페
+        imageSize = cafe.existing ? new kakao.maps.Size(60, 60) : new kakao.maps.Size(30, 30),
         imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커 좌표와 일치시킬 이미지 내 좌표
 
       // 마커이미지 생성
@@ -65,7 +65,6 @@ const MapLayout = ({ cafes }) => {
       kakao.maps.event.addListener(marker, "click", function () {
         // 클릭한 카페 정보 상태에 저장
         setSelectCafe(cafe);
-
         // 클릭한 카페에 대해 현재 회원의 찜 여부
         if (memNo != null) { 
           axios.get(`${url}/member/cafeIsWish/${memNo}/${cafe.cafeNo}`, {

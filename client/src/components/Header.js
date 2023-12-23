@@ -132,7 +132,7 @@ const Header = () => {
         <>
             <div className='navBox'>
                 <div className='navContent'>
-                    <div className='logo' onClick={logoClick} style={{ cursor: "pointer" }}>Café<span className="hub">Hub</span></div>
+                    <div className='logo' onClick={logoClick} style={{ cursor: "pointer" }}>Cafe<span className="hub">Hub</span></div>
                     <div className='center'>
                         <p><a href="#Main2" onClick={cafeRecommendClick}>카페 리뷰 추천</a></p>
                         <p><a href="/reviewList" onClick={cafeReview}>리뷰 게시판</a></p>
@@ -144,13 +144,13 @@ const Header = () => {
                                 <a href="/userInfo" onClick={mypage}>마이페이지</a>)}</p>
                         <p> {!isLogin ? <a href="/login">로그인</a> : <a href="/" onClick={logout}>로그아웃</a>}</p>
                     </div>
-                    <div class="hamburger-icon" onClick={() => setShowMenu(!showMenu)}><img src="/img/hamburger.png" alt="" /></div>
+                    <div className="hamburger-icon" onClick={() => setShowMenu(!showMenu)}><img src="/img/hamburger.png" alt="" /></div>
                 </div>
             </div>
 
             {/* 반응형 */}
             {showMenu && (
-                <div class="menu-items slide-down">
+                <div className="menu-items slide-down">
                     <p><a href="#Main2" onClick={cafeRecommendClick}>카페 리뷰 추천</a></p>
                     <p><a href="/reviewList" onClick={cafeReview}>리뷰 게시판</a></p>
                     <p><a href="/map" onClick={mapClick}>내 근처 카페</a></p>
