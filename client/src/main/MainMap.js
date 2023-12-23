@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { url } from '../config.js'
 const { kakao } = window;
 
 const MainMap = () => {
   const [cafes, setCafes] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/mapMarker')
+    axios.get(`${url}/mapMarker`)
     .then(response => {
       setCafes(response.data);
       console.log(response.data);
@@ -28,9 +29,9 @@ const MainMap = () => {
     cafes.forEach((cafe) => {
       console.log(cafe.existing);
       var imageSrc = cafe.existing
-          ? "/img/marker_in.png"
-          : "/img/marker_out.png", // 마커이미지 주소
-        imageSize = new kakao.maps.Size(60, 60), // 마커이미지의 크기
+          ? "/img/marker_in.png" // 입점카페
+          : "/img/marker_basic.png", // 기본카페
+        imageSize = cafe.existing ? new kakao.maps.Size(60, 60) : new kakao.maps.Size(30, 30),
         imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커 좌표와 일치시킬 이미지 내 좌표
 
       // 마커이미지 생성

@@ -1,15 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+
 import storeInfoStyle from './storeInfoStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import {getCookie} from '../components/Cookie';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { useDispatch } from 'react-redux';
+import { tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { url } from '../config.js'
 const { daum } = window;
 
 const StoreInfo = () => {
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const [point, setPoint] = useState(0);
     const [fileNum, setFileNum] = useState(0);
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
@@ -58,7 +66,7 @@ const StoreInfo = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/cafe/${cafeNo}`)
+            .get(`${url}/cafe/${cafeNo}`)
             .then((res) => {
                 console.log(res.data);
                 const cafeData = res.data;
@@ -71,9 +79,9 @@ const StoreInfo = () => {
                         businessNo: cafeData.businessNo,
                         operTime: cafeData.operTime,
                         thumbImg: cafeData.thumbImg,
-                        storeTag : cafeData.storeTag.storeTagNo
+                        storeTag: cafeData.storeTag.storeTagNo
                     });
-                    setSelectedTags([cafeData.storeTag.storeTagNo-1]);
+                    setSelectedTags([cafeData.storeTag.storeTagNo - 1]);
                 } else {
                     console.error('카페 정보가 없습니다.');
                 }
@@ -86,7 +94,7 @@ const StoreInfo = () => {
     useEffect(() => {
         // Fetch cafe image
         if (cafe.thumbImg) {
-            axios.get(`http://localhost:8080/common/upload/${cafe.thumbImg}`, {
+            axios.get(`${url}/common/upload/${cafe.thumbImg}`, {
                 responseType: 'blob',
             })
 
@@ -110,7 +118,7 @@ const StoreInfo = () => {
 
     const businessNo = () => { // 사업자번호 확인
 
-        axios.post(`http://localhost:8080/business/${cafe.businessNo}`)
+        axios.post(`${url}/business/${cafe.businessNo}`)
             .then((res) => {
                 console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
@@ -136,14 +144,14 @@ const StoreInfo = () => {
                         ...prevWarnings,
                         businessNo: true
                     }));
-                } 
-              
+                }
+
             })
             .catch((error) => {
                 console.log(error);
                 return false;
             })
-           
+
     };
 
     // 유효성 검증
@@ -178,19 +186,19 @@ const StoreInfo = () => {
         formData.append('businessNo', cafe.businessNo);
         formData.append('address', cafe.address);
         formData.append('operTime', cafe.operTime);
-        formData.append('tagName',selectedTags);
-     
+        formData.append('tagName', selectedTags);
+
         // 이미지 파일이 선택된 경우에만 추가
-    if (selectedFile) {
-        formData.append('file', selectedFile);
-      }
+        if (selectedFile) {
+            formData.append('file', selectedFile);
+        }
 
         try {
             // 서버로 요청을 보낼 때는 formData를 config 객체에 넣어서 보냅니다.
-            const response = await axios.put(`http://localhost:8080/cafe/store/${cafeNo}`, formData, {
+            const response = await axios.put(`${url}/cafe/store/${cafeNo}`, formData, {
                 headers: {
                     Authorization: accessToken,
-                    Refresh : getCookie("refreshToken"),
+                    Refresh: getCookie("refreshToken"),
                     'Content-Type': 'multipart/form-data', // 중요: FormData를 보낼 때 Content-Type을 설정해야 합니다.
                 },
             });
@@ -212,18 +220,18 @@ const StoreInfo = () => {
     };
 
     const [tagList, setTagList] = useState([]);
-    useEffect(()=>{
-        axios.get(`http://localhost:8080/storeTagList`)
-        .then(res=>{
-            console.log(res);
-            console.log(res.data);
-            setTagList([...res.data]);
-            console.log(tagList);
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    },[])
+    useEffect(() => {
+        axios.get(`${url}/storeTagList`)
+            .then(res => {
+                console.log(res);
+                console.log(res.data);
+                setTagList([...res.data]);
+                console.log(tagList);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }, [])
 
     // swal
     const MyToast = Swal.mixin({
@@ -249,17 +257,17 @@ const StoreInfo = () => {
         if (name === 'businessNo' && cafe.businessNo !== value) {
             setIsBusinessNoChanged(false);
         }
-        console.log('흠,,'+businessNo);
+        console.log('흠,,' + businessNo);
         setCafe((prevCafe) => ({ ...prevCafe, [name]: value }));
 
     };
 
-   
+
     const fileChange = (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
 
-       
+
         const imageUrl = URL.createObjectURL(file);
         setCafe((prevCafe) => ({
             ...prevCafe,
@@ -269,7 +277,7 @@ const StoreInfo = () => {
 
 
     useEffect(() => {
-       
+
         const storeInfo = document.querySelector('.storeInfo-right-section');
 
         if (storeInfo) {
@@ -289,18 +297,25 @@ const StoreInfo = () => {
 
     // 가게 포인트 조회
     useEffect(() => {
-        axios.get(`http://localhost:8080/point/${memNo}`, {
+        axios.get(`${url}/member/point/${memNo}`, {
+
             headers: {
-                Authorization: accessToken
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
             }
         })
             .then(res => {
                 const resPoint = res.data;
-                console.log(resPoint);
-                setPoint(resPoint);
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
+                        setPoint(resPoint);
+                    })
             })
             .catch(err => {
                 console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
             })
     }, [])
 
@@ -311,32 +326,39 @@ const StoreInfo = () => {
                 title: '100개 이상부터 정산 신청이 가능합니다'
             })
         } else {
-            axios.post(`http://localhost:8080/point/calculate/${memNo}`, {
+            axios.post(`${url}/store/point/calculate/${memNo}`, null, {
                 headers: {
-                    Authorization: accessToken
+                    Authorization: accessToken,
+                    Refresh: getCookie("refreshToken")
                 }
             })
                 .then(res => {
                     console.log(res);
                     console.log(res.data);
-                    setPoint(res.data);
-                    MyToast.fire({
-                        icon: 'success',
-                        title: '포인트 정산 신청이 완료되었습니다'
-                    })
+                    tokenCreate(dispatch, setCookie, res.headers)
+                        .then(() => {
+                            setPoint(res.data);
+                            MyToast.fire({
+                                icon: 'success',
+                                title: '포인트 정산 신청이 완료되었습니다'
+                            })
+                        })
                 })
                 .catch(err => {
                     console.log(err);
+                    if (err.response !== undefined) {
+                        tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                    }
                 })
         }
     }
 
     const [selectedTags, setSelectedTags] = useState([]);
 
-    const tagClick = (i) =>{
+    const tagClick = (i) => {
         let updatedTags;
         console.log(i);
-    
+
         if (selectedTags.includes(i)) {
             updatedTags = selectedTags.filter((item) => item !== i);
         } else {
@@ -393,7 +415,7 @@ const StoreInfo = () => {
                                 <span className='storeInfo-auth'>
                                     {/* {cafe.businessNo && !valid.businessNo ? "하이픈(-) 제외 숫자로 작성하세요" : ""} */}
                                     {!isBusinessNoChanged && cafe.businessNo && !valid.businessNo ? "하이픈(-) 제외 숫자로 작성하세요" : ""}
-                   
+
                                 </span><br />
                                 <input type="text" id="businessNo" name="businessNo" onChange={change} value={cafe.businessNo} /></label>
                         </div>
@@ -442,20 +464,18 @@ const StoreInfo = () => {
 
                         {/* 사장님 선택 태그 */}
                         <div className='StoreInfo-tag'>
-                        {tagList.map((tags, i) => (
-                            <div
-                                key={i}
-                                className={selectedTags.includes(i) ? 'selectTags' : 'tags'}
-                                onClick={() => tagClick(i)}>
-                                {tags.storeTagName}
-                            </div>
-                        ))}
-                    </div>   
+                            {tagList.map((tags, i) => (
+                                <div
+                                    key={i}
+                                    className={selectedTags.includes(i) ? 'selectTags' : 'tags'}
+                                    onClick={() => tagClick(i)}>
+                                    {tags.storeTagName}
+                                </div>
+                            ))}
+                        </div>
                         <div className='storeInfo-button'>
                             <button type="button" onClick={StoreInfo}> 정보 수정 </button>
                         </div> <br />
-
-
                     </form>
                 </div>
             </div>

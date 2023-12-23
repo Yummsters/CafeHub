@@ -703,7 +703,7 @@ const SignUpStore = () => {
             </div>
             <div className='signUpStore-right-section'>
                 <div className='signUpStore'>
-                    <div className='signUpStore-storeName'> {store.storeName ? store.storeName : '가게 이름'}</div>
+                    <div className='signUpStore-storeName'> {store.cafeName ? store.cafeName : '가게 이름'}</div>
                     <div className='signUpStore-picture' >
                         {selectedFile && <img src={URL.createObjectURL(selectedFile)} style={{ width: "320px", height: "320px", borderRadius: "20px" }} alt="썸네일" />}
                     </div>

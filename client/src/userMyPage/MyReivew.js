@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useNavigate } from 'react-router';
+import { url } from '../config.js'
+
 const MyReview = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [reviews, setReviews] = useState([]);
@@ -31,7 +33,7 @@ const MyReview = () => {
     let firstNum = curPage - (curPage % 5) + 1;
     let lastNum = curPage - (curPage % 5) + 5;
     let total = Math.min(4, (pageInfo.totalPages === 0 ? 1 : pageInfo.totalPages) - firstNum);
-    
+
     let firstNum1 = curPage1 - (curPage1 % 5) + 1;
     let lastNum1 = curPage1 - (curPage1 % 5) + 5;
     let total1 = Math.min(4, (pageInfo1.totalPages === 0 ? 1 : pageInfo1.totalPages) - firstNum1);
@@ -44,7 +46,7 @@ const MyReview = () => {
         setPage(page);
         setCurPage(page);
 
-        axios.get(`http://localhost:8080/myReview/${memNo}?page=${page}&size=5`, {
+        axios.get(`${url}/myReview/${memNo}?page=${page}&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -75,7 +77,7 @@ const MyReview = () => {
         setPage1(page1);
         setCurPage1(page1);
 
-        axios.get(`http://localhost:8080/myReviewAuth/${memNo}?page=${page1}&size=5`, {
+        axios.get(`${url}/myReviewAuth/${memNo}?page=${page1}&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -104,7 +106,7 @@ const MyReview = () => {
     useEffect(() => {
         reviews.forEach((review) => {
             axios
-                .get(`http://localhost:8080/common/upload/${review.thumbImg}`, {
+                .get(`${url}/common/upload/${review.thumbImg}`, {
                     responseType: 'arraybuffer',
                 })
                 .then((response) => {
@@ -125,7 +127,7 @@ const MyReview = () => {
     }, [reviews]);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/getMemberBadge/${memNo}`)
+        axios.get(`${url}/getMemberBadge/${memNo}`)
             .then(response => {
                 const badgeName = response.data.badgeName || '';
                 setPickBadge([badgeName]);
@@ -163,7 +165,7 @@ const MyReview = () => {
                                                 className='listImg'
                                                 id='listImg'
                                                 style={{
-                                                    backgroundImage: `url(http://localhost:8080/common/upload/${list.thumbImg})`,
+                                                    backgroundImage: `url(${url}/common/upload/${list.thumbImg})`,
                                                     marginLeft: '22px',
                                                     verticalAlign: 'middle',
                                                     borderRadius: '10px',
@@ -249,29 +251,25 @@ const MyReview = () => {
                 </div>
                 <div className='rightBox'>
                     <br /><label className='cafeList'>리뷰 작성 가능 카페</label><br /><br />
-                        <Table hover>
+                    <Table hover>
                         <tbody>
-                            {authList.length == 0 ? <sapn className="myreview0">조회된 작성 가는 카페가 없습니다</sapn> : authList.map(auth => {
+                            {authList.length == 0 ? <sapn className="myreview0">리뷰 작성 가능한 카페가 없습니다</sapn> : authList.map(auth => {
                                 return (
 
                                     <tr className='trauth'>
                                         <th scope="row">
                                         </th>
                                         <td colSpan={10} >
-                                         
-                                           
-                                                <div className='listMiniTitle'>{auth.cafeName}</div>
-                                                <div className='description1'>{auth.address}</div>
-                                    
-
+                                            <div className='listMiniTitle'>{auth.cafeName}</div>
+                                            <div className='description1'>{auth.address}</div>
                                         </td>
                                         <td colSpan={2}>
 
-                                        <a href='/reviewWrite'> <button className='regReviewBtn'>
-                                        <div className='regReview'>리뷰 등록</div>
-                                        <div className='deadline'>({auth.remainTime}일 남음)</div>
-                                    </button>
-                                    </a>
+                                            <a href='/reviewWrite'> <button className='regReviewBtn'>
+                                                <div className='regReview'>리뷰 등록</div>
+                                                <div className='deadline'>({auth.remainTime}일 남음)</div>
+                                            </button>
+                                            </a>
                                         </td>
                                     </tr>);
                             })}
@@ -279,7 +277,7 @@ const MyReview = () => {
                     </Table>
 
 
-                  
+
                     <div className='reviewpage'>
                         <Pagination className="myReview-Page">
                             <PaginationLink
@@ -313,7 +311,7 @@ const MyReview = () => {
                                             className={`myReview-Button ${pageNum1 === page1 ? 'current-page' : ''}`}
                                             key={i + 1}
                                             onClick={() => getAuthPage(lastNum1)}
-                                            aria-current={page1=== lastNum1 ? "page1" : null}>
+                                            aria-current={page1 === lastNum1 ? "page1" : null}>
                                             {lastNum1}
                                         </PaginationLink>
                                     )
@@ -326,7 +324,7 @@ const MyReview = () => {
                                 &gt;
                             </PaginationLink>
                         </Pagination>
-                  
+
                     </div>
                 </div>
             </div>

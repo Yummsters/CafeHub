@@ -11,9 +11,11 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+
 import { getCookie, setCookie, removeCookie } from '../components/Cookie';
 import {useDispatch} from 'react-redux';
 import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
+import { url } from '../config.js'
 
 
 const ReviewWrite = () => {
@@ -38,7 +40,12 @@ const ReviewWrite = () => {
    
     useEffect(() => {
         if (token) {
-            axios.get(`http://localhost:8080/member`, {
+           console.log('현재 토큰:', token);
+            console.log(getCookie("refreshToken"));
+
+            // 토큰을 이용한 사용자 정보 가져오기
+            axios.get(`${url}/member`, {
+
                 headers: {
                     Authorization: token,
                     Refresh: getCookie("refreshToken"),
@@ -72,7 +79,7 @@ const ReviewWrite = () => {
 
         axios({
             method: 'POST',
-            url: 'http://localhost:8080/common/fileUpload',
+            url: '${url}/common/fileUpload',
             data: formData,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -91,12 +98,9 @@ const ReviewWrite = () => {
 
     const fetchCafeList = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/member/reviewauth/${memNo}`, {
-                headers: {
-                    Authorization: token,
-                    Refresh: getCookie("refreshToken")
-                }
-            });
+
+            const response = await axios.get(`${url}/reviewauth/${memNo}`);
+
             setCafes(response.data);
         } catch (error) {
             console.error(error);
@@ -175,16 +179,9 @@ const ReviewWrite = () => {
         }
 
         axios
-            .post(`http://localhost:8080/member/reviewwrite`, formData, {
-            headers : {
-                Authorization :token,
-                Refresh : getCookie("refreshToken")
-            }
-            
-           })
-           .then(res=>{
-            tokenCreate(dispatch, setCookie, res.headers)
-            .then(() => {
+         .post(`${url}/reviewwrite`, formData)
+            .then((res) => {
+
                 console.log(res);
                 let reviewNo = res.data;
                
@@ -214,20 +211,19 @@ const ReviewWrite = () => {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8080/reviewTagList', {
-          headers: {
-            Authorization: token,
-            Refresh: getCookie("refreshToken")
-          }
-        })
-        .then(res => {
-          setTagName([...res.data]);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-      }, []);
-      
+
+        axios.get(`${url}/reviewTagList`)
+            .then(res => {
+                console.log(res.data);
+                setTagName([...res.data]);
+                console.log("태그이름" + tagName);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }, [])
+
+
     const [selectedTags, setSelectedTags] = useState([]);
 
     const tagClick = (i) => {
@@ -350,7 +346,7 @@ const ReviewWrite = () => {
 
                                 axios({
                                     method: 'POST',
-                                    url: 'http://localhost:8080/common/fileUpload',
+                                    url: `${url}/common/fileUpload`,
                                     data: formData,
                                     headers: {
                                         'Content-Type': 'multipart/form-data',

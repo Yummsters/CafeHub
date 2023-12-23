@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import './Manager.css';
 import ManagerSideTab from '../components/ManagerSideTab';
+import { url } from '../config.js'
 
 const ManagerAd = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,7 +22,7 @@ const ManagerAd = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/cafeAd/unapprovedAds?page=${pageInfo.currentPage - 1}`);
+        const response = await axios.get(`${url}/cafeAd/unapprovedAds?page=${pageInfo.currentPage - 1}`);
         setAds(response.data.content);
         console.log(response.data);
         let totalPages = response.data.totalPages;
@@ -51,7 +52,7 @@ const ManagerAd = () => {
   const handleApproveAd = async (cafeAdNo) => {
     try {
       // Send approval request to the backend using axios
-      await axios.put(`http://localhost:8080/cafeAd/approve/${cafeAdNo}`);
+      await axios.put(`${url}/manager/cafeAd/approve/${cafeAdNo}`);
 
       // Update the local state after successful approval
       setAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
@@ -70,7 +71,7 @@ const ManagerAd = () => {
             {ads.map((ad) => (
               <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
                 <th scope="row">
-                  <img className='listImg' src={ad.thumbImg} alt='' />
+                  <img className='listImg' src={`/img/${ad.thumbImg}.png`} alt='' />
                 </th>
                 <td colSpan={11}>
                   <div className='listMiniTitle'>{ad.cafeName}</div>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import { url } from '../config.js'
 
 
 
@@ -45,7 +46,7 @@ const Keypad = () => {
     const phoneSubmit = (e) => {
         e.preventDefault();
         setPhone('010');
-        axios.get(`http://localhost:8080/member/phone/${phone}`, {
+        axios.get(`${url}/member/phone/${phone}`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -88,7 +89,7 @@ const Keypad = () => {
     return (
         <div className="keypad-container">
             <div className="closeBtn">
-                <img onClick={backPoint} src='/img/X.png' />
+                <img onClick={backPoint} src='/img/Xb.png' style={{width : "50px"}}/>
             </div>
             <input className="keypadInput" type="text" id="phoneNum" name="phoneNum" style={{ height: '20vh' }} value={phone} />
             <div className="keypadNum-section">

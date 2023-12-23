@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import './Manager.css';
 import ManagerSideTab from '../components/ManagerSideTab';
 import axios from 'axios';
+import { url } from '../config.js'
 
 const ManagerConfirm = () => {
     const [pageInfo, setPageInfo] = useState({
@@ -23,7 +24,7 @@ const ManagerConfirm = () => {
     }, [searchParams]);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/managerConfirm`, {
+        axios.get(`${url}/managerConfirm`, {
             params: {
                 page: pageInfo.currentPage - 1,
                 size: pageInfo.cafesPerPage,
@@ -60,7 +61,7 @@ const ManagerConfirm = () => {
                         {unpaidCafes.map((cafe) => (
                             <tr key={cafe.cafeNo}>
                                 <th scope="row">
-                                    <img className='listImg' src={cafe.thumbImg} alt='' />
+                                    <img className='listImg' src={`/img/${cafe.thumbImg}.png`} alt='' />
                                 </th>
                                 <td colSpan={11}>
                                     <div className='listMiniTitle'>{cafe.cafeName}</div>

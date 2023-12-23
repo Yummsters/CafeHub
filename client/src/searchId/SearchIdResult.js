@@ -3,7 +3,7 @@ import searchId from './searchIdStyle.css';
 
 const SearchIdResult = () => {
     const location = useLocation();
-    const result = location.state.result;
+    const searchId = location.state.result;
     const navigate = useNavigate();
 
     return(
@@ -12,7 +12,7 @@ const SearchIdResult = () => {
                 <div className='searchId-section'>
                     <div className='searchId-title'>아이디 찾기</div> <br/>
                     <div className='searchIdResult-text'>
-                    아이디는 <br/> -------- <br/> <b>{result}</b> <br/> -------- <br/>입니다
+                    아이디는 <br/> -------- <br/> <b>{searchId}</b> <br/> -------- <br/>입니다
                     </div>
                     <div className='searchId-button'>
                         <button type="button" onClick={()=>navigate('/login')}> <span>확인</span> </button>

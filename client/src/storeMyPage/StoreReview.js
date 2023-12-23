@@ -8,6 +8,7 @@ import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { url } from '../config.js'
 
 const StoreReview = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -35,7 +36,7 @@ const StoreReview = () => {
     const getPage = (page) => {
         setPage(page);
         setCurPage(page);
-        axios.get(`http://localhost:8080/store/review/storeList/${cafeNo}?page=${page}&&size=5`,
+        axios.get(`${url}/store/review/storeList/${cafeNo}?page=${page}&&size=5`,
             {
                 headers: {
                     Authorization: accessToken,
@@ -78,13 +79,14 @@ const StoreReview = () => {
             <StoreSideTab />
             <div className='storeReviewListBox'>
                 <br /><label className='storeReview-listTitle'>리뷰 조회</label><br /><br />
+                {reviewList.length == 0 &&  <div className="storeReview0">작성된 리뷰가 없습니다</div>}
                 <div className='storeReview-table'>
                     <Table hover>
                         <tbody>
-                            {reviewList.length == 0 ? <sapn className="storeReview0">조회된 댓글이 없습니다.</sapn> : reviewList.map(list => {
+                            {reviewList.length != 0 && reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`http://localhost:8080/thumbImg/${list.thumbImg}`} alt='' /></th>
+                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`${url}/thumbImg/${list.thumbImg}`} alt='' /></th>
                                         <td colSpan={11}><div className='storeReview-listMiniTitle'>{list.title}</div>
                                             <div className='storeReview-reviewUser'>{list.nickName}</div></td>
                                         <td colSpan={1}><div className='storeReview-reviewLikeCount'>추천 {list.likeCount}</div>
@@ -95,6 +97,7 @@ const StoreReview = () => {
                         </tbody>
                     </Table>
                 </div>
+                {reviewList.length != 0 &&  
                 <Pagination className="storeReview-Page">
                     <PaginationLink
                         className='storeReview-Button'
@@ -141,6 +144,7 @@ const StoreReview = () => {
                         &gt;
                     </PaginationLink>
                 </Pagination>
+}
             </div>
         </div>
     );
