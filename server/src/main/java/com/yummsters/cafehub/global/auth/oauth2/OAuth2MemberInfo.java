@@ -5,4 +5,5 @@ public interface OAuth2MemberInfo {
     String getNickname();
     String getProvider();
     String getProviderId();
+    String getName();
 }

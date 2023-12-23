@@ -31,7 +31,7 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
     private OAuth2User pricessOAuth2User(OAuth2UserRequest userRequest,OAuth2User oAuth2User) throws OAuth2AuthenticationException{
         OAuth2MemberInfo oAuth2MemberInfo = null;
         if(userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
-            oAuth2MemberInfo = new KakaoMemberInfo(oAuth2User.getAttribute("response"));
+            oAuth2MemberInfo = new NaverMemberInfo(oAuth2User.getAttribute("response"));
         } else if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
             oAuth2MemberInfo = new KakaoMemberInfo(oAuth2User.getAttributes());
         } else {
@@ -48,14 +48,15 @@ public class PrincipalOauth2UserService  extends DefaultOAuth2UserService {
         }else if(member == null){
             member = Member.builder()
                     .id(oAuth2MemberInfo.getProvider()+oAuth2MemberInfo.getProviderId())
-                    .password("Kakao 로그인 유저")
-                    .name(oAuth2MemberInfo.getNickname())
+                    .password(oAuth2MemberInfo.getProvider()+" 로그인 유저")
+                    .name(oAuth2MemberInfo.getProvider().equals("kakao") ? oAuth2MemberInfo.getNickname() : oAuth2MemberInfo.getName())
                     .nickname(oAuth2MemberInfo.getNickname())
                     .email(oAuth2MemberInfo.getEmail())
                     .status(true)
                     .memberType(MemberType.USER)
-                    .social(Social.KAKAO)
-                    .phone("Kakao 로그인 유저")
+                    .social(oAuth2MemberInfo.getProvider().equals("kakao") ? Social.KAKAO : Social.NAVER)
+                    .badgeNo(9)
+                    .phone(oAuth2MemberInfo.getProvider()+" 로그인 유저")
                     .build();
 
             memberRepository.save(member);
