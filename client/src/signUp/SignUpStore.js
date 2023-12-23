@@ -433,7 +433,7 @@ const SignUpStore = () => {
                 }
 
                 // 카페 생성
-                axios.post(`${url}/cafe/store`, formData)
+                axios.post(`${url}/cafeStore/store`, formData)
                     .then((cafeResponse) => {
                         console.log(cafeResponse);
                         const cafeNo = cafeResponse.data;
