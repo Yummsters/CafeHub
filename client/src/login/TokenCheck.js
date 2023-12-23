@@ -72,6 +72,7 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
         dispatch({type:"isLogin", payload:false});
         dispatch({type:"member", payload:""});
         dispatch({type:"cafe", payload:""});
+        dispatch({ type: "payment", payload: "" });
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         removeCookie("refreshToken");
@@ -107,6 +108,7 @@ export const normalCheck = (dispatch, accessToken) => {
                 dispatch({type:"isLogin", payload:false});
                 dispatch({type:"member", payload:""});
                 dispatch({type:"cafe", payload:""});
+                dispatch({ type: "payment", payload: "" });
         
                 // 로컬 스토리지 정보 및 쿠키 토큰 제거
                 removeCookie("refreshToken");

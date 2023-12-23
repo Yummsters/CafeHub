@@ -52,7 +52,7 @@ const ManagerAd = () => {
   const handleApproveAd = async (cafeAdNo) => {
     try {
       // Send approval request to the backend using axios
-      await axios.put(`${url}/cafeAd/approve/${cafeAdNo}`);
+      await axios.put(`${url}/manager/cafeAd/approve/${cafeAdNo}`);
 
       // Update the local state after successful approval
       setAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
