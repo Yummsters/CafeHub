@@ -47,7 +47,7 @@ const Manager2 = () => {
     const getPage = (page) => {
         setPage(page);
 
-        axios.get(`${url}/point/list?page=${page}&&size=5`,
+        axios.get(`${url}/manager/list?page=${page}&&size=5`,
             {
                 headers: {
                     Authorization: accessToken,
@@ -82,7 +82,7 @@ const Manager2 = () => {
         const memNo = e.target.id;
 
 
-        axios.post(`${url}/point/${memNo}`, null, {
+        axios.post(`${url}/manager/point/${memNo}`, null, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")

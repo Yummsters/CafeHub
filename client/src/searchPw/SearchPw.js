@@ -4,6 +4,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 
 const SearchPw = () => {
   const [data, setData] = useState({});
@@ -11,16 +12,7 @@ const SearchPw = () => {
   const [randomCode, setRandomCode] = useState(0);
   const [phoneAuth, setPhoneAuth] = useState(false); // 인증번호 발송 여부
   const [phoneCheck, setPhoneCheck] = useState(false); // 인증번호 일치 여부
-
   const navigate = useNavigate();
-
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top',
-    showConfirmButton: false,
-    timer: 1500,
-    timerProgressBar: true,
-  })
 
   // input 값 저장
   const handleChange = (e) => {
@@ -34,35 +26,40 @@ const SearchPw = () => {
   };
 
   // 회원 정보 확인 후 휴대폰 인증번호 발송
-  const sendPhoneCode = () => {
-    axios.post(`${url}/searchPw`, { // 회원정보 확인
-      id: data.id,
-      phone: data.phone,
-    })
-    .then((res) => {
-      // 회원정보 일치하는 경우 휴대폰 인증번호 발송
-      const random = Math.floor(Math.random() * 9000) + 1000;
-      setRandomCode(random);
-      console.log(random);
-      axios.get(`${url}/check/sendSMS?phone=${data.phone}&code=${random}`)
-      .then((res) => {
-          console.log(res.data);
-          Toast.fire({
-              title: '인증번호가 발송되었습니다',
-              icon: 'success',
-          });
-          setPhoneAuth(true);
-      })
-      .catch((error) => {
-          console.log(error);
+  const sendPhoneCode = (e) => {
+    e.preventDefault();
+    if (!data.id || !data.phone) {
+      Toast.fire({
+        title: "회원 정보를 입력해주세요",
+        icon: "error",
       });
+      return;
+    }
+    axios.post(`${url}/searchPw`, { id: data.id, phone: data.phone })
+    .then((res) => {
+        if (res.data === true){ // 회원정보 일치하는 경우 휴대폰 인증번호 발송
+          const random = Math.floor(Math.random() * 9000) + 1000;
+          setRandomCode(random);
+          console.log(random); // 실제 사용 시 제거
+          // axios.get(`${url}/check/sendSMS?phone=${data.phone}&code=${random}`)
+          // .then((res) => {
+              Toast.fire({
+                  title: '인증번호가 발송되었습니다',
+                  icon: 'success',
+              });
+              setPhoneAuth(true);
+          // })
+        } else {
+          Toast.fire({
+            title: "일치하는 회원 정보가 없습니다",
+            icon: "error",
+          });
+        }
     })
     .catch((error) => {
-      console.log(error);
       Toast.fire({
-        title: "회원 정보가 없습니다",
+        title: error.response.data,
         icon: "error",
-        confirmButtonText: "확인",
       });
     });
   };
@@ -85,20 +82,11 @@ const SearchPw = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!data.id || !data.phone) {
-      Toast.fire({
-        title: "회원 정보를 입력해주세요",
-        icon: "error",
-        confirmButtonText: "확인",
-      });
-      return;
-    }
 
     if (!phoneAuth || (!phoneAuth && !phoneCheck)) {
       Toast.fire({
         title: "휴대폰 인증이 필요합니다",
         icon: "error",
-        confirmButtonText: "확인",
       });
       return;
     }
@@ -107,13 +95,11 @@ const SearchPw = () => {
       Toast.fire({
         title: "인증번호를 확인해주세요",
         icon: "error",
-        confirmButtonText: "확인",
       });
       return;
     }
     Toast.fire({
-      title: "인증 되었습니다",
-      text: "비밀번호 재설정 페이지로 이동합니다",
+      title: "인증 되었습니다\n비밀번호 재설정 페이지로 이동합니다",
       icon: "success",
     });
     setTimeout(() => {

@@ -233,6 +233,10 @@ const LoginPage = () => {
     window.location.href = `${url}/oauth2/authorization/kakao`;
   }
 
+  const handleNaverOauthLogin = () =>{
+    window.location.href = `${url}/oauth2/authorization/naver`;
+  }
+
   const inputRegexs = {
     idRegex: /^[a-z0-9]{5,12}$/,
     passwordRegex: /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/
@@ -306,7 +310,7 @@ const LoginPage = () => {
             </div>
             <div className='socialLoginBtn' style={{ textAlign: "center" }}>
               <img className="kakao" src="/img/KakaoBtn.png" alt='Kakao' onClick={handleKakaoOauthLogin} />
-              <img className="naver" src="/img/NaverBtn.png" alt='Naver' />
+              <img className="naver" src="/img/NaverBtn.png" alt='Naver' onClick={handleNaverOauthLogin}/>
             </div><br />
             <div className='login-button'>
               <button type="submit" onClick={handleClickUser}> Login </button>

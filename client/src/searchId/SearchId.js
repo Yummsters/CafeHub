@@ -4,19 +4,12 @@ import searchId from './searchIdStyle.css';
 import {useState} from 'react';
 import Swal from 'sweetalert2';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 
 const SearchId = () => {
     const [data, setData] = useState({ name: '', phone: '' });
     const navigate = useNavigate();
     const [warning, setWarnings] = useState('');
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-      })
 
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -37,29 +30,21 @@ const SearchId = () => {
             });
             return; 
         }
-
-        axios.get(`${url}/searchId`, { 
-            params: {
-                name: data.name,
-                phone: data.phone
-            }
-        })
+        axios.post(`${url}/searchId`, { name: data.name, phone: data.phone })
         .then((res) => {
             Toast.fire({
-                title: "회원정보를 찾고 있습니다",
-                text: "결과 페이지로 이동합니다",
+                title: "결과 페이지로 이동합니다",
                 icon: "success",
             });
             setTimeout(() => {
-                navigate('/searchIdResult', { state: { result: res.data } });
+                navigate('/searchIdResult', { state: { result: res.data.id } });
             }, 1500);
         })
-        .catch((error) => {
-            console.log(error);
+        .catch((err) => {
             Toast.fire({
-                title: '회원정보가 일치하지 않습니다',
+                title: err.response.data,
                 icon: 'error',
-            });
+            })
         })
     }
 
