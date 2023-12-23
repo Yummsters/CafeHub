@@ -3,6 +3,7 @@ package com.yummsters.cafehub.domain.review.service;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import com.yummsters.cafehub.domain.tag.entity.ReviewTag;
 import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
@@ -66,8 +67,8 @@ public class ReviewServiceImpl implements ReviewService {
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 
 		if (files != null && files.size() != 0) {
-			//String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
-			String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
+			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
+			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
 
 			String fileNums = "";
 
@@ -127,12 +128,19 @@ public class ReviewServiceImpl implements ReviewService {
 	// 리뷰 삭제
 	@Override
 	public void deleteReview(Integer reviewNo) throws Exception {
+		
 		Review reviewEntity = reviewRepository.findByReviewNo(reviewNo);
+		Review review = reviewRepository.findByReviewNo(reviewNo);
+		 List<ReviewToTag> existingReviewToTags = reviewToTagRepository.findByReview(review);
+		    reviewToTagRepository.deleteAll(existingReviewToTags);
+
 
 		if (reviewEntity != null) {
+			
 			reviewRepository.delete(reviewEntity);
 		}
 	}
+	
 	
 
 	// 리뷰 수정

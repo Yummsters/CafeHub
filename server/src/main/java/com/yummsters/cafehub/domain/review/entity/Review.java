@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.point.entity.Point;
@@ -45,7 +44,7 @@ public class Review {
     private String subTitle;
 	@Column
 	private Integer likeCount;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column
 	private LocalDateTime regDate;
     @Column
     private boolean modPossible;

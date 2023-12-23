@@ -78,7 +78,9 @@ public class Member {
     private Integer badgeNo;
 
     public void setBadgeNo(Badge badge) {
-        
+        if (badge != null) {
+            this.badgeNo = badge.getBadgeNo();
+        }
     }
     
     public void setBadgeNo(Integer badgeNo) {

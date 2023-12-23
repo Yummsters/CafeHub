@@ -223,7 +223,7 @@ public class MemberController {
         }
     }
     
-    @PostMapping("/cafe/store")
+    @PostMapping("/cafeStore/store")
     public ResponseEntity<Object> signUpStore(@ModelAttribute SignUpStoreDto signUpStore, @RequestParam("file") List<MultipartFile> files){       
     	try{
             Integer cafeNo = memberService.existStore(signUpStore, files);
