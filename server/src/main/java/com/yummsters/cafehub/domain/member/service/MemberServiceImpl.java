@@ -202,12 +202,12 @@ public class MemberServiceImpl implements MemberService{
 
     // 비밀번호 찾기
     @Override
-    public Member searchPw(String id, String phone) throws Exception {
+    public boolean searchPw(String id, String phone) throws Exception {
         Member member = memberRepository.findById(id);
         if (member != null && member.getPhone().equals(phone)) {
-            return member;
+            return true;
         } else {
-            throw new Exception("회원정보가 일치하지 않습니다.");
+            return false;
         }
     }
     // 비밀번호 재설정

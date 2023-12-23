@@ -22,7 +22,7 @@ public interface MemberService {
 
     Member modifyMember(Member member) throws Exception;
     Member searchId(String name, String phone) throws Exception;
-    Member searchPw(String id, String phone) throws Exception;
+    boolean searchPw(String id, String phone) throws Exception;
     void changePw(String id, String newPassword) throws Exception;
     boolean matchPw(String id, String password) throws Exception;
     Cafe paymentSignUp(SignUpPayDto signUpPayDto) throws Exception;

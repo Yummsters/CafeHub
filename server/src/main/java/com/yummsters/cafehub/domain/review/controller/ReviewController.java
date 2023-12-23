@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.review.controller;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -166,9 +167,7 @@ public class ReviewController {
 	// ----------------------------------------------------------------------
 	@GetMapping("/review/{reviewNo}")
 	public ResponseEntity<Object> getReviewDetail(@PathVariable Integer reviewNo,
-
 												  @RequestParam(required = false) Integer memNo) {
-
 		try {
 			Map<String, Object> res = new HashMap<>();
 			ReviewDetailDto review = reviewService.reviewDetail(reviewNo);
@@ -238,7 +237,9 @@ public class ReviewController {
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "") String search) {
 		try {
 			Page<Review> reviewsPage = reviewService.getReviewList(search, PageRequest.of(page, size));
+
 	        Page<Map<String, Object>>res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
+
 	            @Override
 	            public Map<String, Object> apply(Review review) {
 	                Map<String, Object> reviewData = new HashMap<>();
@@ -247,7 +248,9 @@ public class ReviewController {
 	                reviewData.put("subtitle", review.getSubTitle());
 	                reviewData.put("cafeName", review.getCafe().getCafeName());
 	                reviewData.put("likeCount", review.getLikeCount());
-	                reviewData.put("regDate", review.getRegDate());
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					String formattedDate = review.getRegDate().format(formatter);
+	                reviewData.put("regDate", formattedDate);
 	                reviewData.put("nickname", review.getMember().getNickname());
 	                reviewData.put("memNo", review.getMember().getMemNo());
 	                reviewData.put("badgeNo", review.getMember().getBadgeNo());
