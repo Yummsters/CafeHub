@@ -141,7 +141,11 @@ public class ReplyServiceImpl implements ReplyService {
     public ReplyInterface getBestReplyByReviewNo(Integer memNo, Integer reviewNo) throws Exception {
         try {
             Optional<ReplyInterface> bestReply = replyRepository.findBestReply(memNo, reviewNo);
-            return bestReply.get();
+            if(bestReply.isPresent()) {
+            	return bestReply.get();            	
+            } else {
+            	return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("베스트 댓글을 가져오는 중에 오류가 발생했습니다.");
