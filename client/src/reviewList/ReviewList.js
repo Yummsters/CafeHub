@@ -114,7 +114,7 @@ const ReviewList = () => {
                 </div>
                 <div className='reviewline' />
                 <div><a href='/reviewwrite'><button className='reviewBtn'>리뷰 등록</button></a></div>
-
+                {reviews.length !== 0 ?
                 <div className='reviewtable'>
                     <Table hover >
                         <tbody>
@@ -134,7 +134,7 @@ const ReviewList = () => {
                                         <div className='writeInfo'>
                                             <a href={`/userReview/${review.nickname}`}>
                                                 <img className='badgeImg' src={`/img/${pickBadgeName[0]}`} alt='' />
-                                                {review.nickname}</a> | 추천 {review.likeCount}
+                                                {review.nickname}</a> &nbsp;| 추천 {review.likeCount}
                                         </div>
                                         <div className='dateTime'>{review.regDate}</div>
                                     </td>
@@ -143,6 +143,8 @@ const ReviewList = () => {
                         </tbody>
                     </Table>
                 </div>
+                 : <div className="noWish">리뷰가 없습니다</div>}
+                {reviews.length !== 0 ?
                 <div className='reviewList-pagination'>
                     <ul className="pagination">
                         <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
@@ -158,6 +160,7 @@ const ReviewList = () => {
                         </li>
                     </ul>
                 </div>
+                : <div></div> }
             </div>
         </div>
     );

@@ -22,6 +22,7 @@ tbody td {
 }
 
 .reviewListBox {
+  min-height: 700px;
     width: 1000px;
     border: none;
     border-radius: 10px;
@@ -31,7 +32,6 @@ tbody td {
     flex-direction: column; /* 자식 요소들을 세로로 배치 */
     align-items: center; /* 수직 정렬 설정 */
     margin: 50px 0 75px 0;
-    justify-content: center;
   }
 .reviewline{
   border:1px solid #555555;
@@ -88,7 +88,7 @@ tbody td {
   .description1, .description2, .writeInfo, .dateTime {
     font-size: 15px;
     vertical-align: middle;
-    
+    margin-top: 3px;
   }
 
   .writeInfo {
