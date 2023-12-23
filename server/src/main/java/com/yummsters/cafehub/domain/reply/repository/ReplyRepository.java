@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.reply.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -36,6 +37,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 			+ "FROM reply r "
 			+ "JOIN member m ON m.mem_no = r.writer "
 			+ "WHERE r.review_no=:reviewNo "
+			+ "AND r.like_count > 0 "
 			+ "ORDER BY r.like_count DESC "
 			+ "LIMIT 1", nativeQuery = true)
 	Optional<ReplyInterface> findBestReply(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo);
@@ -62,4 +64,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 	Page<ReplyInterface> findReplyList(@Param("memNo") Integer memNo,@Param("reviewNo") Integer reviewNo, Pageable pageable);
 
 	Page<Reply> findByMember_MemNo(PageRequest pageRequest, Integer memNo);
+	
+	List<Reply> findByParentReply_ReplyNo(Integer parentReplyNo);
 }
