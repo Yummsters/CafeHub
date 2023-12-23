@@ -145,21 +145,21 @@ public class MemberController {
     }
     @PostMapping("/searchPw")
     public ResponseEntity<Object> pwSearch(@RequestBody SearchPwDto searchPwDto) {
-        String id = searchPwDto.getId();
-        String phone = searchPwDto.getPhone();
         try {
-            Member member = memberService.searchPw(id, phone);
-            return new ResponseEntity<>(member, HttpStatus.OK);
+            String id = searchPwDto.getId();
+            String phone = searchPwDto.getPhone();
+            boolean result = memberService.searchPw(id, phone);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
     @PutMapping("/resetPw/{id}")
-    public ResponseEntity<String> changePassword(@PathVariable String id, @RequestBody SearchPwDto searchPwDto) {
+    public ResponseEntity<Object> changePassword(@PathVariable String id, @RequestBody SearchPwDto searchPwDto) {
         try {
             memberService.changePw(id, searchPwDto.getPassword());
-            return new ResponseEntity<>("ok", HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
