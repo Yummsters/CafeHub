@@ -11,7 +11,7 @@ public class KakaoMemberInfo implements OAuth2MemberInfo {
 
     @Override
     public String getProvider() {
-        return "Kakao";
+        return "kakao";
     }
 
     @Override
@@ -26,6 +26,11 @@ public class KakaoMemberInfo implements OAuth2MemberInfo {
 
     @Override
     public String getNickname() {
+        return (String) (((Map<String,Object>)attributes.get("properties")).get("nickname"));
+    }
+
+    @Override
+    public String getName() {
         return (String) (((Map<String,Object>)attributes.get("properties")).get("nickname"));
     }
 }
