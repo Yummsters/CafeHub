@@ -408,14 +408,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     if (memNo !== undefined) { getDetailURL += `?memNo=${memNo}`; }
     axios.get(getDetailURL)
       .then((res) => {
-        console.log(res.data.review.memNo);
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
         axios.get(`${url}/getMemberBadge/${res.data.review.memNo}`)
         .then(response => {
-            console.log(response.data);
             const badgeName = response.data.badgeName || '';
             setPickBadge([badgeName]);
         })
@@ -426,7 +424,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       .catch((error) => {
         console.error("에러:" + error);
       });
-      console.log(memNo);
     fetchReplies();
     getBestReply();
   }, [pageInfo.currentPage]); // replies, bestReply
