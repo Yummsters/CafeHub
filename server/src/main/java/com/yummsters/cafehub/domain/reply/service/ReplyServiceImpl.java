@@ -1,5 +1,6 @@
 package com.yummsters.cafehub.domain.reply.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -47,13 +48,23 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 
 	@Override
-	public void replyDelete(Integer replyNo) throws Exception {
-		Reply reply = replyRepository.findByReplyNo(replyNo);
-		if (reply == null) {
-			throw new Exception("존재하지 않는 댓글입니다.");
-		}
-		replyRepository.delete(reply);
+	public void replyDelete(Integer replyNo) {
+	    Optional<Reply> optionalReply = replyRepository.findById(replyNo);
+	    if (optionalReply.isPresent()) {
+	        Reply reply = optionalReply.get();
+	        List<Reply> childReplies = replyRepository.findByParentReply_ReplyNo(replyNo);
+	        
+	        if (childReplies.isEmpty()) {
+	            replyRepository.delete(reply);
+	        } else {
+	            reply.setContent("삭제된 댓글입니다.");
+	            replyRepository.save(reply);
+	        }
+	    } else {
+	        throw new IllegalArgumentException("해당 댓글이 없습니다. replyNo=" + replyNo);
+	    }
 	}
+
 
 	@Override
 	public boolean toggleLikeReply(Integer memNo, Integer replyNo) throws Exception {

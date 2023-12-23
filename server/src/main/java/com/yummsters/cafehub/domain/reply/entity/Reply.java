@@ -79,6 +79,10 @@ public class Reply {
     	this.likeCount++;
     }
     
+    public void setContent(String content) {
+    	this.content = content;
+    }
+    
     public ReplyDto toDto() {
         return ReplyDto.builder()
                 .replyNo(this.replyNo)

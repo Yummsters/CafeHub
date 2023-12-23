@@ -273,7 +273,6 @@ public class ReviewController {
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "") String search) {
 		try {
 			Page<Review> reviewsPage = reviewService.getReviewList(search, PageRequest.of(page, size));
-<
 	        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
 	            @Override
 	            public Map<String, Object> apply(Review review) {
