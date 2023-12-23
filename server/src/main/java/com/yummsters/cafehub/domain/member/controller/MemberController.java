@@ -130,11 +130,14 @@ public class MemberController {
     }
 
     // 선진 part ----------------------------------------------------------------
-    @GetMapping("/searchId")
-    public ResponseEntity<String> idSearch(@RequestParam String name, @RequestParam String phone) {
+    @PostMapping("/searchId")
+    public ResponseEntity<Object> idSearch(@RequestBody SearchIdDto searchIdDto) {
         try {
+            String name = searchIdDto.getName();
+            String phone = searchIdDto.getPhone();
             Member member = memberService.searchId(name, phone);
-            return new ResponseEntity<>(member.getId(), HttpStatus.OK);
+            SearchIdDto id = SearchIdDto.searchIdToDto(member);
+            return new ResponseEntity<>(id, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

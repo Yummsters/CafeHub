@@ -77,6 +77,7 @@ public class Cafe {
                 .isPaid(isPaid)
                 .paidDate(paidDate)
                 .isExisting(isExisting)
+                .cafeInfo(cafeInfo)
                 .build();
     }
 
