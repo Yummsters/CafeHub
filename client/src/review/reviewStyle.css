@@ -108,6 +108,7 @@ input[type="file"]{
     border-radius: 10px;
     border: 2px solid #F59A23;
     padding: 5px 3px ;
+    height: 50px;
 }
 
 .selectTag, .tag:hover {
