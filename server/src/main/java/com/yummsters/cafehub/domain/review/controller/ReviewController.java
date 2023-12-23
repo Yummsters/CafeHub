@@ -66,7 +66,7 @@ public class ReviewController {
 	// ----------------------------------------------------------------------
 
 	// 리뷰 권한
-	@GetMapping("/reviewauth/{memNo}")
+	@GetMapping("member/reviewauth/{memNo}")
 	public ResponseEntity<List<ReviewAuthDto>> getReviewAuthByMemNo(@PathVariable Integer memNo) {
 		try {
 			List<ReviewAuth> reviewAuthList = reviewService.getReviewAuthList(memNo);
@@ -80,7 +80,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 등록
-	@PostMapping("/reviewwrite")
+	@PostMapping("member/reviewwrite")
 	public ResponseEntity<Integer> reviewWrite(@ModelAttribute ReviewDto review,
 			@RequestParam("file") List<MultipartFile> files) {
 		try {
@@ -118,35 +118,6 @@ public class ReviewController {
 	}
 
 	// 내가 쓴 리뷰
-//		@GetMapping("/userReviewList/{memNo}")
-//		public ResponseEntity<Page<Map<String, Object>>> userReviewList(
-//		        @PathVariable Integer memNo,
-//		        @RequestParam(defaultValue = "0") int page,
-//		        @RequestParam(defaultValue = "5") int size,
-//		        @RequestParam(defaultValue = "") String search) {
-//
-//		    try {
-//		        Page<Review> reviewsPage = reviewService.getReviewListByMember(memNo, search, PageRequest.of(page, size));
-//		        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
-//		            @Override
-//		            public Map<String, Object> apply(Review review) {
-//		                Map<String, Object> reviewData = new HashMap<>();
-//		                reviewData.put("thumbImg", review.getThumbImg());
-//		                reviewData.put("title", review.getTitle());
-//		                reviewData.put("cafeName", review.getCafe().getCafeName());
-//		                reviewData.put("likeCount", review.getLikeCount());
-//		                reviewData.put("regDate", review.getRegDate());
-//		                reviewData.put("nickname", review.getMember().getNickname());
-//		                reviewData.put("reviewNo", review.getReviewNo());
-//		                return reviewData;
-//		            }
-//		        });
-//		        return new ResponseEntity<>(res, HttpStatus.OK);
-//		    } catch (Exception e) {
-//		        e.printStackTrace();
-//		        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//		    }
-//		}
 	@GetMapping("/myReview/{memNo}")
 	public ResponseEntity<Object> getMyReview(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
 	        @PathVariable("memNo") Integer memNo) {
@@ -190,12 +161,6 @@ public class ReviewController {
 	        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	    }
 	}
-
-
-
-	    
-
-
 
 
 	// 선진 part
@@ -272,7 +237,9 @@ public class ReviewController {
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "") String search) {
 		try {
 			Page<Review> reviewsPage = reviewService.getReviewList(search, PageRequest.of(page, size));
-	        Page<Map<String, Object>> res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
+
+	        Page<Map<String, Object>>res = reviewsPage.map(new Function<Review, Map<String, Object>>() {
+
 	            @Override
 	            public Map<String, Object> apply(Review review) {
 	                Map<String, Object> reviewData = new HashMap<>();
