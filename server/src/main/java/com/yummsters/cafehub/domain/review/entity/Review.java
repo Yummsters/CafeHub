@@ -23,7 +23,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @Builder
 @DynamicInsert
 @DynamicUpdate
-//@ToString(exclude = {"member", "cafe", "reviewToTags"})
 public class Review {
 
    @Id
@@ -59,9 +58,5 @@ public class Review {
 	 public void setTagName(String tagName) {
 	        this.tagName = tagName;
 	    }
-   @Override
-   public String toString() {
-       return String.format("[%d,%s,%s,%s,%d,%d,%d,%s]",
-               reviewNo, title, content, thumbImg, member.getMemNo(), cafe.getCafeNo(), likeCount, regDate);
-   }
+
 }
