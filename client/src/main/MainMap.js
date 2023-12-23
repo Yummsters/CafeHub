@@ -10,7 +10,6 @@ const MainMap = () => {
     axios.get(`${url}/mapMarker`)
     .then(response => {
       setCafes(response.data);
-      console.log(response.data);
     })
     .catch(error => {
       console.error('에러:', error);
@@ -27,7 +26,6 @@ const MainMap = () => {
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
     cafes.forEach((cafe) => {
-      console.log(cafe.existing);
       var imageSrc = cafe.existing
           ? "/img/marker_in.png" // 입점카페
           : "/img/marker_basic.png", // 기본카페

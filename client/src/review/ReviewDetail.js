@@ -10,6 +10,7 @@ import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { url } from '../config.js'
 import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
 import { getCookie, removeCookie, setCookie } from "../components/Cookie";
+import { Toast } from '../components/Toast.js'
 
 const { kakao } = window;
 
@@ -25,7 +26,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [replyLike, setReplyLike] = useState(false);
   const [replyLikeCount, setReplyLikeCount] = useState(0);
   const [pickBadgeName, setPickBadge] = useState([]);
-  const dispatch = useDispatch;
+  const dispatch = useDispatch();
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const isLogin = useSelector(state => state.persistedReducer.isLogin);
@@ -118,7 +119,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     setReplyContent(e.target.value);
   };
 
-  const handleReplySubmit = () => {
+  const handleReplySubmit = (e) => {
+    e.preventDefault();
+    if(memNo === undefined) {
+      showSwal();
+    };
     if(replyContent.length > 0) {
     axios
       .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
@@ -399,31 +404,32 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     if(isLogin) {
       normalCheck(dispatch, accessToken);
     }
-    axios.get(`${url}/review/${reviewNo}?memNo=${memNo}`)
+    let getDetailURL = `${url}/review/${reviewNo}`;
+    if (memNo !== undefined) { getDetailURL += `?memNo=${memNo}`; }
+    axios.get(getDetailURL)
       .then((res) => {
+        console.log(res.data.review.memNo);
         setReview(res.data.review);
         setLike(res.data.isLike);
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
+        axios.get(`${url}/getMemberBadge/${res.data.review.memNo}`)
+        .then(response => {
+            console.log(response.data);
+            const badgeName = response.data.badgeName || '';
+            setPickBadge([badgeName]);
+        })
+        .catch(error => {
+            console.error('에러 발생:', error);
+        });
       })
       .catch((error) => {
         console.error("에러:" + error);
       });
-
-    axios.get(`${url}/getMemberBadge/${memNo}`)
-    .then(response => {
-
-        const badgeName = response.data.badgeName || '';
-        setPickBadge([badgeName]);
-
-    })
-    .catch(error => {
-        console.error('에러 발생:', error);
-    });
-
+      console.log(memNo);
     fetchReplies();
     getBestReply();
-  }, [pageInfo.currentPage]); // currentPage가 변경될 때마다 useEffect가 실행
+  }, [pageInfo.currentPage]); // replies, bestReply
 
   useEffect(() => { // 디테일 지도
     if (review && review.lat && review.lng) {
@@ -485,7 +491,10 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 </div></>
             )}
             <div className="detailLine" />
-            {bestReply && (
+            {replies.length === 0 ? (
+              <div></div>
+            ) : (
+             bestReply && (
               <div key={bestReply.replyNo} className="replyInfo">
                 <div className="infoT">
                   <p>
@@ -537,12 +546,17 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   </>
                 )}
               </div>
+             )
             )}
 
             {/* 댓글 목록 출력 */}
-            {replies.map((reply) => (
-              <div key={reply.replyNo} className="replyInfo">
-                <div className="infoT">
+
+            {replies.length === 0 ? (
+              <div className="noWish">댓글이 없습니다</div>
+            ) : (
+              replies.map((reply) => (
+                <div key={reply.replyNo} className="replyInfo">
+                  <div className="infoT">
                   <p>
                     {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
                     <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
@@ -576,10 +590,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                     <div className="detailLine" />
                   </>
                 )}
+                </div>
+              ))
+            )}
 
-              </div>
-            ))}
-
+            {replies.length !== 0 &&
             <div className="reviewDetail-pagination">
               <ul className="pagination">
                 <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
@@ -595,7 +610,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 </li>
               </ul>
             </div>
-
+            }
           </div>
         </div>
       )}
