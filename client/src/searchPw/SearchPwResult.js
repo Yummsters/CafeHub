@@ -4,6 +4,7 @@ import searchId from '../searchId/searchIdStyle.css';
 import {useState} from 'react';
 import Swal from 'sweetalert2';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 
 const SearchPwResult = () => {
     const [data, setData] = useState({});
@@ -11,14 +12,6 @@ const SearchPwResult = () => {
     const [warning, setWarnings] = useState('');
     const location = useLocation();
     const id = location.state.result; // 찾기 시도한 id
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-      })
 
     // input 데이터 저장
     const handleChange = (e) => {
@@ -38,7 +31,6 @@ const SearchPwResult = () => {
             Toast.fire({
               title: "비밀번호를 입력해주세요",
               icon: "error",
-              confirmButtonText: "확인",
             });
             return;
         }
@@ -46,7 +38,6 @@ const SearchPwResult = () => {
             Toast.fire({
                 title: "비밀번호가 일치하지 않습니다",
                 icon: "error",
-                confirmButtonText: "확인",
               });
             return;
         }
@@ -55,8 +46,7 @@ const SearchPwResult = () => {
         .then((res) => {
             console.log(res);
             Toast.fire({
-                title: "비밀번호 재설정 완료되었습니다",
-                text: "로그인 페이지로 이동합니다",
+                title: "완료되었습니다\n로그인 페이지로 이동합니다",
                 icon: "success",
             });
             setTimeout(() => {
@@ -64,7 +54,10 @@ const SearchPwResult = () => {
             }, 1500);
         })
         .catch((error) => {
-            console.log(error);
+            Toast.fire({
+              title: "실패했습니다\n다시 시도해주세요",
+              icon: "error",
+            });
         })
     }
 
