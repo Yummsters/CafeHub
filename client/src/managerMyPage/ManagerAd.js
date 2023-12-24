@@ -18,7 +18,7 @@ const ManagerAd = () => {
 
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
-    cafesPerPage: 10,
+    cafesPerPage: 5,
     startPage: 1,
     endPage: 1,
     totalPages: 1
