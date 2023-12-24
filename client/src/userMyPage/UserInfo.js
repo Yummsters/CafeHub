@@ -45,9 +45,9 @@ const UserInfo = ({sideTab}) => {
 
   // 배지--------------------------------------------
   useEffect(() => {
-    // if (isLogin) {
-    //   normalCheck(dispatch, accessToken);
-    // }
+    if (isLogin) {
+      normalCheck(dispatch, accessToken)
+    }
     axios.get(`${url}/getMemberBadge/${member.memNo}`)
         .then(response => {
             const badgeName = response.data.badgeName || ''; 
@@ -172,7 +172,6 @@ const UserInfo = ({sideTab}) => {
       if (name === 'nickname' && value.trim() !== '' && value.length > 1) { // 값이 입력 되었을 때
         axios.get(`${url}/nickname/${value}`) // 중복 검사
           .then(res => {
-            console.log(res.data);
             if (res.data) {
               setUserInputMsg({ ...userInputMsg, [name]: "사용불가능한 닉네임입니다" });
               setSaveCheck({ ...saveCheck, [name]: false });
@@ -218,11 +217,9 @@ const UserInfo = ({sideTab}) => {
     // 랜덤 코드
     const random = Math.floor(Math.random() * 9000) + 1000;
     console.log("Random code set:", random);
-    console.log(updateUser.phone);
     // 입력한 번호로 랜덤 코드 발송
     // axios.get(`${url}/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
     // .then((res) => {
-    //     console.log(res.data);
         // swal로 인증번호 입력 받고 확인
         Swal.fire({
           title: "인증번호 확인",
@@ -274,7 +271,6 @@ const UserInfo = ({sideTab}) => {
     if (name === 'pw' && value.trim() !== '' && value.length > 7) {
       axios.post(`${url}/password`, {id: member.id, password: value})
       .then((res) => {
-        console.log(res.data);
         if(res.data === true) { setPasswordMatch(true); } 
         else { setPasswordMatch(false); }
       })
@@ -328,14 +324,12 @@ const UserInfo = ({sideTab}) => {
 
     axios.put(`${url}/resetPw/${member.id}`, { password: password.newPw })
       .then((res) => {
-          console.log(res);
           Toast.fire({
               title: "비밀번호 재설정 완료!",
               icon: "success",
           });
       })
       .catch((error) => {
-          console.log(error);
           Toast.fire({
             title: "비밀번호 재설정 실패",
             icon: "error",
@@ -374,7 +368,6 @@ const UserInfo = ({sideTab}) => {
       }
     })
     .then(res=>{
-      console.log(res.data);
       const isPwCorrect =res.data;
 
       if (isPwCorrect) {
