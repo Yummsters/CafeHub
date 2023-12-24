@@ -42,7 +42,6 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
                 console.log(err);
                 // 토큰이 유효하지 않은 경우 (리프레시 토큰도 만료된 경우) 재로그인 요청
                 tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-                reject();
             })
         }
     });
@@ -78,13 +77,18 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         removeCookie("refreshToken");
+        console.log("리덕스 삭제")
 
+        
         Toast.fire({
             icon: 'error',
             title: '다시 로그인 후 이용해주세요'
-        }).then(()=>{
-            navigate("/login");
         })
+        setTimeout(() => {
+            console.log("로그인 페이지로 이동");
+            navigate("/login");
+        }, 700);
+        console.log("끝")
     }
 }
 
