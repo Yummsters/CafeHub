@@ -8,7 +8,7 @@ import { getCookie, removeCookie, setCookie} from '../components/Cookie';
 import Swal from 'sweetalert2';
 import StoreSideTab from '../components/StoreSideTab';
 import { url } from '../config.js'
-import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck.js';
+import { checkToLogin, normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck.js';
 
 const UserInfo = ({sideTab}) => {
   const navigate = useNavigate();
@@ -45,9 +45,9 @@ const UserInfo = ({sideTab}) => {
 
   // 배지--------------------------------------------
   useEffect(() => {
-    if (isLogin) {
-      normalCheck(dispatch, accessToken);
-    }
+    // if (isLogin) {
+    //   normalCheck(dispatch, accessToken);
+    // }
     axios.get(`${url}/getMemberBadge/${member.memNo}`)
         .then(response => {
             const badgeName = response.data.badgeName || ''; 
@@ -60,6 +60,9 @@ const UserInfo = ({sideTab}) => {
 
   // 수정 관련---------------------------------------
   const edit = () => { // 수정버튼 클릭 시 input 입력 가능
+    if (isLogin) {
+      checkToLogin(dispatch, accessToken, navigate)
+    }
     setEditMode(true);
   }
 
@@ -91,21 +94,15 @@ const UserInfo = ({sideTab}) => {
         }
     })
     .then((res) => {
-      tokenCreate(dispatch, setCookie, res.headers)
-      .then(()=>{
-        dispatch({type:"member", payload: updateUser});
-        setEditMode(false);
-        Toast.fire({
-          icon: 'success',
-          title: '정상적으로 수정되었습니다',
-        });
+      dispatch({type:"member", payload: updateUser});
+      setEditMode(false);
+      Toast.fire({
+        icon: 'success',
+        title: '정상적으로 수정되었습니다',
+      });
       })
-    })
     .catch((error) => {
       console.log(error);
-      if(error.response !== undefined){
-        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-      }
     })
   };
 
@@ -301,31 +298,33 @@ const UserInfo = ({sideTab}) => {
     }
   }
 
-
   const pwSubmit = () => {
-      if (passwordMsg.newPw !== '' || passwordMsg.newPwCheck !== '') {
-        Toast.fire({
-          icon: 'error',
-          title: '유효하지 않은 비밀번호가 있습니다',
-        });
-        return; 
-      }
-      // 모든 필드에 값이 입력되지 않은 경우
-      if (!password.newPw || !password.newPwCheck || !password.pw) {
-        Toast.fire({
-          icon: 'error',
-          title: '비밀번호를 입력해주세요',
-        });
-        return; 
-      }
+    if (isLogin) {
+      checkToLogin(dispatch, accessToken, navigate)
+    }
+    if (passwordMsg.newPw !== '' || passwordMsg.newPwCheck !== '') {
+      Toast.fire({
+        icon: 'error',
+        title: '유효하지 않은 비밀번호가 있습니다',
+      });
+      return; 
+    }
+    // 모든 필드에 값이 입력되지 않은 경우
+    if (!password.newPw || !password.newPwCheck || !password.pw) {
+      Toast.fire({
+        icon: 'error',
+        title: '비밀번호를 입력해주세요',
+      });
+      return; 
+    }
 
-      if (password.pw === password.newPw) {
-        Toast.fire({
-          icon: 'error',
-          title: '현재 비밀번호와 새 비밀번호가 동일합니다',
-        });
-        return;
-      }
+    if (password.pw === password.newPw) {
+      Toast.fire({
+        icon: 'error',
+        title: '현재 비밀번호와 새 비밀번호가 동일합니다',
+      });
+      return;
+    }
 
     axios.put(`${url}/resetPw/${member.id}`, { password: password.newPw })
       .then((res) => {
