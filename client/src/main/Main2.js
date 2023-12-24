@@ -63,7 +63,7 @@ const Main2 = () => {
               <Link to={`/reviewDetail/${review.reviewNo}`}
                 state={{reviewNo: `${review.reviewNo}` }} >
                 <div className='card' key={index}>
-                  <img className='cardImg' src={`${review.thumbImg}`} alt='카드 이미지' />
+                  <img className='cardImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='카드 이미지' />
                   <br />
                   <span className='cardrecommend'>
                     <div className='cardTitle'>{review.title}</div>

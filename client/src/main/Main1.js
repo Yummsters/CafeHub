@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
+import { url } from '../config.js'
 
 const Main1 = () => {
 
@@ -37,7 +38,7 @@ const Main1 = () => {
     }, []);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/cafeAd/approvedAds`)
+        axios.get(`${url}/cafeAd/approvedAds`)
             .then((response) => {
                 console.log(response);
                 setCafeAds(response.data);
@@ -49,7 +50,6 @@ const Main1 = () => {
 
     return (
         <div className='Main'>
-
             <div className='searchbox'>
                 <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange} />
                 < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색" />
@@ -59,7 +59,7 @@ const Main1 = () => {
                 <Slider {...setting}>
                     {cafeAds.map((ad, index) => (
                         <div key={index} className='banner'>
-                            <img className="bannerImg" src={`img/${ad.fileNum}.png`} alt='' />
+                            <img className="bannerImg" src={`${url}/common/upload/${ad.fileNum}`} alt='' />
                             <div className="bannerbox">
                                 <div className="top-text">{ad.cafeName},</div>
                                 <div className="middle-text"><br />{ad.description}</div>
