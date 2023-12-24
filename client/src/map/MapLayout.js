@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from 'react-router';
 import { url } from '../config.js'
 import { getCookie, setCookie, removeCookie } from "../components/Cookie.js";
-import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import {normalCheck, tokenCreate, tokenExpried} from '../login/TokenCheck';
 import Swal from 'sweetalert2';
 
 const { kakao } = window;
@@ -15,6 +15,7 @@ const MapLayout = ({ cafes }) => {
   const [wish, setWish] = useState(false);
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const isLogin = useSelector(state => state.persistedReducer.isLogin);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -32,6 +33,10 @@ const MapLayout = ({ cafes }) => {
     })
   
   useEffect(() => {
+    if (isLogin) {
+      normalCheck(dispatch, accessToken)
+     }
+     
     var mapContainer = document.getElementById("mapView"),
       mapOption = {
         center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
