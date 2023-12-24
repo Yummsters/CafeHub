@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { normalCheck } from '../login/TokenCheck';
+import { checkLogin, normalCheck } from '../login/TokenCheck';
 
 const Main4 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -13,12 +13,13 @@ const Main4 = () => {
     const handleReviewButtonClick = () => {
         
         if(isLogin){
-            navigate('/reviewwrite');
+            checkLogin(dispatch, accessToken, isLogin, navigate)
+            .then(() => {
+                 navigate('/reviewwrite');
+            })
         }else{
             navigate('/login');
-        }
-
-       
+        }       
     };
 
     return (

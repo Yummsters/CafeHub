@@ -34,16 +34,12 @@ const OAuth2Err = () => {
             Toast.fire({
                 icon: 'error',
                 title: '이미 가입된 이메일입니다'
-            }).then(() => {
-                window.location.href = '/';
-            }); 
+            })
         }else if(errorCode === "882"){
             Toast.fire({
                 icon: 'error',
-                title: '이미 존재하는 닉네임입니다 닉네임 수정 후 회원가입 해주세요'
-            }).then(() => {
-                navigate('/');
-            }); 
+                title: '이미 존재하는 닉네임입니다 소셜 닉네임 수정 후 회원가입 해주세요'
+            })
         }
        
     },[])

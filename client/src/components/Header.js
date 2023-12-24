@@ -51,20 +51,7 @@ const Header = () => {
                 else if (memberType == "STORE") navigate('/storeInfo');
                 else if (memberType == "MANAGER") navigate('/managerAd');
             })
-            .catch(() => {
-                Toast.fire({
-                    icon: 'error',
-                    title: '다시 로그인 해주세요',
-                }).then(() => {
-                    dispatch({ type: "accessToken", payload: "" });
-                    dispatch({ type: "isLogin", payload: false });
-                    dispatch({ type: "member", payload: "" });
-                    dispatch({ type: "cafe", payload: "" });
-                    dispatch({ type: "payment", payload: "" });
-                    removeCookie("refreshToken");
-                })
-            })
-        setShowMenu(false);
+            
     }
 
     // 로그아웃

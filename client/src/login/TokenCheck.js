@@ -42,7 +42,6 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
                 console.log(err);
                 // 토큰이 유효하지 않은 경우 (리프레시 토큰도 만료된 경우) 재로그인 요청
                 tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-                reject();
             })
         }
     });
@@ -78,7 +77,9 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         removeCookie("refreshToken");
+        console.log("리덕스 삭제")
 
+        
         Toast.fire({
             icon: 'error',
             title: '다시 로그인 후 이용해주세요'
@@ -93,6 +94,7 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
 // 일반 버튼 관련 토큰 확인 처리
 export const normalCheck = (dispatch, accessToken) => {
     console.log("토큰 유효성 확인 중")
+
         axios.get(`${url}/member`,{
             headers : {
                 Authorization :accessToken,
