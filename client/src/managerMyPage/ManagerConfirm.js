@@ -6,8 +6,19 @@ import './Manager.css';
 import ManagerSideTab from '../components/ManagerSideTab';
 import axios from 'axios';
 import { url } from '../config.js'
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { useDispatch } from 'react-redux';
+import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 
 const ManagerConfirm = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [unpaidCafes, setUnpaidCafes] = useState([]);
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const [pageInfo, setPageInfo] = useState({
         currentPage: 1,
         cafesPerPage: 10,
@@ -16,33 +27,6 @@ const ManagerConfirm = () => {
         totalPages: 1
     })
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [unpaidCafes, setUnpaidCafes] = useState([]);
-
-    useEffect(() => {
-        setPageInfo({...pageInfo, currentPage: parseInt(searchParams.get('page'))});
-    }, [searchParams]);
-
-    useEffect(() => {
-        axios.get(`${url}/manager/managerConfirm`, {
-            params: {
-                page: pageInfo.currentPage - 1,
-                size: pageInfo.cafesPerPage,
-            },
-        })
-            .then((response) => {
-                console.log(response);
-                setUnpaidCafes(response.data.content);
-                let totalPages = response.data.totalPages;
-                let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
-                let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
-                setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages });
-            })
-            .catch(error => {
-                console.error('미결제 카페 목록 가져오기 오류:', error);
-            });
-    }, [pageInfo.currentPage]);
-
     const handlePageChange = (pageNumber) => {
         setSearchParams((prev) => {
             prev.delete('page');
@@ -50,6 +34,46 @@ const ManagerConfirm = () => {
             return prev;
         });
     };
+
+    useEffect(() => {
+        const parsedPage = parseInt(searchParams.get('page'));
+
+        setPageInfo({
+            ...pageInfo,
+            currentPage: isNaN(parsedPage) ? 1 : parsedPage
+        });
+
+    }, [searchParams]);
+
+    useEffect(() => {
+        axios.get(`${url}/manager/managerConfirm`, {
+            headers: {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
+            },
+            params: {
+                page: pageInfo.currentPage - 1,
+                size: pageInfo.cafesPerPage
+            }
+        })
+            .then((response) => {
+                console.log(response);
+                tokenCreate(dispatch, setCookie, response.headers)
+                .then(() => {
+                    setUnpaidCafes(response.data.data);
+                    let totalPages = response.data.totalPages;
+                    let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
+                    let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
+                    setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages });
+                })
+            })
+            .catch(error => {
+                console.error('미결제 카페 목록 가져오기 오류:', error);
+                if(error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                }
+            });
+    }, [pageInfo.currentPage]);
 
     return (
         <div className='manager-container'>
