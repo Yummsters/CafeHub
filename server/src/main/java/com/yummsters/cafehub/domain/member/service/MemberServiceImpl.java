@@ -227,7 +227,7 @@ public class MemberServiceImpl implements MemberService{
     public Member modifyMember(Member member) throws Exception {
         Member modifyMember = memberRepository.findById(member.getId());
         if(modifyMember == null) throw new Exception("존재하지 않는 회원입니다.");
-        modifyMember.setUserInfo(member.getName(), member.getNickname(), modifyMember.getPhone(), modifyMember.getEmail());
+        modifyMember.setUserInfo(member.getName(), member.getNickname(), member.getPhone(), member.getEmail());
         memberRepository.save(modifyMember);
         return modifyMember;
     }
