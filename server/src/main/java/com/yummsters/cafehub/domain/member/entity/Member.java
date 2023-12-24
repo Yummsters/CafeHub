@@ -87,25 +87,11 @@ public class Member {
         this.badgeNo = badgeNo;
     }
     
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserInfo(String name, String nickname, String phone, String email) {
+        if (name != null && !name.isEmpty()) this.name = name;
+        if (nickname != null && !nickname.isEmpty()) this.nickname = nickname;
+        if (phone != null && !phone.isEmpty()) this.phone = phone;
+        if (email != null && !email.isEmpty()) this.email = email;
     }
 
     // 회원 탈퇴 시 회원 정보 삭제
