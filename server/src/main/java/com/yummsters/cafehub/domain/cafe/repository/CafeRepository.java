@@ -13,5 +13,5 @@ public interface CafeRepository extends JpaRepository<Cafe, Integer> {
     Cafe findByCafeNo(Integer cafeNo);
     Cafe findByMember_memNo(Integer memNo);
     //혜리 작성 부분
-    Page<Cafe> findByIsPaidFalseOrderByPaidDate(Pageable pageable);
+    Page<Cafe> findByIsPaidFalseAndIsExistingTrueOrderByPaidDate(Pageable pageable);
 }
