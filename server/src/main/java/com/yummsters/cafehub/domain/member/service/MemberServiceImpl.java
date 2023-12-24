@@ -227,25 +227,11 @@ public class MemberServiceImpl implements MemberService{
     public Member modifyMember(Member member) throws Exception {
         Member modifyMember = memberRepository.findById(member.getId());
         if(modifyMember == null) throw new Exception("존재하지 않는 회원입니다.");
-
-        if (member.getName() != null && !member.getName().isEmpty()) {
-            modifyMember.setName(member.getName());
-        }
-        if (member.getEmail() != null && !member.getEmail().isEmpty()) {
-            modifyMember.setEmail(member.getEmail());
-        }
-        if (member.getNickname() != null && !member.getNickname().isEmpty()) {
-            modifyMember.setNickname(member.getNickname());
-        }
-        if (member.getPhone() != null && !member.getPhone().isEmpty()) {
-            modifyMember.setPhone(member.getPhone());
-        }
-        if (member.getPassword() != null && !member.getPassword().isEmpty()) {
-            modifyMember.setPassword(member.getPassword());
-        }
+        modifyMember.setUserInfo(member.getName(), member.getNickname(), modifyMember.getPhone(), modifyMember.getEmail());
         memberRepository.save(modifyMember);
         return modifyMember;
     }
+
     // userinfo 현재 비밀번호 일치 여부
     @Override
     public boolean matchPw(String id, String password) throws Exception {
