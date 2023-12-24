@@ -51,29 +51,21 @@ const ManagerConfirm = () => {
             }
         })
             .then((response) => {
-                console.log(response);
                 tokenCreate(dispatch, setCookie, response.headers)
                     .then(() => {
-                        setUnpaidCafes(response.data.data);
-                        let totalPages = response.data.totalPages;
+                        setUnpaidCafes(response.data.responseList);
+                        let totalPages = response.data.unpaidCafes.totalPages;
                         let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
                         let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
                         setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages });
                     })
             })
             .catch(error => {
-                console.error('미결제 카페 목록 가져오기 오류:', error);
                 if (error.response !== undefined) {
                     tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                 }
             });
     }, [pageInfo.currentPage]);
-
-    console.log("Length:", Math.ceil(pageInfo.endPage - pageInfo.startPage + 1));
-    console.log("Start Page:", pageInfo.startPage);
-    console.log("End Page:", pageInfo.endPage);
-    console.log("current Page:", pageInfo.currentPage);
-    console.log("total Pages:", pageInfo.totalPages);
 
     return (
         <div className='manager-container'>
