@@ -256,7 +256,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   };
 
-  const handleReplyDelete = (replyNo) => {
+  const handleReplyDelete = (replyNo, hasChildReplies) => {
     Swal.fire({
       title: '댓글 삭제',
       text: '댓글을 삭제하시겠습니까?',
@@ -270,10 +270,24 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
     }).then(result => {
       if (result.isConfirmed) {
-        ReplyDelete(replyNo);
+        if (hasChildReplies) {
+          handleChildReplies(replyNo);
+        } else {
+          ReplyDelete(replyNo);
+        }
       }
     });
-  }
+  };
+
+  const handleChildReplies = (replyNo) => {
+    const updateReplies = replies.map(reply => {
+      if(reply.replyNo === replyNo) {
+        return {...reply, content: "삭제된 댓글입니다"};
+      }
+      return reply;
+    });
+    setReplies(updateReplies);
+  };
 
   const deleteSwal = () => {
     Swal.fire({
@@ -548,7 +562,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                     <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
                   </p>
                   <p>
-                    <span className="underline" onClick={() => handleReplyDelete(reply.replyNo)}>삭제</span>&nbsp;&nbsp;
+                    <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
                     {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
                     &nbsp;&nbsp;
                     <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
