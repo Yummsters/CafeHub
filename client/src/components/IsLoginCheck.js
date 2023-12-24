@@ -1,7 +1,12 @@
-const loginDataString = localStorage.getItem("persist:root");
-const loginData = JSON.parse(loginDataString);
+
 
 export const IsLoginCheck = () => {
-    const isLogin = loginData.isLogin;
-    return isLogin==="false";
+    const loginDataString = localStorage.getItem("persist:root");
+    const loginData = JSON.parse(loginDataString);  
+       
+    if(!loginData || loginData.isLogin === undefined || loginData.isLogin === null) {
+        return false;
+    }else{
+        return loginData.isLogin==="false";
+    }
 };
