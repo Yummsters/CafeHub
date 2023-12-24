@@ -50,6 +50,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             + "	SELECT rtt2.tag_no "
             + "	FROM review r2 "
             + "	JOIN review_to_tag rtt2 ON r2.review_no = rtt2.review_no "
+            + " JOIN review_tag rt ON rt.tag_no = rtt2.tag_no"
             + "	WHERE r2.writer =:memNo "
             + " GROUP BY rtt2.tag_no "
             + " ORDER BY count(r2.review_no) DESC LIMIT 1"
