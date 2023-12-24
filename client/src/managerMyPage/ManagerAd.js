@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'reactstrap';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import './Manager.css';
 import ManagerSideTab from '../components/ManagerSideTab';
 import { url } from '../config.js'
+import { useDispatch, useSelector } from 'react-redux';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie.js';
+import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 
 const ManagerAd = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [ads, setAds] = useState([]);
+  const [unapprovedAds, setUnapprovedAds] = useState([]);
+  const accessToken = useSelector(state => state.persistedReducer.accessToken);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     cafesPerPage: 10,
@@ -18,28 +25,6 @@ const ManagerAd = () => {
   });
 
   console.log(pageInfo);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${url}/cafeAd/unapprovedAds?page=${pageInfo.currentPage - 1}`);
-        setAds(response.data.content);
-        console.log(response.data);
-        let totalPages = response.data.totalPages;
-        let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
-        let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
-        setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [pageInfo.currentPage]);
-
-  useEffect(() => {
-    setPageInfo((prev) => ({...prev, currentPage: parseInt(searchParams.get('page') ?? 1)}))
-  }, [searchParams]);
 
   const handlePageChange = (pageNumber) => {
     setSearchParams((prev) => {
@@ -51,43 +36,96 @@ const ManagerAd = () => {
 
   const handleApproveAd = async (cafeAdNo) => {
     try {
-      // Send approval request to the backend using axios
-      await axios.put(`${url}/manager/cafeAd/approve/${cafeAdNo}`);
-
-      // Update the local state after successful approval
-      setAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
+      const response = await axios.put(`${url}/manager/approve/${cafeAdNo}`, null, {
+        headers: {
+          Authorization: accessToken,
+          Refresh: getCookie("refreshToken")
+        }
+      });
+      tokenCreate(dispatch, setCookie, response.headers)
+        .then(() => {
+          setUnapprovedAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
+        })
     } catch (error) {
       console.error('Error approving ad:', error);
+      if (error.response !== undefined) {
+        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+      }
     }
   };
+
+  useEffect(() => {
+    setPageInfo((prev) => ({ ...prev, currentPage: parseInt(searchParams.get('page') ?? 1) }))
+  }, [searchParams]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${url}/manager/unapprovedAds`, {
+          params: {
+            page: pageInfo.currentPage - 1,
+            size: pageInfo.cafesPerPage,
+        },
+          headers: {
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken")
+          }
+        });
+        tokenCreate(dispatch, setCookie, response.headers)
+          .then(() => {
+            console.log(response.data.responseList);
+            console.log(response.data.unapprovedAds);
+            setUnapprovedAds(response.data.responseList);
+            let totalPages = response.data.unapprovedAds.totalPages;
+            let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
+            let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
+            setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
+          })
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        if (error.response !== undefined) {
+          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+        }
+      }
+    };
+    fetchData();
+  }, [pageInfo.currentPage, accessToken]);
 
   return (
     <div className='manager-container'>
       <ManagerSideTab />
       <div className='manager-listBox'>
         <br /><label className='listTitle'>광고 신청 현황</label><br /><br />
-        <Table hover>
-          <tbody>
-            {ads.map((ad) => (
-              <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
-                <th scope="row">
-                  <img className='listImg' src={`/img/${ad.thumbImg}.png`} alt='' />
-                </th>
-                <td colSpan={11}>
-                  <div className='listMiniTitle'>{ad.cafeName}</div>
-                  <div className='description1'>{ad.description}</div>
-                  <div className='description2'>{ad.menu}</div>
-                </td>
-                <td colSpan={1} className='permission-button'>
-                  {!ad.isApproved && (
-                    <button className='permission' onClick={() => handleApproveAd(ad.cafeAdNo)}>승인</button>
-                  )}
-                  {ad.isApproved && <div className='manager-dateTime'>{ad.authDate}</div>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+
+        {unapprovedAds.length > 0 ? (
+          <Table hover>
+            <tbody>
+              {unapprovedAds.map((ad) => (
+                <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
+                  <th scope="row" style={{width:"115px"}}>
+                    <img className='listImg' src={`/img/${ad.thumbImg}.png`} alt='' />
+                  </th>
+                  <td colSpan={11}>
+                    <div className='listMiniTitle'>{ad.cafeName}</div>
+                    <div className='description1'>{ad.description}</div>
+                    <div className='description2'>{ad.menu}</div>
+                  </td>
+                  <td colSpan={1} className='permission-button'>
+                    {!ad.isApproved && (
+                      <button className='permission' onClick={() => handleApproveAd(ad.cafeAdNo)}>승인</button>
+                    )}
+                    <div className='manager-dateTime'>{ad.regDate}</div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <div>
+            <p style={{ marginLeft: "12%" }}>광고 신청 목록이 존재하지 않습니다.</p>
+          </div>
+        )}
+
         <div className='manager-pagination'>
           <ul className="pagination">
             <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
