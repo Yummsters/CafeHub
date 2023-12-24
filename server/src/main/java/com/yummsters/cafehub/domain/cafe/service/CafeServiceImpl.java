@@ -156,7 +156,7 @@ public class CafeServiceImpl implements CafeService {
 
 	@Override
 	public Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception {
-		Page<Cafe> unpaidCafesPage = cafeRepository.findByIsPaidFalseOrderByPaidDate(pageable);
+		Page<Cafe> unpaidCafesPage = cafeRepository.findByIsPaidFalseAndIsExistingTrueOrderByPaidDate(pageable);
 		Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
 		return unpaidCafesDtoPage;
 	}

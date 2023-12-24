@@ -1,6 +1,8 @@
 package com.yummsters.cafehub.domain.cafe.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.yummsters.cafehub.domain.cafe.service.CafeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,13 +86,17 @@ public class CafeController {
     }
 
     // 혜리 part---------------------------------------------------------------------------
-    @GetMapping("/managerConfirm")
-    public ResponseEntity<Page<CafeDto>> getUnpaidCafes(@RequestParam(defaultValue = "0") int page,
+    @GetMapping("/manager/managerConfirm")
+    public ResponseEntity<Object> getUnpaidCafes(@RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<CafeDto> unpaidCafes = service.getUnpaidCafes(pageable);
-            return new ResponseEntity<>(unpaidCafes, HttpStatus.OK);
+            List<CafeDto> responseList = unpaidCafes.getContent();
+            Map<String, Object> res = new HashMap<>();
+            res.put("unpaidCafes", unpaidCafes);
+            res.put("responseList", responseList);
+            return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
