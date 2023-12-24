@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { removeCookie } from './Cookie';
-import Swal from 'sweetalert2';
 import { checkLogin, normalCheck } from '../login/TokenCheck';
 import { useEffect, useState } from 'react';
+import { Toast } from '../components/Toast.js'
 
 const Header = () => {
     const memberType = useSelector(state => state.persistedReducer.member.memberType);
@@ -29,19 +29,6 @@ const Header = () => {
         };
     }, []);
 
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
-
     // 마이페이지
     const mypage = (e) => {
         e.preventDefault();
@@ -51,13 +38,11 @@ const Header = () => {
                 else if (memberType == "STORE") navigate('/storeInfo');
                 else if (memberType == "MANAGER") navigate('/managerAd');
             })
-            
     }
 
     // 로그아웃
     const logout = (e) => {
         e.preventDefault();
-
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         dispatch({ type: "accessToken", payload: "" });
         dispatch({ type: "isLogin", payload: false });
@@ -66,10 +51,8 @@ const Header = () => {
         dispatch({ type: "payment", payload: "" })
         removeCookie("refreshToken");
 
-        Toast.fire({
-            icon: 'success',
-            title: '로그아웃 되었습니다',
-        }).then(() => {
+        Toast('success', '로그아웃 되었습니다')
+        .then(() => {
             navigate("/login");
         })
         setShowMenu(false);

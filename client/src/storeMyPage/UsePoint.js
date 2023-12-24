@@ -5,11 +5,11 @@ import {useSelector} from 'react-redux';
 import { useParams } from "react-router";
 import { useNavigate } from 'react-router';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import {tokenCreate, tokenExpried} from '../login/TokenCheck';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js';
 
 const UsePoint = () =>{
     const [point, setPoint] = useState(''); // 입력 포인트
@@ -18,8 +18,6 @@ const UsePoint = () =>{
     const {memNo} = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-
     const [cafeNo,setCafeNo] = useState(1);
 
     useEffect(()=>{
@@ -46,19 +44,6 @@ const UsePoint = () =>{
         })
     },[])
 
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
-
     const handleClick = (e) => {
         e.preventDefault();
         // 버튼 클릭 시 동작하는 함수
@@ -78,18 +63,10 @@ const UsePoint = () =>{
        setPoint('');
 
        if(myPoint*100<point){
-
-        Toast.fire({
-            icon: 'error',
-            title: '사용 가능한 커피콩을 확인해주세요.'
-        })
+        Toast('error', '사용 가능한 커피콩을 확인해주세요')
         }else if(point < 100){
-            Toast.fire({
-                icon: 'error',
-                title: '커피콩은 1개(100원)부터 사용 가능합니다.'
-            })
+            Toast('error', '커피콩은 1개(100원)부터 사용 가능합니다')
         }else{
-            //
             axios.post(`${url}/store/point/use/${memNo}/cafe/${cafeNo}/${point}`,null,{
                 headers : {
                     Authorization : accessToken,
@@ -99,10 +76,8 @@ const UsePoint = () =>{
             .then(res=>{
                 tokenCreate(dispatch, setCookie, res.headers)
                 .then(()=>{
-                    Toast.fire({
-                        icon: 'success',
-                        title: '보유 커피콩 : '+res.data
-                    }).then(()=>{
+                    Toast('success', '보유 커피콩 : '+res.data)
+                    .then(()=>{
                         navigate("/keypad");
                     })
                 })
@@ -111,10 +86,7 @@ const UsePoint = () =>{
                 if(err.response !== undefined){
                     tokenExpried(dispatch, removeCookie, err.response.data, navigate);
                 }else{
-                    Toast.fire({
-                        icon: 'error',
-                        title: err.name
-                    })
+                    Toast('error', err.name)
                 }
             })
         }
@@ -127,7 +99,7 @@ const UsePoint = () =>{
     return (
       <div className="useKeypad-container" style={{ height: '80vh' }}>
         <div className="closeBtn">
-                <img onClick={backPoint}  src='/img/Xb.png' style={{width : "50px"}} />
+                <img onClick={backPoint}  src='/img/Xb.png' style={{width : "50px"}} alt=''/>
         </div>
         <p className='usePoint-public'>사용 가능 커피콩 : {myPoint*100}원 / {myPoint}개</p>
         <input className="keypadInput-usePoint" type="text" id="phone" name="phone" style={{ height: '20vh' }} value={point + "원"}/>

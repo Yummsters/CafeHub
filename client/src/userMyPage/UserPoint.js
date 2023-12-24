@@ -4,10 +4,10 @@ import UserSideTab from '../components/UserSideTab';
 import { CheckoutPage } from '../payment/CheckoutPage';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import { url } from '../config.js'
 import { checkToLogin, normalCheck } from '../login/TokenCheck.js';
 import { useNavigate } from 'react-router';
+import { Toast, ToastBtn } from '../components/Toast.js';
 
 const UserPoint = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -22,14 +22,6 @@ const UserPoint = () => {
     const [selectedBadges, setSelectedBadges] = useState([]);
     const [userBadges, setUserBadges] = useState([]);
     const [pickBadgeName, setPickBadge] = useState([]);
-
-    // swal
-    const toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1500
-    })
 
     // 페이먼트 관련
     const payment = useSelector(state => state.persistedReducer.payment);
@@ -72,19 +64,13 @@ const UserPoint = () => {
         .then((res) => {
             console.log(res.data);
             dispatch({ type:"payment", payload:"" })
-            toast.fire({
-                icon: 'success',
-                title: '포인트 적립이 완료되었습니다'
-            });
+            Toast('success', '포인트 적립이 완료되었습니다')
         })
         .catch((error) => {
             console.log(error);
             refund('포인트등록실패')
             dispatch({ type:"payment", payload:"" })
-            toast.fire({
-                icon: 'error',
-                title: '포인트 적립에 실패했습니다'
-            });
+            Toast('error', '포인트 적립에 실패했습니다')
         })
     }
     }, [])
@@ -106,30 +92,17 @@ const UserPoint = () => {
         const selectedBadge = badgeName[badgeIndex];
 
         if (myPoint < 10) {
-            toast.fire({
-                icon: 'info',
-                title: '포인트를 충전해주세요'
-            });
+            Toast('error', '포인트를 충전해주세요')
             return;
         }
 
-        Swal.fire({
-            title: '배지를 구매하시겠습니까?',
-            text: '이용기간은 30일 입니다',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: '네',
-            cancelButtonText: '아니오',
-            allowOutsideClick: false, 
-        }).then((result) => {
+        ToastBtn('question', '배지를 구매하시겠습니까?', '이용기간은 30일 입니다')
+        .then((result) => {
             if (result.isConfirmed) {
                 axios.post(`${url}/buyBadge/${member.memNo}/${selectedBadge.badgeNo}`)
                 .then((res) => {
-                    console.log('뱃지를 성공적으로 구매했습니다:', res.data);
-                    toast.fire({
-                        icon: 'success',
-                        title:  '배지 구매 성공!'
-                    }).then(() => {
+                    Toast('success', '배지 구매가 완료되었습니다')
+                    .then(() => {
                         window.location.reload();
                     });
                 })
@@ -143,22 +116,13 @@ const UserPoint = () => {
     const userBadgeClick = (badgeIndex) => {
         const selectedBadge = userBadges[badgeIndex];
 
-        Swal.fire({
-            title: '배지를 착용하시겠습니까?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: '네',
-            cancelButtonText: '아니오',
-            allowOutsideClick: false, 
-        }).then((result) => {
+        ToastBtn('question', '배지를 변경하시겠습니까?', '')
+        .then((result) => {
             if (result.isConfirmed) {
                 axios.post(`${url}/pickBadge/${member.memNo}/${selectedBadge.memberBadgeNo}`)
                     .then((res) => {
-                    
-                        toast.fire({
-                            icon: 'success',
-                            title:  '배지 달기 성공!'
-                        }).then(() => {
+                        Toast('success', '배지가 변경되었습니다')
+                        .then(() => {
                             window.location.reload();
                         });
                     })
@@ -169,30 +133,20 @@ const UserPoint = () => {
         });
     };
     const defaultBadge = () => {
-       
-        Swal.fire({
-            title: '배지를 착용하시겠습니까?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: '네',
-            cancelButtonText: '아니오',
-            allowOutsideClick: false, 
-        }).then((result) => {
+        ToastBtn('question', '배지를 변경하시겠습니까?', '')
+        .then((result) => {
             if (result.isConfirmed) {
                 axios.post(`${url}/defaultBadge/${member.memNo}`)
                 .then((res) => {
                     console.log('뱃지를 성공적으로 달았습니다:', res.data);
-
-                    toast.fire({
-                        icon: 'success',
-                        title:  '배지 달기 성공!'
-                    }).then(() => {
+                    Toast('success', '배지가 변경되었습니다')
+                    .then(() => {
                         window.location.reload();
                     });
                 })
-                    .catch((error) => {
-                        console.error('뱃지 착용 중 오류 발생:', error);
-                    });
+                .catch((error) => {
+                    console.error('뱃지 착용 중 오류 발생:', error);
+                });
             }
         });
     };
@@ -240,10 +194,8 @@ const UserPoint = () => {
     useEffect(() => {
         axios.get(`${url}/getMemberBadge/${member.memNo}`)
             .then(response => {
-
                 const badgeName = response.data.badgeName || '';
                 setPickBadge([badgeName]);
-
             })
             .catch(error => {
                 console.error('에러 발생:', error);

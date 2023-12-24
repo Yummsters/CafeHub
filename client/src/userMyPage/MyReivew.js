@@ -12,9 +12,7 @@ import { useNavigate } from 'react-router';
 import { url } from '../config.js'
 
 const MyReview = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
     const [reviews, setReviews] = useState([]);
-    const token = useSelector(state => state.persistedReducer.accessToken);
     const [pickBadgeName, setPickBadge] = useState([]);
     const [reviewList, setReviewList] = useState([]);
     const [authList, setAuthList] = useState([]);
@@ -29,11 +27,9 @@ const MyReview = () => {
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [fileUrl, setFileUrl] = useState(null);
     let firstNum = curPage - (curPage % 5) + 1;
     let lastNum = curPage - (curPage % 5) + 5;
     let total = Math.min(4, (pageInfo.totalPages === 0 ? 1 : pageInfo.totalPages) - firstNum);
-
     let firstNum1 = curPage1 - (curPage1 % 5) + 1;
     let lastNum1 = curPage1 - (curPage1 % 5) + 5;
     let total1 = Math.min(4, (pageInfo1.totalPages === 0 ? 1 : pageInfo1.totalPages) - firstNum1);
@@ -95,13 +91,11 @@ const MyReview = () => {
                     totalElements: resPageInfo.totalElements,
                     totalPages: resPageInfo.totalPages
                 });
-
             })
             .catch(err => {
                 console.log(err);
             })
     }
-
 
     useEffect(() => {
         reviews.forEach((review) => {
@@ -144,7 +138,6 @@ const MyReview = () => {
         console.log(reviewNo);
         navigate('/reviewDetail/' + reviewNo, { state: { reviewNo: reviewNo } });
     }
-
 
     return (
         <div className='mypage'>

@@ -1,47 +1,25 @@
 import {useEffect} from 'react';
 import {useNavigate, useParams } from 'react-router';
-import Swal from 'sweetalert2';
+import { Toast } from '../components/Toast.js'
 
 const OAuth2Err = () => {
     const navigate = useNavigate();
     const {errorCode} = useParams();
-
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
     
     useEffect(()=>{
         console.log(errorCode);
 
         if(errorCode == "880"){
-            Toast.fire({
-                icon: 'error',
-                title: '탈퇴한 회원입니다'
-            }).then(() => {
+            Toast('error', '탈퇴한 회원입니다')
+            .then(() => {
                 navigate('/');
             }); 
         }else if(errorCode == "881"){
             console.log("들어옴");
-            Toast.fire({
-                icon: 'error',
-                title: '이미 가입된 이메일입니다'
-            })
+            Toast('error', '이미 가입된 이메일입니다')
         }else if(errorCode === "882"){
-            Toast.fire({
-                icon: 'error',
-                title: '이미 존재하는 닉네임입니다 소셜 닉네임 수정 후 회원가입 해주세요'
-            })
+            Toast('error', '이미 존재하는 닉네임입니다 소셜 닉네임 수정 후 회원가입 해주세요')
         }
-       
     },[])
 
     return (

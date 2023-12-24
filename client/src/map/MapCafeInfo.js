@@ -5,11 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Pagination, PaginationItem, PaginationLink, Table } from "reactstrap";
 import Swal from "sweetalert2";
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
-import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import {normalCheck, tokenCreate, tokenExpried} from '../login/TokenCheck';
 
 const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wishCafeNo }) => {
   const memNo = useSelector(state=>state.persistedReducer.member.memNo);
+  const isLogin = useSelector(state=>state.persistedReducer.isLogin);
   const [reviewList, setReviewList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -52,6 +54,25 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
         console.error("에러:" + error);
       }); 
     }
+
+    if (isLogin) {
+      normalCheck(dispatch, accessToken);
+    }
+  
+    if (memNo != null) { 
+      axios.get(`${url}/member/cafeIsWish/${memNo}/${cafeNo}`, {
+          headers : {
+              Authorization :accessToken,
+              Refresh : getCookie("refreshToken")
+          }
+      })
+      .then((res) => {
+        setWish(res.data);
+        })
+      .catch((error) => {
+        console.log(error);
+      })
+    }
    }, [selectCafe, currentPage])
 
   const toggleWish = () => {    
@@ -74,15 +95,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
       }
       });
     } else {
-        Swal.mixin({
-          toast: true,
-          position: 'top',
-          showConfirmButton: false,
-          timer: 1500
-        }).fire({
-          icon: 'warning',
-          title: '로그인이 필요합니다'
-        })
+        Toast('error', '로그인이 필요합니다')
       };
     }
 

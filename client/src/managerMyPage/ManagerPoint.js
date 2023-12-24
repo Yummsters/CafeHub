@@ -3,12 +3,12 @@ import { Table, Pagination, PaginationLink } from "reactstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import './Manager.css';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import ManagerSideTab from '../components/ManagerSideTab';
 import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useNavigate } from 'react-router';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 
 const Manager2 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -24,19 +24,6 @@ const Manager2 = () => {
     let firstNum = curPage - (curPage % 5) + 1;
     let lastNum = curPage - (curPage % 5) + 5;
     let total = Math.min(4, (pageInfo.totalPages === 0 ? 1 : pageInfo.totalPages) - firstNum);
-
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 900,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
 
     useEffect(() => {
         getPage(page);
@@ -91,10 +78,8 @@ const Manager2 = () => {
             .then(res => {
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
-                        Toast.fire({
-                            icon: 'success',
-                            title: '포인트 정산이 완료되었습니다'
-                        }).then(() => {
+                        Toast('success', '포인트 정산이 완료되었습니다')
+                        .then(() => {
                             getPage(1);
                         })
                     })

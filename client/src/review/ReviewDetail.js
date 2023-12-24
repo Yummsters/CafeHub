@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useLocation, useParams } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
@@ -10,7 +9,7 @@ import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { url } from '../config.js'
 import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
 import { getCookie, removeCookie, setCookie } from "../components/Cookie";
-import { Toast } from '../components/Toast.js'
+import { Toast, ToastBtn } from '../components/Toast.js'
 
 const { kakao } = window;
 
@@ -43,29 +42,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     totalPages: 1
   })
 
-  const showSwal = (title) => {
-    Swal.mixin({
-      toast: true,
-      position: 'top',
-      showConfirmButton: false,
-      timer: 1500
-    }).fire({
-      icon: 'warning',
-      title: title || '로그인이 필요합니다'
-    })
-  };
-
   const navigate = useNavigate();
   const ReviewModify = (e) => {
     e.preventDefault();
     if(review.modPossible){
       navigate(`/reviewmodify/${review.reviewNo}`);
     }else{
-      Swal.fire({
-        text: '리뷰 수정이 불가합니다',
-        icon: 'error',
-        confirmButtonText: '확인'
-      });
+      Toast('error', '리뷰 수정이 불가합니다');
     }
   }
   const ReviewDelete = async (reviewNo) => {
@@ -78,11 +61,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
   
       tokenCreate(dispatch, setCookie, response.headers).then(() => {
-        Swal.fire({
-          text: '리뷰가 삭제되었습니다',
-          icon: 'success',
-          confirmButtonText: '확인',
-        });
+        Toast('success', '리뷰가 삭제되었습니다');
         navigate("/reviewList"); // 페이지 이동
       });
     } catch (error) {
@@ -96,16 +75,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
 
   const handleReviewDelete = () => {
-    Swal.fire({
-      title: "리뷰 삭제",
-      text: "리뷰를 삭제하시겠습니까?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "삭제",
-      cancelButtonText: "취소",
-    }).then((result) => {
+    ToastBtn('error', '리뷰 삭제', "리뷰를 삭제하시겠습니까?")
+    .then((result) => {
       if (result.isConfirmed) {
         ReviewDelete(reviewNo);
       }
@@ -124,7 +95,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const handleReplySubmit = (e) => {
     e.preventDefault();
     if(memNo === undefined) {
-      showSwal();
+      Toast('error', '로그인이 필요합니다');
     };
     if(replyContent.length > 0) {
     axios
@@ -151,6 +122,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
   }}
 
+  console.log(pickBadgeName + "배지네임");
+
   const fetchReplies = () => {
     axios
       .get(`${url}/reply/${reviewNo}/list`, {
@@ -162,7 +135,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .then((res) => {
         setReplies(res.data.content);
-        let totalPages = res.data.totalPages;;
+        console.log(res.data.content);
+        let totalPages = res.data.totalPages;
         let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.repliesPerPage) + 1;
         let endPage = Math.min(startPage + pageInfo.repliesPerPage - 1, totalPages);
         console.log(totalPages)
@@ -179,14 +153,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         } else {
           console.error("Error while sending the request:", error.message);
         }
-      });
-      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
-      .then((res) => {
-          const badgeName = res.data.badgeName || ''; 
-          setPickBadge([badgeName]);
-      })
-      .catch(error => {
-          console.error('에러 발생:', error);
       });
   };
 
@@ -246,36 +212,16 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     try {
       await axios.delete(`${url}/replyDelete/${replyNo}`);
       console.log("댓글 삭제 성공");
-      Swal.fire({
-        text: '댓글이 삭제되었습니다',
-        icon: 'success',
-        confirmButtonText: '확인',
-      });
-
+      Toast('success', '댓글이 삭제되었습니다');
     } catch (error) {
       console.log("댓글 삭제 에러");
-      Swal.fire({
-        title: 'error',
-        text: '댓글을 삭제하는 중에 오류가 발생했습니다',
-        icon: 'error',
-        confirmButtonText: '확인',
-      });
+      Toast('error', '댓글을 삭제하는 중에 오류가 발생했습니다');
     }
   };
 
   const handleReplyDelete = (replyNo, hasChildReplies) => {
-    Swal.fire({
-      title: '댓글 삭제',
-      text: '댓글을 삭제하시겠습니까?',
-      icon: 'warning',
-
-      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
-      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-
-    }).then(result => {
+    ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
+    .then(result => {
       if (result.isConfirmed) {
         if (hasChildReplies) {
           handleChildReplies(replyNo);
@@ -297,24 +243,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const deleteSwal = () => {
-    Swal.fire({
-      title: '정말로 댓글을 삭제하시겠습니까?',
-      text: '댓글이 삭제되면 복구할 수 없습니다..',
-      icon: 'warning',
-
-      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
-      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-
-      reverseButtons: true, // 버튼 순서 거꾸로
-
-    }).then(result => {
+    ToastBtn('warning', '정말로 댓글을 삭제하시겠습니까?', '댓글이 삭제되면 복구할 수 없습니다')
+    .then(result => {
       // 만약 Promise리턴을 받으면,
       if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-
-        Swal.fire('댓글이 삭제되었습니다.', 'success');
+        Toast('success', '댓글이 삭제되었습니다');
       }
     });
   }
@@ -342,7 +275,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         }
       });
     } else {
-      showSwal()
+      Toast('error', '로그인이 필요합니다');
     }
   };
 
@@ -361,7 +294,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("에러:" + error);
         });
     } else {
-      showSwal()
+      Toast('error', '로그인이 필요합니다');
       console.error('memNo 또는 replyNo가 유효하지 않습니다.');
     }
   }
@@ -388,7 +321,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         }
       });
     } else {
-      showSwal()
+      Toast('error', '로그인이 필요합니다');
     }
   }
 
@@ -402,17 +335,18 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .then((res) => {
         setBestReply(res.data);
+        console.log(res.data.writerNo + "배댓");
+        axios.get(`${url}/getMemberBadge/${res.data.writerNo}`)
+        .then((res) => {
+            const badgeName = res.data.badgeName || ''; 
+            setPickBadge([badgeName]);
+        })
+        .catch(error => {
+            console.error('에러 발생:', error);
+        });
       })
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
-      });
-      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
-      .then((res) => {
-          const badgeName = res.data.badgeName || ''; 
-          setPickBadge([badgeName]);
-      })
-      .catch(error => {
-          console.error('에러 발생:', error);
       });
   }
 
@@ -572,7 +506,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   <div className="infoT">
                   <p>
                     {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                    <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
+                    <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="" /> {reply.nickname}</a>
                   </p>
                   <p>
                     <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;

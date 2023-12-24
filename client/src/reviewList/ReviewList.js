@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { url } from '../config.js'
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { normalCheck, tokenCreate, tokenExpried,checkLogin } from '../login/TokenCheck';
-import Swal from "sweetalert2";
+import { Toast } from '../components/Toast.js';
 const ReviewList = () => {
     const isLogin = useSelector(state => state.persistedReducer.isLogin);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -23,18 +23,6 @@ const ReviewList = () => {
     const [inputKeyword, setInputKeyword] = useState(''); //input에 입력될 내용, 키워드
     const [pickBadgeName, setPickBadge] = useState([]);
     const navigate = useNavigate();
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
 
     const handleSearchChange = (e) => {
         setInputKeyword(e.target.value);
@@ -85,11 +73,11 @@ const ReviewList = () => {
             })
             .then((response) => {
                 setReviews(response.data.content);
+                console.log(response.data.content);
                 let totalPages = response.data.totalPages;
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
                 let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
                 setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
-
                 response.data.content.forEach((review) => {
                     axios.get(`${url}/getMemberBadge/${review.memNo}`)
                         .then(badgeResponse => {
@@ -132,10 +120,8 @@ const ReviewList = () => {
                 navigate("/reviewWrite");
             })
             .catch(() => {
-                Toast.fire({
-                    icon: 'error',
-                    title: '다시 로그인 해주세요',
-                }).then(() => {
+                Toast('error', '다시 로그인 해주세요')
+                .then(() => {
                     dispatch({ type: "accessToken", payload: "" });
                     dispatch({ type: "isLogin", payload: false });
                     dispatch({ type: "member", payload: "" });
@@ -147,7 +133,6 @@ const ReviewList = () => {
                 });
             });
     };
-    
       
     return (
         <div className='reviewWrapper'>

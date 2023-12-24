@@ -1,4 +1,4 @@
-import { redirect, useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import searchId from './searchIdStyle.css';
 
 const SearchIdResult = () => {

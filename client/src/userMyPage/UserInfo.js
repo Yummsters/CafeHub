@@ -4,13 +4,14 @@ import UserSideTab from '../components/UserSideTab';
 import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import { useNavigate } from 'react-router';
-import { getCookie, removeCookie, setCookie} from '../components/Cookie';
-import Swal from 'sweetalert2';
+import { getCookie, removeCookie } from '../components/Cookie';
 import StoreSideTab from '../components/StoreSideTab';
 import { url } from '../config.js'
-import { checkToLogin, normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck.js';
+import { checkToLogin, normalCheck } from '../login/TokenCheck.js';
+import { Toast } from '../components/Toast.js';
+import Swal from 'sweetalert2';
 
-const UserInfo = ({sideTab}) => {
+const UserInfo = ({ sideTab }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const member = useSelector(state=>state.persistedReducer.member);
@@ -29,19 +30,6 @@ const UserInfo = ({sideTab}) => {
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
   const [pickBadgeName, setPickBadge] = useState([]);
-  
-  // swal
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top',
-    showConfirmButton: false,
-    timer: 1000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer)
-      toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-  })
 
   // 배지--------------------------------------------
   useEffect(() => {
@@ -69,10 +57,7 @@ const UserInfo = ({sideTab}) => {
   const save = () => { // 저장버튼 클릭 시 input readOnly
     const isUnchanged = Object.keys(updateUser).every((key) => updateUser[key] === member[key]);
     if (isUnchanged) {
-      Toast.fire({
-        icon: 'warning',
-        title: '변경된 정보가 없습니다.',
-      });
+      Toast('warning', '변경된 정보가 없습니다')
       setEditMode(false);
       return;
     }
@@ -80,10 +65,7 @@ const UserInfo = ({sideTab}) => {
     // 모든 saveCheck 값이 true인지 확인
     const allCheck = Object.values(saveCheck).every((value) => value === true);
     if (!allCheck) {
-      Toast.fire({
-        icon: 'error',
-        title: '입력값을 확인해주세요',
-      });
+      Toast('error', '입력값을 확인해주세요')
       return;
     }
 
@@ -96,10 +78,7 @@ const UserInfo = ({sideTab}) => {
     .then((res) => {
       dispatch({type:"member", payload: updateUser});
       setEditMode(false);
-      Toast.fire({
-        icon: 'success',
-        title: '정상적으로 수정되었습니다',
-      });
+      Toast('success', '정상적으로 수정되었습니다')
       })
     .catch((error) => {
       console.log(error);
@@ -225,8 +204,10 @@ const UserInfo = ({sideTab}) => {
           title: "인증번호 확인",
           text: "입력한 번호로 전송된 인증번호를 입력하세요",
           input: "text",
-        showCancelButton: true,
-        confirmButtonText: "ok",
+          confirmButtonColor: "#007355",
+          cancelButtonColor: "#F59A23",
+          confirmButtonText: "삭제",
+          cancelButtonText: "취소",
         preConfirm: (inputCode) => {
           if (inputCode === random.toString()) {
             return true; // 인증 성공
@@ -239,10 +220,7 @@ const UserInfo = ({sideTab}) => {
       }).then((result) => {
         if (result.isConfirmed) {
           setUserInputMsg({ ...userInputMsg, phone: "" });
-          Toast.fire({
-            title: "휴대폰 번호 인증 완료",
-            icon: "success"
-          });
+          Toast('success', '휴대폰 번호 인증 완료')
           setSaveCheck({...saveCheck, phone: true})
         }
       });
@@ -299,41 +277,26 @@ const UserInfo = ({sideTab}) => {
       checkToLogin(dispatch, accessToken, navigate)
     }
     if (passwordMsg.newPw !== '' || passwordMsg.newPwCheck !== '') {
-      Toast.fire({
-        icon: 'error',
-        title: '유효하지 않은 비밀번호가 있습니다',
-      });
+      Toast('error', '유효하지 않은 비밀번호가 있습니다')
       return; 
     }
     // 모든 필드에 값이 입력되지 않은 경우
     if (!password.newPw || !password.newPwCheck || !password.pw) {
-      Toast.fire({
-        icon: 'error',
-        title: '비밀번호를 입력해주세요',
-      });
+      Toast('error', '비밀번호를 입력해주세요')
       return; 
     }
 
     if (password.pw === password.newPw) {
-      Toast.fire({
-        icon: 'error',
-        title: '현재 비밀번호와 새 비밀번호가 동일합니다',
-      });
+      Toast('error', '현재 비밀번호와 새 비밀번호가 동일합니다')
       return;
     }
 
     axios.put(`${url}/resetPw/${member.id}`, { password: password.newPw })
       .then((res) => {
-          Toast.fire({
-              title: "비밀번호 재설정 완료!",
-              icon: "success",
-          });
+        Toast('success', '비밀번호 재설정 완료되었습니다')
       })
       .catch((error) => {
-          Toast.fire({
-            title: "비밀번호 재설정 실패",
-            icon: "error",
-        });
+        Toast('error', '비밀번호 재설정 실패했습니다')
       })
     setPassword({ pw: '', newPw: '', newPwCheck: '' }); // 제출 후 필드 초기화
     setPasswordMatch(false);
@@ -375,14 +338,11 @@ const UserInfo = ({sideTab}) => {
         dispatch({type:"isLogin", payload:false});
         dispatch({type:"accessToken", payload:""});
         dispatch({type:"member", payload:''});
-        Toast.fire({
-          icon: 'success',
-          title: '회원탈퇴가 완료되었습니다'
-        }).then(()=>{
+        Toast('success', '회원탈퇴가 완료되었습니다')
+        .then(()=>{
           navigate("/");
       })
       } else {
-        // 비밀번호가 일치하지 않을 때
         setPwMatch(false);
       }
     })
@@ -411,14 +371,11 @@ const UserInfo = ({sideTab}) => {
         removeCookie("accessToken");
         dispatch({type:"isLogin", payload:false});
         dispatch({type:"member", payload:''});
-        Toast.fire({
-          icon: 'success',
-          title: '회원탈퇴가 완료되었습니다'
-        }).then(()=>{
+        Toast('success', '회원탈퇴가 완료되었습니다')
+        .then(()=>{
           navigate("/");
       })
       } else {
-        // 비밀번호가 일치하지 않을 때
         setEmailMatch(false);
       }
     })

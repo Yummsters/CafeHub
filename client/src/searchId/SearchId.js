@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import searchId from './searchIdStyle.css';
 import {useState} from 'react';
-import Swal from 'sweetalert2';
 import { url } from '../config.js'
 import { Toast } from '../components/Toast.js'
 
@@ -24,30 +23,21 @@ const SearchId = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!data.phone.trim() || !data.name.trim()) { 
-            Toast.fire({
-                title: '입력한 정보를 확인하세요',
-                icon: 'error',
-            });
+            Toast('error', '입력한 정보를 확인하세요')
             return; 
         }
         axios.post(`${url}/searchId`, { name: data.name, phone: data.phone })
         .then((res) => {
-            Toast.fire({
-                title: "결과 페이지로 이동합니다",
-                icon: "success",
-            });
+            Toast('success', '결과 페이지로 이동합니다')
             setTimeout(() => {
                 navigate('/searchIdResult', { state: { result: res.data.id } });
             }, 1500);
         })
         .catch((err) => {
-            Toast.fire({
-                title: err.response.data,
-                icon: 'error',
-            })
+            Toast('error', err.response.data)
         })
     }
-
+    
     return(
         <div className='searchId-container'>
             <div className='searchId-bg'>
