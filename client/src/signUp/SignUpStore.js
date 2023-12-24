@@ -705,7 +705,7 @@ const SignUpStore = () => {
                 <div className='signUpStore'>
                     <div className='signUpStore-storeName'> {store.cafeName ? store.cafeName : '가게 이름'}</div>
                     <div className='signUpStore-picture' >
-                        {selectedFile && <img src={URL.createObjectURL(selectedFile)} style={{ width: "320px", height: "320px", borderRadius: "20px" }} alt="썸네일" />}
+                        {selectedFile && <img src={URL.createObjectURL(selectedFile)} style={{ width: "295px", height: "295px", borderRadius: "20px" }} alt="썸네일" />}
                     </div>
                     <div className='signUpStore-location'>{store.address ? store.address : '위치를 입력하세요.'}</div>
                     <div className='signUpStore-time'>운영 시간 : {store.operTime ? store.operTime : '시간을 입력하세요.'}</div>

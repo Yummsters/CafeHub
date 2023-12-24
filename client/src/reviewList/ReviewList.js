@@ -5,16 +5,36 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { url } from '../config.js'
-
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { normalCheck, tokenCreate, tokenExpried,checkLogin } from '../login/TokenCheck';
+import Swal from "sweetalert2";
 const ReviewList = () => {
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const dispatch = useDispatch();
+
     const member = useSelector(state => state.persistedReducer.member);
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchKeyword, setSearchKeyword] = useState('');
     const [reviews, setReviews] = useState([]);
     const [inputKeyword, setInputKeyword] = useState(''); //input에 입력될 내용, 키워드
     const [pickBadgeName, setPickBadge] = useState([]);
+    const navigate = useNavigate();
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 800,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
 
     const handleSearchChange = (e) => {
         setInputKeyword(e.target.value);
@@ -104,7 +124,31 @@ const ReviewList = () => {
             return prev;
         });
     };
-
+    const clickReveiwBtn = (e) => {
+        e.preventDefault();
+    
+        checkLogin(dispatch, accessToken, isLogin, navigate)
+            .then(() => {
+                navigate("/reviewWrite");
+            })
+            .catch(() => {
+                Toast.fire({
+                    icon: 'error',
+                    title: '다시 로그인 해주세요',
+                }).then(() => {
+                    dispatch({ type: "accessToken", payload: "" });
+                    dispatch({ type: "isLogin", payload: false });
+                    dispatch({ type: "member", payload: "" });
+                    dispatch({ type: "cafe", payload: "" });
+                    dispatch({ type: "payment", payload: "" });
+                    removeCookie("refreshToken");
+    
+                    navigate("/login");
+                });
+            });
+    };
+    
+      
     return (
         <div className='reviewWrapper'>
             <div className='reviewListBox'>
@@ -113,54 +157,56 @@ const ReviewList = () => {
                     <img className='searchBtn' src='/img/searchIcon.png' onClick={() => handleSearch()} alt="검색" />
                 </div>
                 <div className='reviewline' />
-                <div><a href='/reviewwrite'><button className='reviewBtn'>리뷰 등록</button></a></div>
+                <button className='reviewBtn' onClick={ clickReveiwBtn}>
+                    리뷰 등록
+                </button>
                 {reviews.length !== 0 ?
-                <div className='reviewtable'>
-                    <Table hover >
-                        <tbody>
-                            {reviews.map((review) => (
-                                <tr key={review.reviewNo}>
-                                    <th scope='row' style={{ width: "100px" }}>
-                                    <img className='listImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='' />
-                                    </th>
-                                    <td colSpan={10}>
-                                        <Link to={`/reviewDetail/${review.reviewNo}`}
-                                            state={{ reviewNo: `${review.reviewNo}` }} >
-                                            <div className='listMiniTitle'>{review.title}</div>
-                                        </Link>
-                                        <div className='description1'>{review.cafeName}</div>
-                                    </td>
-                                    <td colSpan={2}>
-                                        <div className='writeInfo'>
-                                            <a href={`/userReview/${review.nickname}`}>
-                                                <img className='badgeImg' src={`/img/${pickBadgeName[0]}`} alt='' />
-                                                {review.nickname}</a> &nbsp;| 추천 {review.likeCount}
-                                        </div>
-                                        <div className='dateTime'>{review.regDate}</div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </div>
-                 : <div className="noWish">리뷰가 없습니다</div>}
+                    <div className='reviewtable'>
+                        <Table hover >
+                            <tbody>
+                                {reviews.map((review) => (
+                                    <tr key={review.reviewNo}>
+                                        <th scope='row' style={{ width: "100px" }}>
+                                            <img className='listImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='' />
+                                        </th>
+                                        <td colSpan={10}>
+                                            <Link to={`/reviewDetail/${review.reviewNo}`}
+                                                state={{ reviewNo: `${review.reviewNo}` }} >
+                                                <div className='listMiniTitle'>{review.title}</div>
+                                            </Link>
+                                            <div className='description1'>{review.cafeName}</div>
+                                        </td>
+                                        <td colSpan={2}>
+                                            <div className='writeInfo'>
+                                                <a href={`/userReview/${review.nickname}`}>
+                                                    <img className='badgeImg' src={`/img/${pickBadgeName[0]}`} alt='' />
+                                                    {review.nickname}</a> &nbsp;| 추천 {review.likeCount}
+                                            </div>
+                                            <div className='dateTime'>{review.regDate}</div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
+                    : <div className="noWish">리뷰가 없습니다</div>}
                 {reviews.length !== 0 ?
-                <div className='reviewList-pagination'>
-                    <ul className="pagination">
-                        <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
-                            <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
-                        </li>
-                        {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
-                            <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
-                                <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+                    <div className='reviewList-pagination'>
+                        <ul className="pagination">
+                            <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
                             </li>
-                        ))}
-                        <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
-                            <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
-                        </li>
-                    </ul>
-                </div>
-                : <div></div> }
+                            {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
+                                <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+                                </li>
+                            ))}
+                            <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
+                            </li>
+                        </ul>
+                    </div>
+                    : <div></div>}
             </div>
         </div>
     );

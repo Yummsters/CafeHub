@@ -83,17 +83,48 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
         Toast.fire({
             icon: 'error',
             title: '다시 로그인 후 이용해주세요'
+        }).then(()=>{
+            setTimeout(() => {
+                navigate("/login");
+            }, 800)
         })
-        setTimeout(() => {
-            console.log("로그인 페이지로 이동");
-            navigate("/login");
-        }, 700);
-        console.log("끝")
     }
 }
 
 // 일반 버튼 관련 토큰 확인 처리
 export const normalCheck = (dispatch, accessToken) => {
+    console.log("토큰 유효성 확인 중")
+
+        axios.get(`${url}/member`,{
+            headers : {
+                Authorization :accessToken,
+                Refresh : getCookie("refreshToken")
+            }
+        })
+        .then(res => {
+            // 토큰이 유효한 경우 확인 후 재발급
+            tokenCreate(dispatch, setCookie, res.headers);
+        })
+        .catch(err=>{
+            console.log(err); 
+            console.log("리프레시 토큰 만료 - 로그아웃");
+
+            if(err.response.data.status === 602){
+                console.log("들어옴");
+                // 로컬 없애는 로직 추가
+                dispatch({type:"accessToken", payload:""});
+                dispatch({type:"isLogin", payload:false});
+                dispatch({type:"member", payload:""});
+                dispatch({type:"cafe", payload:""});
+                dispatch({ type: "payment", payload: "" });
+        
+                // 로컬 스토리지 정보 및 쿠키 토큰 제거
+                removeCookie("refreshToken");
+            }
+        })
+}
+
+export const checkToLogin = (dispatch, accessToken, navigate) => {
     console.log("토큰 유효성 확인 중")
         axios.get(`${url}/member`,{
             headers : {
@@ -120,6 +151,12 @@ export const normalCheck = (dispatch, accessToken) => {
         
                 // 로컬 스토리지 정보 및 쿠키 토큰 제거
                 removeCookie("refreshToken");
+                Toast.fire({
+                    icon: 'error',
+                    title: '다시 로그인 해주세요',
+                  }).then(()=>{
+                    navigate("/login");
+                })
             }
         })
 }

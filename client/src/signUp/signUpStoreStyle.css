@@ -112,7 +112,7 @@ body, button, input{
 /* 오른쪽 가게 미리보기 */
 .signUpStore{
     width: 400px;
-    height: 500px;
+    min-height: 500px;
     background-color: #f3f3f3cc;
     border-radius: 20px;
     margin: 30px auto;

@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import axios from "axios";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { url } from '../config.js'
-import { normalCheck } from "../login/TokenCheck.js";
+import { checkToLogin } from "../login/TokenCheck.js";
+import { useNavigate } from "react-router";
 
 const WishReview = () => {
   const [wishReviewList, setWishReviewList] = useState([]);
@@ -18,14 +19,21 @@ const WishReview = () => {
   const memNo = useSelector((state) => state.persistedReducer.member.memNo);
   const accessToken = useSelector((state) => state.persistedReducer.accessToken);
   const isLogin = useSelector((state) => state.persistedReducer.isLogin);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const openModal = (reviewNo) => { 
+    if (isLogin) {
+      checkToLogin(dispatch, accessToken, navigate)
+    }
     setWishReviewNo(reviewNo);
     document.body.style.overflow = 'hidden'; // 부모페이지 스크롤 비활성화
   };
 
   const closeModal = () => {
+    if (isLogin) {
+      checkToLogin(dispatch, accessToken, navigate)
+    }
     setWishReviewNo(null);
     setShowModal(false);
     document.body.style.overflow = 'auto';
@@ -45,7 +53,7 @@ const WishReview = () => {
 
   useEffect(() => {
     if (isLogin) {
-      normalCheck(dispatch, accessToken);
+      checkToLogin(dispatch, accessToken, navigate)
     }
     axios.get(`${url}/member/wishReviewList/${memNo}?page=${currentPage-1}`, {
         headers: {
@@ -54,7 +62,6 @@ const WishReview = () => {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setWishReviewList(res.data.data);
         setTotalPages(res.data.pageInfo.totalPages);
       })
@@ -65,7 +72,6 @@ const WishReview = () => {
 
   useEffect(() => { // 모달위한 useEffect
     if (wishReviewNo !== null) {
-      console.log(wishReviewNo);
       setShowModal(true);
     }
   }, [wishReviewNo]);

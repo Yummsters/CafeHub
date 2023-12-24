@@ -6,11 +6,15 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { url } from '../config.js'
+import { checkToLogin, normalCheck } from '../login/TokenCheck.js';
+import { useNavigate } from 'react-router';
 
 const UserPoint = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const member = useSelector(state => state.persistedReducer.member);
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [myPoint, setMyPoint] = useState(0); // 회원의 보유 포인트
     const [selectPrice, setSelectPrice] = useState(0); // 선택한 가격 보여주기
     const [price, setPrice] = useState(1000); // 페이먼트로 전달할 가격
@@ -32,9 +36,15 @@ const UserPoint = () => {
     const [paymentModal, setPaymentModal] = useState(false);
     const paymentData = { price: price, orderName: "포인트구매" };
     const paymentOpen = () => {
+        if (isLogin) {
+            checkToLogin(dispatch, accessToken, navigate)
+          }
         setPaymentModal(true);
     }
     const paymentClose = () => {
+        if (isLogin) {
+            checkToLogin(dispatch, accessToken, navigate)
+        }
         setPaymentModal(false);
     }
 
@@ -57,26 +67,26 @@ const UserPoint = () => {
     }
 
     useEffect(() => {
-        if (payment.isSuccess) {
-            axios.post(`${url}/buyPoint/${member.memNo}/${Number(payment.price) / 100}`)
-            .then((res) => {
-                console.log(res.data);
-                dispatch({ type:"payment", payload:"" })
-                toast.fire({
-                    icon: 'success',
-                    title: '포인트 적립이 완료되었습니다'
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                refund('포인트등록실패')
-                dispatch({ type:"payment", payload:"" })
-                toast.fire({
-                    icon: 'error',
-                    title: '포인트 적립에 실패했습니다'
-                });
-            })
-        }
+    if (payment.isSuccess) {
+        axios.post(`${url}/buyPoint/${member.memNo}/${Number(payment.price) / 100}`)
+        .then((res) => {
+            console.log(res.data);
+            dispatch({ type:"payment", payload:"" })
+            toast.fire({
+                icon: 'success',
+                title: '포인트 적립이 완료되었습니다'
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+            refund('포인트등록실패')
+            dispatch({ type:"payment", payload:"" })
+            toast.fire({
+                icon: 'error',
+                title: '포인트 적립에 실패했습니다'
+            });
+        })
+    }
     }, [])
 
     const coffeeData = [
@@ -114,18 +124,18 @@ const UserPoint = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 axios.post(`${url}/buyBadge/${member.memNo}/${selectedBadge.badgeNo}`)
-                    .then((res) => {
-                        console.log('뱃지를 성공적으로 구매했습니다:', res.data);
-                        toast.fire({
-                            icon: 'success',
-                            title:  '배지 구매 성공!'
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    })
-                    .catch((error) => {
-                        console.error('뱃지 구매 중 오류 발생:', error);
+                .then((res) => {
+                    console.log('뱃지를 성공적으로 구매했습니다:', res.data);
+                    toast.fire({
+                        icon: 'success',
+                        title:  '배지 구매 성공!'
+                    }).then(() => {
+                        window.location.reload();
                     });
+                })
+                .catch((error) => {
+                    console.error('뱃지 구매 중 오류 발생:', error);
+                });
             }
         });
     };
@@ -188,28 +198,31 @@ const UserPoint = () => {
     };
 
     useEffect(() => {
-        axios.get(`${url}/member/point/${member.memNo}`,
-            {
-                headers: {
-                    Authorization: accessToken
-                }
-            })
-            .then((res) => {
-                setMyPoint(res.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+    if (isLogin) {
+        normalCheck(dispatch, accessToken)
+    }
+    axios.get(`${url}/member/point/${member.memNo}`,
+        {
+            headers: {
+                Authorization: accessToken
+            }
+        })
+        .then((res) => {
+            setMyPoint(res.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        })
     }, [])
 
     useEffect(() => {
-        axios.get(`${url}/badgeList`)
-            .then(res => {
-                setBadge([...res.data]);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+    axios.get(`${url}/badgeList`)
+    .then(res => {
+        setBadge([...res.data]);
+    })
+    .catch(err => {
+        console.log(err);
+    })
     }, [])
 
     useEffect(() => {

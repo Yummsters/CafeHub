@@ -104,7 +104,7 @@ a {
     }
   }
 
-@media screen and (max-width: 940px) {
+@media screen and (max-width: 958px) {
     .center, .right {
         display: none; 
     }
