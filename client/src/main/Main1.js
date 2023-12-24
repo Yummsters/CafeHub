@@ -54,23 +54,36 @@ const Main1 = () => {
                 <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange} />
                 < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색" />
             </div>
-            <Slider {...setting}>
 
-                {cafeAds.map((ad, index) => (
-                    <div key={index} className='banner'>
-                        <img className="bannerImg" src={`/img/${ad.thumbImg}.png`} alt='' />
-
-                        <div className="bannerbox">
-                            <div className="top-text">{ad.cafeName},</div>
-                            <div className="middle-text"><br/>{ad.description}</div>
-                            <div className="last-text">
-                                <div className="adMenuList">{ad.menu}</div>
-                                <div className="adAddress">{ad.address}</div>
+            {cafeAds.length > 0 ? (
+                <Slider {...setting}>
+                    {cafeAds.map((ad, index) => (
+                        <div key={index} className='banner'>
+                            <img className="bannerImg" src={`img/${ad.fileNum}.png`} alt='' />
+                            <div className="bannerbox">
+                                <div className="top-text">{ad.cafeName},</div>
+                                <div className="middle-text"><br />{ad.description}</div>
+                                <div className="last-text">
+                                    <div className="adMenuList">{ad.menu}</div>
+                                    <div className="adAddress">{ad.address}</div>
+                                </div>
                             </div>
                         </div>
+                    ))}
+                </Slider>
+            ) : (
+                <div className='banner'>
+                    <img className="bannerImg" src={`img/cafeHubMain.png`} alt='' />
+                    <div className="bannerbox">
+                        <div className="top-text">카페허브,</div>
+                        <div className="middle-text"><br />카페에 관한 모든 것</div>
+                        <div className="last-text">
+                            <div className="adMenuList">리뷰 작성 및 열람부터</div>
+                            <div className="adAddress">커피콩으로 할인까지</div>
+                        </div>
                     </div>
-                ))}
-            </Slider>
+                </div>
+            )}
 
         </div >
     );
