@@ -275,8 +275,8 @@ public class MemberServiceImpl implements MemberService{
     public Integer existStore(SignUpStoreDto signUpStore, List<MultipartFile> files) throws Exception {
         try {
             if (files != null && !files.isEmpty()) {
-                String dir = "c:/soobin/upload/"; // 업로드 경로
-                //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
+                //String dir = "c:/soobin/upload/"; // 업로드 경로
+                String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
 
                 String fileNums = "";
 
@@ -342,7 +342,6 @@ public class MemberServiceImpl implements MemberService{
             throw new Exception("중복된 회원입니다");
         }
 
-       
         member = Member.builder()
                 .id(member.getId())
                 .password(bCryptPasswordEncoder.encode(member.getPassword()))
@@ -353,6 +352,7 @@ public class MemberServiceImpl implements MemberService{
                 .email(member.getEmail())
                 .phone(member.getPhone())
                 .cafe(cafeRepository.findByCafeNo(cafeNo))
+                .badgeNo(9)
                 .social(Social.NORMAL)
                 .build();
 
