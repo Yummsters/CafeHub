@@ -62,7 +62,7 @@ const UserReview = () => {
         if (isLogin) {
             normalCheck(dispatch, accessToken);
         }
-        navigate('/reviewDetail/' + reviewNo);
+        navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});
     }
 
     return (

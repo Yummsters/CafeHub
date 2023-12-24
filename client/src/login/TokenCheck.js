@@ -24,7 +24,7 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
                 icon: 'error',
                 title: '로그인 후 이용해 주세요'
             }).then(() => {
-                navigate('/login');
+                window.location.href="/login";
             });  
         }else{
             axios.get(`${url}/member`,{
@@ -77,17 +77,16 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
 
         // 로컬 스토리지 정보 및 쿠키 토큰 제거
         removeCookie("refreshToken");
-        console.log("리덕스 삭제")
-
         
         Toast.fire({
             icon: 'error',
             title: '다시 로그인 후 이용해주세요'
-        }).then(()=>{
-            setTimeout(() => {
-                navigate("/login");
-            }, 800)
         })
+                
+        setTimeout(() => {
+            window.location.href="/login";
+        }, 800)
+    
     }
 }
 
@@ -155,7 +154,7 @@ export const checkToLogin = (dispatch, accessToken, navigate) => {
                     icon: 'error',
                     title: '다시 로그인 해주세요',
                   }).then(()=>{
-                    navigate("/login");
+                    window.location.href="/login";
                 })
             }
         })

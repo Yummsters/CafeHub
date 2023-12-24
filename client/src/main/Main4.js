@@ -18,7 +18,7 @@ const Main4 = () => {
                  navigate('/reviewwrite');
             })
         }else{
-            navigate('/login');
+            window.location.href="/login";
         }       
     };
 
