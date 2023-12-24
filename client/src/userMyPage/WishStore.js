@@ -1,6 +1,5 @@
 import "./wishStoreStyle.css";
 import UserSideTab from "../components/UserSideTab";
-
 import { useEffect, useState } from "react";
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import MapCafeInfo from "../map/MapCafeInfo";
 import { url } from '../config.js'
-import { normalCheck } from "../login/TokenCheck.js";
+import { checkToLogin } from "../login/TokenCheck.js";
 import { useNavigate } from "react-router";
 const {kakao} = window;
 
@@ -25,15 +24,21 @@ const WishStore = () => {
   const accessToken = useSelector((state) => state.persistedReducer.accessToken);
   const isLogin = useSelector((state) => state.persistedReducer.isLogin);
   const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onClick = (cafeNo) => {
+    if (isLogin) {
+      checkToLogin(dispatch, accessToken, navigate)
+    }
     setCafeNo(cafeNo);
     setShowModal(true);
     document.body.style.overflow = 'hidden'; // 부모페이지 스크롤 비활성화
   }
 
   const closeModal = () => {
+    if (isLogin) {
+      checkToLogin(dispatch, accessToken, navigate)
+    }
     setShowModal(false);
     document.body.style.overflow = 'auto';
   };
@@ -52,7 +57,7 @@ const WishStore = () => {
 
   useEffect(() => {
     if (isLogin) {
-      normalCheck(dispatch, accessToken);
+      checkToLogin(dispatch, accessToken, navigate)
     }
       axios.get(`${url}/member/wishStoreList/${memNo}?page=${currentPage-1}`, {
         headers: {

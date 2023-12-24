@@ -40,8 +40,8 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
         setCurrentPage(currentPage - 1);
       }
     };
-    console.log(selectCafe)
-   useEffect(() => { 
+
+    useEffect(() => { 
     if(selectCafe !== null) {
       axios.get(`${url}/review/storeList/${cafeNo}?page=${currentPage}&size=5`)
       .then((res) => {
