@@ -31,11 +31,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const isLogin = useSelector(state => state.persistedReducer.isLogin);
 
-
   const location = useLocation();
-  const listReviewNo = location.state?.reviewNo
+  const listReviewNo = location.state?.reviewNo;
   const reviewNo = wishReviewNo || listReviewNo;
-
 
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
