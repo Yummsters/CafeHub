@@ -25,7 +25,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [replyLike, setReplyLike] = useState(false);
   const [replyLikeCount, setReplyLikeCount] = useState(0);
   const [pickBadgeName, setPickBadge] = useState([]);
-  const dispatch = useDispatch;
+  const dispatch = useDispatch();
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const isLogin = useSelector(state => state.persistedReducer.isLogin);
@@ -69,27 +69,31 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
     }
   }
-
   const ReviewDelete = async (reviewNo) => {
     try {
-      await axios.delete(`${url}/review/${reviewNo}/delete`);
-      console.log("리뷰 삭제 성공");
-      Swal.fire({
-        text: '리뷰가 삭제되었습니다',
-        icon: 'success',
-        confirmButtonText: '확인',
+      const response = await axios.delete(`${url}/review/${reviewNo}/delete`, {
+        headers: {
+          Authorization: accessToken,
+          Refresh: getCookie("refreshToken"),
+        },
       });
-      navigate("/reviewList"); // 페이지 이동
+  
+      tokenCreate(dispatch, setCookie, response.headers).then(() => {
+        Swal.fire({
+          text: '리뷰가 삭제되었습니다',
+          icon: 'success',
+          confirmButtonText: '확인',
+        });
+        navigate("/reviewList"); // 페이지 이동
+      });
     } catch (error) {
-      console.log("리뷰 삭제 에러");
-      Swal.fire({
-        title: 'error',
-        text: '리뷰를 삭제하는 중에 오류가 발생했습니다',
-        icon: 'error',
-        confirmButtonText: '확인',
-      });
+      console.log("리뷰 삭제 에러", error);
+      if (error.response !== undefined) {
+        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+      }
     }
   };
+  
 
 
   const handleReviewDelete = () => {
