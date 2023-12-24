@@ -30,6 +30,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	Page<Review> findAllByMember(Member member, Pageable pageable);
     @Query(value = "SELECT r.title, "
     		+ "r.thumb_img as thumbImg, "
+    		+ "r.review_no as reviewNo, "
+    		+ "r.writer as writer, "
     		+ "c.cafe_name as cafeName "
             + "FROM review r "
             + "JOIN cafe c "
@@ -38,6 +40,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<ReviewInterface> findReviewsByMemberNoWithoutReviews();
     @Query(value = "SELECT r.title, "
     		+ "	r.thumb_img as thumbImg, "
+    		+ " r.review_no as reviewNo, "
+    		+ " r.writer as writer, "
     		+ "	c.cafe_name as cafeName "
             + "FROM review r "
             + "JOIN review_to_tag rtt ON r.review_no = rtt.review_no "
