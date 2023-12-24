@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input } from 'reactstrap';
-import {useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Editor } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 
 import { getCookie, setCookie, removeCookie } from '../components/Cookie';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
 import { url } from '../config.js'
 
@@ -35,12 +35,12 @@ const ReviewWrite = () => {
     const [selectedReviewAuthNo, setSelectedReviewAuthNo] = useState('');
     const [selectedCafeNo, setSelectedCafeNo] = useState('');
     const dispatch = useDispatch();
-  //  const {accessToken, refreshToken} = useParams();
-  
-   
+    //  const {accessToken, refreshToken} = useParams();
+
+
     useEffect(() => {
         if (token) {
-           console.log('현재 토큰:', token);
+            console.log('현재 토큰:', token);
             console.log(getCookie("refreshToken"));
 
             // 토큰을 이용한 사용자 정보 가져오기
@@ -69,31 +69,6 @@ const ReviewWrite = () => {
                 });
         }
     }, [token, memNo, token, getCookie("refreshToken")]);
-    
-   
-    
-
-    const uploadImages = (blob, callback) => {
-        let formData = new FormData();
-        formData.append('images', blob);
-
-        axios({
-            method: 'POST',
-            url: '${url}/common/fileUpload',
-            data: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
-            .then((response) => {
-              
-                callback(response.data);
-            })
-            .catch((error) => {
-                callback('image_load_failfff');
-            });
-    };
-
 
 
     const fetchCafeList = async () => {
@@ -106,7 +81,7 @@ const ReviewWrite = () => {
             console.error(error);
         }
     };
-  
+
     const handleEditorChange = (content) => {
         setReview(prevReview => ({
             ...prevReview,
@@ -150,10 +125,10 @@ const ReviewWrite = () => {
             });
             return;
         }
-    
+
         const content = editorRef.current.getInstance().getHTML();
-       
-        if (!content.trim() || content.trim() === '<p><br></p>'){
+
+        if (!content.trim() || content.trim() === '<p><br></p>') {
             Swal.fire({
                 title: '내용을 입력하세요',
                 icon: 'error',
@@ -175,51 +150,69 @@ const ReviewWrite = () => {
         }
         if (thumbnail) {
             formData.append('thumbnail', thumbnail);
-            
+
         }
 
         axios
-         .post(`${url}/reviewwrite`, formData)
-            .then((res) => {
+            .post(`${url}/member/reviewwrite`, formData, {
+                headers: {
+                    Authorization: token,
+                    Refresh: getCookie("refreshToken")
+                }
 
-                console.log(res);
-                let reviewNo = res.data;
-               
-                Swal.fire({
-                    title: '커피콩 1개 적립 성공!',
-                    text: '리뷰가 성공적으로 등록되었습니다',
-                    icon: 'success',
-                    confirmButtonText: '확인',
-                }).then(() => {
-                    navigate(`/reviewList`);
-                });
             })
-        })
-        .catch(err=>{
-            if(err.response !== undefined){
-                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-            }else{
-                Swal.fire({
-                    title: 'error',
-                    text: '리뷰를 등록하는 중에 오류가 발생했습니다',
-                    icon: 'error',
-                    confirmButtonText: '확인',
-                })         
-            }
-               
-        })
+            .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
+
+                        console.log(res);
+                        let reviewNo = res.data;
+
+                        Swal.fire({
+                            title: '커피콩 1개 적립 성공!',
+                            text: '리뷰가 성공적으로 등록되었습니다',
+                            icon: 'success',
+                            confirmButtonText: '확인',
+                        }).then(() => {
+                            navigate(`/reviewList`);
+                        });
+                    })
+            })
+
+            .catch(err => {
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                } else {
+                    Swal.fire({
+                        title: 'error',
+                        text: '리뷰를 등록하는 중에 오류가 발생했습니다',
+                        icon: 'error',
+                        confirmButtonText: '확인',
+                    })
+                }
+
+            })
     }
 
     useEffect(() => {
 
-        axios.get(`${url}/reviewTagList`)
+        axios.get(`${url}/reviewTagList`, {
+            headers: {
+                Authorization: token,
+                Refresh: getCookie("refreshToken")
+            }
+
+        })
             .then(res => {
-                console.log(res.data);
+                // 토큰이 유효한 경우 확인 후 재발급
+                tokenCreate(dispatch, setCookie, res.headers);
                 setTagName([...res.data]);
-                console.log("태그이름" + tagName);
             })
             .catch(err => {
                 console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
             })
     }, [])
 
@@ -268,7 +261,7 @@ const ReviewWrite = () => {
             setSelectedFile(file);
             const thumbnailURL = URL.createObjectURL(file);
             setThumbnail(thumbnailURL);
-           
+
         }
     };
     const resetForm = () => {
@@ -281,7 +274,7 @@ const ReviewWrite = () => {
         setSelectedTags([]);
         setSelectedReviewAuthNo('');
         setSelectedCafeNo('');
-        
+
 
         editorRef.current.getInstance().setMarkdown('');
     };
@@ -321,13 +314,13 @@ const ReviewWrite = () => {
                 </div>
                 <hr className='line' />
                 <div className='thumbnail'>
-                      {!isFileSelected && (
+                    {!isFileSelected && (
                         <label className='review-img' >
                             썸네일 선택
                             <input type='file' name='thumbImg' onChange={handleFileChange} />
                         </label>
                     )}&nbsp;&nbsp;&nbsp;
-                    {thumbnail && <img className='thumbnail-preview' src={thumbnail} alt='Thumbnail Preview'/>}
+                    {thumbnail && <img className='thumbnail-preview' src={thumbnail} alt='Thumbnail Preview' />}
                 </div>
                 <div className='editor'>
                     <Editor
@@ -350,13 +343,20 @@ const ReviewWrite = () => {
                                     data: formData,
                                     headers: {
                                         'Content-Type': 'multipart/form-data',
+                                        Authorization :token,
+                                        Refresh : getCookie("refreshToken")
+                        
                                     },
                                 })
                                     .then((response) => {
+                                        tokenCreate(dispatch, setCookie, response.headers);
                                         callback(response.data);
                                     })
                                     .catch((error) => {
                                         callback('image_load_fail');
+                                        // 로컬 스토리지 정보 및 쿠키 토큰 제거
+                                        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                                      
                                     });
                             },
 
