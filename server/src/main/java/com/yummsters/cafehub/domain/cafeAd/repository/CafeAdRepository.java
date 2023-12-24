@@ -20,7 +20,7 @@ public interface CafeAdRepository extends JpaRepository<CafeAd, Integer> {
   //혜리 part-------------------------------------------------------
     @Query(value = "SELECT c.cafe_name AS cafeName, "
     		+ "c.address AS address, "
-    		+ "ca.thumb_img AS thumbImg, "
+    		+ "ca.file_num AS fileNum, "
     		+ "ca.description AS description, "
     		+ "ca.menu AS menu, "
     		+ "ca.auth_date AS authDate "
@@ -39,7 +39,8 @@ public interface CafeAdRepository extends JpaRepository<CafeAd, Integer> {
             + "ca.cafe_ad_no AS cafeAdNo "
             + "FROM cafe_ad ca "
             + "JOIN cafe c ON ca.cafe_no = c.cafe_no "
-            + "WHERE ca.is_approved = 0", nativeQuery = true)
+            + "WHERE ca.is_approved = 0 "
+            + "ORDER BY ca.reg_date", nativeQuery = true)
      Page<CafeAdInterface> findUnapprovedAds(Pageable pageable);
     
     @Transactional
