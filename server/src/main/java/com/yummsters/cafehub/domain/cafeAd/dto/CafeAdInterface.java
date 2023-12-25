@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 public interface CafeAdInterface {
 	String getCafeAdNo();
-	boolean getIsApproved();
+	Boolean getIsApproved();
+	Boolean getIsPaid();
 	LocalDateTime getAuthDate();
 	String getFileNum();
 	String getCafeName();
