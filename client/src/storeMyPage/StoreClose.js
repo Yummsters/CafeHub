@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { removeCookie} from '../components/Cookie';
 import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js';
 
 const StoreClose = () => {
     const [isTerminationModalOpen, setIsTerminationModalOpen] = useState(true);
@@ -14,22 +14,8 @@ const StoreClose = () => {
     const dispatch = useDispatch();
     const [pwInput, setPwInput] = useState('');
     const [pwMatch, setPwMatch] = useState(true);
-
     const memNo = useSelector(state=>state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-
-    // swal
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top',
-    showConfirmButton: false,
-    timer: 1000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-  })
 
     const closeModal = () => {
         setIsTerminationModalOpen(false);
@@ -60,10 +46,8 @@ const StoreClose = () => {
                 dispatch({type:"member", payload:''});
                 dispatch({type:"accessToken", payload:""});
                 dispatch({type:"cafe", payload:""});
-                Toast.fire({
-                    icon: 'success',
-                    title: '회원탈퇴가 완료되었습니다'
-                }).then(()=>{
+                Toast('success', '회원탈퇴가 완료되었습니다')
+                .then(()=>{
                     navigate("/");
                 })
             } else {
@@ -76,17 +60,10 @@ const StoreClose = () => {
             console.log(err.data);
 
             if(err.data === '포인트 정산 후 탈퇴가 가능합니다'){
-                Toast.fire({
-                    icon: 'success',
-                    title: '포인트 정산 후 탈퇴가 가능합니다'
-                })
+                Toast('success', '포인트 정산 후 탈퇴가 가능합니다')
             }else{
-                Toast.fire({
-                    icon: 'success',
-                    title: "정산 대기중인 포인트가 있습니다. 포인트 정산 후 탈퇴가 가능합니다."
-                })
+                Toast('success', '정산 대기중인 포인트가 있습니다\n포인트 정산 후 탈퇴가 가능합니다')
             }
-           
         })
       };
 

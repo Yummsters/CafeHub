@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import { Toast } from '../components/Toast.js'
 import { setCookie } from '../components/Cookie';
 import { url } from '../config.js'
 
@@ -22,19 +22,6 @@ const LoginPage = () => {
     const showLoginPageParam = new URLSearchParams(location.search).get('showLoginPage');
     if (showLoginPageParam === "STORE") setShowLoginPage(true);
   }, [location.search]);
-
-  // swal
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top',
-    showConfirmButton: false,
-    timer: 800,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer)
-      toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-  })
 
   // 사용자 관련
   const [userLogin, setUserLogin] = useState({ id: '', password: '', memberType: 'USER' });
@@ -63,10 +50,8 @@ const LoginPage = () => {
           const refreshToken = res.headers.refresh;
           setCookie("refreshToken", refreshToken);
 
-          Toast.fire({
-            icon: 'success',
-            title: '로그인 완료되었습니다'
-          }).then(() => {
+          Toast('success', '로그인 완료되었습니다')
+          .then(()=>{
             window.location.href = "/";
           })
         })
@@ -74,28 +59,17 @@ const LoginPage = () => {
           const errStatus = err.response.data.status;
           // 로그인 에러
           if (errStatus === 401) {
-            Toast.fire({
-              icon: 'error',
-              title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
-            }).then(() => {
+            Toast('error', '회원이 아닙니다. 회원가입 후 이용해 주세요')
+            .then(()=>{
               navigate('/signUpUser');
             })
           } else if (errStatus === 990) {
-            Toast.fire({
-              icon: 'error',
-              title: '사장 회원은 사장 로그인을 이용해 주세요'
-            })
+            Toast('error', '사장 회원은 사장 로그인을 이용해 주세요')
             setShowLoginPage(true);
           } else if (errStatus === 880) {
-            Toast.fire({
-              icon: 'error',
-              title: '탈퇴한 회원입니다'
-            })
+            Toast('error', '탈퇴한 회원입니다')
           } else {
-            Toast.fire({
-              icon: 'error',
-              title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
-            })
+            Toast('error', '로그인이 불가능합니다 관리자에게 문의해 주세요')
           }
         })
     }
@@ -160,39 +134,26 @@ const LoginPage = () => {
           const refreshToken = res.headers.refresh;
           setCookie("refreshToken", refreshToken);
 
-          Toast.fire({
-            icon: 'success',
-            title: '로그인 완료되었습니다'
-          }).then(() => {
+          Toast('success', '로그인 완료되었습니다')
+          .then(()=> {
             window.location.href = "/";
-          });
+          })
         })
         .catch(err => {
           const errStatus = err.response.data.status;
           // 로그인 에러
           if (errStatus === 401) {
-            Toast.fire({
-              icon: 'error',
-              title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
-            }).then(() => {
+            Toast('error', '회원이 아닙니다\n회원가입 후 이용해 주세요')
+            .then(() => {
               navigate('/signUpStore');
             });
           } else if (errStatus === 991) {
-            Toast.fire({
-              icon: 'error',
-              title: '사용자 회원은 사용자 로그인을 이용해 주세요'
-            })
+            Toast('error', '사용자 회원은 사용자 로그인을 이용해 주세요')
             setShowLoginPage(false);
           } else if (errStatus === 880) {
-            Toast.fire({
-              icon: 'error',
-              title: '탈퇴한 회원입니다'
-            })
+            Toast('error', '탈퇴한 회원입니다')
           } else {
-            Toast.fire({
-              icon: 'error',
-              title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
-            })
+            Toast('error', '로그인이 불가능합니다 관리자에게 문의해 주세요')
           }
         })
     }

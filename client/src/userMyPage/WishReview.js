@@ -27,7 +27,6 @@ const WishReview = () => {
       checkToLogin(dispatch, accessToken, navigate)
     }
     setWishReviewNo(reviewNo);
-    document.body.style.overflow = 'hidden'; // 부모페이지 스크롤 비활성화
   };
 
   const closeModal = () => {
@@ -36,7 +35,6 @@ const WishReview = () => {
     }
     setWishReviewNo(null);
     setShowModal(false);
-    document.body.style.overflow = 'auto';
   };
 
   const nextPage = () => {

@@ -1,15 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-
 import storeInfoStyle from './storeInfoStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js';
 const { daum } = window;
 
 const StoreInfo = () => {
@@ -17,7 +16,6 @@ const StoreInfo = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     const [point, setPoint] = useState(0);
     const [fileNum, setFileNum] = useState(0);
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
@@ -31,7 +29,6 @@ const StoreInfo = () => {
         name: "", id: "", password: "", passwordCk: "", phone: "", email: "",
         storeName: "", storePhone: "", storeNum: "", location: "", time: ""
     });
-
 
     const searchAddr = () => { // 주소 입력
         new daum.Postcode({
@@ -92,7 +89,6 @@ const StoreInfo = () => {
     }, [accessToken]);
 
     useEffect(() => {
-        // Fetch cafe image
         if (cafe.thumbImg) {
             axios.get(`${url}/common/upload/${cafe.thumbImg}`, {
                 responseType: 'blob',
@@ -117,41 +113,28 @@ const StoreInfo = () => {
 
 
     const businessNo = () => { // 사업자번호 확인
-
         axios.post(`${url}/business/${cafe.businessNo}`)
             .then((res) => {
                 console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
-
-                    MyToast.fire({
-                        title: '사업자 인증 실패!',
-                        text: '다시 입력해주세요',
-                        icon: 'error',
-                    })
+                    Toast('error', '등록되지 않은 사업자등록번호입니다')
                     setCheck((prevWarnings) => ({
                         ...prevWarnings,
                         businessNo: false
                     }));
 
                 } else {
-                    MyToast.fire({
-                        title: '사업자 인증 성공!',
-                        text: '성공적으로 등록되었습니다',
-                        icon: 'success',
-                    })
-
+                    Toast('success', '사업자 인증 성공\n성공적으로 등록되었습니다')
                     setCheck((prevWarnings) => ({
                         ...prevWarnings,
                         businessNo: true
                     }));
                 }
-
             })
             .catch((error) => {
                 console.log(error);
                 return false;
             })
-
     };
 
     // 유효성 검증
@@ -171,11 +154,7 @@ const StoreInfo = () => {
     const StoreInfo = async (e) => {
         e.preventDefault();
         if (!isBusinessNoChanged) {
-            MyToast.fire({
-                title: '사업자 등록번호 변경',
-                text: '사업자 등록번호를 변경하세요.',
-                icon: 'error',
-            });
+            Toast('error', '사업자등록번호를 변경하세요')
             return;
         }
         console.log("tag = " + selectedTags);
@@ -194,25 +173,14 @@ const StoreInfo = () => {
         }
 
         try {
-            // 서버로 요청을 보낼 때는 formData를 config 객체에 넣어서 보냅니다.
             const response = await axios.put(`${url}/cafe/store/${cafeNo}`, formData, {
                 headers: {
                     Authorization: accessToken,
                     Refresh: getCookie("refreshToken"),
-                    'Content-Type': 'multipart/form-data', // 중요: FormData를 보낼 때 Content-Type을 설정해야 합니다.
+                    'Content-Type': 'multipart/form-data'
                 },
             });
-
-            Swal.fire({
-                title: '수정 성공!',
-                text: '리뷰가 성공적으로 등록되었습니다',
-                icon: 'success',
-                confirmButtonText: '확인',
-            }).then(() => {
-                // 추가적인 로직
-            });
-
-
+            Toast('success', '정보 수정이 완료되었습니다')
             console.log(response);
         } catch (err) {
             console.log(err);
@@ -233,21 +201,8 @@ const StoreInfo = () => {
             })
     }, [])
 
-    // swal
-    const MyToast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
     // 유효성 정규표현식
     const inputRegexs = {
-
         businessNoRegex: /^[0-9]+$/
     };
 
@@ -257,17 +212,12 @@ const StoreInfo = () => {
         if (name === 'businessNo' && cafe.businessNo !== value) {
             setIsBusinessNoChanged(false);
         }
-        console.log('흠,,' + businessNo);
         setCafe((prevCafe) => ({ ...prevCafe, [name]: value }));
-
     };
-
 
     const fileChange = (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
-
-
         const imageUrl = URL.createObjectURL(file);
         setCafe((prevCafe) => ({
             ...prevCafe,
@@ -275,15 +225,11 @@ const StoreInfo = () => {
         }));
     }
 
-
     useEffect(() => {
-
         const storeInfo = document.querySelector('.storeInfo-right-section');
-
         if (storeInfo) {
             window.addEventListener('scroll', function () {
                 const scrollTop = window.scrollY;
-
                 if (scrollTop > 50) {
                     storeInfo.style.top = `${scrollTop}px`;
                 } else {
@@ -298,7 +244,6 @@ const StoreInfo = () => {
     // 가게 포인트 조회
     useEffect(() => {
         axios.get(`${url}/member/point/${memNo}`, {
-
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
@@ -321,10 +266,7 @@ const StoreInfo = () => {
 
     const pointCalReq = () => {
         if (point < 100) {
-            MyToast.fire({
-                icon: 'error',
-                title: '100개 이상부터 정산 신청이 가능합니다'
-            })
+            Toast('error', '100개 이상부터 정산 신청이 가능합니다')
         } else {
             axios.post(`${url}/store/point/calculate/${memNo}`, null, {
                 headers: {
@@ -338,10 +280,7 @@ const StoreInfo = () => {
                     tokenCreate(dispatch, setCookie, res.headers)
                         .then(() => {
                             setPoint(res.data);
-                            MyToast.fire({
-                                icon: 'success',
-                                title: '포인트 정산 신청이 완료되었습니다'
-                            })
+                            Toast('success', '포인트 정산 신청이 완료되었습니다');
                         })
                 })
                 .catch(err => {
@@ -365,16 +304,11 @@ const StoreInfo = () => {
             updatedTags = [...selectedTags, i];
         }
         if (updatedTags.length > 1) {
-            Swal.fire({
-                title: '1개까지 선택 가능합니다',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '1개까지 선택 가능합니다')
         } else {
             setSelectedTags(updatedTags);
         }
     };
-
 
     return (
         <div className='storeInfo-container'>

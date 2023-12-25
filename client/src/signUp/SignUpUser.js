@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import signUpUserStyle from './signUpUserStyle.css';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js';
 
 // 커서 관련하여 매끄럽지 않은 부분 수정 필요
 const SignUp_User = () =>{
@@ -10,18 +10,6 @@ const SignUp_User = () =>{
     const [valid, setValid] = useState({ id : false, password : false, email : false, phone : false})
     const [check, setCheck] = useState({nickname : false, id : false, email : false, phone : false})
     const [warnings, setWarnings] = useState({name : false, nickname : false, id : false, password : false, passwordConfirm : false, phone : false, phoneConfirm : false, email : false});
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
 
     // 회원가입 제출 가능 여부 확인
     const submitSignUP =
@@ -111,24 +99,16 @@ const SignUp_User = () =>{
         if (submitSignUP) {
             axios.post(`${url}/signUpUser`, member)
                 .then(res => {
-                    Toast.fire({
-                        icon: 'success',
-                        title: '회원가입이 완료되었습니다 '
-                    }).then(() => {
+                    Toast('success', '회원가입이 완료되었습니다')
+                    .then(() => {
                         window.location.href = "/login?showLoginPage=USER";
                     });
                 })
                 .catch(err => {
-                    Toast.fire({
-                        icon: 'error',
-                        title: '가입이 불가능한 아이디입니다 다시 확인해 주세요'
-                    })
+                    Toast('error', '가입이 불가능한 아이디입니다 다시 확인해주세요')
                 })
         } else {
-            Toast.fire({
-                icon: 'error',
-                title: '인증 여부를 다시 확인해주세요'
-            })
+            Toast('error', '인증 여부를 다시 확인해주세요')
         }
     };
 
@@ -282,14 +262,9 @@ const SignUp_User = () =>{
         const random = Math.floor(Math.random() * 9000) + 1000;
         setRandomCode(random);
         console.log("Random code set:", random);
-        console.log(member.phone);
         // axios.get(`${url}/check/sendSMS?phone=${member.phone}&code=${random}`)
         // .then((res) => {
-        //     console.log(res.data);
-        //     toast.fire({
-        //         title: '인증번호가 발송되었습니다',
-        //         icon: 'success',
-        //     });
+        //      Toast('success', '인증번호가 발송되었습니다')
         // })
         // .catch((error) => {
         //     console.log(error);
@@ -299,24 +274,14 @@ const SignUp_User = () =>{
     // 인증번호 일치여부 -> 확인버튼
     const phoneCodeCheck = () => {
         if (member.phoneConfirm == randomCode) {
-            Toast.fire({
-                title: "휴대폰 번호 인증 성공!",
-                icon: "success",
-            }) 
+            Toast('success', '휴대폰 번호 인증 성공!')
             setCheck({...check, phone: true})
             
         } else {
-            Toast.fire({
-                title: "인증번호가 틀렸습니다",
-                text: "확인 후 다시 입력해주세요",
-                icon: "error",
-            })
+            Toast('error', '인증번호가 틀렸습니다\n확인 후 다시 입력해주세요')
             setCheck({...check, phone: false})
         }
     };
-
-    console.log(check)
-
 
     return (
         <div className='signUpUser-container'>

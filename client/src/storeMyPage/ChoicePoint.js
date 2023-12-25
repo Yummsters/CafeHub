@@ -8,6 +8,7 @@ import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
 import {tokenCreate, tokenExpried} from '../login/TokenCheck';
 import { url } from '../config.js'
+import { Toast } from "../components/Toast.js";
 
 // 포인트 및 리뷰권한 테이블 생성 후 로직 추가 필요
 const ChoicePoint = () => {
@@ -17,18 +18,6 @@ const ChoicePoint = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
 
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
     // 포인트 적립
     const pointSave = (e) =>{
         e.preventDefault();
@@ -41,10 +30,8 @@ const ChoicePoint = () => {
         .then(res=>{
             tokenCreate(dispatch, setCookie, res.headers)
             .then(()=>{
-                Toast.fire({
-                    icon: 'success',
-                    title: '보유 커피콩 : '+res.data
-                }).then(()=>{
+                Toast('success', '보유 커피콩 : '+res.data)
+                .then(()=>{
                     navigate("/keypad");
                 })
             })
@@ -54,10 +41,7 @@ const ChoicePoint = () => {
             if(err.response !== undefined){
                 tokenExpried(dispatch, removeCookie, err.response.data, navigate);
             }else{
-                Toast.fire({
-                    icon: 'error',
-                    title: err
-                })
+                Toast('error', 'err')
             }
         })
     }
@@ -79,10 +63,7 @@ const ChoicePoint = () => {
            tokenCreate(dispatch, setCookie, res.headers)
             .then(()=>{
                 if(point === 0){
-                    Toast.fire({
-                        icon: 'error',
-                        title: '사용가능한 포인트가 없습니다'
-                    })
+                    Toast('error', '사용가능한 포인트가 없습니다')
                 }else{
                     navigate("/usePoint/"+memNo);
                 }
@@ -93,10 +74,7 @@ const ChoicePoint = () => {
             if(err.response !== undefined){
                 tokenExpried(dispatch, removeCookie, err.response.data, navigate);
             }else{
-                Toast.fire({
-                    icon: 'error',
-                    title: '현재 포인트 사용이 불가능합니다 관리자에게 문의하세요'
-                })
+                Toast('error', '현재 포인트 사용이 불가능합니다 관리자에게 문의하세요')
             }
         })
     }
@@ -108,7 +86,7 @@ const ChoicePoint = () => {
     return(
         <div className="choicePoint-container">
             <div className="closeBtn">
-                <img onClick={backPoint} src='/img/Xb.png' style={{width : "50px"}} />
+                <img onClick={backPoint} src='/img/Xb.png' style={{width : "50px"}} alt=""/>
              </div>
             <div className="choicePoint-title">커피콩 적립/사용</div>
             <div className="choiceButton-container">
