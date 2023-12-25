@@ -334,7 +334,6 @@ return (
                     id="title"
                     required="required"
                     value={review.title}
-                    placeholder="{review.title}"
                 />
             </div>
 

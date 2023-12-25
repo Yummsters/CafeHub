@@ -209,7 +209,8 @@ const StoreInfo = () => {
                 icon: 'success',
                 confirmButtonText: '확인',
             }).then(() => {
-                // 추가적인 로직
+                // 리덕스 정보도 수정                
+                dispatch({ type: "cafe", payload: {cafeNo, ...cafe} });
             });
 
 
