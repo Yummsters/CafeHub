@@ -10,7 +10,7 @@ import { url } from '../config.js'
 const Main1 = () => {
 
     const [searchKeyword, setSearchKeyword] = useState('');
-    const [cafeAds, setCafeAds] = useState([]);
+    const [approvedAds, setApprovedAds] = useState([]);
     const [setting] = useState({
         slidesToShow: 1,
         slidesToScroll: 1,
@@ -27,7 +27,7 @@ const Main1 = () => {
     const handleSearch = () => {
         window.location.href = `/reviewList?search=${encodeURIComponent(searchKeyword)}`;
     };
-
+    
     useEffect(() => {
         const handleResize = () => { };
         window.addEventListener('resize', handleResize);
@@ -41,7 +41,7 @@ const Main1 = () => {
         axios.get(`${url}/cafeAd/approvedAds`)
             .then((response) => {
                 console.log(response);
-                setCafeAds(response.data);
+                setApprovedAds(response.data);
             })
             .catch(error => {
                 console.error('카페 광고 가져오기 오류:', error);
@@ -54,10 +54,9 @@ const Main1 = () => {
                 <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange} />
                 < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색" />
             </div>
-
-            {cafeAds.length > 0 ? (
+            {approvedAds.length > 0 ? (
                 <Slider {...setting}>
-                    {cafeAds.map((ad, index) => (
+                    {approvedAds.map((ad, index) => (
                         <div key={index} className='banner'>
                             <img className="bannerImg" src={`${url}/common/upload/${ad.fileNum}`} alt='' />
                             <div className="bannerbox">
