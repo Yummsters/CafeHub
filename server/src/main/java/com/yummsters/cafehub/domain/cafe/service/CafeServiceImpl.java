@@ -198,6 +198,9 @@ public class CafeServiceImpl implements CafeService {
 	    if (modifyCafeDto.getOperTime() != null) {
 	        cafe.setOperTime(modifyCafeDto.getOperTime());
 	    }
+	    if (modifyCafeDto.getCafeInfo() != null) {
+	        cafe.setCafeInfo(modifyCafeDto.getCafeInfo());
+	    }
 
 	    if (files != null && !files.isEmpty()) {
 	        String dir = "c:/soobin/upload/";
