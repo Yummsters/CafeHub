@@ -21,8 +21,14 @@ const Main2 = () => {
   const memNo = useSelector(state => state.persistedReducer.member?.memNo);
   const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
-  const reviewDetail = (reviewNo) => {
-    navigate('/reviewDetail/' + reviewNo);
+  const isLogin = useSelector(state => state.persistedReducer.isLogin);
+  
+  const handleGoReview = () => {
+    if(isLogin) {
+      navigate('/reviewWrite');
+    } else {
+      navigate('/login');
+    }
 }
 
   useEffect(() => {
@@ -76,7 +82,7 @@ const Main2 = () => {
         ) : (
           <div className='noReviewCafeRec'>
             <div>작성된 카페 리뷰가 없습니다.</div>
-            <button type='button' id='reviewbutton'>&gt;&gt;커피콩받기</button>
+            <button type='button' id='reviewbutton' onClick={handleGoReview}>&gt;&gt;리뷰 쓰러 가기</button>
           </div>
         )}
       </div>
