@@ -38,6 +38,7 @@ const Header = () => {
                 else if (memberType == "STORE") navigate('/storeInfo');
                 else if (memberType == "MANAGER") navigate('/managerAd');
             })
+        setShowMenu(false);
     }
 
     // 로그아웃
