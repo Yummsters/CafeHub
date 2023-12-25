@@ -88,7 +88,7 @@ public class CafeController {
     // 혜리 part---------------------------------------------------------------------------
     @GetMapping("/manager/managerConfirm")
     public ResponseEntity<Object> getUnpaidCafes(@RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "10") int size) {
+                                                        @RequestParam(defaultValue = "5") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<CafeDto> unpaidCafes = service.getUnpaidCafes(pageable);

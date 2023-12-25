@@ -99,13 +99,10 @@ public class CafeAdController {
     }
     
     //혜리 part-------------------------------------------------------
-    @GetMapping("/manager/approvedAds")
+    @GetMapping("/cafeAd/approvedAds")
     public ResponseEntity<List<CafeAdInterface>> getApprovedAds() {
         try {
         	List<CafeAdInterface> approvedAds = cafeAdService.getApprovedAds();
-        	for(CafeAdInterface ca : approvedAds) {
-        		System.out.println(ca.getIsApproved());
-        	}
             return new ResponseEntity<>(approvedAds, HttpStatus.OK);
         } catch (Exception e) {
         	e.printStackTrace();
@@ -116,7 +113,7 @@ public class CafeAdController {
     //managerAd 광고 신청 현황
     @GetMapping("/manager/unapprovedAds")
     public ResponseEntity<Object> getUnapprovedAds(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         try {
             Page<CafeAdInterface> unapprovedAds = cafeAdService.getUnapprovedAds(PageRequest.of(page, size));
             List<CafeAdInterface> responseList = unapprovedAds.getContent();
