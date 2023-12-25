@@ -44,12 +44,14 @@
     border: 0px;
     width:250px;
     font-size:20px;
+    outline: none;
 }
 
 .storeInfoInputDiv-other input{
     border: 0px;
     width: 210px;;
     font-size:20px;
+    outline: none;
 }
 
 .storeInfoAuthNum {
@@ -90,7 +92,11 @@
 .storeInfoInputDiv span{
     color: #F59A23;
 }
-
+.cafeInfo {
+    outline: none;
+    border: none;
+    width:450px;
+}
 .storeInfoInputDiv-other span{
     color: #F59A23;
 }
@@ -98,7 +104,7 @@
 /* 왼쪽 가게 미리보기 */
 .storeInfo{
     width: 487px;
-    height: 550px;
+    min-height: 550px;
     background-color: #f3f3f3cc;
     border-radius: 20px;
     margin:0px auto;
@@ -159,7 +165,7 @@
 }
 
 /* 태그 버튼 스타일*/
-.storeInfo-tag1{
+.storeInfo-tag{
     border: 2px solid #F59A23;
     border-radius: 10px;
     width: 150px;
@@ -167,17 +173,19 @@
     font-size: 18px;
     margin: 10px 10px 10px 0;
     background-color: #FFFFFF;
+    align-items: center;
 }
 
-.storeInfo-tag1:hover {
+/* .storeInfo-tag1:hover {
     border-radius: 10px;
     border: 2px solid #F59A23;
     background: #F59A23;
     color: #FFF;
-}
+} */
 
-.storeInfo-tag{
+.tags{
     margin-left: 20px;
+    
 }
 
 .selectTags,
@@ -190,7 +198,7 @@
     font-size: 18px;
     border-radius: 10px;
     border: 2px solid #F59A23;
-    margin: 10px 10px 10px 0;
+    margin-left: 20px;
     background: #F59A23;
     color: #FFF;
 }

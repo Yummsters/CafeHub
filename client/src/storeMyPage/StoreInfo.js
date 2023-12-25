@@ -22,7 +22,7 @@ const StoreInfo = () => {
     const [fileNum, setFileNum] = useState(0);
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
     const [valid, setValid] = useState({ businessNo: false });
-    const [cafe, setCafe] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "", tagName: "", thumbImg: "" });
+    const [cafe, setCafe] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "", tagName: "", thumbImg: "", cafeInfo: "" });
     const [check, setCheck] = useState({ businessNo: false });
     const [warnings, setWarnings] = useState({ businessNo: false });
     const [isBusinessNoChanged, setIsBusinessNoChanged] = useState(true);
@@ -79,7 +79,8 @@ const StoreInfo = () => {
                         businessNo: cafeData.businessNo,
                         operTime: cafeData.operTime,
                         thumbImg: cafeData.thumbImg,
-                        storeTag: cafeData.storeTag.storeTagNo
+                        storeTag: cafeData.storeTag.storeTagNo,
+                        cafeInfo: cafeData.cafeInfo
                     });
                     setSelectedTags([cafeData.storeTag.storeTagNo - 1]);
                 } else {
@@ -187,6 +188,7 @@ const StoreInfo = () => {
         formData.append('address', cafe.address);
         formData.append('operTime', cafe.operTime);
         formData.append('tagName', selectedTags);
+        formData.append('cafeInfo', cafe.cafeInfo);
 
         // 이미지 파일이 선택된 경우에만 추가
         if (selectedFile) {
@@ -434,6 +436,10 @@ const StoreInfo = () => {
                             <label>운영시간 <br />
                                 <input type="text" id="operTime" name="operTime" onChange={change} value={cafe.operTime} /></label>
                         </div> <br />
+                        <div className='storeInfoInputDiv'>
+                            <label>사장님 한마디 <br />
+                                <textarea className='cafeInfo' type="text" id="cafeInfo" name="cafeInfo" onChange={change} value={cafe.cafeInfo} /></label>
+                        </div> <br />
 
                         <input
                             type="file"
@@ -460,7 +466,8 @@ const StoreInfo = () => {
                                 onClick={() => document.getElementById("thumbImg").click()}
                             >
                                 썸네일 <br />선택
-                            </button> </div><br />
+                            </button> 
+                        </div><br />
 
                         {/* 사장님 선택 태그 */}
                         <div className='StoreInfo-tag'>
