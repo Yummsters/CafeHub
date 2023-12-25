@@ -70,10 +70,24 @@ const ReviewWrite = () => {
     const fetchCafeList = async () => {
         try {
 
-            const response = await axios.get(`${url}/reviewauth/${memNo}`);
+            const response = await axios.get(`${url}/user/reviewauth/${memNo}`,{
+                headers: {
+                    Authorization: token,
+                    Refresh: getCookie("refreshToken")
+                }
+            })
+            .then(response => {
+                tokenCreate(dispatch, setCookie, response.headers)
+                    .then(() => {
+
 
             setCafes(response.data);
+            })
+        })
         } catch (error) {
+            if (error.response !== undefined) {
+                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+            }
             console.error(error);
         }
     };
@@ -128,7 +142,7 @@ const ReviewWrite = () => {
         }
 
         axios
-            .post(`${url}/member/reviewwrite`, formData, {
+            .post(`${url}/user/reviewwrite`, formData, {
                 headers: {
                     Authorization: token,
                     Refresh: getCookie("refreshToken")
@@ -161,7 +175,7 @@ const ReviewWrite = () => {
 
     useEffect(() => {
 
-        axios.get(`${url}/reviewTagList`, {
+        axios.get(`${url}/user/reviewTagList`, {
             headers: {
                 Authorization: token,
                 Refresh: getCookie("refreshToken")
@@ -247,7 +261,10 @@ const ReviewWrite = () => {
                             const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
                             setSelectedReviewAuthNo(selectedReviewAuthNo);
                             setSelectedCafeNo(selectedCafeNo);
-                        }}>
+
+                        }}
+                        style={{ width: '200px' }}
+                        >
                         <option value='' disabled>
                             카페 선택
                         </option>
