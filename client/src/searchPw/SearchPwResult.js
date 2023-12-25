@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import searchId from '../searchId/searchIdStyle.css';
 import {useState} from 'react';
-import Swal from 'sweetalert2';
 import { url } from '../config.js'
 import { Toast } from '../components/Toast.js'
 
@@ -28,36 +27,23 @@ const SearchPwResult = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!data.password || !data.passwordCheck) {
-            Toast.fire({
-              title: "비밀번호를 입력해주세요",
-              icon: "error",
-            });
+          Toast('error', '비밀번호를 입력해주세요')
             return;
         }
         if (data.password !== data.passwordCheck) {
-            Toast.fire({
-                title: "비밀번호가 일치하지 않습니다",
-                icon: "error",
-              });
+          Toast('error', '비밀번호가 일치하지 않습니다')
             return;
         }
 
         axios.put(`${url}/resetPw/${id}`, { password: data.password })
         .then((res) => {
-            console.log(res);
-            Toast.fire({
-                title: "완료되었습니다\n로그인 페이지로 이동합니다",
-                icon: "success",
-            });
+            Toast('error', '완료되었습니다\n로그인 페이지로 이동합니다')
             setTimeout(() => {
                 navigate('/login');
             }, 1500);
         })
         .catch((error) => {
-            Toast.fire({
-              title: "실패했습니다\n다시 시도해주세요",
-              icon: "error",
-            });
+            Toast('error', '실패했습니다\n다시 시도해주세요')
         })
     }
 

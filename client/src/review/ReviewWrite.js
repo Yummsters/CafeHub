@@ -9,14 +9,12 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 import 'prismjs/themes/prism.css';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
-import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
-
 import { getCookie, setCookie, removeCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
-import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
+import { tokenCreate, tokenExpried } from "../login/TokenCheck.js";
 import { url } from '../config.js'
-
+import { Toast } from '../components/Toast.js'
 
 const ReviewWrite = () => {
     const [editorInstance, setEditorInstance] = useState(null);
@@ -35,8 +33,6 @@ const ReviewWrite = () => {
     const [selectedReviewAuthNo, setSelectedReviewAuthNo] = useState('');
     const [selectedCafeNo, setSelectedCafeNo] = useState('');
     const dispatch = useDispatch();
-    //  const {accessToken, refreshToken} = useParams();
-
 
     useEffect(() => {
         if (token) {
@@ -74,10 +70,24 @@ const ReviewWrite = () => {
     const fetchCafeList = async () => {
         try {
 
-            const response = await axios.get(`${url}/reviewauth/${memNo}`);
+            const response = await axios.get(`${url}/user/reviewauth/${memNo}`,{
+                headers: {
+                    Authorization: token,
+                    Refresh: getCookie("refreshToken")
+                }
+            })
+            .then(response => {
+                tokenCreate(dispatch, setCookie, response.headers)
+                    .then(() => {
+
 
             setCafes(response.data);
+            })
+        })
         } catch (error) {
+            if (error.response !== undefined) {
+                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+            }
             console.error(error);
         }
     };
@@ -92,48 +102,26 @@ const ReviewWrite = () => {
     const submit = (e) => {
         e.preventDefault();
         if (!selectedReviewAuthNo) {
-            Swal.fire({
-                title: '카페를 선택하세요',
-
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
-
+            Toast('error', '카페를 선택하세요')
             return;
         }
         if (selectedTags.length === 0) {
-            Swal.fire({
-                title: '태그를 선택하세요',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '태그를 선택하세요')
             return;
         }
         if (!review.title.trim()) {
-            Swal.fire({
-                title: '제목을 입력하세요',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '제목을 선택하세요')
             return;
         }
         if (!thumbnail) {
-            Swal.fire({
-                title: '썸네일을 등록하세요',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '썸네일을 등록하세요')
             return;
         }
 
         const content = editorRef.current.getInstance().getHTML();
 
         if (!content.trim() || content.trim() === '<p><br></p>') {
-            Swal.fire({
-                title: '내용을 입력하세요',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '내용을 입력하세요')
             return;
         }
 
@@ -154,7 +142,7 @@ const ReviewWrite = () => {
         }
 
         axios
-            .post(`${url}/member/reviewwrite`, formData, {
+            .post(`${url}/user/reviewwrite`, formData, {
                 headers: {
                     Authorization: token,
                     Refresh: getCookie("refreshToken")
@@ -168,12 +156,8 @@ const ReviewWrite = () => {
                         console.log(res);
                         let reviewNo = res.data;
 
-                        Swal.fire({
-                            title: '커피콩 1개 적립 성공!',
-                            text: '리뷰가 성공적으로 등록되었습니다',
-                            icon: 'success',
-                            confirmButtonText: '확인',
-                        }).then(() => {
+                        Toast('success', '리뷰 등록 성공!', '커피콩 1개 적립')
+                        .then(() => {
                             navigate(`/reviewList`);
                         });
                     })
@@ -183,12 +167,7 @@ const ReviewWrite = () => {
                 if (err.response !== undefined) {
                     tokenExpried(dispatch, removeCookie, err.response.data, navigate);
                 } else {
-                    Swal.fire({
-                        title: 'error',
-                        text: '리뷰를 등록하는 중에 오류가 발생했습니다',
-                        icon: 'error',
-                        confirmButtonText: '확인',
-                    })
+                    Toast('error', '리뷰 등록 중 오류가 발생했습니다')
                 }
 
             })
@@ -196,7 +175,7 @@ const ReviewWrite = () => {
 
     useEffect(() => {
 
-        axios.get(`${url}/reviewTagList`, {
+        axios.get(`${url}/user/reviewTagList`, {
             headers: {
                 Authorization: token,
                 Refresh: getCookie("refreshToken")
@@ -229,11 +208,7 @@ const ReviewWrite = () => {
         }
 
         if (updatedTags.length > 3) {
-            Swal.fire({
-                title: '3개까지 선택 가능합니다',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '3개까지 선택 가능합니다')
         } else {
             setSelectedTags(updatedTags);
         }
@@ -245,11 +220,7 @@ const ReviewWrite = () => {
         // 제목 글자수 제한
         if (name === 'title' && value.length > 15) {
             value = value.slice(0, 15); // 15자로 제한
-            Swal.fire({
-                title: '제목은 15자 이하로 입력해주세요',
-                icon: 'warning',
-                confirmButtonText: '확인',
-            });
+            Toast('warning', '제목은 15자 이하로 입력해주세요')
         }
 
         setReview({ ...review, [name]: value });
@@ -290,7 +261,10 @@ const ReviewWrite = () => {
                             const [selectedReviewAuthNo, selectedCafeNo] = e.target.value.split(',');
                             setSelectedReviewAuthNo(selectedReviewAuthNo);
                             setSelectedCafeNo(selectedCafeNo);
-                        }}>
+
+                        }}
+                        style={{ width: '200px' }}
+                        >
                         <option value='' disabled>
                             카페 선택
                         </option>

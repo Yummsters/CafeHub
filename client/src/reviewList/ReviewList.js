@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { url } from '../config.js'
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { normalCheck, tokenCreate, tokenExpried,checkLogin } from '../login/TokenCheck';
-import Swal from "sweetalert2";
+import { Toast } from '../components/Toast.js';
 const ReviewList = () => {
     const isLogin = useSelector(state => state.persistedReducer.isLogin);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
@@ -23,18 +23,6 @@ const ReviewList = () => {
     const [inputKeyword, setInputKeyword] = useState(''); //input에 입력될 내용, 키워드
     const [pickBadgeName, setPickBadge] = useState([]);
     const navigate = useNavigate();
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
 
     const handleSearchChange = (e) => {
         setInputKeyword(e.target.value);
@@ -67,14 +55,6 @@ const ReviewList = () => {
 
     useEffect(() => {
         if (!pageInfo) return false;
-        // let url = '';
-        // if (searchKeyword) {
-        //     //검색어가 있는 경우에만 검색 API 호출
-        //     url = `${url}/searchList/${searchKeyword}`;
-        // } else {
-        //     //검색어가 없는 경우 기존 리뷰 목록 API 호출
-        //     url = `${url}/reviewList`;
-        // }
         axios
             .get(`${url}/reviewList`, {
                 params: {
@@ -85,11 +65,11 @@ const ReviewList = () => {
             })
             .then((response) => {
                 setReviews(response.data.content);
+                console.log(response.data.content);
                 let totalPages = response.data.totalPages;
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
                 let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
                 setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
-
                 response.data.content.forEach((review) => {
                     axios.get(`${url}/getMemberBadge/${review.memNo}`)
                         .then(badgeResponse => {
@@ -131,9 +111,7 @@ const ReviewList = () => {
             .then(() => {
                 navigate("/reviewWrite");
             })
-        
     };
-    
       
     return (
         <div className='reviewWrapper'>
@@ -153,7 +131,7 @@ const ReviewList = () => {
                                 {reviews.map((review) => (
                                     <tr key={review.reviewNo}>
                                         <th scope='row' style={{ width: "100px" }}>
-                                            <img className='listImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='' />
+                                            <img className='listImg' src={`${url}/thumbImg/${review.thumbImg}`} alt='' />
                                         </th>
                                         <td colSpan={10}>
                                             <Link to={`/reviewDetail/${review.reviewNo}`}

@@ -1,10 +1,10 @@
 import {useState, useEffect} from 'react';
 import { useParams, useNavigate } from 'react-router';
 import {useDispatch} from 'react-redux';
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import { getCookie, setCookie } from '../components/Cookie';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 
 const OAuth2 = () => {
     const dispatch = useDispatch();
@@ -16,19 +16,6 @@ const OAuth2 = () => {
     dispatch({type:"accessToken", payload:accessToken});
     dispatch({type:"isLogin", payload:true});
 
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
-
     useEffect(()=> {
         axios.get(`${url}/member`,{
             headers : {
@@ -39,10 +26,8 @@ const OAuth2 = () => {
         .then(res=>{
             setMember(res.data);
             dispatch({type:"member", payload:res.data});
-            Toast.fire({
-                icon: 'success',
-                title: '로그인이 완료되었습니다.'
-            }).then(() => {
+            Toast('success', '로그인이 완료되었습니다')
+            .then(() => {
                 window.location.href="/";
             }); 
         })
@@ -50,21 +35,14 @@ const OAuth2 = () => {
             const errStatus = err.response.data.status;
             // 로그인 에러
             if(errStatus === 401){
-                Toast.fire({
-                icon: 'error',
-                title: '회원이 아닙니다. 회원가입 후 이용해 주세요'
-                })
-                navigate('/signUpUser');
+                Toast('error', '회원이 아닙니다. 회원가입 후 이용해 주세요')
+                .then(() => {
+                    navigate('/signUpUser');
+                });
             } else if(errStatus === 880){
-                Toast.fire({
-                    icon: 'error',
-                    title: '탈퇴한 회원입니다'
-                })
+                Toast('error', '탈퇴한 회원입니다')
             }else{
-                Toast.fire({
-                    icon: 'error',
-                    title: '로그인이 불가능합니다 관리자에게 문의해 주세요'
-                })
+                Toast('error', '로그인이 불가능합니다 관리자에게 문의해 주세요')
             }
         })
     }, [])

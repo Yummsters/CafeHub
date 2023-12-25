@@ -11,15 +11,14 @@ import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
 import axios from 'axios';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { url } from '../config.js'
+import { Toast, ToastBtn } from '../components/Toast.js';
 
 const User5 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const isLogin = useSelector(state => state.persistedReducer.isLogin);
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
     const [replyList, setReplyList] = useState([]);
     const [pageInfo, setPageInfo] = useState({ page: 1, size: 5, totalElements: 1, totalPages: 1 });
     const [page, setPage] = useState(1);
@@ -28,18 +27,6 @@ const User5 = () => {
     let firstNum = curPage - (curPage % 5) + 1;
     let lastNum = curPage - (curPage % 5) + 5;
     let total = Math.min(4, (pageInfo.totalPages === 0 ? 1 : pageInfo.totalPages) - firstNum);
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 800,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
 
     useEffect(() => {
         getPage(page);
@@ -89,17 +76,8 @@ const User5 = () => {
 
     const replyDeleteCheck = (e, replyNo) => {
         e.stopPropagation();
-
-        Swal.fire({
-            title: "댓글 삭제",
-            text: "댓글을 삭제하시겠습니까?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "삭제",
-            cancelButtonText: "취소",
-        }).then((res) => {
+        ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
+        .then((res) => {
             if (res.isConfirmed) {
                 replyDelete(replyNo);
             }
@@ -119,13 +97,10 @@ const User5 = () => {
                 console.log(res);
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
-                        Toast.fire({
-                            title: "댓글 삭제 완료",
-                            icon: "success",
+                        Toast('success', '댓글 삭제 완료')
+                        .then(() => {
+                            window.location.reload();
                         })
-                            .then(() => {
-                                window.location.reload();
-                            })
                     })
             })
             .catch(err => {

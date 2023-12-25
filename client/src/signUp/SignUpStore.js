@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import signUpStoreStyle from './signUpStoreStyle.css';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckoutPage } from '../payment/CheckoutPage';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js';
 const { daum } = window;
 
 const SignUpStore = () => {
@@ -41,10 +41,7 @@ const SignUpStore = () => {
                 axios.put(`${url}/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
                 .then((res) => {
                     console.log(res.data)
-                    toast.fire({
-                        title: '가입 및 가게등록이 완료되었습니다',
-                        icon: 'success',
-                    })
+                    Toast('success', '가입 및 가게등록이 완료되었습니다')
                     dispatch({ type:"payment", payload:"" })
                     setTimeout(() => {
                         window.location.href="/login";
@@ -62,11 +59,7 @@ const SignUpStore = () => {
         .then((res) => {
             console.log(res.data);
             dispatch({type:"payment", payload:''});
-            toast.fire({
-                title: '회원가입에 실패했습니다',
-                text: '사유: 결제 오류',
-                icon: 'error',
-            })
+            Toast('error', '회원가입에 실패했습니다\n사유: 결제 오류')
         })
     }
 
@@ -192,38 +185,20 @@ const SignUpStore = () => {
         }).open();
     }
 
-    // swal
-    const toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 1500
-    })
-
     const businessNo = () => { // 사업자번호 확인
        
         axios.post(`${url}/business/${store.businessNo}`)
             .then((res) => {
                 console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
-                  
-                    toast.fire({
-                        title: '사업자 인증 실패!',
-                        text: '다시 입력해주세요',
-                        icon: 'error',
-                    })
+                    Toast('error', '등록되지 않은 사업자등록번호입니다')
                     setCheck((prevWarnings) => ({
                         ...prevWarnings,
                         businsssNo: false
                     }));
 
                 } else {
-                    toast.fire({
-                        title: '사업자 인증 성공!',
-                        text: '성공적으로 등록되었습니다',
-                        icon: 'success',
-                    })
-            
+                    Toast('success', '사업자 인증 성공\n성공적으로 등록되었습니다')
                     setCheck((prevWarnings) => ({
                         ...prevWarnings,
                         businsssNo: true
@@ -241,14 +216,9 @@ const SignUpStore = () => {
         const random = Math.floor(Math.random() * 9000) + 1000;
         setRandomCode(random);
         console.log("Random code set:", random);
-        console.log(member.phone);
         // axios.get(`${url}/check/sendSMS?phone=${member.phone}&code=${random}`)
         // .then((res) => {
-        //     console.log(res.data);
-        //     toast.fire({
-        //         title: '인증번호가 발송되었습니다',
-        //         icon: 'success',
-        //     });
+        //      Toast('success', '인증번호가 발송되었습니다')
         // })
         // .catch((error) => {
         //     console.log(error);
@@ -258,20 +228,13 @@ const SignUpStore = () => {
     // 인증번호 일치여부 -> 확인버튼
     const phoneCodeCheck = () => {
         if (member.authNum == randomCode) {
-            toast.fire({
-                title: "휴대폰 번호 인증 성공!",
-                icon: "success",
-            }) 
+            Toast('success', '휴대폰 번호 인증 성공!')
             setCheck((prevWarnings) => ({
                 ...prevWarnings,
                 authNum: true
             }));
         } else {
-            toast.fire({
-                title: "인증번호가 틀렸습니다",
-                text: "확인 후 다시 입력해주세요",
-                icon: "error",
-            })
+            Toast('error', '인증번호가 틀렸습니다\n확인 후 다시 입력해주세요')
             setCheck((prevWarnings) => ({
                 ...prevWarnings,
                 authNum: false
@@ -322,10 +285,8 @@ const SignUpStore = () => {
        
     // 제출 버튼 클릭
     const handleClick = (e) => {
-       
         e.preventDefault();
-      
-       
+
         // 빈값에 대한 warning 체크
         setWarnings((prevWarnings) => ({
             ...prevWarnings,
@@ -343,7 +304,6 @@ const SignUpStore = () => {
             address: store.address.trim() === '',
             operTime: store.operTime.trim() === '',
             authNum: member.authNum.trim() === '',
-           
         }));
 
         if (!check.id) {
@@ -426,10 +386,7 @@ const SignUpStore = () => {
                 if (selectedFile) {
                     formData.append('file', selectedFile);
                 }else{
-                    toast.fire({
-                        title: '썸네일을 선택하세요',
-                        icon: 'error',
-                    });
+                    Toast('error', '썸네일을 선택하세요')
                 }
 
                 // 카페 생성
@@ -448,10 +405,7 @@ const SignUpStore = () => {
                             })
                             .catch((error) => {
                                 console.log(error);
-                                toast.fire({
-                                    icon: 'error',
-                                    title: '입력한 정보를 확인해주세요',
-                                });
+                                Toast('error', '입력한 정보를 확인해주세요')
                             });
                     })
                     .catch((error) => {
@@ -462,10 +416,7 @@ const SignUpStore = () => {
                 console.log(error);
             } 
         } else {
-            toast.fire({
-                icon: 'error',
-                title: '인증 여부를 다시 확인해주세요',
-            });
+            Toast('error', '인증 여부를 다시 확인해주세요')
         }
     };
     // 아이디 중복 체크
@@ -551,16 +502,11 @@ const SignUpStore = () => {
         }
 
         if (updatedTags.length > 1) {
-            Swal.fire({
-                title: '1개까지 선택 가능합니다',
-                icon: 'error',
-                confirmButtonText: '확인',
-            });
+            Toast('error', '1개까지 선택 가능합니다')
         } else {
             setSelectedTags(updatedTags);
         }
     };
-
 
     return (
         <div className='signUpStore-container'>

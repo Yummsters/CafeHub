@@ -15,8 +15,7 @@ const SideTab = () => {
             <NavLink
                 key={index}
                 to={tab.link}
-                className={({isActive}) => (isActive ? 'selectTab':'tab')}
-            >
+                className={({isActive}) => (isActive ? 'selectTab':'tab')}>
                 {tab.label}
             </NavLink>
             ))}

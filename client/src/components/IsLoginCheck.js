@@ -1,5 +1,3 @@
-
-
 export const IsLoginCheck = () => {
     const loginDataString = localStorage.getItem("persist:root");
     const loginData = JSON.parse(loginDataString);  

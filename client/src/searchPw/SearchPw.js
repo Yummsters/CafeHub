@@ -29,10 +29,7 @@ const SearchPw = () => {
   const sendPhoneCode = (e) => {
     e.preventDefault();
     if (!data.id || !data.phone) {
-      Toast.fire({
-        title: "회원 정보를 입력해주세요",
-        icon: "error",
-      });
+      Toast('error', '회원 정보를 입력해주세요')
       return;
     }
     axios.post(`${url}/searchPw`, { id: data.id, phone: data.phone })
@@ -43,40 +40,25 @@ const SearchPw = () => {
           console.log(random); // 실제 사용 시 제거
           // axios.get(`${url}/check/sendSMS?phone=${data.phone}&code=${random}`)
           // .then((res) => {
-              Toast.fire({
-                  title: '인증번호가 발송되었습니다',
-                  icon: 'success',
-              });
+            Toast('success', '인증번호가 발송되었습니다')
               setPhoneAuth(true);
           // })
         } else {
-          Toast.fire({
-            title: "일치하는 회원 정보가 없습니다",
-            icon: "error",
-          });
+          Toast('error', '일치하는 회원 정보가 없습니다')
         }
     })
     .catch((error) => {
-      Toast.fire({
-        title: error.response.data,
-        icon: "error",
-      });
+      Toast('error', error.response.data)
     });
   };
 
   // 인증번호 일치여부
   const phoneCodeCheck = () => {
     if (data.authNum == randomCode) {
-      Toast.fire({
-        title: "휴대폰 번호 인증 완료되었습니다",
-        icon: "success",
-      });
+      Toast('success', '휴대폰 번호 인증 완료되었습니다')
       setPhoneCheck(true);
     } else {
-      Toast.fire({
-        title: "인증번호가 일치하지 않습니다",
-        icon: "error",
-      });
+      Toast('error', '인증번호가 일치하지 않습니다')
     }
   };
 
@@ -84,24 +66,17 @@ const SearchPw = () => {
     e.preventDefault();
 
     if (!phoneAuth || (!phoneAuth && !phoneCheck)) {
-      Toast.fire({
-        title: "휴대폰 인증이 필요합니다",
-        icon: "error",
-      });
+      Toast('error', '휴대폰 인증이 필요합니다')
       return;
     }
   
     if (phoneAuth && !phoneCheck) {
-      Toast.fire({
-        title: "인증번호를 확인해주세요",
-        icon: "error",
-      });
+      Toast('error', '인증번호를 확인해주세요')
       return;
     }
-    Toast.fire({
-      title: "인증 되었습니다\n비밀번호 재설정 페이지로 이동합니다",
-      icon: "success",
-    });
+    
+    Toast('success', '인증 되었습니다\n비밀번호 재설정 페이지로 이동합니다')
+
     setTimeout(() => {
       navigate("/searchPwResult", { state: { result: data.id } });
     }, 1500);

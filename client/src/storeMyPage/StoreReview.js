@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Pagination, Button, ButtonGroup, PaginationLink } from "reactstrap";
+import { Table, Pagination, PaginationLink } from "reactstrap";
 import { useSelector } from 'react-redux';
 import './storeReviewStyle.css';
 import axios from 'axios';
@@ -27,7 +27,6 @@ const StoreReview = () => {
     let lastNum = curPage - (curPage % 5) + 5;
     let total = Math.min(4, (pageInfo.totalPages === 0 ? 1 : pageInfo.totalPages) - firstNum);
 
-
     useEffect(() => {
         getPage(page);
     }, [])
@@ -48,7 +47,6 @@ const StoreReview = () => {
                     .then(() => {
                         const list = res.data.data;
                         const resPageInfo = res.data.pageInfo;
-
                         setReviewList([...list]);
                         setPageInfo({
                             page: resPageInfo.page,
@@ -57,7 +55,6 @@ const StoreReview = () => {
                             totalPages: resPageInfo.totalPages
                         });
                     })
-
             })
             .catch(err => {
                 console.log(err);

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import "./SideTabStyle.css"
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const UserSideTab = () => {
     const tabs = [
@@ -18,8 +18,7 @@ const UserSideTab = () => {
             <NavLink
                 key={index}
                 to={tab.link}
-                className={({isActive}) => (isActive ? 'selectTab':'tab')}
-            >
+                className={({isActive}) => (isActive ? 'selectTab':'tab')} >
                 {tab.label}
             </NavLink>
         ))}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./reviewDetailStyle.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useLocation, useParams } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
@@ -10,7 +9,7 @@ import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { url } from '../config.js'
 import { normalCheck, tokenCreate, tokenExpried } from "../login/TokenCheck.js";
 import { getCookie, removeCookie, setCookie } from "../components/Cookie";
-import { Toast } from '../components/Toast.js'
+import { Toast, ToastBtn } from '../components/Toast.js'
 
 const { kakao } = window;
 
@@ -31,11 +30,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
   const isLogin = useSelector(state => state.persistedReducer.isLogin);
 
-
   const location = useLocation();
-  const listReviewNo = location.state?.reviewNo
+  const listReviewNo = location.state?.reviewNo;
   const reviewNo = wishReviewNo || listReviewNo;
-
 
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
@@ -45,29 +42,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     totalPages: 1
   })
 
-  const showSwal = (title) => {
-    Swal.mixin({
-      toast: true,
-      position: 'top',
-      showConfirmButton: false,
-      timer: 1500
-    }).fire({
-      icon: 'warning',
-      title: title || '로그인이 필요합니다'
-    })
-  };
-
   const navigate = useNavigate();
   const ReviewModify = (e) => {
     e.preventDefault();
-    if(review.modPossible){
+    if (review.modPossible) {
       navigate(`/reviewmodify/${review.reviewNo}`);
     }else{
-      Swal.fire({
-        text: '리뷰 수정이 불가합니다',
-        icon: 'error',
-        confirmButtonText: '확인'
-      });
+      Toast('error', '리뷰 수정이 불가합니다');
     }
   }
   const ReviewDelete = async (reviewNo) => {
@@ -78,13 +59,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           Refresh: getCookie("refreshToken"),
         },
       });
-  
+
       tokenCreate(dispatch, setCookie, response.headers).then(() => {
-        Swal.fire({
-          text: '리뷰가 삭제되었습니다',
-          icon: 'success',
-          confirmButtonText: '확인',
-        });
+        Toast('success', '리뷰가 삭제되었습니다');
         navigate("/reviewList"); // 페이지 이동
       });
     } catch (error) {
@@ -94,20 +71,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       }
     }
   };
-  
+
 
 
   const handleReviewDelete = () => {
-    Swal.fire({
-      title: "리뷰 삭제",
-      text: "리뷰를 삭제하시겠습니까?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "삭제",
-      cancelButtonText: "취소",
-    }).then((result) => {
+    ToastBtn('error', '리뷰 삭제', "리뷰를 삭제하시겠습니까?")
+    .then((result) => {
       if (result.isConfirmed) {
         ReviewDelete(reviewNo);
       }
@@ -126,32 +95,35 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const handleReplySubmit = (e) => {
     e.preventDefault();
     if(memNo === undefined) {
-      showSwal();
+      Toast('error', '로그인이 필요합니다');
     };
-    if(replyContent.length > 0) {
-    axios
-      .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
-        content: replyContent,
-      })
-      .then((res) => {
-        console.log("댓글이 성공적으로 등록되었습니다");
-        setReplyContent("");
-        fetchReplies();
-      })
-      .catch((error) => {
-        console.error("댓글 등록 에러", error);
+    if (replyContent.length > 0) {
+      axios
+        .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
+          content: replyContent,
+        })
+        .then((res) => {
+          console.log("댓글이 성공적으로 등록되었습니다");
+          setReplyContent("");
+          fetchReplies();
+        })
+        .catch((error) => {
+          console.error("댓글 등록 에러", error);
 
-        if (error.response) {
-          console.error("응답 데이터:", error.response.data);
-          console.error("응답 상태 코드:", error.response.status);
-          console.error("응답 헤더:", error.response.headers);
-        } else if (error.request) {
-          console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
-        } else {
-          console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
-        }
-      });
-  }}
+          if (error.response) {
+            console.error("응답 데이터:", error.response.data);
+            console.error("응답 상태 코드:", error.response.status);
+            console.error("응답 헤더:", error.response.headers);
+          } else if (error.request) {
+            console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
+          } else {
+            console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
+          }
+        });
+    }
+  }
+
+  console.log(pickBadgeName + "배지네임");
 
   const fetchReplies = () => {
     axios
@@ -164,7 +136,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .then((res) => {
         setReplies(res.data.content);
-        let totalPages = res.data.totalPages;;
+        console.log(res.data.content);
+        let totalPages = res.data.totalPages;
         let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.repliesPerPage) + 1;
         let endPage = Math.min(startPage + pageInfo.repliesPerPage - 1, totalPages);
         console.log(totalPages)
@@ -182,13 +155,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("Error while sending the request:", error.message);
         }
       });
-      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+    axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
       .then((res) => {
-          const badgeName = res.data.badgeName || ''; 
-          setPickBadge([badgeName]);
+        const badgeName = res.data.badgeName || '';
+        setPickBadge([badgeName]);
       })
       .catch(error => {
-          console.error('에러 발생:', error);
+        console.error('에러 발생:', error);
       });
   };
 
@@ -204,11 +177,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReReplySubmit = (parentReplyNo) => {
     if (selectedReply && reReplyContent) {
-      axios.get(`${url}/member/${memNo}`,{
-          headers : {
-            Authorization : accessToken,
-            Refresh : getCookie('refreshToken')
-          }
+      axios.get(`${url}/member/${memNo}`, {
+        headers: {
+          Authorization: accessToken,
+          Refresh: getCookie('refreshToken')
+        }
       })
         .then((response) => {
           const member = response.data;
@@ -248,36 +221,16 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     try {
       await axios.delete(`${url}/replyDelete/${replyNo}`);
       console.log("댓글 삭제 성공");
-      Swal.fire({
-        text: '댓글이 삭제되었습니다',
-        icon: 'success',
-        confirmButtonText: '확인',
-      });
-
+      Toast('success', '댓글이 삭제되었습니다');
     } catch (error) {
       console.log("댓글 삭제 에러");
-      Swal.fire({
-        title: 'error',
-        text: '댓글을 삭제하는 중에 오류가 발생했습니다',
-        icon: 'error',
-        confirmButtonText: '확인',
-      });
+      Toast('error', '댓글을 삭제하는 중에 오류가 발생했습니다');
     }
   };
 
   const handleReplyDelete = (replyNo, hasChildReplies) => {
-    Swal.fire({
-      title: '댓글 삭제',
-      text: '댓글을 삭제하시겠습니까?',
-      icon: 'warning',
-
-      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
-      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-
-    }).then(result => {
+    ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
+    .then(result => {
       if (result.isConfirmed) {
         if (hasChildReplies) {
           handleChildReplies(replyNo);
@@ -290,8 +243,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleChildReplies = (replyNo) => {
     const updateReplies = replies.map(reply => {
-      if(reply.replyNo === replyNo) {
-        return {...reply, content: "삭제된 댓글입니다"};
+      if (reply.replyNo === replyNo) {
+        return { ...reply, content: "삭제된 댓글입니다" };
       }
       return reply;
     });
@@ -299,24 +252,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const deleteSwal = () => {
-    Swal.fire({
-      title: '정말로 댓글을 삭제하시겠습니까?',
-      text: '댓글이 삭제되면 복구할 수 없습니다..',
-      icon: 'warning',
-
-      showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-      confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-      cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-      confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
-      cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-
-      reverseButtons: true, // 버튼 순서 거꾸로
-
-    }).then(result => {
+    ToastBtn('warning', '정말로 댓글을 삭제하시겠습니까?', '댓글이 삭제되면 복구할 수 없습니다')
+    .then(result => {
       // 만약 Promise리턴을 받으면,
       if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-
-        Swal.fire('댓글이 삭제되었습니다.', 'success');
+        Toast('success', '댓글이 삭제되었습니다');
       }
     });
   }
@@ -324,27 +264,27 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const toggleLike = () => {
     if (memNo !== undefined) {
       axios.post(`${url}/member/like/${memNo}/${reviewNo}`, null,
-      {
-          headers : {
-               Authorization :accessToken,
-               Refresh : getCookie("refreshToken")
+        {
+          headers: {
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken")
           }
-      })
-      .then((res) => {
-        tokenCreate(dispatch, setCookie, res.headers)
-        .then(()=>{
-            setLike(res.data.toggleLike);
-            setLikeCount(res.data.likeCount);
         })
-      })
-      .catch((error) => {
-        console.error("toggleLike 에러:" + error);
-        if(error.response !== undefined){
-          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-        }
-      });
+        .then((res) => {
+          tokenCreate(dispatch, setCookie, res.headers)
+            .then(() => {
+              setLike(res.data.toggleLike);
+              setLikeCount(res.data.likeCount);
+            })
+        })
+        .catch((error) => {
+          console.error("toggleLike 에러:" + error);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+          }
+        });
     } else {
-      showSwal()
+      Toast('error', '로그인이 필요합니다');
     }
   };
 
@@ -363,7 +303,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("에러:" + error);
         });
     } else {
-      showSwal()
+      Toast('error', '로그인이 필요합니다');
       console.error('memNo 또는 replyNo가 유효하지 않습니다.');
     }
   }
@@ -371,26 +311,26 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const toggleWish = () => {
     if (memNo !== undefined) {
       axios.post(`${url}/member/wish/${memNo}/${reviewNo}`, null,
-      {
-          headers : {
-               Authorization :accessToken,
-               Refresh : getCookie("refreshToken")
+        {
+          headers: {
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken")
           }
-      })
-      .then((res) => {
-        tokenCreate(dispatch, setCookie, res.headers)
-        .then(()=>{
-          setWish(res.data);
         })
-      })
-      .catch((error) => {
-        console.error("toggleWish 에러:" + error);
-        if(error.response !== undefined){
-          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-        }
-      });
+        .then((res) => {
+          tokenCreate(dispatch, setCookie, res.headers)
+            .then(() => {
+              setWish(res.data);
+            })
+        })
+        .catch((error) => {
+          console.error("toggleWish 에러:" + error);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+          }
+        });
     } else {
-      showSwal()
+      Toast('error', '로그인이 필요합니다');
     }
   }
 
@@ -404,22 +344,32 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .then((res) => {
         setBestReply(res.data);
+        console.log(res.data.writerNo + "배댓");
+        axios.get(`${url}/getMemberBadge/${res.data.writerNo}`)
+        .then((res) => {
+            const badgeName = res.data.badgeName || ''; 
+            setPickBadge([badgeName]);
+        })
+        .catch(error => {
+            console.error('에러 발생:', error);
+        });
       })
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
       });
-      axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+
+    axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
       .then((res) => {
-          const badgeName = res.data.badgeName || ''; 
-          setPickBadge([badgeName]);
+        const badgeName = res.data.badgeName || '';
+        setPickBadge([badgeName]);
       })
       .catch(error => {
-          console.error('에러 발생:', error);
+        console.error('에러 발생:', error);
       });
   }
 
   useEffect(() => { // 디테일 가져오기
-    if(isLogin) {
+    if (isLogin) {
       normalCheck(dispatch, accessToken);
     }
     let getDetailURL = `${url}/review/${reviewNo}`;
@@ -431,13 +381,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
         axios.get(`${url}/getMemberBadge/${res.data.review.memNo}`)
-        .then(response => {
+          .then(response => {
             const badgeName = response.data.badgeName || '';
             setPickBadge([badgeName]);
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             console.error('에러 발생:', error);
-        });
+          });
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -462,12 +412,21 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   }, [review]);
 
+  const toDetail = (reviewNo) => {
+    console.log(reviewNo);
+    navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});
+  }
+
   return (
     <div className={!modalDetail ? "reviewDetail-bgBox" : "modalBox"}>
       {review && (
         <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
-            <p className="detailTitle">{review.title}</p>
+            {modalDetail ? 
+              <p className="detailTitle" onClick={() => toDetail(review.reviewNo)} style={{cursor:"pointer"}}>{review.title}</p>
+              : 
+              <p className="detailTitle">{review.title}</p>
+            }
             <div className="detailInfo">
               <div className="infoL">
                 <p>
@@ -475,7 +434,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   {review.cafeName}
                 </p>
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
-                </div>
+              </div>
               <div className="infoR">
                 <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
@@ -509,59 +468,59 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             {replies.length === 0 ? (
               <div></div>
             ) : (
-             bestReply && (
-              <div key={bestReply.replyNo} className="replyInfo">
-                <div className="infoT">
-                  <p>
-                    <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
-                  </p>
-                  <p>
-                    <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                    <span className="underline" onClick={() => showReplyClick(bestReply)}>
-                      답글
-                    </span>
-                    &nbsp;&nbsp;
-                    <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
-                    <span>{bestReply.likeCount}</span>
-                  </p>
-                </div>
-                <div className="infoB">
-                  <p>
-                    <img src="/img/best.png" alt="best" />
-                    {bestReply.content}
-                  </p>
-                  <p>{bestReply.regDate}</p>
-                </div>
-                <div className="detailLine" />
+              bestReply && (
+                <div key={bestReply.replyNo} className="replyInfo">
+                  <div className="infoT">
+                    <p>
+                      <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
+                    </p>
+                    <p>
+                      <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
+                      <span className="underline" onClick={() => showReplyClick(bestReply)}>
+                        답글
+                      </span>
+                      &nbsp;&nbsp;
+                      <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
+                      <span>{bestReply.likeCount}</span>
+                    </p>
+                  </div>
+                  <div className="infoB">
+                    <p>
+                      <img src="/img/best.png" alt="best" />
+                      {bestReply.content}
+                    </p>
+                    <p>{bestReply.regDate}</p>
+                  </div>
+                  <div className="detailLine" />
 
-                {/* 베스트 댓글에 대한 답글 창 */}
-                {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
-                  <>
-                    <div className="reply comment">
-                      <img src="/img/reply.png" alt="reReply" />
-                      <input type="text" name="reply" onChange={handleReReplyChange} />
-                      <div className="Gbtn" onClick={() => handleReReplySubmit(bestReply.replyNo)}>
-                        등록
+                  {/* 베스트 댓글에 대한 답글 창 */}
+                  {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
+                    <>
+                      <div className="reply comment">
+                        <img src="/img/reply.png" alt="reReply" />
+                        <input type="text" name="reply" onChange={handleReReplyChange} />
+                        <div className="Gbtn" onClick={() => handleReReplySubmit(bestReply.replyNo)}>
+                          등록
+                        </div>
                       </div>
-                    </div>
-                    <div className="detailLine" />
+                      <div className="detailLine" />
 
-                    {/* 베스트 댓글에 대한 답글 목록 */}
-                    {selectedReply.replies && selectedReply.replies.length > 0 && (
-                      <div className="reReplyInfo">
-                        {selectedReply.replies.map((reReply) => (
-                          <div key={reReply.replyNo} className="infoB comment">
-                            <p>{reReply.content}</p>
-                            <p>{reReply.regDate}</p>
-                          </div>
-                        ))}
-                        <div className="detailLine" />
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-             )
+                      {/* 베스트 댓글에 대한 답글 목록 */}
+                      {selectedReply.replies && selectedReply.replies.length > 0 && (
+                        <div className="reReplyInfo">
+                          {selectedReply.replies.map((reReply) => (
+                            <div key={reReply.replyNo} className="infoB comment">
+                              <p>{reReply.content}</p>
+                              <p>{reReply.regDate}</p>
+                            </div>
+                          ))}
+                          <div className="detailLine" />
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )
             )}
 
             {/* 댓글 목록 출력 */}
@@ -571,60 +530,70 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             ) : (
               replies.map((reply) => (
                 <div key={reply.replyNo} className="replyInfo">
-                  <div className="infoT">
-                  <p>
-                    {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                    <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
-                  </p>
-                  <p>
-                    <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
-                    {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
-                    &nbsp;&nbsp;
-                    <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
-                    <span>{reply.likeCount}</span>
-                  </p>
-                </div>
-                <div className="infoB" style={reply.depth === 1 ? {marginLeft: 35} : {}}>
-                  <p>
-                    {reply.content}
-                  </p>
-                  <p>{reply.regDate.split('.')[0]}</p>
-                </div>
-                <div className="detailLine" />
-
-                {/* 대댓글 */}
-                {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
-                  <>
-                    <div className="reply comment">
-                      <img src="/img/reply.png" alt="reReply" />
-                      <input type="text" name="reply" onChange={handleReReplyChange} />
-                      <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
-                        등록
+                  {reply.content != "삭제된 댓글입니다." ? (
+                    <>
+                      <div className="infoT">
+                        <p>
+                          {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
+                          <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
+                        </p>
+                        <p>
+                          <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
+                          {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
+                          &nbsp;&nbsp;
+                          <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
+                          <span>{reply.likeCount}</span>
+                        </p>
                       </div>
+                      <div className="infoB" style={reply.depth === 1 ? { marginLeft: 35 } : {}}>
+                        <p>
+                          {reply.content}
+                        </p>
+                        <p>{reply.regDate.split('.')[0]}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="infoB" style={reply.depth === 1 ? { marginLeft: 35 } : {}}>
+                      <p>
+                        {reply.content}
+                      </p>
                     </div>
-                    <div className="detailLine" />
-                  </>
-                )}
+                  )}
+                  <div className="detailLine" />
+
+                  {/* 대댓글 */}
+                  {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
+                    <>
+                      <div className="reply comment">
+                        <img src="/img/reply.png" alt="reReply" />
+                        <input type="text" name="reply" onChange={handleReReplyChange} />
+                        <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
+                          등록
+                        </div>
+                      </div>
+                      <div className="detailLine" />
+                    </>
+                  )}
                 </div>
               ))
             )}
 
             {replies.length !== 0 &&
-            <div className="reviewDetail-pagination">
-              <ul className="pagination">
-                <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
-                </li>
-                {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
-                  <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+              <div className="reviewDetail-pagination">
+                <ul className="pagination">
+                  <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
                   </li>
-                ))}
-                <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
-                </li>
-              </ul>
-            </div>
+                  {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
+                    <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
+                      <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+                    </li>
+                  ))}
+                  <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
+                  </li>
+                </ul>
+              </div>
             }
           </div>
         </div>

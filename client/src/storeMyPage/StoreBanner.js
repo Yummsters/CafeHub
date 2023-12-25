@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import storeBannerStyle from './storeBannerStyle.css';
 import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { CheckoutPage } from '../payment/CheckoutPage';
 import { url } from '../config.js'
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
-import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { tokenCreate, tokenExpried } from '../login/TokenCheck';
 import { useNavigate } from 'react-router';
+import { Toast, ToastBtn } from '../components/Toast.js';
+import Swal from 'sweetalert2';
 
 const StoreBanner = () => {
     const [cafeAd, setCafeAd] = useState({ description: '', menu: '', approved: false });
@@ -16,7 +17,6 @@ const StoreBanner = () => {
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
-    const isLogin = useSelector(state => state.persistedReducer.isLogin);
 
     // 페이먼트 관련
     const payment = useSelector(state => state.persistedReducer.payment);
@@ -29,21 +29,17 @@ const StoreBanner = () => {
     };
     const paymentClose = () => {
         setPaymentModal(false);
-        failCafeAd('error', '광고 신청에 실패하였습니다.\n관리자에게 문의하세요', '사유: 결제 오류');
+        failCafeAd('error', '광고 신청에 실패하였습니다\n관리자에게 문의하세요\n사유: 결제 오류');
         setTimeout(() => {
             window.location.reload();
-        }, 2000);
+        }, 1200);
     }
-    const failCafeAd = (icon, title, text) => {
+    const failCafeAd = (icon, text) => {
         axios.delete(`${url}/cafeAd/${cafeNo}`)
             .then((res) => {
                 console.log(res.data);
                 dispatch({ type: "payment", payload: '' });
-                Toast.fire({
-                    icon: icon,
-                    title: title,
-                    text: text
-                })
+                Toast(icon, text, 1200)
             })
     }
 
@@ -58,19 +54,6 @@ const StoreBanner = () => {
     const [isApprove, setIsApprove] = useState(false); // 광고 승인 여부 조회
 
     const submitCheck = thumbImg && cafeAd.description !== '' && cafeAd.menu !== '';
-
-    // swal
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
 
     useEffect(() => {
         var descrInput = document.getElementById("description");
@@ -92,17 +75,14 @@ const StoreBanner = () => {
                                     .then((res) => {
                                         console.log(res.data);
                                         dispatch({ type: "payment", payload: '' });
-                                        Toast.fire({
-                                            icon: 'success',
-                                            title: '광고 신청이 완료되었습니다'
-                                        })
+                                        Toast('success', '광고 신청이 완료되었습니다')
                                         setTimeout(() => {
                                             window.location.reload();
                                         }, 2000);
                                     })
                                     .catch((error) => console.log(error))
                             } else {
-                                failCafeAd('error', '광고 신청에 실패하였습니다.\n관리자에게 문의하세요', '사유: 결제 오류');
+                                failCafeAd('error', '광고 신청에 실패하였습니다\n관리자에게 문의하세요\n사유: 결제 오류');
                                 setTimeout(() => {
                                     window.location.reload();
                                 }, 2000);
@@ -214,30 +194,19 @@ const StoreBanner = () => {
                     if (err.response !== undefined) {
                         tokenExpried(dispatch, removeCookie, err.response.data, navigate);
                     } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: '광고 신청에 실패하였습니다\n관리자에게 문의하세요'
-                        })
+                        Toast('error', '광고 신청에 실패하였습니다\n관리자에게 문의하세요')
                     }
 
                 })
         } else {
-            Toast.fire({
-                icon: 'error',
-                title: '이미지 / 설명 / 메뉴를 모두 입력하세요'
-            })
+            Toast('error', '이미지 / 설명 / 메뉴를 모두 입력하세요')
         }
     }
 
     // 페이먼트 환불 관련
     const paymentCancel = () => {
-        Swal.fire({
-            title: "광고 신청을 취소하시겠습니까?",
-            text: "광고 승인이 취소되며, 환불이 진행됩니다",
-            showCancelButton: true,
-            confirmButtonText: "환불요청",
-            cancelButtonText: "취소"
-        }).then((result) => {
+        ToastBtn('question', '광고 신청을 취소하시겠습니까?', '광고 승인이 취소되며, 환불이 진행됩니다')
+        .then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: "취소하려는 이유를 작성해주세요",
@@ -245,6 +214,8 @@ const StoreBanner = () => {
                     showCancelButton: true,
                     confirmButtonText: "확인",
                     cancelButtonText: "취소",
+                    confirmButtonColor: "#007355",
+                    cancelButtonColor: "#F59A23",
                     showLoaderOnConfirm: true,
                     preConfirm: (reason) => {
                         const data = {
@@ -264,7 +235,7 @@ const StoreBanner = () => {
                     allowOutsideClick: () => !Swal.isLoading()
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        failCafeAd('success', '광고 신청이 취소되었습니다', '카드사 취소 최대 3-7일 소요');
+                        failCafeAd('success', '광고 신청이 취소되었습니다\n카드사 취소 최대 3-7일 소요');
                         setTimeout(() => {
                             window.location.reload();
                         }, 2000);

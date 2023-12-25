@@ -7,10 +7,10 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
 import Prism from 'prismjs';
-import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
 import { url } from '../config.js'
+import { Toast } from '../components/Toast.js'
 
 import { getCookie, setCookie, removeCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
@@ -117,13 +117,8 @@ const ReviewModify = () => {
                 .then(response => {
                     tokenCreate(dispatch, setCookie, response.headers)
                         .then(() => {
-
-                            Swal.fire({
-                                title: '수정 성공!',
-                                text: '리뷰가 성공적으로 등록되었습니다',
-                                icon: 'success',
-                                confirmButtonText: '확인',
-                            }).then(() => {
+                            Toast('success', '리뷰가 등록되었습니다')
+                            .then(() => {
                                 navigate(`/reviewList`);
                             });
                         })
@@ -209,11 +204,7 @@ const tagClick = (i) => {
         updatedTags = [...selectedTags, i];
     }
     if (updatedTags.length > 3) {
-        Swal.fire({
-            title: '3개까지 선택 가능합니다',
-            icon: 'error',
-            confirmButtonText: '확인',
-        });
+        Toast('error', '3개까지 선택 가능합니다')
     } else {
         setSelectedTags(updatedTags);
     }
