@@ -111,19 +111,6 @@ const ReviewList = () => {
             .then(() => {
                 navigate("/reviewWrite");
             })
-            .catch(() => {
-                Toast('error', '다시 로그인 해주세요')
-                .then(() => {
-                    dispatch({ type: "accessToken", payload: "" });
-                    dispatch({ type: "isLogin", payload: false });
-                    dispatch({ type: "member", payload: "" });
-                    dispatch({ type: "cafe", payload: "" });
-                    dispatch({ type: "payment", payload: "" });
-                    removeCookie("refreshToken");
-    
-                    navigate("/login");
-                });
-            });
     };
       
     return (

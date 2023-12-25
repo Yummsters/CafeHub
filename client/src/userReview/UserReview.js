@@ -63,7 +63,6 @@ const UserReview = () => {
             normalCheck(dispatch, accessToken);
         }
         navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});
-        console.log(reviewNo);
     }
 
     return (

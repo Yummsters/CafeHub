@@ -182,7 +182,13 @@ const StoreInfo = () => {
                     'Content-Type': 'multipart/form-data'
                 },
             });
+          
             Toast('success', '정보 수정이 완료되었습니다')
+            .then(() => {
+                // 리덕스 정보도 수정                
+                dispatch({ type: "cafe", payload: {cafeNo, ...cafe} });
+            });
+
             console.log(response);
         } catch (err) {
             console.log(err);
