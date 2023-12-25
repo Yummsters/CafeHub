@@ -161,9 +161,7 @@ public class ReviewServiceImpl implements ReviewService {
 	    if (reviewModifyDto.getContent() != null) {
 	        review.setContent(reviewModifyDto.getContent());
 	    }
-	    if (reviewModifyDto.getTagName() != null) {
-	        review.setTagName(reviewModifyDto.getTagName());
-	    }
+	   
 
 	    if (files != null && !files.isEmpty()) {
 	        String dir = "c:/soobin/upload/";

@@ -47,6 +47,7 @@ public class ModifyCafeDto {
 		            .address(address)
 		            .operTime(operTime)
 		            .thumbImg(thumbImg)
+		            .cafeInfo(cafeInfo)
 		            .lat(lat)
 		            .lng(lng)
 		            .build();

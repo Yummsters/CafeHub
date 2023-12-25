@@ -54,7 +54,7 @@ public class TagController {
     }
 
     // 리뷰 태그 목록 조회
-    @GetMapping("/reviewTagList")
+    @GetMapping("user/reviewTagList")
     public ResponseEntity<Object> reviewTagList(){
         List<ReviewTag> responseList = reviewTagRepository.findAll();
         return new ResponseEntity<>(responseList, HttpStatus.OK);

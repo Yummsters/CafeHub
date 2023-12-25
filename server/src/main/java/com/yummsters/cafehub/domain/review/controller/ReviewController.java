@@ -66,7 +66,7 @@ public class ReviewController {
 	// ----------------------------------------------------------------------
 
 	// 리뷰 권한
-	@GetMapping("member/reviewauth/{memNo}")
+	@GetMapping("user/reviewauth/{memNo}")
 	public ResponseEntity<List<ReviewAuthDto>> getReviewAuthByMemNo(@PathVariable Integer memNo) {
 		try {
 			List<ReviewAuth> reviewAuthList = reviewService.getReviewAuthList(memNo);
@@ -80,7 +80,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 등록
-	@PostMapping("member/reviewwrite")
+	@PostMapping("user/reviewwrite")
 	public ResponseEntity<Integer> reviewWrite(@ModelAttribute ReviewDto review,
 			@RequestParam("file") List<MultipartFile> files) {
 		try {
@@ -93,7 +93,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 삭제
-	@DeleteMapping("/review/{reviewNo}/delete")
+	@DeleteMapping("user/review/{reviewNo}/delete")
 	public ResponseEntity<Integer> reviewDelete(@PathVariable Integer reviewNo) {
 		try {
 			reviewService.deleteReview(reviewNo);
