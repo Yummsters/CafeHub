@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
@@ -40,7 +41,8 @@ public class CafeAd {
     @Column
     private boolean isPaid;
 
-    @Column
+    @ColumnDefault("false")
+    @Column(nullable = false)
     private boolean isApproved;
     
     @CreatedDate
