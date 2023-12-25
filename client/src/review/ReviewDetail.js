@@ -394,12 +394,21 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   }, [review]);
 
+  const toDetail = (reviewNo) => {
+    console.log(reviewNo);
+    navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});
+  }
+
   return (
     <div className={!modalDetail ? "reviewDetail-bgBox" : "modalBox"}>
       {review && (
         <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
-            <p className="detailTitle">{review.title}</p>
+            {modalDetail ? 
+              <p className="detailTitle" onClick={() => toDetail(review.reviewNo)} style={{cursor:"pointer"}}>{review.title}</p>
+              : 
+              <p className="detailTitle">{review.title}</p>
+            }
             <div className="detailInfo">
               <div className="infoL">
                 <p>
