@@ -35,6 +35,12 @@ const ManagerConfirm = () => {
         });
     };
 
+    const formatPaidDate = (paidDate) => {
+        const date = new Date(paidDate);
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        return formattedDate;
+    };
+
     useEffect(() => {
         searchParams.get('page') && setPageInfo({ ...pageInfo, currentPage: parseInt(searchParams.get('page')) });
     }, [searchParams]);
@@ -90,7 +96,7 @@ const ManagerConfirm = () => {
                                     </td>
                                     <td colSpan={1} className='permission-button'>
                                         <button className='unpermission'>미결제</button>
-                                        <div className='manager-dateTime'>{cafe.paidDate}</div>
+                                        <div className='manager-dateTime'>{formatPaidDate(cafe.paidDate)}</div>
                                     </td>
                                 </tr>
                             ))}

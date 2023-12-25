@@ -54,6 +54,12 @@ const ManagerAd = () => {
     }
   };
 
+  const formatRegDate = (regDate) => {
+    const date = new Date(regDate);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+    return formattedDate;
+};
+
   useEffect(() => {
     setPageInfo((prev) => ({ ...prev, currentPage: parseInt(searchParams.get('page') ?? 1) }))
   }, [searchParams]);
@@ -114,7 +120,7 @@ const ManagerAd = () => {
                     {!ad.isApproved && (
                       <button className='permission' onClick={() => handleApproveAd(ad.cafeAdNo)}>승인</button>
                     )}
-                    <div className='manager-dateTime'>{ad.regDate}</div>
+                    <div className='manager-dateTime'>{formatRegDate(ad.regDate)}</div>
                   </td>
                 </tr>
               ))}
