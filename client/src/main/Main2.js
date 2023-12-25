@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { url } from '../config.js'
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const Main2 = () => {
   const [settings] = useState({
@@ -16,18 +17,13 @@ const Main2 = () => {
     dots: true,
   });
 
+  // Redux를 통해 로그인한 사용자 정보 가져오기
   const memNo = useSelector(state => state.persistedReducer.member?.memNo);
   const [reviews, setReviews] = useState([]);
-  const isLogin = useSelector(state => state.persistedReducer.isLogin);
   const navigate = useNavigate();
-
-  const handleReviewButtonClick = () => {
-    if (isLogin) {
-      navigate('/reviewwrite');
-    } else {
-      navigate('/login');
-    }
-  };
+  const reviewDetail = (reviewNo) => {
+    navigate('/reviewDetail/' + reviewNo);
+}
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -61,24 +57,26 @@ const Main2 = () => {
             당신을 위한 카페 리뷰 추천
           </p>
         </div>
-
         {reviews.length > 0 ? (
           <Slider {...settings}>
             {reviews.map((review, index) => (
-              <div className='card' key={index}>
-                <img className='cardImg' src={`${review.thumbImg}`} alt='카드 이미지' />
-                <br />
-                <span className='cardrecommend'>
-                  <div className='cardTitle'>{review.title}</div>
-                  <div className='cardCafe'>-{review.cafeName}-</div>
-                </span>
-              </div>
+              <Link to={`/reviewDetail/${review.reviewNo}`}
+                state={{reviewNo: `${review.reviewNo}` }} >
+                <div className='card' key={index}>
+                  <img className='cardImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='카드 이미지' />
+                  <br />
+                  <span className='cardrecommend'>
+                    <div className='cardTitle'>{review.title}</div>
+                    <div className='cardCafe'>-{review.cafeName}-</div>
+                  </span>
+                </div>
+              </Link>
             ))}
           </Slider>
         ) : (
           <div className='noReviewCafeRec'>
-            <br/><br/><br/><br/><br/><div>작성된 카페 리뷰가 없습니다.</div><br/>
-            <button id='goReviewbutton' onClick={handleReviewButtonClick}>&gt;&gt;리뷰 작성하러 가기</button>
+            <div>작성된 카페 리뷰가 없습니다.</div>
+            <button type='button' id='reviewbutton'>&gt;&gt;커피콩받기</button>
           </div>
         )}
       </div>

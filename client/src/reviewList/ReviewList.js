@@ -55,14 +55,6 @@ const ReviewList = () => {
 
     useEffect(() => {
         if (!pageInfo) return false;
-        // let url = '';
-        // if (searchKeyword) {
-        //     //검색어가 있는 경우에만 검색 API 호출
-        //     url = `${url}/searchList/${searchKeyword}`;
-        // } else {
-        //     //검색어가 없는 경우 기존 리뷰 목록 API 호출
-        //     url = `${url}/reviewList`;
-        // }
         axios
             .get(`${url}/reviewList`, {
                 params: {
@@ -152,7 +144,7 @@ const ReviewList = () => {
                                 {reviews.map((review) => (
                                     <tr key={review.reviewNo}>
                                         <th scope='row' style={{ width: "100px" }}>
-                                            <img className='listImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='' />
+                                            <img className='listImg' src={`${url}/thumbImg/${review.thumbImg}`} alt='' />
                                         </th>
                                         <td colSpan={10}>
                                             <Link to={`/reviewDetail/${review.reviewNo}`}

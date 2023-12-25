@@ -45,7 +45,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const navigate = useNavigate();
   const ReviewModify = (e) => {
     e.preventDefault();
-    if(review.modPossible){
+    if (review.modPossible) {
       navigate(`/reviewmodify/${review.reviewNo}`);
     }else{
       Toast('error', '리뷰 수정이 불가합니다');
@@ -59,7 +59,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           Refresh: getCookie("refreshToken"),
         },
       });
-  
+
       tokenCreate(dispatch, setCookie, response.headers).then(() => {
         Toast('success', '리뷰가 삭제되었습니다');
         navigate("/reviewList"); // 페이지 이동
@@ -71,7 +71,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       }
     }
   };
-  
+
 
 
   const handleReviewDelete = () => {
@@ -97,30 +97,31 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     if(memNo === undefined) {
       Toast('error', '로그인이 필요합니다');
     };
-    if(replyContent.length > 0) {
-    axios
-      .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
-        content: replyContent,
-      })
-      .then((res) => {
-        console.log("댓글이 성공적으로 등록되었습니다");
-        setReplyContent("");
-        fetchReplies();
-      })
-      .catch((error) => {
-        console.error("댓글 등록 에러", error);
+    if (replyContent.length > 0) {
+      axios
+        .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
+          content: replyContent,
+        })
+        .then((res) => {
+          console.log("댓글이 성공적으로 등록되었습니다");
+          setReplyContent("");
+          fetchReplies();
+        })
+        .catch((error) => {
+          console.error("댓글 등록 에러", error);
 
-        if (error.response) {
-          console.error("응답 데이터:", error.response.data);
-          console.error("응답 상태 코드:", error.response.status);
-          console.error("응답 헤더:", error.response.headers);
-        } else if (error.request) {
-          console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
-        } else {
-          console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
-        }
-      });
-  }}
+          if (error.response) {
+            console.error("응답 데이터:", error.response.data);
+            console.error("응답 상태 코드:", error.response.status);
+            console.error("응답 헤더:", error.response.headers);
+          } else if (error.request) {
+            console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
+          } else {
+            console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
+          }
+        });
+    }
+  }
 
   console.log(pickBadgeName + "배지네임");
 
@@ -154,6 +155,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("Error while sending the request:", error.message);
         }
       });
+    axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+      .then((res) => {
+        const badgeName = res.data.badgeName || '';
+        setPickBadge([badgeName]);
+      })
+      .catch(error => {
+        console.error('에러 발생:', error);
+      });
   };
 
   const handlePageChange = (pageNumber) => {
@@ -168,11 +177,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReReplySubmit = (parentReplyNo) => {
     if (selectedReply && reReplyContent) {
-      axios.get(`${url}/member/${memNo}`,{
-          headers : {
-            Authorization : accessToken,
-            Refresh : getCookie('refreshToken')
-          }
+      axios.get(`${url}/member/${memNo}`, {
+        headers: {
+          Authorization: accessToken,
+          Refresh: getCookie('refreshToken')
+        }
       })
         .then((response) => {
           const member = response.data;
@@ -234,8 +243,8 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleChildReplies = (replyNo) => {
     const updateReplies = replies.map(reply => {
-      if(reply.replyNo === replyNo) {
-        return {...reply, content: "삭제된 댓글입니다"};
+      if (reply.replyNo === replyNo) {
+        return { ...reply, content: "삭제된 댓글입니다" };
       }
       return reply;
     });
@@ -255,25 +264,25 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const toggleLike = () => {
     if (memNo !== undefined) {
       axios.post(`${url}/member/like/${memNo}/${reviewNo}`, null,
-      {
-          headers : {
-               Authorization :accessToken,
-               Refresh : getCookie("refreshToken")
+        {
+          headers: {
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken")
           }
-      })
-      .then((res) => {
-        tokenCreate(dispatch, setCookie, res.headers)
-        .then(()=>{
-            setLike(res.data.toggleLike);
-            setLikeCount(res.data.likeCount);
         })
-      })
-      .catch((error) => {
-        console.error("toggleLike 에러:" + error);
-        if(error.response !== undefined){
-          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-        }
-      });
+        .then((res) => {
+          tokenCreate(dispatch, setCookie, res.headers)
+            .then(() => {
+              setLike(res.data.toggleLike);
+              setLikeCount(res.data.likeCount);
+            })
+        })
+        .catch((error) => {
+          console.error("toggleLike 에러:" + error);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+          }
+        });
     } else {
       Toast('error', '로그인이 필요합니다');
     }
@@ -302,24 +311,24 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const toggleWish = () => {
     if (memNo !== undefined) {
       axios.post(`${url}/member/wish/${memNo}/${reviewNo}`, null,
-      {
-          headers : {
-               Authorization :accessToken,
-               Refresh : getCookie("refreshToken")
+        {
+          headers: {
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken")
           }
-      })
-      .then((res) => {
-        tokenCreate(dispatch, setCookie, res.headers)
-        .then(()=>{
-          setWish(res.data);
         })
-      })
-      .catch((error) => {
-        console.error("toggleWish 에러:" + error);
-        if(error.response !== undefined){
-          tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-        }
-      });
+        .then((res) => {
+          tokenCreate(dispatch, setCookie, res.headers)
+            .then(() => {
+              setWish(res.data);
+            })
+        })
+        .catch((error) => {
+          console.error("toggleWish 에러:" + error);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+          }
+        });
     } else {
       Toast('error', '로그인이 필요합니다');
     }
@@ -348,10 +357,19 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
       });
+
+    axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+      .then((res) => {
+        const badgeName = res.data.badgeName || '';
+        setPickBadge([badgeName]);
+      })
+      .catch(error => {
+        console.error('에러 발생:', error);
+      });
   }
 
   useEffect(() => { // 디테일 가져오기
-    if(isLogin) {
+    if (isLogin) {
       normalCheck(dispatch, accessToken);
     }
     let getDetailURL = `${url}/review/${reviewNo}`;
@@ -363,13 +381,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         setWish(res.data.isWish);
         setLikeCount(res.data.review.likeCount);
         axios.get(`${url}/getMemberBadge/${res.data.review.memNo}`)
-        .then(response => {
+          .then(response => {
             const badgeName = response.data.badgeName || '';
             setPickBadge([badgeName]);
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             console.error('에러 발생:', error);
-        });
+          });
       })
       .catch((error) => {
         console.error("에러:" + error);
@@ -416,7 +434,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   {review.cafeName}
                 </p>
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
-                </div>
+              </div>
               <div className="infoR">
                 <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
@@ -450,59 +468,59 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             {replies.length === 0 ? (
               <div></div>
             ) : (
-             bestReply && (
-              <div key={bestReply.replyNo} className="replyInfo">
-                <div className="infoT">
-                  <p>
-                    <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
-                  </p>
-                  <p>
-                    <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                    <span className="underline" onClick={() => showReplyClick(bestReply)}>
-                      답글
-                    </span>
-                    &nbsp;&nbsp;
-                    <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
-                    <span>{bestReply.likeCount}</span>
-                  </p>
-                </div>
-                <div className="infoB">
-                  <p>
-                    <img src="/img/best.png" alt="best" />
-                    {bestReply.content}
-                  </p>
-                  <p>{bestReply.regDate}</p>
-                </div>
-                <div className="detailLine" />
+              bestReply && (
+                <div key={bestReply.replyNo} className="replyInfo">
+                  <div className="infoT">
+                    <p>
+                      <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
+                    </p>
+                    <p>
+                      <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
+                      <span className="underline" onClick={() => showReplyClick(bestReply)}>
+                        답글
+                      </span>
+                      &nbsp;&nbsp;
+                      <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
+                      <span>{bestReply.likeCount}</span>
+                    </p>
+                  </div>
+                  <div className="infoB">
+                    <p>
+                      <img src="/img/best.png" alt="best" />
+                      {bestReply.content}
+                    </p>
+                    <p>{bestReply.regDate}</p>
+                  </div>
+                  <div className="detailLine" />
 
-                {/* 베스트 댓글에 대한 답글 창 */}
-                {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
-                  <>
-                    <div className="reply comment">
-                      <img src="/img/reply.png" alt="reReply" />
-                      <input type="text" name="reply" onChange={handleReReplyChange} />
-                      <div className="Gbtn" onClick={() => handleReReplySubmit(bestReply.replyNo)}>
-                        등록
+                  {/* 베스트 댓글에 대한 답글 창 */}
+                  {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
+                    <>
+                      <div className="reply comment">
+                        <img src="/img/reply.png" alt="reReply" />
+                        <input type="text" name="reply" onChange={handleReReplyChange} />
+                        <div className="Gbtn" onClick={() => handleReReplySubmit(bestReply.replyNo)}>
+                          등록
+                        </div>
                       </div>
-                    </div>
-                    <div className="detailLine" />
+                      <div className="detailLine" />
 
-                    {/* 베스트 댓글에 대한 답글 목록 */}
-                    {selectedReply.replies && selectedReply.replies.length > 0 && (
-                      <div className="reReplyInfo">
-                        {selectedReply.replies.map((reReply) => (
-                          <div key={reReply.replyNo} className="infoB comment">
-                            <p>{reReply.content}</p>
-                            <p>{reReply.regDate}</p>
-                          </div>
-                        ))}
-                        <div className="detailLine" />
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-             )
+                      {/* 베스트 댓글에 대한 답글 목록 */}
+                      {selectedReply.replies && selectedReply.replies.length > 0 && (
+                        <div className="reReplyInfo">
+                          {selectedReply.replies.map((reReply) => (
+                            <div key={reReply.replyNo} className="infoB comment">
+                              <p>{reReply.content}</p>
+                              <p>{reReply.regDate}</p>
+                            </div>
+                          ))}
+                          <div className="detailLine" />
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )
             )}
 
             {/* 댓글 목록 출력 */}
@@ -512,60 +530,70 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             ) : (
               replies.map((reply) => (
                 <div key={reply.replyNo} className="replyInfo">
-                  <div className="infoT">
-                  <p>
-                    {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                    <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="" /> {reply.nickname}</a>
-                  </p>
-                  <p>
-                    <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
-                    {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
-                    &nbsp;&nbsp;
-                    <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
-                    <span>{reply.likeCount}</span>
-                  </p>
-                </div>
-                <div className="infoB" style={reply.depth === 1 ? {marginLeft: 35} : {}}>
-                  <p>
-                    {reply.content}
-                  </p>
-                  <p>{reply.regDate.split('.')[0]}</p>
-                </div>
-                <div className="detailLine" />
-
-                {/* 대댓글 */}
-                {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
-                  <>
-                    <div className="reply comment">
-                      <img src="/img/reply.png" alt="reReply" />
-                      <input type="text" name="reply" onChange={handleReReplyChange} />
-                      <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
-                        등록
+                  {reply.content != "삭제된 댓글입니다." ? (
+                    <>
+                      <div className="infoT">
+                        <p>
+                          {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
+                          <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
+                        </p>
+                        <p>
+                          <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
+                          {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
+                          &nbsp;&nbsp;
+                          <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
+                          <span>{reply.likeCount}</span>
+                        </p>
                       </div>
+                      <div className="infoB" style={reply.depth === 1 ? { marginLeft: 35 } : {}}>
+                        <p>
+                          {reply.content}
+                        </p>
+                        <p>{reply.regDate.split('.')[0]}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="infoB" style={reply.depth === 1 ? { marginLeft: 35 } : {}}>
+                      <p>
+                        {reply.content}
+                      </p>
                     </div>
-                    <div className="detailLine" />
-                  </>
-                )}
+                  )}
+                  <div className="detailLine" />
+
+                  {/* 대댓글 */}
+                  {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
+                    <>
+                      <div className="reply comment">
+                        <img src="/img/reply.png" alt="reReply" />
+                        <input type="text" name="reply" onChange={handleReReplyChange} />
+                        <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
+                          등록
+                        </div>
+                      </div>
+                      <div className="detailLine" />
+                    </>
+                  )}
                 </div>
               ))
             )}
 
             {replies.length !== 0 &&
-            <div className="reviewDetail-pagination">
-              <ul className="pagination">
-                <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
-                </li>
-                {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
-                  <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+              <div className="reviewDetail-pagination">
+                <ul className="pagination">
+                  <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
                   </li>
-                ))}
-                <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
-                </li>
-              </ul>
-            </div>
+                  {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
+                    <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
+                      <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+                    </li>
+                  ))}
+                  <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
+                  </li>
+                </ul>
+              </div>
             }
           </div>
         </div>
