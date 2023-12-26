@@ -105,7 +105,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 수정
-	@PostMapping("/reviewmodify/{reviewNo}")
+	@PostMapping("user/reviewmodify/{reviewNo}")
 	public ResponseEntity<Integer> modifyReview(@PathVariable Integer reviewNo, @ModelAttribute ReviewModifyDto review,
 			@RequestParam(value = "files", required = false) List<MultipartFile> files) {
 		try {
@@ -118,7 +118,7 @@ public class ReviewController {
 	}
 
 	// 내가 쓴 리뷰
-	@GetMapping("/myReview/{memNo}")
+	@GetMapping("/user/myReview/{memNo}")
 	public ResponseEntity<Object> getMyReview(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
 	        @PathVariable("memNo") Integer memNo) {
 	    try {
@@ -141,7 +141,7 @@ public class ReviewController {
 	
 	// 리뷰 작성 가능 카페
 
-	@GetMapping("/myReviewAuth/{memNo}")
+	@GetMapping("user/myReviewAuth/{memNo}")
 	public ResponseEntity<Object> getMyReviewAuth(@RequestParam("page") Integer page, 
 	        @RequestParam("size") Integer size, @PathVariable("memNo") Integer memNo) {
 	    try {

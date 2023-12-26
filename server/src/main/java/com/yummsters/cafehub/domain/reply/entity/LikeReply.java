@@ -38,4 +38,5 @@ public class LikeReply {
 	@ManyToOne
 	@JoinColumn(name = "replyNo")
     private Reply reply;
+	
 }

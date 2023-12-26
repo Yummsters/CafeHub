@@ -20,7 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.repository.MemberRepository;
 import com.yummsters.cafehub.domain.point.service.PointService;
+import com.yummsters.cafehub.domain.reply.entity.LikeReply;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
+import com.yummsters.cafehub.domain.reply.repository.LikeReplyRepository;
+import com.yummsters.cafehub.domain.reply.repository.ReplyRepository;
 import com.yummsters.cafehub.domain.review.dto.ReviewDetailDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
@@ -52,6 +55,8 @@ public class ReviewServiceImpl implements ReviewService {
 	private final PointService pointService;
 	private final ReviewToTagRepository reviewToTagRepository;
 	private final ReviewTagRepository reviewTagRepository;
+	private final ReplyRepository replyRepository;
+	private final LikeReplyRepository likeReplyRepository;
 
 	// 수빈 part
 	// ----------------------------------------------------------------------
@@ -130,9 +135,28 @@ public class ReviewServiceImpl implements ReviewService {
 	public void deleteReview(Integer reviewNo) throws Exception {
 		
 		Review reviewEntity = reviewRepository.findByReviewNo(reviewNo);
+		
 		Review review = reviewRepository.findByReviewNo(reviewNo);
 		 List<ReviewToTag> existingReviewToTags = reviewToTagRepository.findByReview(review);
 		    reviewToTagRepository.deleteAll(existingReviewToTags);
+		
+	        List<LikeReview> existingLikeReviews = likeRepository.findByReview(review);
+	        likeRepository.deleteAll(existingLikeReviews);
+	    
+	        List<Reply> existingReplies = replyRepository.findByReview(reviewEntity);
+	        for (Reply reply : existingReplies) {
+	         
+	            List<LikeReply> existingLikeReplies = likeReplyRepository.findByReply(reply);
+	            likeReplyRepository.deleteAll(existingLikeReplies);
+	        }
+	        replyRepository.deleteAll(existingReplies);
+	        
+	        
+	     //
+	        List<WishReview> existingWishReview = wishRepository.findByReview(review);
+	        wishRepository.deleteAll(existingWishReview);
+	    
+
 
 
 		if (reviewEntity != null) {

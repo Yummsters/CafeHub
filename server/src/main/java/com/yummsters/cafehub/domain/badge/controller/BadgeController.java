@@ -46,7 +46,7 @@ public class BadgeController {
     }
    
     //배지 목록 조회
-    @GetMapping("/badgeList")
+    @GetMapping("/user/badgeList")
     public ResponseEntity<Object> badgeList() {
         
         List<Badge> responseList = badgeRepository.findByBadgeNoNot(9);
@@ -55,7 +55,7 @@ public class BadgeController {
     }
   
     //구매한 배지 가져오기
-    @GetMapping("/badge/{memNo}")
+    @GetMapping("user/badge/{memNo}")
     public ResponseEntity<Object> getBadge(@PathVariable Integer memNo) {
         try {
             List<MemberBadges> memberBadgesList = badgeService.getBadge(memNo);
@@ -75,7 +75,7 @@ public class BadgeController {
         }
     }
     //배지 구매하기
-    @PostMapping("/buyBadge/{memNo}/{badgeNo}")
+    @PostMapping("user/buyBadge/{memNo}/{badgeNo}")
     public ResponseEntity<Object> buyBadge(@PathVariable Integer memNo, @PathVariable Integer badgeNo) {
         try {
             MemberBadges boughtBadge = badgeService.buyBadge(memNo, badgeNo);
@@ -92,7 +92,7 @@ public class BadgeController {
     
     }
     //배지 선택하기
-    @PostMapping("/pickBadge/{memNo}/{badgeNo}")
+    @PostMapping("user/pickBadge/{memNo}/{badgeNo}")
     public ResponseEntity<Object> pickBadge(@PathVariable Integer memNo, @PathVariable Integer badgeNo) {
         try {
             MemberBadges boughtBadge = badgeService.pickBadge(memNo, badgeNo);
@@ -142,7 +142,7 @@ public class BadgeController {
         }
     }
     //기본배지선택
-    @PostMapping("/defaultBadge/{memNo}")
+    @PostMapping("user/defaultBadge/{memNo}")
     public ResponseEntity<Object> defaultBadge(@PathVariable Integer memNo) {
         try {
             Member member = badgeService.defaultBadge(memNo);
