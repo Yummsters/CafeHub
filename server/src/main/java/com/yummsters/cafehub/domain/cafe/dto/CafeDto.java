@@ -19,6 +19,7 @@ public class CafeDto {
     private String address;
     private String operTime;
     private String thumbImg;
+    private String fileName;
     private String tagName;
     private String lat;
     private String lng;

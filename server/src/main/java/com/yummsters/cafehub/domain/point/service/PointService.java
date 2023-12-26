@@ -3,8 +3,6 @@ package com.yummsters.cafehub.domain.point.service;
 import com.yummsters.cafehub.domain.point.entity.Point;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface PointService {
     Point checkPoint(Integer memNo) throws Exception;
     Integer savePoint(Integer memNo, Integer cafeNo) throws Exception;

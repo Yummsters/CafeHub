@@ -1,8 +1,6 @@
 package com.yummsters.cafehub.domain.member.dto;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 @Data
 public class ModifyResDto {

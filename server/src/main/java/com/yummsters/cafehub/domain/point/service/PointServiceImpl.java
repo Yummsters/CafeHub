@@ -117,7 +117,6 @@ public class PointServiceImpl implements PointService{
     		 throw e;
     	}
     }
-    
 
     // 포인트 정산 신청 승인
     @Override

@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.member.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,6 @@ public class BusinessServiceImpl implements BusinessService {
         urlBuilder.append("?serviceKey=" + secretKey);
 
         String str = "{\"b_no\": [\"" + businessNo + "\"]}";
-//        System.out.println(str);
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -49,5 +47,4 @@ public class BusinessServiceImpl implements BusinessService {
 
         return responseBuilder.toString();
     }
-
 }

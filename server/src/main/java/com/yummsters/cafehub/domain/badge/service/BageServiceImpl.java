@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.badge.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,7 @@ public class BageServiceImpl implements BageService {
 	 private final PointService pointService;
 	 private final MemberRepository memberRepository;
 	@Override
-	public List<MemberBadges> getBadge(Integer memNo)throws Exception {
+	public List<MemberBadges> getBadge(Integer memNo){
 	    return memberBadgeRepository.findByMemNo(memNo);
 	}
 	
@@ -60,8 +59,7 @@ public class BageServiceImpl implements BageService {
 	        MemberBadges memberBadges = memberBadgeRepository.findById(memberBadgeNo)
 	                .orElseThrow(() -> new Exception("해당 배지를 찾을 수 없습니다."));
 
-	      
-	        Integer badgeNo = memberBadges.getBadgeNo();
+	        Integer badgeNo = memberBadges.getBadge().getBadgeNo();
 	        member.setBadgeNo(badgeNo);
 
 	        memberRepository.save(member); 
@@ -80,7 +78,6 @@ public class BageServiceImpl implements BageService {
                 Member member = optionalMember.get();
 
                 Integer badgeNo = member.getBadgeNo();
-
               
                 Optional<Badge> optionalBadge = badgeRepository.findById(badgeNo);
                 
@@ -117,7 +114,6 @@ public class BageServiceImpl implements BageService {
 	        throw new Exception("해당 사용자를 찾을 수 없습니다.");
 	    }
 	}
-
 }
 
 

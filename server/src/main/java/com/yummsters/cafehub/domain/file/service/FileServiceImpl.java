@@ -4,6 +4,7 @@ import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.review.entity.FileVo;
 import com.yummsters.cafehub.domain.review.repository.FileVoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -16,13 +17,15 @@ import java.io.OutputStream;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService{
+    @Value("${upload.path}")
+    private String uploadPath;
+
     private final FileVoRepository fileVoRepository;
 
     @Override
     @Transactional
     public FileVo oneFileUpload(MultipartFile file, CafeAd cafeAd) throws Exception {
-       // String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
-    	String dir = "c:/soobin/upload/"; //수빈 업로드 경로
+        String dir = uploadPath;
         FileVo fileVo = FileVo.builder()
                 .directory(dir)
                 .name(file.getOriginalFilename())
@@ -41,8 +44,7 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public void readThumbImg(Integer fileNum, OutputStream out) throws Exception {
-        //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
-    	 String dir = "c:/soobin/upload/"; //수빈업로드경로
+        String dir = uploadPath;
         FileInputStream fis = new FileInputStream(dir+fileNum);
         System.out.println(dir + fileNum);
         FileCopyUtils.copy(fis, out);
@@ -50,7 +52,7 @@ public class FileServiceImpl implements FileService{
     }
     @Override
 	public void readImage(Integer fileNum, OutputStream out) throws Exception {
-        String dir = "c:/soobin/upload/";
+        String dir = uploadPath;
         FileInputStream fis = new FileInputStream(new File(dir + fileNum));
         FileCopyUtils.copy(fis, out);
         fis.close();

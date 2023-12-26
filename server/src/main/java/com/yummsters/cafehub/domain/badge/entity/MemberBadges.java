@@ -2,7 +2,6 @@ package com.yummsters.cafehub.domain.badge.entity;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,13 +38,7 @@ public class MemberBadges {
 	    
 	    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	    private LocalDateTime regDate;
-	    
-	    
-	    public Integer getBadgeNo() {
-	        return badge.getBadgeNo();
-	    }
-	   
-	    
+
 	    public MemberBadgeDto toDTO() {
 	        return MemberBadgeDto.builder()
 	                .memberBadgeNo(memberBadgeNo)
@@ -55,15 +48,4 @@ public class MemberBadges {
 	                .regDate(regDate)
 	                .build();
 	    }
-	    
-	    @Override
-	    public String toString() {
-	        return "MemberBadges{" +
-	                "memberBadgeNo=" + memberBadgeNo +
-	                ", memNo=" + memNo +
-	                ", badge=" + badge.toString() + 
-	                ", regDate=" + regDate +
-	                '}';
-	    }
-
 }
