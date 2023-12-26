@@ -16,6 +16,12 @@ tbody tr {
   width: 24px;
   height: 24px;
 }
+.myReview-Page {
+  position: absolute;
+  bottom: 2px;
+  transform: translateX(-50%);
+  left: 50%;
+}
 
 .myreview-pagination {
   padding: 40px 0;
@@ -44,14 +50,20 @@ tbody tr {
   .leftBox {
     width: 550px;
     margin: 0 30px 0 30px;
+    position: relative;
   }
   .reviewpage{
-    position:relative;
-    top:100px;
+    /* position:relative;
+    top:100px; */
+    position: absolute;
+    bottom: 2px;
+    transform: translateX(-30%);
+    left: 50%;
     
   }
   .rightBox {
     width: 350px;
+    position:relative;
   }
 
   .myreview-listTitle {

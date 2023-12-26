@@ -106,31 +106,26 @@ const ReviewModify = () => {
         if (selectedFile) {
             formData.append('files', selectedFile);
         }
-
         try {
-            const response = await axios.post(`${url}/reviewmodify/${review.reviewNo}`, formData, {
+            const response = await axios.post(`${url}/user/reviewmodify/${review.reviewNo}`, formData, {
                 headers: {
                     Authorization: token,
                     Refresh: getCookie("refreshToken")
                 }
-            })
-                .then(response => {
-                    tokenCreate(dispatch, setCookie, response.headers)
-                        .then(() => {
-                            Toast('success', '리뷰가 등록되었습니다')
-                            .then(() => {
-                                navigate(`/reviewList`);
-                            });
-                        })
-                })
-
-
-            } catch (err) {
-                if (err.response !== undefined) {
-                  tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-                }
-              }
-            };
+            });
+    
+            // 성공한 경우
+            await tokenCreate(dispatch, setCookie, response.headers);
+            await Toast('success', '리뷰가 수정되었습니다');
+            navigate(`/reviewList`);
+        } catch (err) {
+            // 실패한 경우
+            console.error('리뷰 수정 에러:', err);
+            if (err.response !== undefined) {
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+            }
+        }
+    };
 
 const [editorInitialValue, setEditorInitialValue] = useState('');
 let encodedHTML;
@@ -181,14 +176,24 @@ useEffect(() => {
 
 
 useEffect(() => {
-    axios.get(`http://localhost:8080/reviewTagList`)
+
+    axios.get(`${url}/user/reviewTagList`, {
+        headers: {
+            Authorization: token,
+            Refresh: getCookie("refreshToken")
+        }
+
+    })
         .then(res => {
-
+            // 토큰이 유효한 경우 확인 후 재발급
+            tokenCreate(dispatch, setCookie, res.headers);
             setTagName([...res.data]);
-
         })
         .catch(err => {
             console.log(err);
+            if (err.response !== undefined) {
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+            }
         })
 }, [])
 
@@ -230,7 +235,7 @@ const handleFileChange = (e) => {
         uploadImages(file, (response) => {
             console.log('이미지 업로드 결과:', response);
             setIsFileSelected(true);
-            // 이미지 프리뷰 업데이트
+           
             setImagePreview(URL.createObjectURL(file));
 
         });
@@ -249,30 +254,40 @@ const uploadImages = (blob, callback) => {
         data: formData,
         headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: token,
+            Refresh: getCookie("refreshToken")
         },
     })
         .then((response) => {
-            console.log('이미지 업로드 성공 맞나', response.data);
-            const fileNum = response.data.filenum; // 파일의 filenum을 가져옴
-            setThumbImg(fileNum); // 썸네일 이미지 업데이트
+            tokenCreate(dispatch, setCookie, response.headers);
+            const fileNum = response.data.filenum; 
+            setThumbImg(fileNum);
             callback(response.data);
         })
         .catch((error) => {
-            console.error('이미지 업로드 실패', error);
-            console.error('서버 응답 데이터:', error.response.data); // 서버 응답 데이터 출력
-
+            if (error.response !== undefined) {
+                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+            }
             callback('image_load_fail');
         });
 };
+
+
+
 useEffect(() => {
     if (review.thumbImg) {
-        const imageUrl = `http://localhost:8080/common/upload/${review.thumbImg}`;
-        console.log('Image URL:', imageUrl);
-
-        axios.get(imageUrl, { responseType: 'blob' })
+       
+        axios.get(`${url}/common/upload/${review.thumbImg}`, {
+        headers: {
+            Authorization: token,
+            Refresh: getCookie("refreshToken")
+        },
+        responseType: 'blob'
+        })
             .then((res) => {
-
+                tokenCreate(dispatch, setCookie, res.headers);
                 const imageUrl = URL.createObjectURL(res.data);
+                console.log("이미지",res.data);
 
                 setReview((prevReview) => ({
                     ...prevReview,
@@ -280,6 +295,9 @@ useEffect(() => {
                 }));
             })
             .catch((error) => {
+                if (error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                }
                 console.error('카페 사진 가져오기 실패:', error);
             });
     }
@@ -339,6 +357,7 @@ return (
 
                 {review.imageUrl && (
                     <img src={review.imageUrl} alt="썸네일" style={{ width: "100px", height: "100px" }} />
+
                 )}
 
 

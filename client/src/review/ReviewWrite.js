@@ -79,8 +79,6 @@ const ReviewWrite = () => {
             .then(response => {
                 tokenCreate(dispatch, setCookie, response.headers)
                     .then(() => {
-
-
             setCafes(response.data);
             })
         })
@@ -302,12 +300,12 @@ const ReviewWrite = () => {
                         className='custom-editor'
                         ref={editorRef}
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
-                        // placeholder='Please Enter Text.'
                         previewStyle='vertical'
                         height='500px'
                         initialEditType='wysiwyg'
                         hooks={{
                             addImageBlobHook: (blob, callback) => {
+                                
                                 let formData = new FormData();
                                 formData.append('images', blob);
 

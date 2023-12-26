@@ -167,9 +167,8 @@ body, button, input{
     color: #FFF;
 }
 
-
 .SignUpStore-tag {
-    margin-left:20px;
+    margin-left:3px;
     display: flex;
     flex-wrap: wrap;
 }
@@ -180,10 +179,10 @@ body, button, input{
     justify-content: center;
     border: 2px solid #F59A23;
     border-radius: 10px;
-    width: 144px;
+    width: 130px;
     height: 45px;
     font-size: 18px;
-    margin: 10px 10px 10px 0;
+    margin: 5px 5px 5px 0;
     background-color: white;
 }
 
@@ -192,13 +191,12 @@ body, button, input{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 144px;
+    width: 130px;
     height: 45px;
     font-size: 18px;
     border-radius: 10px;
     border: 2px solid #F59A23;
-    margin: 10px 10px 10px 0;
+    margin: 5px 5px 5px 0;
     background: #F59A23;
     color: #FFF;
 }
-
