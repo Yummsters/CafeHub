@@ -83,7 +83,6 @@ public class ReplyController {
 		try {
 	        Pageable pageable = PageRequest.of(page, size);
 	        Page<ReplyInterface> replyPage = replyService.getRepliesByReviewNo(memNo, reviewNo, pageable);
-	        //System.out.println(replyPage.getContent());
 	        return new ResponseEntity<>(replyPage, HttpStatus.OK);
 	    } catch(Exception e) {
 	        e.printStackTrace();
@@ -113,7 +112,6 @@ public class ReplyController {
         }
     }
 
-	// 회원 댓글 조회
 	@GetMapping("/user/reply/{memNo}")
 	public ResponseEntity<Object> getMyReply(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
 										@PathVariable("memNo") Integer memNo){
