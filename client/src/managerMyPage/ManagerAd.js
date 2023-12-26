@@ -41,10 +41,12 @@ const ManagerAd = () => {
           Authorization: accessToken,
           Refresh: getCookie("refreshToken")
         }
-      });
-      tokenCreate(dispatch, setCookie, response.headers)
-        .then(() => {
-          setUnapprovedAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
+      })
+        .then((response) => {
+          tokenCreate(dispatch, setCookie, response.headers)
+            .then(() => {
+              setUnapprovedAds((prevAds) => prevAds.filter((ad) => ad.cafeAdNo !== cafeAdNo));
+            })
         })
     } catch (error) {
       console.error('Error approving ad:', error);
@@ -58,7 +60,7 @@ const ManagerAd = () => {
     const date = new Date(regDate);
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
     return formattedDate;
-};
+  };
 
   useEffect(() => {
     setPageInfo((prev) => ({ ...prev, currentPage: parseInt(searchParams.get('page') ?? 1) }))
@@ -71,21 +73,23 @@ const ManagerAd = () => {
           params: {
             page: pageInfo.currentPage - 1,
             size: pageInfo.cafesPerPage,
-        },
+          },
           headers: {
             Authorization: accessToken,
             Refresh: getCookie("refreshToken")
           }
-        });
-        tokenCreate(dispatch, setCookie, response.headers)
-          .then(() => {
-            console.log(response.data.responseList);
-            console.log(response.data.unapprovedAds);
-            setUnapprovedAds(response.data.responseList);
-            let totalPages = response.data.unapprovedAds.totalPages;
-            let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
-            let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
-            setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
+        })
+          .then((response) => {
+            tokenCreate(dispatch, setCookie, response.headers)
+              .then(() => {
+                console.log(response.data.responseList);
+                console.log(response.data.unapprovedAds);
+                setUnapprovedAds(response.data.responseList);
+                let totalPages = response.data.unapprovedAds.totalPages;
+                let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;
+                let endPage = Math.min(startPage + pageInfo.cafesPerPage - 1, totalPages);
+                setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
+              })
           })
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -108,8 +112,8 @@ const ManagerAd = () => {
             <tbody>
               {unapprovedAds.map((ad) => (
                 <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
-                  <th scope="row" style={{width:"115px"}}>
-                    <img className='listImg' src={`/img/${ad.thumbImg}.png`} alt='' />
+                  <th scope="row" style={{ width: "115px" }}>
+                    <img className='listImg' src={`${url}/common/thumbImg/${ad.thumbImg}`} alt='' />
                   </th>
                   <td colSpan={11}>
                     <div className='listMiniTitle'>{ad.cafeName}</div>
