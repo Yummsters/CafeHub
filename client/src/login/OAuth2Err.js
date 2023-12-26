@@ -15,10 +15,15 @@ const OAuth2Err = () => {
                 navigate('/');
             }); 
         }else if(errorCode == "881"){
-            console.log("들어옴");
             Toast('error', '이미 가입된 이메일입니다')
+            .then(() => {
+                navigate('/login');
+            }); 
         }else if(errorCode === "882"){
             Toast('error', '이미 존재하는 닉네임입니다 소셜 닉네임 수정 후 회원가입 해주세요')
+            .then(() => {
+                navigate('/login');
+            }); 
         }
     },[])
 
