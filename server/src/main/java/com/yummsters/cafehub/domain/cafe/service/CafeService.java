@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.dto.ModifyCafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
+import com.yummsters.cafehub.domain.review.entity.FileVo;
 
 public interface CafeService {
     // 선진 part---------------------------------------------------------------------------
@@ -24,4 +25,5 @@ public interface CafeService {
     // 수빈 part---------------------------------------------------------------------------
     Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files)throws Exception;
     Cafe getCafeInfo(Integer cafeNo) throws Exception;    
+    
 }

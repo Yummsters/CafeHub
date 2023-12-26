@@ -30,13 +30,6 @@ public class ModifyCafeDto {
     private boolean isExisting;
     private String cafeInfo;
     
-
-    private String fileurl;
-
-    public void setFileurl(String fileurl) {
-        this.fileurl = fileurl;
-    }
-    
     public Cafe toEntity() {
 
 		 return Cafe.builder()

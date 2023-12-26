@@ -17,6 +17,8 @@ import org.springframework.stereotype.Repository;
 import com.yummsters.cafehub.domain.reply.dto.ReplyDto;
 import com.yummsters.cafehub.domain.reply.dto.ReplyInterface;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
+import com.yummsters.cafehub.domain.review.entity.LikeReview;
+import com.yummsters.cafehub.domain.review.entity.Review;
 
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Integer> {
@@ -66,4 +68,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 	Page<Reply> findByMember_MemNo(PageRequest pageRequest, Integer memNo);
 	
 	List<Reply> findByParentReply_ReplyNo(Integer parentReplyNo);
+	
+	 List<Reply> findByReview(Review review);
 }

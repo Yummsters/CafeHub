@@ -61,6 +61,7 @@ public class Cafe {
     public Integer getCafeNo() {
         return cafeNo;
     }
+   
 
     public CafeDto toDTO() {
         return CafeDto.builder()

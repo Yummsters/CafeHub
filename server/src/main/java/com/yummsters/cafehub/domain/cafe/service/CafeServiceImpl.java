@@ -169,7 +169,7 @@ public class CafeServiceImpl implements CafeService {
 		
 	        return cafeRepository.findByCafeNo(cafeNo);
 	    }
-
+	
 	@Override
 	public Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files)throws Exception {
 	    // 기존 카페 정보 가져오기
