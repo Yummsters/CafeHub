@@ -54,17 +54,27 @@ public class ReplyServiceImpl implements ReplyService {
 	        Reply reply = optionalReply.get();
 	        List<Reply> childReplies = replyRepository.findByParentReply_ReplyNo(replyNo);
 	        
-	        if (childReplies.isEmpty()) {
-	            replyRepository.delete(reply);
+	        if(reply.getDepth() == 0) {
+	        	if(childReplies.isEmpty()) {
+	        		replyRepository.delete(reply);
+	        	} else {
+	        		reply.setContent("삭제된 댓글입니다.");
+		            replyRepository.save(reply);
+	        	}
 	        } else {
-	            reply.setContent("삭제된 댓글입니다.");
-	            replyRepository.save(reply);
+	        	Reply parentReply = reply.getParentReply();
+	        	replyRepository.delete(reply);
+	        	if(parentReply.getContent().equals("삭제된 댓글입니다.")) {
+	        		List<Reply> checkChildReplies = replyRepository.findByParentReply_ReplyNo(parentReply.getReplyNo());
+	        		if(checkChildReplies.size()==0) {
+	        			replyRepository.delete(parentReply);
+	        		}
+	        	}
 	        }
 	    } else {
 	        throw new IllegalArgumentException("해당 댓글이 없습니다. replyNo=" + replyNo);
 	    }
 	}
-
 
 	@Override
 	public boolean toggleLikeReply(Integer memNo, Integer replyNo) throws Exception {
@@ -102,7 +112,6 @@ public class ReplyServiceImpl implements ReplyService {
 	        Review review = parentReply.getReview();
 	        Member member = memberRepository.findByMemNo(replyDto.getWriterNo());
 
-	        // Ensure that member is not null before creating the reReply
 	        if (member != null) {
 	            Reply reReply = Reply.builder()
 	                .content(replyDto.getContent())
@@ -125,12 +134,9 @@ public class ReplyServiceImpl implements ReplyService {
 	@Override
 	public Page<ReplyInterface> getRepliesByReviewNo(Integer memNo, Integer reviewNo, Pageable pageable) throws Exception {
 		try {
-			Page<ReplyInterface> replyPage = replyRepository.findReplyList(memNo, reviewNo, pageable);
-			System.out.println(replyPage.getContent());
-			
+			Page<ReplyInterface> replyPage = replyRepository.findReplyList(memNo, reviewNo, pageable);			
 			return replyPage;
 
-//			return replyPage.map((reply) -> reply.toDto());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("댓글 목록을 가져오는 중에 오류가 발생했습니다.");
@@ -152,7 +158,6 @@ public class ReplyServiceImpl implements ReplyService {
         }
     }
 
-	// 회원 댓글 조회
 	@Override
 	public Page<Reply> findMyReply(Integer page, Integer size, Integer memNo) {
 		return replyRepository.findByMember_MemNo(PageRequest.of(page, size, Sort.by("regDate").descending()), memNo);
