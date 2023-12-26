@@ -3,7 +3,7 @@ import "./reviewDetailStyle.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useLocation, useParams } from "react-router";
+import { useLocation } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { url } from '../config.js'
@@ -16,14 +16,12 @@ const { kakao } = window;
 const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
-  const [replyContent, setReplyContent] = useState(""); //댓글 내용 state
-  const [replies, setReplies] = useState([]); //새로운 replies 상태 추가
+  const [replyContent, setReplyContent] = useState("");
+  const [replies, setReplies] = useState([]);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const [bestReply, setBestReply] = useState(null);
-  const [replyLike, setReplyLike] = useState(false);
-  const [replyLikeCount, setReplyLikeCount] = useState(0);
   const [pickBadgeName, setPickBadge] = useState([]);
   const dispatch = useDispatch();
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
@@ -47,7 +45,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     e.preventDefault();
     if (review.modPossible) {
       navigate(`/reviewmodify/${review.reviewNo}`);
-    }else{
+    } else {
       Toast('error', '리뷰 수정이 불가합니다');
     }
   }
@@ -62,7 +60,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
       tokenCreate(dispatch, setCookie, response.headers).then(() => {
         Toast('success', '리뷰가 삭제되었습니다');
-        navigate("/reviewList"); // 페이지 이동
+        navigate("/reviewList");
       });
     } catch (error) {
       console.log("리뷰 삭제 에러", error);
@@ -72,15 +70,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   };
 
-
-
   const handleReviewDelete = () => {
     ToastBtn('error', '리뷰 삭제', "리뷰를 삭제하시겠습니까?")
-    .then((result) => {
-      if (result.isConfirmed) {
-        ReviewDelete(reviewNo);
-      }
-    });
+      .then((result) => {
+        if (result.isConfirmed) {
+          ReviewDelete(reviewNo);
+        }
+      });
   };
 
   const showReplyClick = (reply) => {
@@ -94,30 +90,39 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const handleReplySubmit = (e) => {
     e.preventDefault();
-    if(memNo === undefined) {
+    if (memNo === undefined) {
       Toast('error', '로그인이 필요합니다');
     };
     if (replyContent.length > 0) {
       axios
         .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
+          headers: {
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken"),
+          },
           content: replyContent,
         })
-        .then((res) => {
+        .then((response) => {
           console.log("댓글이 성공적으로 등록되었습니다");
-          setReplyContent("");
-          fetchReplies();
+          tokenCreate(dispatch, setCookie, response.headers)
+            .then(() => {
+              setReplyContent("");
+              fetchReplies();
+            })
         })
         .catch((error) => {
           console.error("댓글 등록 에러", error);
-
-          if (error.response) {
-            console.error("응답 데이터:", error.response.data);
-            console.error("응답 상태 코드:", error.response.status);
-            console.error("응답 헤더:", error.response.headers);
-          } else if (error.request) {
-            console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
-          } else {
-            console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+            if (error.response) {
+              console.error("응답 데이터:", error.response.data);
+              console.error("응답 상태 코드:", error.response.status);
+              console.error("응답 헤더:", error.response.headers);
+            } else if (error.request) {
+              console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
+            } else {
+              console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
+            }
           }
         });
     }
@@ -185,24 +190,40 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         }
       })
         .then((response) => {
-          const member = response.data;
-          axios.post(`${url}/reply/${selectedReply.replyNo}/reReply`, {
-            parentReplyNo: parentReplyNo,
-            content: reReplyContent,
-            writerNo: member.memNo, // writerNo 대신 memNo 사용
-            likeCount: 0,
-          })
-            .then((res) => {
-              console.log("대댓글이 성공적으로 등록되었습니다.");
-              setReReplyContent("");
-              fetchReplies();
+          tokenCreate(dispatch, setCookie, response.headers)
+            .then(() => {
+              const member = response.data;
+              axios.post(`${url}/reply/${selectedReply.replyNo}/reReply`, {
+                headers: {
+                  Authorization: accessToken,
+                  Refresh: getCookie("refreshToken"),
+                },
+                parentReplyNo: parentReplyNo,
+                content: reReplyContent,
+                writerNo: member.memNo, // writerNo 대신 memNo 사용
+                likeCount: 0,
+              })
+                .then(() => {
+                  tokenCreate(dispatch, setCookie, response.headers)
+                    .then(() => {
+                      console.log("대댓글이 성공적으로 등록되었습니다.");
+                      setReReplyContent("");
+                      fetchReplies();
+                    })
+                })
+                .catch((error) => {
+                  console.error("대댓글 등록 에러", error);
+                  if (error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                  }
+                });
             })
-            .catch((error) => {
-              console.error("대댓글 등록 에러", error);
-            });
         })
         .catch((error) => {
           console.error("Member 조회 에러", error);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+          }
         });
     } else {
       console.error("댓글을 입력해주세요.");
@@ -212,34 +233,43 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const [selectedReply, setSelectedReply] = useState(null);
 
-  const handleReplyClick = (reply) => {
-    setSelectedReply(reply);
-    setShowReply(!showReply);
-  }
-
-
   const ReplyDelete = async (replyNo) => {
     try {
-      await axios.delete(`${url}/replyDelete/${replyNo}`);
-      console.log("댓글 삭제 성공");
-      Toast('success', '댓글이 삭제되었습니다');
+      await axios.delete(`${url}/replyDelete/${replyNo}`, {
+        headers: {
+          Authorization: accessToken,
+          Refresh: getCookie("refreshToken"),
+        }
+      }
+      )
+        .then((response) => {
+          tokenCreate(dispatch, setCookie, response.headers)
+            .then(() => {
+              console.log("댓글 삭제 성공");
+              Toast('success', '댓글이 삭제되었습니다');
+              fetchReplies();
+            })
+        })
     } catch (error) {
       console.log("댓글 삭제 에러");
       Toast('error', '댓글을 삭제하는 중에 오류가 발생했습니다');
+      if (error.response !== undefined) {
+        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+      }
     }
   };
 
   const handleReplyDelete = (replyNo, hasChildReplies) => {
     ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
-    .then(result => {
-      if (result.isConfirmed) {
-        if (hasChildReplies) {
-          handleChildReplies(replyNo);
-        } else {
-          ReplyDelete(replyNo);
+      .then(result => {
+        if (result.isConfirmed) {
+          if (hasChildReplies) {
+            handleChildReplies(replyNo);
+          } else {
+            ReplyDelete(replyNo);
+          }
         }
-      }
-    });
+      });
   };
 
   const handleChildReplies = (replyNo) => {
@@ -251,16 +281,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     });
     setReplies(updateReplies);
   };
-
-  const deleteSwal = () => {
-    ToastBtn('warning', '정말로 댓글을 삭제하시겠습니까?', '댓글이 삭제되면 복구할 수 없습니다')
-    .then(result => {
-      // 만약 Promise리턴을 받으면,
-      if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-        Toast('success', '댓글이 삭제되었습니다');
-      }
-    });
-  }
 
   const toggleLike = () => {
     if (memNo !== undefined) {
@@ -291,17 +311,28 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const replyToggleLike = (replyNo) => {
     if (memNo !== undefined) {
-      axios.post(`${url}/replyLike/${memNo}/${replyNo}`)
+      axios.post(`${url}/replyLike/${memNo}/${replyNo}`, {
+        headers: {
+          Authorization: accessToken,
+          Refresh: getCookie("refreshToken"),
+        }
+      })
         .then((res) => {
-          const index = replies.findIndex((reply) => reply.replyNo == replyNo);
-          const reply = { ...replies[index] };
-          reply.isReplyLike = res.data.isToggleLike;
-          reply.likeCount = res.data.likeCount;
-          setReplies([...replies.slice(0, index), reply, ...replies.slice(index + 1)]);
-          getBestReply();
+          tokenCreate(dispatch, setCookie, res.headers)
+            .then(() => {
+              const index = replies.findIndex((reply) => reply.replyNo == replyNo);
+              const reply = { ...replies[index] };
+              reply.isReplyLike = res.data.isToggleLike;
+              reply.likeCount = res.data.likeCount;
+              setReplies([...replies.slice(0, index), reply, ...replies.slice(index + 1)]);
+              getBestReply();
+            })
         })
         .catch((error) => {
           console.error("에러:" + error);
+          if (error.response !== undefined) {
+            tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+        }
         });
     } else {
       Toast('error', '로그인이 필요합니다');
@@ -336,7 +367,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   const getBestReply = () => {
-    //베스트 댓글 가져오기
     axios
       .get(`${url}/reply/${reviewNo}/best`, {
         params: {
@@ -347,13 +377,13 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         setBestReply(res.data);
         console.log(res.data.writerNo + "배댓");
         axios.get(`${url}/getMemberBadge/${res.data.writerNo}`)
-        .then((res) => {
-            const badgeName = res.data.badgeName || ''; 
+          .then((res) => {
+            const badgeName = res.data.badgeName || '';
             setPickBadge([badgeName]);
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             console.error('에러 발생:', error);
-        });
+          });
       })
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
@@ -369,7 +399,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
   }
 
-  useEffect(() => { // 디테일 가져오기
+  useEffect(() => {
     if (isLogin) {
       normalCheck(dispatch, accessToken);
     }
@@ -395,9 +425,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       });
     fetchReplies();
     getBestReply();
-  }, [pageInfo.currentPage]); // replies, bestReply
+  }, [pageInfo.currentPage]);
 
-  useEffect(() => { // 디테일 지도
+  useEffect(() => {
     if (review && review.lat && review.lng) {
       const mapContainer = document.getElementById("detailMap"),
         mapOption = {
@@ -415,7 +445,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const toDetail = (reviewNo) => {
     console.log(reviewNo);
-    navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});
+    navigate('/reviewDetail/' + reviewNo, { state: { reviewNo: reviewNo } });
   }
 
   return (
@@ -423,9 +453,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       {review && (
         <div className={!modalDetail ? "reviewBox" : "reviewModalContent"}>
           <div className="reviewContent">
-            {modalDetail ? 
-              <p className="detailTitle" onClick={() => toDetail(review.reviewNo)} style={{cursor:"pointer"}}>{review.title}</p>
-              : 
+            {modalDetail ?
+              <p className="detailTitle" onClick={() => toDetail(review.reviewNo)} style={{ cursor: "pointer" }}>{review.title}</p>
+              :
               <p className="detailTitle">{review.title}</p>
             }
             <div className="detailInfo">
@@ -446,7 +476,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
             <div id="detailMap"></div>
 
-            {!modalDetail && ( // wishReviewList 모달 띄울 때 차별화 위해!
+            {!modalDetail && (
               <><div className="starNheart">
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
@@ -459,7 +489,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   </div>
                 )}
                 <div className="detailLine" />
-                {/* 댓글 */}
+
                 <div className="reply">
                   <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
                   <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
@@ -494,7 +524,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   </div>
                   <div className="detailLine" />
 
-                  {/* 베스트 댓글에 대한 답글 창 */}
                   {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
                     <>
                       <div className="reply comment">
@@ -506,7 +535,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       </div>
                       <div className="detailLine" />
 
-                      {/* 베스트 댓글에 대한 답글 목록 */}
                       {selectedReply.replies && selectedReply.replies.length > 0 && (
                         <div className="reReplyInfo">
                           {selectedReply.replies.map((reReply) => (
@@ -524,8 +552,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
               )
             )}
 
-            {/* 댓글 목록 출력 */}
-
             {replies.length === 0 ? (
               <div className="noWish">댓글이 없습니다</div>
             ) : (
@@ -539,7 +565,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                           <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
                         </p>
                         <p>
-                          <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
+                          <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies ? reply.hasChildReplies.length > 0 : false)}>삭제</span>&nbsp;&nbsp;
                           {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
                           &nbsp;&nbsp;
                           <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
@@ -562,12 +588,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                   )}
                   <div className="detailLine" />
 
-                  {/* 대댓글 */}
                   {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
                     <>
                       <div className="reply comment">
                         <img src="/img/reply.png" alt="reReply" />
-                        <input type="text" name="reply" onChange={handleReReplyChange} />
+                        <input type="text" name="reply" value={reReplyContent} onChange={handleReReplyChange} />
                         <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
                           등록
                         </div>

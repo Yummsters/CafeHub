@@ -88,7 +88,7 @@ const ManagerConfirm = () => {
                             {unpaidCafes.map((cafe) => (
                                 <tr key={cafe.cafeNo}>
                                     <th scope="row">
-                                        <img className='listImg' src={`/img/${cafe.thumbImg}.png`} alt='' />
+                                        <img className='listImg' src={`${url}/common/thumbImg/${cafe.thumbImg}`} alt='' />
                                     </th>
                                     <td colSpan={11}>
                                         <div className='listMiniTitle'>{cafe.cafeName}</div>
