@@ -48,10 +48,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Member member = principalDetails.getMember();
         String dbMemberType = member.getMemberType().toString();
 
-        // 탈퇴 회원 로그인 불가
+        // 탈퇴 회원 로그인 불가\
+        System.out.println("회원 상태 = " + member.isStatus());
         if(!member.isStatus()){
             try {
                 response.sendError(880, "탈퇴 회원입니다.");
+                return null;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -72,7 +74,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 throw new RuntimeException(e);
             }
         }
-
 
         return authentication;
     }
