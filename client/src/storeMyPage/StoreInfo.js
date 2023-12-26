@@ -18,7 +18,7 @@ const StoreInfo = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [point, setPoint] = useState(0);
-    const [fileNum, setFileNum] = useState(0);
+    const [fileName, setFileName] = useState("");
     const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
     const [valid, setValid] = useState({ businessNo: false });
     const [cafe, setCafe] = useState({ cafeName: "", tel: "", address: "", businessNo: "", operTime: "", lat: "", lng: "", tagName: "", thumbImg: "", cafeInfo: "" });
@@ -65,6 +65,7 @@ const StoreInfo = () => {
 
     useEffect(() => {
         axios
+
             .get(`${url}/cafe/${cafeNo}`,{
                 headers: {
                     Authorization: accessToken,
@@ -76,6 +77,7 @@ const StoreInfo = () => {
                 console.log(response.data);
                 const cafeData = response.data;
 
+
                 if (cafeData) {
                     setCafe({
                         cafeName: cafeData.cafeName,
@@ -84,10 +86,12 @@ const StoreInfo = () => {
                         businessNo: cafeData.businessNo,
                         operTime: cafeData.operTime,
                         thumbImg: cafeData.thumbImg,
+                        fileName : cafeData.fileName,
                         storeTag: cafeData.storeTag.storeTagNo,
                         cafeInfo: cafeData.cafeInfo
                     });
-                    setSelectedTags([cafeData.storeTag.storeTagNo - 1]);
+                    setSelectedTags([cafeData.storeTag.storeTagNo - 1]);  
+                    setFileName(cafeData.fileName);              
                 } else {
                     console.error('카페 정보가 없습니다.');
                 }
@@ -270,6 +274,8 @@ const StoreInfo = () => {
     const fileChange = (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
+        setFileName(file.name);
+        console.log(file);
         const imageUrl = URL.createObjectURL(file);
         setCafe((prevCafe) => ({
             ...prevCafe,
@@ -439,7 +445,7 @@ const StoreInfo = () => {
                                     type="text"
                                     id="thumbImg"
                                     name="thumbImg"
-                                    value={cafe.imageUrl}
+                                    value={fileName}
                                     readOnly
                                 />
                             </label>

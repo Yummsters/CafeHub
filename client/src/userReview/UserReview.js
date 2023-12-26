@@ -76,7 +76,7 @@ const UserReview = () => {
                             {reviewList.length != 0 && reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <th scope="row" style={{ width: "150px" }}> <img className='listImg' src={`${url}/thumbImg/${list.thumbImg}`} alt='' /></th>
+                                        <th scope="row" style={{ width: "150px" }}> <img className='listImg' src={`${url}/common/thumbImg/${list.thumbImg}`} alt='' /></th>
                                         <td colSpan={8}><div className='listMiniTitle'>{list.title}</div>
                                             <div className='reviewUser'>{list.cafeName}</div></td>
                                         <td colSpan={4}><div className='reviewLikeCount'>추천 {list.likeCount}</div>
