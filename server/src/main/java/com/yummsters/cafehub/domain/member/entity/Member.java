@@ -1,11 +1,8 @@
 package com.yummsters.cafehub.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yummsters.cafehub.domain.badge.entity.Badge;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.dto.DefaultBadgeDto;
-import com.yummsters.cafehub.domain.member.dto.ModifyReqDto;
-import com.yummsters.cafehub.domain.point.entity.Point;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
 import lombok.*;
@@ -22,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-//@ToString(exclude = "reviews")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,23 +62,13 @@ public class Member {
     @OneToMany(mappedBy = "member") @JsonIgnore
     private List<ReviewAuth> reviewAuths;
 
-   /* @OneToOne(mappedBy="member")
-    private Point point;*/
-
     @OneToOne
     @JoinColumn(name="cafe_no")
     private Cafe cafe;
-    @Column
-    private Integer cafeno;
+
     @Column(name="badge_no")
     private Integer badgeNo;
 
-    public void setBadgeNo(Badge badge) {
-        if (badge != null) {
-            this.badgeNo = badge.getBadgeNo();
-        }
-    }
-    
     public void setBadgeNo(Integer badgeNo) {
         this.badgeNo = badgeNo;
     }
@@ -109,11 +95,7 @@ public class Member {
         return DefaultBadgeDto.builder()
                 .memNo(this.memNo)
                 .badgeNo(this.badgeNo)
-               
                 .build();
-    }
-    public void setCafeno(Integer cafeno) {
-        this.cafeno = cafeno;
     }
 
     public void changePassword(String newPassword) { this.password = newPassword; }

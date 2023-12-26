@@ -63,10 +63,6 @@ public class CafeAd {
     @JoinColumn(name = "paymentKey", referencedColumnName = "paymentKey")
     private Payment payment;
 
-   /* public void addThumbImg(String thumbImg) {
-        this.thumbImg = thumbImg;
-    }*/
-    
     public void setApproved(boolean isApproved) {
         this.isApproved = isApproved;
     }

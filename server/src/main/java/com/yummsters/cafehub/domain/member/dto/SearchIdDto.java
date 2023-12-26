@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.member.dto;
 
-import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import lombok.Builder;
 import lombok.Data;

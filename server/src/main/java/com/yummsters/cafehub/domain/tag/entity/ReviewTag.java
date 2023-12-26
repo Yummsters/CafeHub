@@ -16,7 +16,6 @@ import java.util.List;
 @Builder
 @DynamicInsert
 @DynamicUpdate
-@ToString(exclude = "reviewTags")
 public class ReviewTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

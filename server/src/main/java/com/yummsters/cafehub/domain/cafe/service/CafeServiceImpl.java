@@ -49,6 +49,9 @@ public class CafeServiceImpl implements CafeService {
     @Value("${kakaomap-key}")
     private String apiKey;
 
+    @Value("${upload.path}")
+    private String uploadPath;
+
     @Override
     public void saveCafe() throws Exception {
         List<Cafe> cafes = new ArrayList<>();
@@ -107,9 +110,8 @@ public class CafeServiceImpl implements CafeService {
         cafeRepository.saveAll(cafes);
     }
 
-
     @Override
-    public List<CafeDto> getCafes() throws Exception {
+    public List<CafeDto> getCafes(){
         List<Cafe> cafeList = cafeRepository.findAll(); // Entity, DB의 모든 정보
         List<CafeDto> cafeDTOList = new ArrayList<>(); // DTO
         for (Cafe cafe : cafeList) {
@@ -120,13 +122,13 @@ public class CafeServiceImpl implements CafeService {
     }
 
     @Override
-    public boolean isWishCafe(Integer memNo, Integer cafeNo) throws Exception {
+    public boolean isWishCafe(Integer memNo, Integer cafeNo){
         return wishRepository.existsByMember_memNoAndCafe_cafeNo(memNo, cafeNo);
     }
 
     @Override
     @Transactional
-    public boolean toggleWishCafe(Integer memNo, Integer cafeNo) throws Exception {
+    public boolean toggleWishCafe(Integer memNo, Integer cafeNo){
         Cafe cafe = cafeRepository.findByCafeNo(cafeNo);
         Member member = memberRepository.findByMemNo(memNo);
         boolean isWish = wishRepository.existsByMember_memNoAndCafe_cafeNo(memNo, cafeNo);
@@ -148,30 +150,29 @@ public class CafeServiceImpl implements CafeService {
     }
 
     @Override
-    public CafeDto getCafeByCafeNo(Integer cafeNo) throws Exception {
+    public CafeDto getCafeByCafeNo(Integer cafeNo){
         return cafeRepository.findByCafeNo(cafeNo).toDTO();
     }
 
-    // 혜리 part---------------------------------------------------------------------------
-
 	@Override
-	public Page<CafeDto> getUnpaidCafes(Pageable pageable) throws Exception {
+	public Page<CafeDto> getUnpaidCafes(Pageable pageable){
 		Page<Cafe> unpaidCafesPage = cafeRepository.findByIsPaidFalseAndIsExistingTrueOrderByPaidDate(pageable);
 		Page<CafeDto> unpaidCafesDtoPage = unpaidCafesPage.map(Cafe::toDTO);
 		return unpaidCafesDtoPage;
 	}
+	
+	@Override
+    public Cafe getCafeInfo(Integer cafeNo){
+        return cafeRepository.findByCafeNo(cafeNo);
+    }
 
-	// 수빈 part---------------------------------------------------------------------------
-	
-	
-	@Override
-	  public Cafe getCafeInfo(Integer cafeNo) throws Exception{
-		
-	        return cafeRepository.findByCafeNo(cafeNo);
-	    }
-	
-	@Override
-	public Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files)throws Exception {
+    @Override
+    public String getFileName(String thumbImg) {
+        return fileVoRepository.findByFileNum(Integer.parseInt(thumbImg)).getName();
+    }
+
+    @Override
+	public Integer modifyCafe(Integer cafeNo, ModifyCafeDto modifyCafeDto, List<MultipartFile> files){
 	    // 기존 카페 정보 가져오기
 	    Cafe cafe = cafeRepository.findByCafeNo(cafeNo);
         System.out.println("mod" + modifyCafeDto.getTagName());
@@ -203,8 +204,7 @@ public class CafeServiceImpl implements CafeService {
 	    }
 
 	    if (files != null && !files.isEmpty()) {
-	        String dir = "c:/soobin/upload/";
-            //String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
+            String dir = uploadPath; // 다른 업로드 경로
 
             String fileNums = "";
 
@@ -228,19 +228,14 @@ public class CafeServiceImpl implements CafeService {
 	                    fileNums += (fileNums.isEmpty() ? "" : ",") + fileVo.getFileNum();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
-	                    // 파일 업로드 중 예외 처리
 	                }
 	            }
 	        }
-	        // 파일 번호 목록을 썸네일 이미지로 사용
 	        cafe.setThumbImg(fileNums);
 	    }
-	    // 카페 정보 저장
-	    cafeRepository.save(cafe);
+        cafeRepository.save(cafe);
 
 	    return cafe.getCafeNo();
 	}
-
- 
 }
 

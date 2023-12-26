@@ -29,20 +29,5 @@ public class ModifyCafeDto {
     private LocalDateTime paidDate;
     private boolean isExisting;
     private String cafeInfo;
-    
-    public Cafe toEntity() {
-
-		 return Cafe.builder()
-				    .cafeNo(cafeNo)
-		            .cafeName(cafeName)
-		            .tel(tel)
-		            .businessNo(businessNo)
-		            .address(address)
-		            .operTime(operTime)
-		            .thumbImg(thumbImg)
-		            .cafeInfo(cafeInfo)
-		            .lat(lat)
-		            .lng(lng)
-		            .build();
-	}
+    private String fileurl;
 }

@@ -2,7 +2,6 @@ package com.yummsters.cafehub.domain.member.mapper;
 
 import com.yummsters.cafehub.domain.member.dto.*;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.yummsters.cafehub.domain.member.entity.Member;

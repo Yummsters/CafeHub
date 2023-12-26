@@ -55,7 +55,6 @@ public class CafeAdServiceImpl implements CafeAdService {
 		return cafeAdRepository.findByCafe_CafeNo(cafeAd.getCafeAdNo());
 	}
 
-	// 선진 part ----------------------------------------------
 	// 광고 삭제
 	@Override
 	public boolean deleteCafeAd(Integer cafeNo) throws Exception {
@@ -86,14 +85,13 @@ public class CafeAdServiceImpl implements CafeAdService {
 		}
 	}
 
-	// 혜리 part-------------------------------------------------------
 	@Override
-	public List<CafeAdInterface> getApprovedAds() throws Exception {
+	public List<CafeAdInterface> getApprovedAds(){
 		return cafeAdRepository.findApprovedAds();
 	}
 
 	@Override
-	public Page<CafeAdInterface> getUnapprovedAds(Pageable pageable) throws Exception {
+	public Page<CafeAdInterface> getUnapprovedAds(Pageable pageable){
 	    return cafeAdRepository.findUnapprovedAds(pageable);
 	}
 
@@ -111,7 +109,7 @@ public class CafeAdServiceImpl implements CafeAdService {
     }
 
 	@Override
-	public void deleteOldRecords() throws Exception {
+	public void deleteOldRecords(){
 		cafeAdRepository.deleteOldRecords(LocalDateTime.now().minusDays(7));
 	}
 }

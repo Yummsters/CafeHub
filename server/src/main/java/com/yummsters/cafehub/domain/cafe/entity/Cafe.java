@@ -43,10 +43,8 @@ public class Cafe {
     private boolean isExisting;
     @Column
     private String cafeInfo;
-
     @OneToOne(mappedBy="cafe")
     private Member member;
-
     @OneToOne
     @JoinColumn(name = "storeTagNo")
     private StoreTag storeTag;
@@ -54,14 +52,8 @@ public class Cafe {
     @JoinColumn(name = "paymentKey", referencedColumnName = "paymentKey")
     private Payment payment;
 
-
     public void updatePaid(boolean isPaid) { this.isPaid = isPaid; }
     public void addPayment(Payment payment) { this.payment = payment; }
-    
-    public Integer getCafeNo() {
-        return cafeNo;
-    }
-   
 
     public CafeDto toDTO() {
         return CafeDto.builder()
@@ -72,6 +64,7 @@ public class Cafe {
                 .address(address)
                 .operTime(operTime)
                 .thumbImg(thumbImg)
+                .fileName("파일이름")
                 .storeTag(storeTag)
                 .lat(lat)
                 .lng(lng)

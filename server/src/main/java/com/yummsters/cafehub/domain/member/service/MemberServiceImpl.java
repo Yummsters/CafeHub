@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.member.service;
 
-import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.member.dto.*;
 
 import java.io.File;
@@ -10,12 +9,12 @@ import com.yummsters.cafehub.domain.payment.entity.Payment;
 import com.yummsters.cafehub.domain.payment.repository.PaymentRepository;
 import com.yummsters.cafehub.domain.tag.entity.StoreTag;
 import com.yummsters.cafehub.domain.tag.repository.StoreTagRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
-import com.yummsters.cafehub.domain.file.service.FileService;
 import com.yummsters.cafehub.domain.member.dto.SignUpStoreDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
@@ -31,6 +30,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
+    @Value("${upload.path}")
+    private String uploadPath;
+
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -41,7 +43,7 @@ public class MemberServiceImpl implements MemberService{
 
   // 아이디 중복 체크
     @Override
-    public boolean existId(String id) throws Exception {
+    public boolean existId(String id) {
         Member member = memberRepository.findById(id);
         if(member != null) return true;
         return false;
@@ -49,14 +51,15 @@ public class MemberServiceImpl implements MemberService{
 
     // 이메일 중복 체크
     @Override
-    public boolean existEmail(String email) throws Exception {
+    public boolean existEmail(String email) {
         Member member = memberRepository.findByEmail(email);
         if(member != null) return true;
         return false;
     }
 
     // 닉네임 중복 체크
-    public boolean existNickname(String nickname) throws Exception {
+    @Override
+    public boolean existNickname(String nickname){
         Member member = memberRepository.findByNickname(nickname);
         if(member != null) return true;
         return false;
@@ -76,7 +79,7 @@ public class MemberServiceImpl implements MemberService{
                     .password(bCryptPasswordEncoder.encode(member.getPassword()))
                     .name(member.getName())
                     .nickname(member.getNickname())
-                    .memberType(MemberType.USER)
+                    .memberType(member.getEmail().equals("cafehub@kosta.com") ? MemberType.MANAGER : MemberType.USER)
                     .status(true)
                     .email(member.getEmail())
                     .phone(member.getPhone())
@@ -87,7 +90,6 @@ public class MemberServiceImpl implements MemberService{
         memberRepository.save(member);
 
         member = memberRepository.findById(member.getId());
-        System.out.println(member);
 
         // 포인트 정보 생성
         Point point = Point.builder()
@@ -191,7 +193,6 @@ public class MemberServiceImpl implements MemberService{
         return member;
     }
 
-    // 선진 part ----------------------------------------------------------
     // 아이디 찾기
     @Override
     public Member searchId(String name, String phone) throws Exception {
@@ -269,14 +270,12 @@ public class MemberServiceImpl implements MemberService{
         }
     }
 
-    // 수빈 part ----------------------------------------------------------
     //카페정보생성
     @Override
     public Integer existStore(SignUpStoreDto signUpStore, List<MultipartFile> files) throws Exception {
         try {
             if (files != null && !files.isEmpty()) {
-                //String dir = "c:/soobin/upload/"; // 업로드 경로
-                String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 다른 업로드 경로
+                String dir =uploadPath; // 다른 업로드 경로
 
                 String fileNums = "";
 
@@ -291,7 +290,6 @@ public class MemberServiceImpl implements MemberService{
 
                     fileVoRepository.save(fileVo);
                     File uploadFile = new File(dir + fileVo.getFileNum());
-                    System.out.println("파일 경로: " + uploadFile.getAbsolutePath());
 
                     file.transferTo(uploadFile);
 
@@ -317,11 +315,7 @@ public class MemberServiceImpl implements MemberService{
                         .storeTag(storeTag)
                         .build();
 
-                System.out.println("카페 엔터티: " + cafeEntity);
-
                 cafeRepository.save(cafeEntity);
-                System.out.println("저장된 카페 엔터티: " + cafeEntity);
-
                 
                 Integer cafeNo = cafeEntity.getCafeNo();
 
@@ -355,7 +349,6 @@ public class MemberServiceImpl implements MemberService{
                 .badgeNo(9)
                 .social(Social.NORMAL)
                 .build();
-
  
         memberRepository.save(member);
 
@@ -368,7 +361,6 @@ public class MemberServiceImpl implements MemberService{
         return member;
     }
 
-    // 혜리 part ----------------------------------------------------------
     @Override
     public Member getMemberByMemNo(Integer memNo) {
         return memberRepository.findById(memNo).orElse(null);

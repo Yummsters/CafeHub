@@ -2,7 +2,6 @@ package com.yummsters.cafehub.domain.cafeAd.dto;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
-import com.yummsters.cafehub.domain.payment.entity.Payment;
 import lombok.Builder;
 import lombok.Getter;
 
