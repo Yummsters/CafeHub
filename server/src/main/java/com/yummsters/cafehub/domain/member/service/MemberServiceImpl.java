@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.member.service;
 
-import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.member.dto.*;
 
 import java.io.File;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
 import com.yummsters.cafehub.domain.cafe.repository.CafeRepository;
-import com.yummsters.cafehub.domain.file.service.FileService;
 import com.yummsters.cafehub.domain.member.dto.SignUpStoreDto;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.entity.MemberType;
@@ -76,7 +74,7 @@ public class MemberServiceImpl implements MemberService{
                     .password(bCryptPasswordEncoder.encode(member.getPassword()))
                     .name(member.getName())
                     .nickname(member.getNickname())
-                    .memberType(MemberType.USER)
+                    .memberType(member.getEmail().equals("cafehub@kosta.com") ? MemberType.MANAGER : MemberType.USER)
                     .status(true)
                     .email(member.getEmail())
                     .phone(member.getPhone())
