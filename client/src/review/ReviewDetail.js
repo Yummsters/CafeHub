@@ -102,7 +102,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
           content: replyContent,
         })
-        .then((res) => {
+        .then((response) => {
           console.log("댓글이 성공적으로 등록되었습니다");
           setReplyContent("");
           fetchReplies();
@@ -191,7 +191,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             writerNo: member.memNo, // writerNo 대신 memNo 사용
             likeCount: 0,
           })
-            .then((res) => {
+            .then(() => {
               console.log("대댓글이 성공적으로 등록되었습니다.");
               setReReplyContent("");
               fetchReplies();
@@ -216,20 +216,21 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     setShowReply(!showReply);
   }
 
+const ReplyDelete = async (replyNo) => {
+  try {
+    await axios.delete(`${url}/replyDelete/${replyNo}`);
+    console.log("댓글 삭제 성공");
+    Toast('success', '댓글이 삭제되었습니다');
+    // 댓글 삭제 성공 시 댓글 목록을 다시 가져오도록 수정
+    fetchReplies();
+  } catch (error) {
+    console.log("댓글 삭제 에러");
+    Toast('error', '댓글을 삭제하는 중에 오류가 발생했습니다');
+  }
+};
 
-  const ReplyDelete = async (replyNo) => {
-    try {
-      await axios.delete(`${url}/replyDelete/${replyNo}`);
-      console.log("댓글 삭제 성공");
-      Toast('success', '댓글이 삭제되었습니다');
-    } catch (error) {
-      console.log("댓글 삭제 에러");
-      Toast('error', '댓글을 삭제하는 중에 오류가 발생했습니다');
-    }
-  };
-
-  const handleReplyDelete = (replyNo, hasChildReplies) => {
-    ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
+const handleReplyDelete = (replyNo, hasChildReplies) => {
+  ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
     .then(result => {
       if (result.isConfirmed) {
         if (hasChildReplies) {
@@ -239,7 +240,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         }
       }
     });
-  };
+};
 
   const handleChildReplies = (replyNo) => {
     const updateReplies = replies.map(reply => {
@@ -538,7 +539,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                           <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
                         </p>
                         <p>
-                          <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies.length > 0)}>삭제</span>&nbsp;&nbsp;
+                        <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies ? reply.hasChildReplies.length > 0 : false)}>삭제</span>&nbsp;&nbsp;
                           {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
                           &nbsp;&nbsp;
                           <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
@@ -566,7 +567,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                     <>
                       <div className="reply comment">
                         <img src="/img/reply.png" alt="reReply" />
-                        <input type="text" name="reply" onChange={handleReReplyChange} />
+                        <input type="text" name="reply" value={reReplyContent} onChange={handleReReplyChange} />
                         <div className="Gbtn" onClick={() => handleReReplySubmit(selectedReply.replyNo)}>
                           등록
                         </div>
