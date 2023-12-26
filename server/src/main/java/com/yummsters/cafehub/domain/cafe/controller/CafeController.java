@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.cafe.dto.CafeDto;
 import com.yummsters.cafehub.domain.cafe.dto.ModifyCafeDto;
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-import com.yummsters.cafehub.domain.cafe.service.CafeServiceImpl;
 
 @RestController
 public class CafeController {
@@ -85,7 +84,6 @@ public class CafeController {
         }
     }
 
-    // 혜리 part---------------------------------------------------------------------------
     @GetMapping("/manager/managerConfirm")
     public ResponseEntity<Object> getUnpaidCafes(@RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "5") int size) {
@@ -102,7 +100,7 @@ public class CafeController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    // 수빈 part---------------------------------------------------------------------------
+
     @GetMapping("/cafe/{cafeNo}")
     public ResponseEntity<Object> getCafeInfo(@PathVariable Integer cafeNo) {
         try {
@@ -110,6 +108,7 @@ public class CafeController {
             
             if (cafe != null) {
                 CafeDto cafeDto = cafe.toDTO();
+                cafeDto.setFileName(service.getFileName(cafe.getThumbImg()));
                 return new ResponseEntity<>(cafeDto, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -133,6 +132,4 @@ public class CafeController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-
 }

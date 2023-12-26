@@ -2,7 +2,6 @@ package com.yummsters.cafehub.domain.member.dto;
 
 import lombok.*;
 
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpReqDto {

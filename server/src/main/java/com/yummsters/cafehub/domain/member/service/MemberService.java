@@ -2,7 +2,6 @@ package com.yummsters.cafehub.domain.member.service;
 
 import com.yummsters.cafehub.domain.member.dto.*;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;

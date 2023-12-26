@@ -1,8 +1,6 @@
 package com.yummsters.cafehub.domain.member.controller;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
-import com.yummsters.cafehub.domain.cafeAd.dto.SearchResDto;
-import com.yummsters.cafehub.domain.cafeAd.entity.CafeAd;
 import com.yummsters.cafehub.domain.member.dto.*;
 import com.yummsters.cafehub.global.auth.userdetails.PrincipalDetails;
 
@@ -17,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yummsters.cafehub.domain.member.entity.Member;
 import com.yummsters.cafehub.domain.member.mapper.MemberMapper;
 import com.yummsters.cafehub.domain.member.service.MemberService;
-import com.yummsters.cafehub.domain.review.dto.ReviewDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -106,8 +103,6 @@ public class MemberController {
             // 서비스 이메일에 맞게 수정 필요
             boolean deleteResult = memberService.deleteSocialMember(memNo, member.getEmail());
 
-            // deleteResult가 true일 경우 api를 이용한 탈퇴 구현 진행할 예정이라면 로직 추가 필요
-
             return new ResponseEntity<>(deleteResult, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,7 +124,6 @@ public class MemberController {
         }
     }
 
-    // 선진 part ----------------------------------------------------------------
     @PostMapping("/searchId")
     public ResponseEntity<Object> idSearch(@RequestBody SearchIdDto searchIdDto) {
         try {
@@ -211,7 +205,6 @@ public class MemberController {
         }
     }
 
-    // 수빈 part ----------------------------------------------------------------
     // 사장님 회원가입
     @PostMapping("/signUpStore/{cafeNo}")
     public ResponseEntity<Object> existStoreMember(@RequestBody SignUpReqDto requestDto, @PathVariable Integer cafeNo) {
@@ -237,7 +230,6 @@ public class MemberController {
         }
     }
    
-    // 혜리 part ----------------------------------------------------------
     @GetMapping("/member/{memNo}")
     public ResponseEntity<Member> getMember(@PathVariable Integer memNo) {
         Member member;
@@ -252,7 +244,6 @@ public class MemberController {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-
     }
 }
 

@@ -2,6 +2,7 @@ package com.yummsters.cafehub.domain.review.controller;
 
 import com.yummsters.cafehub.domain.file.service.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,11 @@ import java.nio.charset.StandardCharsets;
 public class FileUploadController {
     private final FileService fileService;
 
+    @Value("${upload.path}")
+    private String uploadPath;
+
     // 기본 URL 정의
     private static final String BASE_URL = "http://localhost:8080/common/";
-    private static final String UPLOAD_DIRECTORY = "c:/soobin/uploads/"; // 수빈 업로드 경로
-    //private static final String UPLOAD_DIRECTORY = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
 
     @PostMapping("/fileUpload")
     public ResponseEntity<String> handleFileUpload(@RequestParam("images") MultipartFile file) {
@@ -37,7 +39,7 @@ public class FileUploadController {
         String fileName = file.getOriginalFilename();
         try {
            
-            file.transferTo(new File(UPLOAD_DIRECTORY + fileName));
+            file.transferTo(new File(uploadPath + fileName));
             
         } catch (IOException e) {
            
@@ -52,7 +54,7 @@ public class FileUploadController {
     public ResponseEntity<Resource> getFile(@PathVariable String filename) throws IOException {
         // URL 디코딩
         String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8.toString());
-        Resource fileResource = new FileSystemResource(UPLOAD_DIRECTORY + decodedFilename);
+        Resource fileResource = new FileSystemResource(uploadPath + decodedFilename);
 
         return ResponseEntity.ok()
                 .body(fileResource);

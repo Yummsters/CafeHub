@@ -125,7 +125,7 @@ public class BadgeController {
             List<MemberBadges> list = memberBadgeRepository.findAllByRegDateIsBefore(LocalDateTime.now().minusDays(30));
             for (MemberBadges memberBadges : list) {
                 Integer memberBadge = memberRepository.findByMemNo(memberBadges.getMemNo()).getBadgeNo();
-                Integer memberBadgesBadge = memberBadges.getBadgeNo();
+                Integer memberBadgesBadge = memberBadges.getBadge().getBadgeNo();
                 if (memberBadge.equals(memberBadgesBadge)) {
                     // 동일한 경우
                 	Badge defaultBadge = badgeRepository.findByBadgeNo(9); 
@@ -135,7 +135,6 @@ public class BadgeController {
                 	memberBadgeRepository.delete(memberBadges); //members에있는 배지 지움
                 } else {
                 	 memberBadgeRepository.delete(memberBadges);
-                	 
                 }
             }
         } catch (Exception e) {
@@ -149,7 +148,7 @@ public class BadgeController {
             Member member = badgeService.defaultBadge(memNo);
 
             if (member != null) {
-            	DefaultBadgeDto defaultBadgeDto = member.toDTO();  // MemberDto를 사용하는 경우에 대한 가정입니다.
+            	DefaultBadgeDto defaultBadgeDto = member.toDTO();
 
                 return new ResponseEntity<>(defaultBadgeDto, HttpStatus.OK);
             } else {
@@ -159,10 +158,4 @@ public class BadgeController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
-
-
-    
-
-    
 }

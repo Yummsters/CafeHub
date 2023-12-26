@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.badge.repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +12,5 @@ import com.yummsters.cafehub.domain.badge.entity.MemberBadges;
 public interface MemberBadgeRepository extends JpaRepository<MemberBadges, Integer> {
      List<MemberBadges> findByMemNo(Integer memNo);
 	 Optional<MemberBadges> findById(Integer badgeNo);
-	 List<MemberBadges> findByMemNoAndBadge(Integer memNo, Badge badge); 
 	 List<MemberBadges> findAllByRegDateIsBefore(LocalDateTime localDateTime);
-
 }
