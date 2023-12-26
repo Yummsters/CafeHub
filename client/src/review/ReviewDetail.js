@@ -3,7 +3,7 @@ import "./reviewDetailStyle.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useLocation, useParams } from "react-router";
+import { useLocation } from "react-router";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { url } from '../config.js'
@@ -16,14 +16,12 @@ const { kakao } = window;
 const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const [review, setReview] = useState(null);
   const [showReply, setShowReply] = useState(false);
-  const [replyContent, setReplyContent] = useState(""); //댓글 내용 state
-  const [replies, setReplies] = useState([]); //새로운 replies 상태 추가
+  const [replyContent, setReplyContent] = useState("");
+  const [replies, setReplies] = useState([]);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [wish, setWish] = useState(false);
   const [bestReply, setBestReply] = useState(null);
-  const [replyLike, setReplyLike] = useState(false);
-  const [replyLikeCount, setReplyLikeCount] = useState(0);
   const [pickBadgeName, setPickBadge] = useState([]);
   const dispatch = useDispatch();
   const memNo = useSelector(state => state.persistedReducer.member.memNo);
@@ -62,7 +60,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
       tokenCreate(dispatch, setCookie, response.headers).then(() => {
         Toast('success', '리뷰가 삭제되었습니다');
-        navigate("/reviewList"); // 페이지 이동
+        navigate("/reviewList");
       });
     } catch (error) {
       console.log("리뷰 삭제 에러", error);
@@ -71,8 +69,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       }
     }
   };
-
-
 
   const handleReviewDelete = () => {
     ToastBtn('error', '리뷰 삭제', "리뷰를 삭제하시겠습니까?")
@@ -211,17 +207,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
 
   const [selectedReply, setSelectedReply] = useState(null);
 
-  const handleReplyClick = (reply) => {
-    setSelectedReply(reply);
-    setShowReply(!showReply);
-  }
-
 const ReplyDelete = async (replyNo) => {
   try {
     await axios.delete(`${url}/replyDelete/${replyNo}`);
     console.log("댓글 삭제 성공");
     Toast('success', '댓글이 삭제되었습니다');
-    // 댓글 삭제 성공 시 댓글 목록을 다시 가져오도록 수정
     fetchReplies();
   } catch (error) {
     console.log("댓글 삭제 에러");
@@ -251,16 +241,6 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
     });
     setReplies(updateReplies);
   };
-
-  const deleteSwal = () => {
-    ToastBtn('warning', '정말로 댓글을 삭제하시겠습니까?', '댓글이 삭제되면 복구할 수 없습니다')
-    .then(result => {
-      // 만약 Promise리턴을 받으면,
-      if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-        Toast('success', '댓글이 삭제되었습니다');
-      }
-    });
-  }
 
   const toggleLike = () => {
     if (memNo !== undefined) {
@@ -336,7 +316,6 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
   }
 
   const getBestReply = () => {
-    //베스트 댓글 가져오기
     axios
       .get(`${url}/reply/${reviewNo}/best`, {
         params: {
@@ -369,7 +348,7 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
       });
   }
 
-  useEffect(() => { // 디테일 가져오기
+  useEffect(() => {
     if (isLogin) {
       normalCheck(dispatch, accessToken);
     }
@@ -395,9 +374,9 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
       });
     fetchReplies();
     getBestReply();
-  }, [pageInfo.currentPage]); // replies, bestReply
+  }, [pageInfo.currentPage]);
 
-  useEffect(() => { // 디테일 지도
+  useEffect(() => {
     if (review && review.lat && review.lng) {
       const mapContainer = document.getElementById("detailMap"),
         mapOption = {
@@ -446,7 +425,7 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
 
             <div id="detailMap"></div>
 
-            {!modalDetail && ( // wishReviewList 모달 띄울 때 차별화 위해!
+            {!modalDetail && (
               <><div className="starNheart">
                 <img src={wish ? "/img/y_star.png" : "/img/n_star.png"} alt="star" onClick={toggleWish} /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src={like ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={toggleLike} />
@@ -459,7 +438,7 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
                   </div>
                 )}
                 <div className="detailLine" />
-                {/* 댓글 */}
+                
                 <div className="reply">
                   <input type="text" name="reply" value={replyContent} onChange={handleReplyChange} />
                   <button className="Gbtn" onClick={handleReplySubmit}>등록</button>
@@ -494,7 +473,6 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
                   </div>
                   <div className="detailLine" />
 
-                  {/* 베스트 댓글에 대한 답글 창 */}
                   {showReply && selectedReply && selectedReply.replyNo === bestReply.replyNo && (
                     <>
                       <div className="reply comment">
@@ -506,7 +484,6 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
                       </div>
                       <div className="detailLine" />
 
-                      {/* 베스트 댓글에 대한 답글 목록 */}
                       {selectedReply.replies && selectedReply.replies.length > 0 && (
                         <div className="reReplyInfo">
                           {selectedReply.replies.map((reReply) => (
@@ -523,8 +500,6 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
                 </div>
               )
             )}
-
-            {/* 댓글 목록 출력 */}
 
             {replies.length === 0 ? (
               <div className="noWish">댓글이 없습니다</div>
@@ -562,7 +537,6 @@ const handleReplyDelete = (replyNo, hasChildReplies) => {
                   )}
                   <div className="detailLine" />
 
-                  {/* 대댓글 */}
                   {showReply && selectedReply && selectedReply.replyNo === reply.replyNo && (
                     <>
                       <div className="reply comment">
