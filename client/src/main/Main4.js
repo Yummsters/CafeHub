@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkLogin, normalCheck } from '../login/TokenCheck';
 import Swal from 'sweetalert2';
+import { IsUserCheck } from '../components/IsMemberTypeCheck';
 
 const Main4 = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const isLogin = useSelector(state => state.persistedReducer.isLogin);
+    const memberType = useSelector(state => state.persistedReducer.member.memberType);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,7 +31,13 @@ const Main4 = () => {
         if(isLogin){
             checkLogin(dispatch, accessToken, isLogin, navigate)
             .then(() => {
-                 navigate('/reviewwrite');
+                if(IsUserCheck()) navigate('/reviewwrite');
+                else {
+                  Toast.fire({
+                    icon: 'error',
+                    title: '이용 불가능한 서비스 입니다'
+                  })
+                }
             })
         }else{
             Toast.fire({
