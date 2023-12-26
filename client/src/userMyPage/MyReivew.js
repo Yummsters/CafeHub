@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Table, Pagination, PaginationLink } from "reactstrap";
 import { useDispatch } from 'react-redux';
-import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { normalCheck, tokenCreate, tokenExpried ,checkLogin} from '../login/TokenCheck';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useNavigate } from 'react-router';
 import { url } from '../config.js'
@@ -42,13 +42,14 @@ const MyReview = () => {
         setPage(page);
         setCurPage(page);
 
-        axios.get(`${url}/myReview/${memNo}?page=${page}&size=5`, {
+        axios.get(`${url}/user/myReview/${memNo}?page=${page}&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
             }
         })
             .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers);
                 console.log("서버 응답 데이터:", res.data);
                 const list = res.data.data;
                 const resPageInfo = res.data.pageInfo;
@@ -63,7 +64,9 @@ const MyReview = () => {
 
             })
             .catch(err => {
-                console.log(err);
+                console.log(err); 
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                                      
             })
     }
     useEffect(() => {
@@ -73,13 +76,15 @@ const MyReview = () => {
         setPage1(page1);
         setCurPage1(page1);
 
-        axios.get(`${url}/myReviewAuth/${memNo}?page=${page1}&size=5`, {
+        axios.get(`${url}/user/myReviewAuth/${memNo}?page=${page1}&size=5`, {
             headers: {
                 Authorization: accessToken,
                 Refresh: getCookie("refreshToken")
             }
         })
             .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers)
+                .then(() => {
                 console.log("응답 데이터:", res.data);
                 const auth = res.data.data;
                 const resPageInfo = res.data.pageInfo;
@@ -92,8 +97,12 @@ const MyReview = () => {
                     totalPages: resPageInfo.totalPages
                 });
             })
+            })
             .catch(err => {
                 console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
             })
     }
 
@@ -101,9 +110,17 @@ const MyReview = () => {
         reviews.forEach((review) => {
             axios
                 .get(`${url}/common/upload/${review.thumbImg}`, {
-                    responseType: 'arraybuffer',
+                    headers: {
+                        responseType: 'arraybuffer',
+                        Authorization :accessToken,
+                        Refresh : getCookie("refreshToken")
+        
+                    },
+                  
                 })
                 .then((response) => {
+                    tokenCreate(dispatch, setCookie, response.headers);
+                                    
                     const imageBlob = new Blob([response.data], { type: response.headers['content-type'] });
                     const imageUrl = URL.createObjectURL(imageBlob);
 
@@ -116,28 +133,47 @@ const MyReview = () => {
                 })
                 .catch((error) => {
                     console.error('이미지 불러오기 오류:', error);
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                                      
                 });
         });
     }, [reviews]);
 
     useEffect(() => {
-        axios.get(`${url}/getMemberBadge/${memNo}`)
+        axios.get(`${url}/getMemberBadge/${memNo}`,{
+            Authorization :accessToken,
+            Refresh : getCookie("refreshToken")
+
+        })
             .then(response => {
+                tokenCreate(dispatch, setCookie, response.headers);
+                                   
                 const badgeName = response.data.badgeName || '';
                 setPickBadge([badgeName]);
+               
             })
             .catch(error => {
+                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                 console.error('에러 발생:', error);
             });
     }, [memNo]);
 
     const reviewDetail = (reviewNo) => {
-        if (isLogin) {
-            normalCheck(dispatch, accessToken);
-        }
-        console.log(reviewNo);
+    
+    checkLogin(dispatch, accessToken, isLogin, navigate)
+    .then(() => {
         navigate('/reviewDetail/' + reviewNo, { state: { reviewNo: reviewNo } });
-    }
+
+    })
+}
+const clickReveiwBtn = (e) => {
+    e.preventDefault();
+
+    checkLogin(dispatch, accessToken, isLogin, navigate)
+        .then(() => {
+            navigate("/reviewWrite");
+        })
+};
 
     return (
         <div className='mypage'>
@@ -192,6 +228,8 @@ const MyReview = () => {
                             })}
                         </tbody>
                     </Table>
+
+
                     <div className='reviewpage'>
                         <Pagination className="myReview-Page">
                             <PaginationLink
@@ -239,8 +277,6 @@ const MyReview = () => {
                             </PaginationLink>
                         </Pagination>
                     </div>
-
-
                 </div>
                 <div className='rightBox'>
                     <br /><label className='cafeList'>리뷰 작성 가능 카페</label><br /><br />
@@ -258,7 +294,7 @@ const MyReview = () => {
                                         </td>
                                         <td colSpan={2}>
 
-                                            <a href='/reviewWrite'> <button className='regReviewBtn'>
+                                            <a> <button className='regReviewBtn' onClick={clickReveiwBtn}>
                                                 <div className='regReview'>리뷰 등록</div>
                                                 <div className='deadline'>({auth.remainTime}일 남음)</div>
                                             </button>

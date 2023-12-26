@@ -53,7 +53,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
   const ReviewDelete = async (reviewNo) => {
     try {
-      const response = await axios.delete(`${url}/review/${reviewNo}/delete`, {
+      const response = await axios.delete(`${url}/user/review/${reviewNo}/delete`, {
         headers: {
           Authorization: accessToken,
           Refresh: getCookie("refreshToken"),
@@ -128,6 +128,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   const fetchReplies = () => {
     axios
       .get(`${url}/reply/${reviewNo}/list`, {
+        
         params: {
           page: pageInfo.currentPage - 1,
           size: pageInfo.repliesPerPage,
@@ -155,7 +156,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("Error while sending the request:", error.message);
         }
       });
-    axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
+    axios.get(`${url}/member/getMemberBadge/${reviewNo.memNo}`,)
       .then((res) => {
         const badgeName = res.data.badgeName || '';
         setPickBadge([badgeName]);

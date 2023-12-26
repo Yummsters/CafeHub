@@ -6,12 +6,13 @@ import StoreSideTab from '../components/StoreSideTab';
 import axios from 'axios';
 import { getCookie, removeCookie, setCookie } from '../components/Cookie';
 import { useDispatch } from 'react-redux';
-import { tokenCreate, tokenExpried } from '../login/TokenCheck';
+import { tokenCreate, tokenExpried,checkLogin } from '../login/TokenCheck';
 import { url } from '../config.js'
 import { Toast } from '../components/Toast.js';
 const { daum } = window;
 
 const StoreInfo = () => {
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
     const memNo = useSelector(state => state.persistedReducer.member.memNo);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const StoreInfo = () => {
     });
 
     const searchAddr = () => { // 주소 입력
+       
         new daum.Postcode({
             oncomplete: function (data) {
                 // var roadAddr = data.roadAddress; // 도로명 주소 변수
@@ -63,10 +65,16 @@ const StoreInfo = () => {
 
     useEffect(() => {
         axios
-            .get(`${url}/cafe/${cafeNo}`)
-            .then((res) => {
-                console.log(res.data);
-                const cafeData = res.data;
+            .get(`${url}/cafe/${cafeNo}`,{
+                headers: {
+                    Authorization: accessToken,
+                    Refresh: getCookie("refreshToken")
+                }
+            })
+            .then((response) => {
+                tokenCreate(dispatch, setCookie, response.headers)
+                console.log(response.data);
+                const cafeData = response.data;
 
                 if (cafeData) {
                     setCafe({
@@ -85,19 +93,27 @@ const StoreInfo = () => {
                 }
             })
             .catch((error) => {
+                if (error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                }
                 console.error('카페 정보 가져오기 실패:', error);
             });
     }, [accessToken]);
 
     useEffect(() => {
+        checkLogin(dispatch, accessToken, isLogin, navigate)
         if (cafe.thumbImg) {
             axios.get(`${url}/common/upload/${cafe.thumbImg}`, {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken"),
                 responseType: 'blob',
             })
 
-                .then((res) => {
+                .then((response) => {
+                    tokenCreate(dispatch, setCookie, response.headers)
+              
                     // Blob 객체를 URL로 변환
-                    const imageUrl = URL.createObjectURL(res.data);
+                    const imageUrl = URL.createObjectURL(response.data);
                     console.log(imageUrl);
 
                     // 이미지 데이터를 state에 설정
@@ -107,6 +123,9 @@ const StoreInfo = () => {
                     }));
                 })
                 .catch((error) => {
+                    if (error.response !== undefined) {
+                        tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                    }
                     console.error('카페 사진 가져오기 실패:', error);
                 });
         }
@@ -114,10 +133,16 @@ const StoreInfo = () => {
 
 
     const businessNo = () => { // 사업자번호 확인
-        axios.post(`${url}/business/${cafe.businessNo}`)
-            .then((res) => {
-                console.log(res.data);
-                if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
+        checkLogin(dispatch, accessToken, isLogin, navigate)
+        axios.post(`${url}/business/${cafe.businessNo}`,{
+            Authorization: accessToken,
+            Refresh: getCookie("refreshToken"),
+        
+        })
+            .then((response) => {
+                tokenCreate(dispatch, setCookie, response.headers)
+                console.log(response.data);
+                if (response.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
                     Toast('error', '등록되지 않은 사업자등록번호입니다')
                     setCheck((prevWarnings) => ({
                         ...prevWarnings,
@@ -125,6 +150,7 @@ const StoreInfo = () => {
                     }));
 
                 } else {
+                    
                     Toast('success', '사업자 인증 성공\n성공적으로 등록되었습니다')
                     setCheck((prevWarnings) => ({
                         ...prevWarnings,
@@ -133,6 +159,9 @@ const StoreInfo = () => {
                 }
             })
             .catch((error) => {
+                if (error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                }
                 console.log(error);
                 return false;
             })
@@ -182,29 +211,44 @@ const StoreInfo = () => {
                     'Content-Type': 'multipart/form-data'
                 },
             });
-          
             Toast('success', '정보 수정이 완료되었습니다')
-            .then(() => {
-                // 리덕스 정보도 수정                
+            .then(response => {
+                tokenCreate(dispatch, setCookie, response.headers)
+               
                 dispatch({ type: "cafe", payload: {cafeNo, ...cafe} });
+              
+       
             });
 
             console.log(response);
         } catch (err) {
+            if (err.response !== undefined) {
+                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+            }
             console.log(err);
         }
     };
 
     const [tagList, setTagList] = useState([]);
     useEffect(() => {
-        axios.get(`${url}/storeTagList`)
-            .then(res => {
-                console.log(res);
-                console.log(res.data);
-                setTagList([...res.data]);
+        axios.get(`${url}/storeTagList`,{
+            headers: {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
+            }
+        })
+            .then(response => {
+                tokenCreate(dispatch, setCookie, response.headers)
+             
+                console.log(response);
+                console.log(response.data);
+                setTagList([...response.data]);
                 console.log(tagList);
             })
             .catch(err => {
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
                 console.log(err);
             })
     }, [])
@@ -417,6 +461,7 @@ const StoreInfo = () => {
                                     className={selectedTags.includes(i) ? 'selectTags' : 'tags'}
                                     onClick={() => tagClick(i)}>
                                     {tags.storeTagName}
+                                    {(i + 1) % 3 === 0 && i !== tagList.length - 1 ? <br /> : ""}
                                 </div>
                             ))}
                         </div>

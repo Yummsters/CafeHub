@@ -164,41 +164,12 @@
     height:50px;
 }
 
-/* 태그 버튼 스타일*/
-.storeInfo-tag{
-    border: 2px solid #F59A23;
-    border-radius: 10px;
-    width: 150px;
-    height: 45px;
-    font-size: 18px;
-    margin: 10px 10px 10px 0;
-    background-color: #FFFFFF;
-    align-items: center;
-}
-
-/* .storeInfo-tag1:hover {
-    border-radius: 10px;
-    border: 2px solid #F59A23;
-    background: #F59A23;
-    color: #FFF;
-} */
-
-.tags{
-    margin-left: 20px;
-    
-}
-
-.selectTags,
-.tags:hover {
+.StoreInfo-tag{
+    margin-left:20px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 144px;
-    height: 45px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: 2px solid #F59A23;
-    margin-left: 20px;
-    background: #F59A23;
-    color: #FFF;
+    width: 450px;
+    flex-wrap: wrap;
+}
+.StoreInfo-tag div{
+   
 }
