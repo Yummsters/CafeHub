@@ -97,13 +97,13 @@ const Manager2 = () => {
         <div className='manager-container'>
             <ManagerSideTab />
             <div className='manager-listBox'>
-                <br /><label className='listTitle'>포인트 정산</label><br /><br />
+                <br /><label className='managerPointTitle'>포인트 정산</label><br /><br />
                 <Table hover>
                     <tbody>
                         {pointList.length != 0 && pointList.map(list => {
                             return (
                                 <tr key={list.memNo}> 
-                                    <th scope="row"><img className='managerPoint-thumb' src={`${url}/common/uplooad/${list.thumbImg}`} alt=''/></th>
+                                    <th scope="row"><img className='managerPoint-thumb' src={`${url}/common/upload/${list.thumbImg}`} alt=''/></th>
                                     <td colSpan={2}> <div className='listMiniTitle' >{list.cafeName}</div></td>
                                     <td colSpan={2}><div className='dateTime'>신청일 {list.refDate}</div></td>
                                     <td colSpan={1}> <img className='managerPoint-bean' src='/img/coffeebeans.png' alt='' style={{ width: "40px" }} /></td>

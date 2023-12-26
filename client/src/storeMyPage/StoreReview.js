@@ -83,7 +83,7 @@ const StoreReview = () => {
                             {reviewList.length != 0 && reviewList.map(list => {
                                 return (
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
-                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`${url}/thumbImg/${list.thumbImg}`} alt='' /></th>
+                                        <th scope="row" style={{ width: "150px" }}> <img className='storeReview-listImg' src={`${url}/common/thumbImg/${list.thumbImg}`} alt='' /></th>
                                         <td colSpan={11}><div className='storeReview-listMiniTitle'>{list.title}</div>
                                             <div className='storeReview-reviewUser'>{list.nickName}</div></td>
                                         <td colSpan={1}><div className='storeReview-reviewLikeCount'>추천 {list.likeCount}</div>
