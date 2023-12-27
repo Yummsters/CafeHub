@@ -16,4 +16,5 @@ public interface ReplyInterface {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	LocalDateTime getRegDate();
 	Integer getIsReplyLike();
+	Integer getBadgeNo();
 }
