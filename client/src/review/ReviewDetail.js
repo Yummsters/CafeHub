@@ -51,7 +51,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
   const ReviewDelete = async (reviewNo) => {
     try {
-      const response = await axios.delete(`${url}/review/${reviewNo}/delete`, {
+      const response = await axios.delete(`${url}/user/review/${reviewNo}/delete`, {
         headers: {
           Authorization: accessToken,
           Refresh: getCookie("refreshToken"),
@@ -95,7 +95,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     };
     if (replyContent.length > 0) {
       axios
-        .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {content:replyContent},{
+        .post(`${url}/replyWrite/${memNo}/${reviewNo}`, { content: replyContent }, {
           headers: {
             Authorization: accessToken,
             Refresh: getCookie("refreshToken"),
@@ -477,11 +477,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${bestReply.badgeNo}.png`} alt="house" /> {bestReply.writer}</a>
                     </p>
                     <p>
-                      <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                      <span className="underline" onClick={() => showReplyClick(bestReply)}>
-                        답글
-                      </span>
-                      &nbsp;&nbsp;
                       <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
                       <span>{bestReply.likeCount}</span>
                     </p>
@@ -541,8 +536,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                               <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies ? reply.hasChildReplies.length > 0 : false)}>삭제</span>&nbsp;&nbsp;
                             </>
                           }
-                          {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
-                          &nbsp;&nbsp;
+                          {reply.depth === 0 &&
+                            <>
+                              <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>&nbsp;&nbsp;
+                            </>
+                          }
                           <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
                           <span>{reply.likeCount}</span>
                         </p>
