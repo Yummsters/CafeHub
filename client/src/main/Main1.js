@@ -52,7 +52,7 @@ const Main1 = () => {
         <div className='Main'>
             <div className='searchbox'>
                 <Input type="text" name="search" id="search" value={searchKeyword} onChange={handleSearchChange} />
-                < img className="searchImg" src='/img/search.png' onClick={handleSearch} alt="검색" />
+                < img className="searchImg" src='/img/searchIcon.png' onClick={handleSearch} alt="검색" />
             </div>
             {approvedAds.length > 0 ? (
                 <Slider {...setting}>
