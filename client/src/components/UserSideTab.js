@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 const UserSideTab = () => {
     const tabs = [
        {label:'회원 정보', link:'/userInfo'},
-       {label: '찜한 가게', link:'/WishStore'},
+       {label: '찜한 카페', link:'/WishStore'},
        {label:'찜한 리뷰', link:'/wishReview'},
        {label:'리뷰 관리' , link:'/myReivew'},
        {label:'댓글 관리', link:'/myReply'},

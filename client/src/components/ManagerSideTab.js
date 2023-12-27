@@ -5,8 +5,8 @@ import { NavLink } from 'react-router-dom';
 const SideTab = () => {
     const tabs = [
         {label:'광고 신청 현황', link:'/managerAd'},
-        {label:'가게 포인트 정산',link:'/managerPoint'},
-        {label:'등록 가게 결제 확인',link:'/managerConfirm'}
+        {label:'카페 포인트 정산',link:'/managerPoint'},
+        {label:'등록 카페 결제 확인',link:'/managerConfirm'}
     ];
 
     return (

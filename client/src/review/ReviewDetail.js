@@ -271,7 +271,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const toggleLike = () => {
-    if (memNo !== undefined) {
+    if (isLogin) {
       axios.post(`${url}/member/like/${memNo}/${reviewNo}`, null,
         {
           headers: {
@@ -298,7 +298,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   };
 
   const replyToggleLike = (replyNo) => {
-    if (memNo !== undefined) {
+    if (isLogin) {
       axios.post(`${url}/replyLike/${memNo}/${replyNo}`, {
         headers: {
           Authorization: accessToken,
@@ -329,7 +329,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
 
   const toggleWish = () => {
-    if (memNo !== undefined) {
+    if (isLogin) {
       axios.post(`${url}/member/wish/${memNo}/${reviewNo}`, null,
         {
           headers: {
@@ -375,7 +375,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       normalCheck(dispatch, accessToken);
     }
     let getDetailURL = `${url}/review/${reviewNo}`;
-    if (memNo !== undefined) { getDetailURL += `?memNo=${memNo}`; }
+    if (isLogin) { getDetailURL += `?memNo=${memNo}`; }
     axios.get(getDetailURL)
       .then((res) => {
         setReview(res.data.review);

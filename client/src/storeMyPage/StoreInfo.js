@@ -206,7 +206,6 @@ const StoreInfo = () => {
         if (selectedFile) {
             formData.append('file', selectedFile);
         }
-
         try {
             const response = await axios.put(`${url}/cafe/store/${cafeNo}`, formData, {
                 headers: {
@@ -215,15 +214,12 @@ const StoreInfo = () => {
                     'Content-Type': 'multipart/form-data'
                 },
             });
-            Toast('success', '정보 수정이 완료되었습니다')
-            .then(response => {
-                tokenCreate(dispatch, setCookie, response.headers)
-               
-                dispatch({ type: "cafe", payload: {cafeNo, ...cafe} });
-              
-       
-            });
-
+        
+            tokenCreate(dispatch, setCookie, response.headers);
+            dispatch({ type: "cafe", payload: {cafeNo, ...cafe} });
+            Toast('success', '정보 수정이 완료되었습니다');
+            window.location.reload();
+        
             console.log(response);
         } catch (err) {
             if (err.response !== undefined) {
@@ -231,6 +227,7 @@ const StoreInfo = () => {
             }
             console.log(err);
         }
+        
     };
 
     const [tagList, setTagList] = useState([]);
@@ -299,7 +296,7 @@ const StoreInfo = () => {
         }
     }, [])
 
-    // 가게 포인트 조회
+    // 카페 포인트 조회
     useEffect(() => {
         axios.get(`${url}/member/point/${memNo}`, {
             headers: {
@@ -374,7 +371,7 @@ const StoreInfo = () => {
             <div className='storeInfo-container-other'>
                 <div className='storeInfo-left-section'>
                     <div className='storeInfo'>
-                        <div className='storeInfo-storeName'>{cafe.cafeName ? cafe.cafeName : '가게 이름'}</div>
+                        <div className='storeInfo-storeName'>{cafe.cafeName ? cafe.cafeName : '카페 이름'}</div>
                         <div className='storeInfo-picture' >
                             {cafe.imageUrl && (
                                 <img src={cafe.imageUrl} style={{ width: "320px", height: "320px", borderRadius: "20px" }} alt="썸네일" />
@@ -395,11 +392,11 @@ const StoreInfo = () => {
                     <form>
 
                         <div className='storeInfoInputDiv'>
-                            <label>가게명 <br />
+                            <label>카페명 <br />
                                 <input type="text" id="cafeName" name="cafeName" onChange={change} value={cafe.cafeName} /></label>
                         </div> <br />
                         <div className='storeInfoInputDiv'>
-                            <label>가게 전화번호 <br />
+                            <label>카페 전화번호 <br />
                                 <input type="text" id="tel" name="tel" onChange={change} value={cafe.tel} /></label>
                         </div> <br />
                         <div className='storeInfoInputDiv-other'>

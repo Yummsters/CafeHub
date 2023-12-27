@@ -77,7 +77,7 @@ const ManagerConfirm = () => {
         <div className='manager-container'>
             <ManagerSideTab />
             <div className='manager-listBox'>
-                <br /><label className='listTitle'>등록 가게 결제 확인</label><br /><br />
+                <br /><label className='listTitle'>등록 카페 결제 확인</label><br /><br />
                 {unpaidCafes.length === 0 ? (
                     <div>
                         <p style={{marginLeft: "12%"}}>카페 목록이 존재하지 않습니다.</p>

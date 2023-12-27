@@ -55,12 +55,14 @@ body, button, input{
     border: 0px;
     width:250px;
     font-size:20px;
+    outline: none;
 }
 
 .signUpStoreInputDiv-other input{
     border: 0px;
     width: 100%;
     font-size:18px;
+    outline: none;
 }
 
 /* 인증 버튼 */
@@ -109,7 +111,7 @@ body, button, input{
     color: #F59A23;
 }
 
-/* 오른쪽 가게 미리보기 */
+/* 오른쪽 카페 미리보기 */
 .signUpStore{
     width: 400px;
     min-height: 500px;
@@ -168,7 +170,7 @@ body, button, input{
 }
 
 .SignUpStore-tag {
-    margin-left:3px;
+    margin-left: 20px;
     display: flex;
     flex-wrap: wrap;
 }
@@ -182,7 +184,7 @@ body, button, input{
     width: 130px;
     height: 45px;
     font-size: 18px;
-    margin: 5px 5px 5px 0;
+    margin: 5px 20px 5px 0;
     background-color: white;
 }
 
@@ -196,7 +198,7 @@ body, button, input{
     font-size: 18px;
     border-radius: 10px;
     border: 2px solid #F59A23;
-    margin: 5px 5px 5px 0;
+    margin: 5px 20px 5px 0;
     background: #F59A23;
     color: #FFF;
 }

@@ -184,7 +184,7 @@ const clickReveiwBtn = (e) => {
 
                     <Table hover>
                         <tbody>
-                            {reviewList.length == 0 ? <sapn className="myreview0">조회된 리뷰가 없습니다.</sapn> : reviewList.map(list => {
+                            {reviewList.length == 0 ? <sapn className="myreview0">조회된 리뷰가 없습니다</sapn> : reviewList.map(list => {
                                 return (
 
                                     <tr key={list.reviewNo} onClick={() => { reviewDetail(list.reviewNo) }}>
@@ -282,7 +282,7 @@ const clickReveiwBtn = (e) => {
                     <br /><label className='cafeList'>리뷰 작성 가능 카페</label><br /><br />
                     <Table hover>
                         <tbody>
-                            {authList.length == 0 ? <sapn className="myreview0">리뷰 작성 가능한 카페가 없습니다</sapn> : authList.map(auth => {
+                            {authList.length == 0 ? <sapn className="myreview0">작성 가능한 카페가 없습니다</sapn> : authList.map(auth => {
                                 return (
 
                                     <tr className='trauth'>

@@ -111,7 +111,7 @@ const Header = () => {
                     </div>
                     <div className='right'>
                         <p>{memberType === "MANAGER" ? <a href="/" onClick={mypage}> 관리자 마이페이지 </a> :
-                            (memberType === "STORE" ? <a href="/" onClick={mypage}>내 가게 관리</a> :
+                            (memberType === "STORE" ? <a href="/" onClick={mypage}>내 카페 관리</a> :
                                 <a href="/userInfo" onClick={mypage}>마이페이지</a>)}</p>
                         <p> {!isLogin ? <a href="/login">로그인</a> : <a href="/" onClick={logout}>로그아웃</a>}</p>
                     </div>
@@ -126,7 +126,7 @@ const Header = () => {
                     <p><a href="/reviewList" onClick={cafeReview}>리뷰 게시판</a></p>
                     <p><a href="/map" onClick={mapClick}>내 근처 카페</a></p>
                     <p>{memberType === "MANAGER" ? <a href="/" onClick={mypage}> 관리자 마이페이지 </a> :
-                        (memberType === "STORE" ? <a href="/" onClick={mypage}>내 가게 관리</a> :
+                        (memberType === "STORE" ? <a href="/" onClick={mypage}>내 카페 관리</a> :
                             <a href="/userInfo" onClick={mypage}>마이페이지</a>)}</p>
                     <p> {!isLogin ? <a href="/login">로그인</a> : <a href="/" onClick={logout}>로그아웃</a>}</p>
                 </div>

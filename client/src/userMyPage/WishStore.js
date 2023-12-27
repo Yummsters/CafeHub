@@ -105,7 +105,7 @@ const WishStore = () => {
       <UserSideTab />
       <div className="wishStore-list">
         <div className="wishStore-title">
-          <img src="/img/y_star.png" alt="" width={"30px"}/> <span> 찜한 가게 </span>
+          <img src="/img/y_star.png" alt="" width={"30px"}/> <span> 찜한 카페 </span>
         </div>
             {wishStoreList.length !== 0 ?
                 wishStoreList.map((store, index) => (
@@ -114,7 +114,7 @@ const WishStore = () => {
                 <div className="image-text">{store.cafeName}</div>
                 {/* {index % 4 === 3 ? (<><br /></>) : ("")} */}
                 </span>
-            )) : <div className="noWish">찜한 가게가 없습니다</div>}
+            )) : <div className="noWish">찜한 카페가 없습니다</div>}
 
             {wishStoreList.length !== 0  && (
               <div className="pagination-container">
