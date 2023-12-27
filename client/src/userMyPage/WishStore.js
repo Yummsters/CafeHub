@@ -32,7 +32,6 @@ const WishStore = () => {
     }
     setCafeNo(cafeNo);
     setShowModal(true);
-    document.body.style.overflow = 'hidden'; // 부모페이지 스크롤 비활성화
   }
 
   const closeModal = () => {
@@ -40,7 +39,6 @@ const WishStore = () => {
       checkToLogin(dispatch, accessToken, navigate)
     }
     setShowModal(false);
-    document.body.style.overflow = 'auto';
   };
 
   const nextPage = () => {

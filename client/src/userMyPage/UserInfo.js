@@ -30,6 +30,7 @@ const UserInfo = ({ sideTab }) => {
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
   const [pickBadgeName, setPickBadge] = useState([]);
+  console.log(updateUser)
 
   // 배지--------------------------------------------
   useEffect(() => {
@@ -206,8 +207,9 @@ const UserInfo = ({ sideTab }) => {
           input: "text",
           confirmButtonColor: "#007355",
           cancelButtonColor: "#F59A23",
-          confirmButtonText: "삭제",
+          confirmButtonText: "확인",
           cancelButtonText: "취소",
+          showCancelButton: true,
         preConfirm: (inputCode) => {
           if (inputCode === random.toString()) {
             return true; // 인증 성공

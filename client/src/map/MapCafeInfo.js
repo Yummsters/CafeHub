@@ -20,6 +20,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
   const accessToken = useSelector(state => state.persistedReducer.accessToken);
 
   const cafeNo = selectCafe?.cafeNo || wishCafeNo;
+  console.log(cafeNo);
   
   // null이 아닌 정보만 띄울 수 있게 만들기
   const cafeInfo = (src, text) => {
