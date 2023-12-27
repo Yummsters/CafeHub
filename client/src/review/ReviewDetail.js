@@ -51,7 +51,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }
   const ReviewDelete = async (reviewNo) => {
     try {
-      const response = await axios.delete(`${url}/user/review/${reviewNo}/delete`, {
+      const response = await axios.delete(`${url}/review/${reviewNo}/delete`, {
         headers: {
           Authorization: accessToken,
           Refresh: getCookie("refreshToken"),
@@ -95,12 +95,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     };
     if (replyContent.length > 0) {
       axios
-        .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {
+        .post(`${url}/replyWrite/${memNo}/${reviewNo}`, {content:replyContent},{
           headers: {
             Authorization: accessToken,
             Refresh: getCookie("refreshToken"),
           },
-          content: replyContent,
         })
         .then((response) => {
           console.log("댓글이 성공적으로 등록되었습니다");
@@ -128,12 +127,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
     }
   }
 
-  console.log(pickBadgeName + "배지네임");
-
   const fetchReplies = () => {
     axios
       .get(`${url}/reply/${reviewNo}/list`, {
-        
         params: {
           page: pageInfo.currentPage - 1,
           size: pageInfo.repliesPerPage,
@@ -160,14 +156,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         } else {
           console.error("Error while sending the request:", error.message);
         }
-      });
-    axios.get(`${url}/member/getMemberBadge/${reviewNo.memNo}`,)
-      .then((res) => {
-        const badgeName = res.data.badgeName || '';
-        setPickBadge([badgeName]);
-      })
-      .catch(error => {
-        console.error('에러 발생:', error);
       });
   };
 
@@ -332,7 +320,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           console.error("에러:" + error);
           if (error.response !== undefined) {
             tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-        }
+          }
         });
     } else {
       Toast('error', '로그인이 필요합니다');
@@ -376,26 +364,9 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       .then((res) => {
         setBestReply(res.data);
         console.log(res.data.writerNo + "배댓");
-        axios.get(`${url}/getMemberBadge/${res.data.writerNo}`)
-          .then((res) => {
-            const badgeName = res.data.badgeName || '';
-            setPickBadge([badgeName]);
-          })
-          .catch(error => {
-            console.error('에러 발생:', error);
-          });
       })
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
-      });
-
-    axios.get(`${url}/getMemberBadge/${reviewNo.memNo}`)
-      .then((res) => {
-        const badgeName = res.data.badgeName || '';
-        setPickBadge([badgeName]);
-      })
-      .catch(error => {
-        console.error('에러 발생:', error);
       });
   }
 
@@ -467,7 +438,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
               </div>
               <div className="infoR">
-                <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
+                <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}.png`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>
@@ -503,7 +474,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <div key={bestReply.replyNo} className="replyInfo">
                   <div className="infoT">
                     <p>
-                      <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} alt="house" /> {bestReply.nickname}</a>
+                      <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${bestReply.badgeNo}.png`} alt="house" /> {bestReply.writer}</a>
                     </p>
                     <p>
                       <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
@@ -562,10 +533,14 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       <div className="infoT">
                         <p>
                           {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                          <a href={`/userReview/${reply.nickname}`}><img src={`/img/${pickBadgeName[0]}`} /> {reply.nickname}</a>
+                          <a href={`/userReview/${reply.nickname}`}><img src={`/img/${reply.badgeNo}.png`} /> {reply.writer}</a>
                         </p>
                         <p>
-                          <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies ? reply.hasChildReplies.length > 0 : false)}>삭제</span>&nbsp;&nbsp;
+                          {reply.writerNo === memNo &&
+                            <>
+                              <span className="underline" onClick={() => handleReplyDelete(reply.replyNo, reply.hasChildReplies ? reply.hasChildReplies.length > 0 : false)}>삭제</span>&nbsp;&nbsp;
+                            </>
+                          }
                           {reply.depth === 0 && <span className="underline" onClick={() => showReplyClick(reply)}>답글</span>}
                           &nbsp;&nbsp;
                           <img src={reply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(reply.replyNo)} />
