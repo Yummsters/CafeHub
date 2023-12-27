@@ -18,5 +18,6 @@ public interface LikeReplyRepository extends JpaRepository<LikeReply, Integer> {
 	
 	@Transactional
 	void deleteByMember_memNoAndReply_replyNo(Integer memNo, Integer replyNo);
-	 List<LikeReply> findByReply(Reply reply);
+	List<LikeReply> findByReply(Reply reply); 
+	List<LikeReply> findByReply_ReplyNo(Integer replyNo);
 }

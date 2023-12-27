@@ -52,6 +52,10 @@ public class ReplyServiceImpl implements ReplyService {
 	    Optional<Reply> optionalReply = replyRepository.findById(replyNo);
 	    if (optionalReply.isPresent()) {
 	        Reply reply = optionalReply.get();
+	        
+	        List<LikeReply> likeReplies = likeReplyRepository.findByReply_ReplyNo(replyNo);
+	        likeReplyRepository.deleteAll(likeReplies);
+	        
 	        List<Reply> childReplies = replyRepository.findByParentReply_ReplyNo(replyNo);
 	        
 	        if(reply.getDepth() == 0) {
