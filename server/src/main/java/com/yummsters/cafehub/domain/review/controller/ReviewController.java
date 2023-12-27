@@ -15,23 +15,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.multipart.MultipartFile;
-
-import com.yummsters.cafehub.domain.reply.dto.MyReplyListResDto;
-import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.review.dto.MyReviewAuthResDto;
 import com.yummsters.cafehub.domain.review.dto.MyReviewListResDto;
 import com.yummsters.cafehub.domain.review.dto.ReviewAuthDto;
@@ -43,27 +34,13 @@ import com.yummsters.cafehub.domain.review.dto.ReviewModifyDto;
 import com.yummsters.cafehub.domain.review.dto.UserReviewListDto;
 import com.yummsters.cafehub.domain.review.entity.Review;
 import com.yummsters.cafehub.domain.review.entity.ReviewAuth;
-import com.yummsters.cafehub.domain.review.repository.ReviewRepository;
 import com.yummsters.cafehub.domain.review.service.ReviewService;
-import com.yummsters.cafehub.domain.tag.entity.ReviewTag;
-import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
-import com.yummsters.cafehub.domain.tag.repository.ReviewTagRepository;
-import com.yummsters.cafehub.domain.tag.repository.ReviewToTagRepository;
 import com.yummsters.cafehub.global.response.MultiResponseDto;
 
 @RestController
 public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
-	@Autowired
-	private ReviewRepository reviewRepository;
-	@Autowired
-	private ReviewTagRepository reviewTagRepository;
-	@Autowired
-	private ReviewToTagRepository reviewToTagRepository;
-
-	// 수빈 part
-	// ----------------------------------------------------------------------
 
 	// 리뷰 권한
 	@GetMapping("user/reviewauth/{memNo}")
@@ -162,9 +139,6 @@ public class ReviewController {
 	    }
 	}
 
-
-	// 선진 part
-	// ----------------------------------------------------------------------
 	@GetMapping("/review/{reviewNo}")
 	public ResponseEntity<Object> getReviewDetail(@PathVariable Integer reviewNo,
 												  @RequestParam(required = false) Integer memNo) {
@@ -211,8 +185,6 @@ public class ReviewController {
 		}
 	}
 
-
-	// 혜리 part ----------------------------------------------------------------
 	@GetMapping("/review/storeList/{cafeNo}")
 	public ResponseEntity<Object> getStoreList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
 											@PathVariable("cafeNo") Integer cafeNo){
@@ -278,7 +250,6 @@ public class ReviewController {
 		}
 	}
 
-	// 희진 part ----------------------------------------------------------------
 	// 가게 리뷰 리스트 조회
 	@GetMapping("/store/review/storeList/{cafeNo}")
 	public ResponseEntity<Object> storeList(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
@@ -318,7 +289,7 @@ public class ReviewController {
 	}
 
 	// 리뷰 작성 및 수정 기한에 따른 스케줄러 설정
-	//@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
+	@Scheduled(fixedDelay = 10_800_000) // 하루 86_400_000
 	public void deleteReviewAuth() throws Exception {
 		reviewService.deleteReviewAuth();
 	}

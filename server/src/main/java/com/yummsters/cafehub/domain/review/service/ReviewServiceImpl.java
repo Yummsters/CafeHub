@@ -3,12 +3,13 @@ package com.yummsters.cafehub.domain.review.service;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import com.yummsters.cafehub.domain.tag.entity.ReviewTag;
 import com.yummsters.cafehub.domain.tag.entity.ReviewToTag;
 import com.yummsters.cafehub.domain.tag.repository.ReviewTagRepository;
 import com.yummsters.cafehub.domain.tag.repository.ReviewToTagRepository;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,9 +59,9 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReplyRepository replyRepository;
 	private final LikeReplyRepository likeReplyRepository;
 
-	// 수빈 part
-	// ----------------------------------------------------------------------
-
+	@Value("${upload.path}")
+    private String uploadPath;
+	
 	// 리뷰 권한
 	@Override
 	public List<ReviewAuth> getReviewAuthList(Integer memNo) throws Exception {
@@ -72,9 +73,8 @@ public class ReviewServiceImpl implements ReviewService {
 	public Integer reviewWrite(ReviewDto review, List<MultipartFile> files) throws Exception {
 
 		if (files != null && files.size() != 0) {
-			String dir = "c:/soobin/upload/"; // 수빈 업로드 경로
-			//String dir = "/Users/gmlwls/Desktop/kosta/upload/"; // 희진 업로드 경로
-
+			String dir = uploadPath;
+			
 			String fileNums = "";
 
 			for (MultipartFile file : files) {
@@ -82,13 +82,11 @@ public class ReviewServiceImpl implements ReviewService {
 						.contenttype(file.getContentType()).data(file.getBytes()).build();
 
 				fileVoRepository.save(fileVo);
-
 				
 				File uploadFile = new File(dir + fileVo.getFileNum());
 				
 				file.transferTo(uploadFile);
 
-				// file번호 목록 만들기
 				if (!fileNums.equals(""))
 					fileNums += ",";
 				fileNums += fileVo.getFileNum();
@@ -107,8 +105,7 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewEntity.setSubTitle(reviewEntity.getCafe().getCafeName() + " " +  reviewEntity.getTitle());
 
 		reviewRepository.save(reviewEntity);
-
-		// 리뷰 태그 저장
+		
 		String tagString = review.getTagName();
 		String[] tagList = tagString.substring(1, tagString.length()-1).split(",");
 		for(String tag : tagList){
@@ -121,7 +118,7 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewEntity.getReviewNo();
 	}
 
-	// 리뷰 권한 삭제
+
 	@Override
 	public void deleteReviewAuth(Integer reviewAuthNo) {
 		ReviewAuth reviewAuth = reviewAuthRepository.findByReviewAuthNo(reviewAuthNo);
@@ -130,7 +127,6 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
-	// 리뷰 삭제
 	@Override
 	public void deleteReview(Integer reviewNo) throws Exception {
 		
@@ -151,23 +147,16 @@ public class ReviewServiceImpl implements ReviewService {
 	        }
 	        replyRepository.deleteAll(existingReplies);
 	        
-	        
-	     //
 	        List<WishReview> existingWishReview = wishRepository.findByReview(review);
 	        wishRepository.deleteAll(existingWishReview);
 	    
-
-
-
 		if (reviewEntity != null) {
 			
 			reviewRepository.delete(reviewEntity);
 		}
 	}
 	
-	
 
-	// 리뷰 수정
 	@Override
 	public Integer modifyReview(Integer reviewNo, ReviewModifyDto reviewModifyDto, List<MultipartFile> files) throws Exception {
 	   
@@ -185,10 +174,12 @@ public class ReviewServiceImpl implements ReviewService {
 	    if (reviewModifyDto.getContent() != null) {
 	        review.setContent(reviewModifyDto.getContent());
 	    }
-	   
+	    if (reviewModifyDto.getTagName() != null) {
+	           review.setTagName(reviewModifyDto.getTagName());
+	       }
 
 	    if (files != null && !files.isEmpty()) {
-	        String dir = "c:/soobin/upload/";
+	    	String dir = uploadPath;
 	        String fileNums = "";
 
 	        for (MultipartFile file : files) {
@@ -235,7 +226,7 @@ public class ReviewServiceImpl implements ReviewService {
 	                    reviewToTagRepository.save(reviewToTag);
 	                }
 	            } catch (NumberFormatException e) {
-	                // 예외 처리
+	                
 	                e.printStackTrace();
 	            }
 	        }
@@ -257,11 +248,6 @@ public class ReviewServiceImpl implements ReviewService {
 	    return reviewAuthRepository.findByMember_MemNo(PageRequest.of(page, size, Sort.by("regDate").descending()), memNo);
 	}
 
-
-
-
-	// 선진 part
-	// ----------------------------------------------------------------------
 	@Override
 	public ReviewDetailDto reviewDetail(Integer reviewNo) throws Exception {
 		return detailRepository.findReviewByReviewNo(reviewNo);
@@ -309,8 +295,6 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
-
-	// 희진 part
 	// 가게 리뷰 리스트 조회
 	@Override
 	public Page<Review> storeReviewPage(Integer page, Integer size, Integer cafeNo) {
@@ -328,19 +312,17 @@ public class ReviewServiceImpl implements ReviewService {
 	public void deleteReviewAuth() throws Exception {
 		// 오늘 날짜 기준 3일 전 등록된 것이라면 modPossible을 false로 변경
 		List<Review> reviewList = reviewRepository.findAllByModPossibleIsTrueAndRegDateIsBefore(LocalDateTime.now().minusDays(3));
-		//System.out.println(reviewList.toString());
+	
 		for(Review review : reviewList){
 			review.setModPossible(false);
 			reviewRepository.save(review);
 		}
 
 		// 오늘 날짜 기준 7일 전 등록된 것이라면 삭제
-		//System.out.println(reviewAuthRepository.findByRegDateIsBefore(LocalDateTime.now().minusDays(7)).toString());
 		reviewAuthRepository.deleteAllByRegDateIsBefore(LocalDateTime.now().minusDays(7));
 
 	}
 
-	// 혜리 part ----------------------------------------------------------------
 	@Override
 	public Page<Review> getReviewList(String search, Pageable pageable) throws Exception {
 		return reviewRepository.findAllByTitleContainsOrderByReviewNoDesc(search, pageable);
@@ -357,12 +339,11 @@ public class ReviewServiceImpl implements ReviewService {
 	        // 로그인하지 않은 회원이거나 리뷰를 작성하지 않은 회원의 경우
 	        return reviewRepository.findReviewsByMemberNoWithoutReviews();
 	    } else {
-	        // 로그인한 회원인 경우
 	        if (hasNoReviews(memNo)) {
-	            // 리뷰를 작성하지 않은 회원인 경우
+	          
 	            return reviewRepository.findReviewsByMemberNoWithoutReviews();
 	        } else {
-	            // 리뷰를 작성한 회원인 경우
+	         
 	            return reviewRepository.findReviewsByMemberNoWithReviews(memNo);
 	        }
 	    }
