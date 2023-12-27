@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { url } from '../config.js'
+import MapCafeInfo from '../map/MapCafeInfo.js';
 const { kakao } = window;
 
 const MainMap = () => {
   const [cafes, setCafes] = useState([]);
+  const [cafeNo, setCafeNo] = useState(0);
+  const [wish, setWish] = useState(true);
+  const [selectCafe, setSelectCafe] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     axios.get(`${url}/mapMarker`)
@@ -51,13 +56,17 @@ const MainMap = () => {
       });
   
       // 마커에 마우스 호버 이벤트 추가
-      kakao.maps.event.addListener(marker, 'mouseover', function () {
-        infowindow.open(map, marker);
+      kakao.maps.event.addListener(marker, 'click', function () {
+        // infowindow.open(map, marker);
+        setCafeNo(cafe.cafeNo);
+        setSelectCafe(cafe);
+        setShowModal(true);
+        // console.log(cafe.cafeNo)
       });
   
-      kakao.maps.event.addListener(marker, 'mouseout', function () {
-        infowindow.close();
-      });
+      // kakao.maps.event.addListener(marker, 'mouseout', function () {
+      //   infowindow.close();
+      // });
     });
 
     if (navigator.geolocation) { // GPS 기반
@@ -70,8 +79,25 @@ const MainMap = () => {
     }
   }, [cafes]);
 
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
 return (
+  <>
     <div id="mapView"></div>
+    {showModal && selectCafe && (
+      <div className="modalBox">
+          <img className="closeBtn" onClick={closeModal} src="/img/X.png" width={"70px"} alt=""/>
+          <div className="cafeModalContent">
+          <div className='modalMap'>
+            {/* <div id="mapView2"></div> */}
+            <MapCafeInfo wishModal={true} selectCafe={selectCafe} wishCafeNo={cafeNo} wish={wish} setWish={setWish}/>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 };
 

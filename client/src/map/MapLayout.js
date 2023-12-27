@@ -1,22 +1,11 @@
 import React, { useEffect, useState } from "react";
 import MapCafeInfo from "./MapCafeInfo";
-import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from 'react-router';
-import { url } from '../config.js'
-import { getCookie, setCookie, removeCookie } from "../components/Cookie.js";
-import {normalCheck, tokenCreate, tokenExpried} from '../login/TokenCheck';
 
 const { kakao } = window;
 
 const MapLayout = ({ cafes }) => {
   const [selectCafe, setSelectCafe] = useState(null);
   const [wish, setWish] = useState(false);
-  const memNo = useSelector(state=>state.persistedReducer.member.memNo);
-  const accessToken = useSelector(state => state.persistedReducer.accessToken);
-  const isLogin = useSelector(state => state.persistedReducer.isLogin);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   
   useEffect(() => {     
     var mapContainer = document.getElementById("mapView"),
