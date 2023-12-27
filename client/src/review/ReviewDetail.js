@@ -477,11 +477,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${bestReply.badgeNo}.png`} alt="house" /> {bestReply.writer}</a>
                     </p>
                     <p>
-                      <span className="underline" onClick={() => handleReplyDelete(bestReply.replyNo)}>삭제</span>&nbsp;&nbsp;
-                      <span className="underline" onClick={() => showReplyClick(bestReply)}>
-                        답글
-                      </span>
-                      &nbsp;&nbsp;
                       <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
                       <span>{bestReply.likeCount}</span>
                     </p>
