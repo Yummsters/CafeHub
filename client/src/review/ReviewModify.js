@@ -113,7 +113,7 @@ const ReviewModify = () => {
                     Refresh: getCookie("refreshToken")
                 }
             });
-    
+
             // 성공한 경우
             await tokenCreate(dispatch, setCookie, response.headers);
             await Toast('success', '리뷰가 수정되었습니다');
@@ -127,299 +127,298 @@ const ReviewModify = () => {
         }
     };
 
-const [editorInitialValue, setEditorInitialValue] = useState('');
-let encodedHTML;
-useEffect(() => {
+    const [editorInitialValue, setEditorInitialValue] = useState('');
+    let encodedHTML;
+    useEffect(() => {
 
-    axios
-        .get(`${url}/review/${review.reviewNo}`,{
+        axios
+            .get(`${url}/review/${review.reviewNo}`, {
+                headers: {
+                    Authorization: token,
+                    Refresh: getCookie("refreshToken")
+                }
+            }).then(response => {
+                tokenCreate(dispatch, setCookie, response.headers)
+                    .then(() => {
+
+                        setThumbImg(response.data.review.thumbImg || '');
+                        console.log(response.data);
+                        setReview({
+                            title: response.data.review.title,
+                            content: response.data.review.content,
+                            reg_date: response.data.review.reg_date,
+                            cafeNo: response.data.review.cafeNo,
+                            thumbImg: response.data.review.thumbImg,
+                            reviewNo: response.data.review.reviewNo,
+                            tagNames: response.data.review.tagNames,
+                            cafeName: response.data.review.cafeName,
+                            modDate: response.data.modDate,
+
+                        });
+
+
+                        const htmlString = decodeURIComponent(response.data.review.content);
+                        editorRef.current?.getInstance().setHTML(htmlString);
+                        setSelectedCafeNo(response.data.review.cafeNo);
+
+                        setSelectedTags(response.data.review.tagNames || []);
+
+
+                    })
+            })
+            .catch((error) => {
+                console.error('리뷰 정보 가져오기 실패:', error);
+                if (error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                }
+            });
+    }, [token, review.reviewNo]);
+
+
+    useEffect(() => {
+
+        axios.get(`${url}/user/reviewTagList`, {
             headers: {
                 Authorization: token,
                 Refresh: getCookie("refreshToken")
             }
-        }).then(response => {
-            tokenCreate(dispatch, setCookie, response.headers)
-                .then(() => {
-            
-            setThumbImg(response.data.review.thumbImg || '');
-            console.log(response.data);
-            setReview({
-                title: response.data.review.title,
-                content: response.data.review.content,
-                reg_date: response.data.review.reg_date,
-                cafeNo: response.data.review.cafeNo,
-                thumbImg: response.data.review.thumbImg,
-                reviewNo: response.data.review.reviewNo,
-                tagNames: response.data.review.tagNames,
-                cafeName: response.data.review.cafeName,
-                modDate: response.data.modDate,
+
+        })
+            .then(res => {
+                // 토큰이 유효한 경우 확인 후 재발급
+                tokenCreate(dispatch, setCookie, res.headers);
+                setTagName([...res.data]);
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
+            })
+    }, [])
+
+    const [selectedTags, setSelectedTags] = useState([]);
+
+    const tagClick = (i) => {
+        let updatedTags;
+        console.log(i);
+
+        if (selectedTags.includes(i)) {
+            updatedTags = selectedTags.filter((item) => item !== i);
+        } else {
+            updatedTags = [...selectedTags, i];
+        }
+        if (updatedTags.length > 3) {
+            Toast('error', '3개까지 선택 가능합니다')
+        } else {
+            setSelectedTags(updatedTags);
+        }
+    };
+
+    const fetchCafeList = async () => {
+        try {
+            const response = await axios.get(`${url}/reviewauth/${memNo}`);
+
+            setCafes(response.data);
+            console.log('Cafes:', response.data);
+        } catch (error) {
+            console.error('Error fetching cafe list:', error);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            setSelectedFile(file);
+
+            uploadImages(file, (response) => {
+                console.log('이미지 업로드 결과:', response);
+                setIsFileSelected(true);
+
+                setImagePreview(URL.createObjectURL(file));
 
             });
-
-
-            const htmlString = decodeURIComponent(response.data.review.content);
-            editorRef.current?.getInstance().setHTML(htmlString);
-            setSelectedCafeNo(response.data.review.cafeNo);
-
-            setSelectedTags(response.data.review.tagNames || []);
-
-
-        })
-    })
-        .catch((error) => {
-            console.error('리뷰 정보 가져오기 실패:', error);
-            if (error.response !== undefined) {
-                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-            }
-        });
-}, [token, review.reviewNo]);
-
-
-useEffect(() => {
-
-    axios.get(`${url}/user/reviewTagList`, {
-        headers: {
-            Authorization: token,
-            Refresh: getCookie("refreshToken")
         }
+    };
 
-    })
-        .then(res => {
-            // 토큰이 유효한 경우 확인 후 재발급
-            tokenCreate(dispatch, setCookie, res.headers);
-            setTagName([...res.data]);
+
+    // 이미지 업로드 성공 후 처리
+    const uploadImages = (blob, callback) => {
+        let formData = new FormData();
+        formData.append('images', blob);
+
+        axios({
+            method: 'POST',
+            url: `${url}/common/fileUpload`,
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: token,
+                Refresh: getCookie("refreshToken")
+            },
         })
-        .catch(err => {
-            console.log(err);
-            if (err.response !== undefined) {
-                tokenExpried(dispatch, removeCookie, err.response.data, navigate);
-            }
-        })
-}, [])
-
-const [selectedTags, setSelectedTags] = useState([]);
-
-const tagClick = (i) => {
-    let updatedTags;
-    console.log(i);
-
-    if (selectedTags.includes(i)) {
-        updatedTags = selectedTags.filter((item) => item !== i);
-    } else {
-        updatedTags = [...selectedTags, i];
-    }
-    if (updatedTags.length > 3) {
-        Toast('error', '3개까지 선택 가능합니다')
-    } else {
-        setSelectedTags(updatedTags);
-    }
-};
-
-const fetchCafeList = async () => {
-    try {
-        const response = await axios.get(`${url}/reviewauth/${memNo}`);
-
-        setCafes(response.data);
-        console.log('Cafes:', response.data);
-    } catch (error) {
-        console.error('Error fetching cafe list:', error);
-    }
-};
-
-const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-        setSelectedFile(file);
-
-        uploadImages(file, (response) => {
-            console.log('이미지 업로드 결과:', response);
-            setIsFileSelected(true);
-           
-            setImagePreview(URL.createObjectURL(file));
-
-        });
-    }
-};
-
-
-// 이미지 업로드 성공 후 처리
-const uploadImages = (blob, callback) => {
-    let formData = new FormData();
-    formData.append('images', blob);
-
-    axios({
-        method: 'POST',
-        url: `${url}/common/fileUpload`,
-        data: formData,
-        headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: token,
-            Refresh: getCookie("refreshToken")
-        },
-    })
-        .then((response) => {
-            tokenCreate(dispatch, setCookie, response.headers);
-            const fileNum = response.data.filenum; 
-            setThumbImg(fileNum);
-            callback(response.data);
-        })
-        .catch((error) => {
-            if (error.response !== undefined) {
-                tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-            }
-            callback('image_load_fail');
-        });
-};
-
-
-
-useEffect(() => {
-    if (review.thumbImg) {
-       
-        axios.get(`${url}/common/upload/${review.thumbImg}`, {
-        headers: {
-            Authorization: token,
-            Refresh: getCookie("refreshToken")
-        },
-        responseType: 'blob'
-        })
-            .then((res) => {
-                tokenCreate(dispatch, setCookie, res.headers);
-                const imageUrl = URL.createObjectURL(res.data);
-                console.log("이미지",res.data);
-
-                setReview((prevReview) => ({
-                    ...prevReview,
-                    imageUrl: imageUrl,
-                }));
+            .then((response) => {
+                tokenCreate(dispatch, setCookie, response.headers);
+                const fileNum = response.data.filenum;
+                setThumbImg(fileNum);
+                callback(response.data);
             })
             .catch((error) => {
                 if (error.response !== undefined) {
                     tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                 }
-                console.error('카페 사진 가져오기 실패:', error);
+                callback('image_load_fail');
             });
+    };
+
+    
+    useEffect(() => {
+        const fetchImage = async () => {
+            try {
+                const res = await axios.get(`${url}/common/upload/${review.thumbImg}`, {
+                    headers: {
+                        Authorization: token,
+                        Refresh: getCookie("refreshToken"),
+                    },
+                    responseType: 'blob',
+                });
+    
+                tokenCreate(dispatch, setCookie, res.headers);
+                const imageUrl = URL.createObjectURL(res.data);
+    
+                setReview((prevReview) => ({
+                    ...prevReview,
+                    imageUrl: imageUrl,
+                }));
+            } catch (error) {
+                if (error.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, error.response.data, navigate);
+                }
+                console.error('카페 사진 가져오기 실패:', error);
+            }
+        };
+    
+        if (review.thumbImg) {
+            fetchImage();
+        }
+    }, [token, review.thumbImg]);
+    
+    
+
+
+    const fileChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedFile(file);
+
+
+        const imageUrl = URL.createObjectURL(file);
+        setReview((prevReview) => ({
+            ...prevReview,
+            imageUrl: imageUrl,
+        }));
     }
-}, [review.thumbImg]);
 
 
+    return (
+        <div className="review-bgBox">
+            <div className="reviewBox">
+                <div className="reviewTitle">
+
+                    <select
+                        value={`${selectedReviewAuthNo},${selectedCafeNo}`}
+                    >
+                        <option value='1' disabled={!selectedReviewAuthNo && !selectedCafeNo}>
+                            {review.cafeName}({review.modDate}일 남음)
+                        </option>
+                        <option>
+                            (카페는 수정할 수 없습니다)
+                        </option>
+                    </select>
+
+                    <input
+                        className="title"
+                        name="title"
+                        type="text"
+                        onChange={change}
+                        id="title"
+                        required="required"
+                        value={review.title}
+                    />
+                </div>
+
+                <hr className="line" />
+
+                <div className="thumbnail">
+
+                    <label className="review-img">
+                        썸네일 선택
+                        <input type="file" name="filename" onChange={fileChange} style={{ display: 'none' }} />
+                    </label>&nbsp;&nbsp;
+
+                    {review.imageUrl && (
+                        <img src={review.imageUrl} style={{ width: "100px", height: "100px" }} alt="썸네일" />
+                    )}
+
+                </div>
 
 
-const fileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+                <div className="editor">
+                    <Editor
 
+                        ref={editorRef}
+                        onChange={handleEditorChange}
+                        className="custom-editor"
 
-    const imageUrl = URL.createObjectURL(file);
-    setReview((prevReview) => ({
-        ...prevReview,
-        imageUrl: imageUrl,
-    }));
-}
+                        plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
 
+                        previewStyle="vertical"
+                        height="500px"
+                        initialEditType="wysiwyg"
+                        hooks={{
+                            addImageBlobHook: (blob, callback) => {
+                                let formData = new FormData();
+                                formData.append('images', blob);
 
-return (
-    <div className="review-bgBox">
-        <div className="reviewBox">
-            <div className="reviewTitle">
-
-                <select
-                    value={`${selectedReviewAuthNo},${selectedCafeNo}`}
-                >
-                    <option value='1' disabled={!selectedReviewAuthNo && !selectedCafeNo}>
-                        {review.cafeName}({review.modDate}일 남음)
-                    </option>
-                    <option>
-                        (카페는 수정할 수 없습니다)
-                    </option>
-                </select>
-
-                <input
-                    className="title"
-                    name="title"
-                    type="text"
-                    onChange={change}
-                    id="title"
-                    required="required"
-                    value={review.title}
-                />
-            </div>
-
-            <hr className="line" />
-
-            <div className="thumbnail">
-
-                <label className="review-img">
-                    썸네일 선택
-                    <input type="file" name="filename" onChange={fileChange} style={{ display: 'none' }} />
-                </label>&nbsp;&nbsp;
-
-                {review.imageUrl && (
-                    <img src={review.imageUrl} alt="썸네일" style={{ width: "100px", height: "100px" }} />
-
-                )}
-
-
-            </div>
-
-
-            <div className="editor">
-                <Editor
-
-                    ref={editorRef}
-                    onChange={handleEditorChange}
-                    className="custom-editor"
-
-                    plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
-
-                    previewStyle="vertical"
-                    height="500px"
-                    initialEditType="wysiwyg"
-                    hooks={{
-                        addImageBlobHook: (blob, callback) => {
-                            let formData = new FormData();
-                            formData.append('images', blob);
-
-                            axios({
-                                method: 'POST',
-                                url: `${url}/common/fileUpload`,
-                                data: formData,
-                                headers: {
-                                    'Content-Type': 'multipart/form-data',
-                                },
-                            })
-                                .then((response) => {
-                                    console.log('이미지 업로드 성공', response.data);
-                                    callback(response.data);
+                                axios({
+                                    method: 'POST',
+                                    url: `${url}/common/fileUpload`,
+                                    data: formData,
+                                    headers: {
+                                        'Content-Type': 'multipart/form-data',
+                                    },
                                 })
-                                .catch((error) => {
-                                    console.error('프론트 이미지 업로드 실패', error);
-                                    callback('image_load_fail');
-                                });
-                        },
-                    }}
-                />
+                                    .then((response) => {
+                                        console.log('이미지 업로드 성공', response.data);
+                                        callback(response.data);
+                                    })
+                                    .catch((error) => {
+                                        console.error('프론트 이미지 업로드 실패', error);
+                                        callback('image_load_fail');
+                                    });
+                            },
+                        }}
+                    />
 
-            </div>
-            <div className="tagBox">
-                {tagName.map((tag, i) => (
-                    <div
-                        key={i}
-                        className={selectedTags.includes(tag.tagName) ? 'selectTags' : 'tags'}
-                        onClick={() => tagClick(tag.tagName)}>
-                        {tag.tagName}
-                    </div>
-                ))}
+                </div>
+                <div className="tagBox">
+                    {tagName.map((tag, i) => (
+                        <div
+                            key={i}
+                            className={selectedTags.includes(tag.tagName) ? 'selectTags' : 'tags'}
+                            onClick={() => tagClick(tag.tagName)}>
+                            {tag.tagName}
+                        </div>
+                    ))}
 
-            </div>
+                </div>
 
-            <div className="btnBox">
-                <div className="review-btn" onClick={handleReset}>초기화</div>
-                <div className="review-btn" onClick={ReviewCahange}>리뷰 수정</div>
+                <div className="btnBox">
+                    <div className="review-btn" onClick={handleReset}>초기화</div>
+                    <div className="review-btn" onClick={ReviewCahange}>리뷰 수정</div>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
 };
 export default ReviewModify;

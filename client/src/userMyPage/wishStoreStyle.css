@@ -2,7 +2,7 @@
     display: flex;
 }
 
-/* 찜한 가게 블럭 */
+/* 찜한 카페 블럭 */
 .wishStore-list{
     border:3px solid #007355;
     width: 1000px;
@@ -22,7 +22,7 @@
 }
 
 
-/* 찜한 가게 이미지 */
+/* 찜한 카페 이미지 */
 .wishStore-stores {
     position: relative;
     display: inline-block;

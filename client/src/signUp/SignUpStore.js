@@ -41,7 +41,7 @@ const SignUpStore = () => {
                 axios.put(`${url}/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
                 .then((res) => {
                     console.log(res.data)
-                    Toast('success', '가입 및 가게등록이 완료되었습니다')
+                    Toast('success', '가입 및 카페등록이 완료되었습니다')
                     dispatch({ type:"payment", payload:"" })
                     setTimeout(() => {
                         window.location.href="/login";
@@ -580,15 +580,15 @@ const SignUpStore = () => {
                     </div> <br />
 
                     <div className='signUpStoreInputDiv'>
-                        <label>가게명 <span className='signUpUser-auth'>
-                                {warnings.cafeName && "가게명을 입력하세요"}
+                        <label>카페명 <span className='signUpUser-auth'>
+                                {warnings.cafeName && "카페명을 입력하세요"}
                             </span>
                             <br/>
                             <input type="text" id="cafeName" name="cafeName" onChange={changeStore} value={store.cafeName} /></label>
                     </div> <br />
                     <div className='signUpStoreInputDiv'>
-                        <label>가게 전화번호 <span className='signUpUser-auth'>
-                                {warnings.tel && "가게 전화번호를 입력하세요"}
+                        <label>카페 전화번호 <span className='signUpUser-auth'>
+                                {warnings.tel && "카페 전화번호를 입력하세요"}
                             </span><br/>
                             <input type="text" id="tel" name="tel" onChange={changeStore} value={store.tel} /></label>
                     </div> <br />
@@ -649,7 +649,7 @@ const SignUpStore = () => {
             </div>
             <div className='signUpStore-right-section'>
                 <div className='signUpStore'>
-                    <div className='signUpStore-storeName'> {store.cafeName ? store.cafeName : '가게 이름'}</div>
+                    <div className='signUpStore-storeName'> {store.cafeName ? store.cafeName : '카페 이름'}</div>
                     <div className='signUpStore-picture' >
                         {selectedFile && <img src={URL.createObjectURL(selectedFile)} style={{ width: "295px", height: "295px", borderRadius: "20px" }} alt="썸네일" />}
                     </div>

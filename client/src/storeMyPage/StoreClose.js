@@ -77,7 +77,7 @@ const StoreClose = () => {
                     <div className="termination-modal">
                         <div className="termination-modal-wrap">
                             <p>정말 서비스를 종료하시겠습니까?</p>
-                            <p>카페 허브 서비스를 해지할 경우, 회원 정보와 가게 정보가 함께 삭제됩니다.</p>
+                            <p>카페 허브 서비스를 해지할 경우, 회원 정보와 카페 정보가 함께 삭제됩니다.</p>
                             <p>미정산 금액이 있는 경우 정산 후 해지가 가능합니다.</p>
                             <p>단, 커피콩을 100개 미만 보유한 경우 정산 없이 서비스가 종료됩니다.</p>
                             <div className="termination-passwordInput">
