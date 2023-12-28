@@ -25,7 +25,6 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
                 resolve();
             })
             .catch(err=>{
-                console.log(err);
                 // 토큰이 유효하지 않은 경우 (리프레시 토큰도 만료된 경우) 재로그인 요청
                 tokenExpried(dispatch, removeCookie, err.response.data, navigate);
             })
@@ -35,10 +34,8 @@ export const checkLogin = (dispatch, accessToken, isLogin, navigate) =>{
 
 // 토큰 재생성
 export const tokenCreate = (dispatch, setCookie, headers) => {
-    console.log("에세스 토큰 만료 확인중 ");
     return new Promise((resolve, reject) => {
         if (headers.authorization !== undefined) {
-            console.log("에세스 토큰 만료 확인 - 토큰 재생성")
             dispatch({ type: "accessToken", payload: headers.authorization });
             setCookie("refreshToken", `${headers.refresh}`);
             resolve();
@@ -50,10 +47,7 @@ export const tokenCreate = (dispatch, setCookie, headers) => {
 
 // 토큰 만료 처리
 export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
-    console.log("리스레스 토큰 만료 확인중 ");
-
     if(data.status === 602){
-        console.log("리프레시 토큰 만료 - 로그아웃");
         // 로컬 없애는 로직 추가
         dispatch({type:"accessToken", payload:""});
         dispatch({type:"isLogin", payload:false});
@@ -73,8 +67,6 @@ export const tokenExpried = (dispatch, removeCookie, data, navigate) => {
 
 // 일반 버튼 관련 토큰 확인 처리
 export const normalCheck = (dispatch, accessToken) => {
-    console.log("토큰 유효성 확인 중")
-
         axios.get(`${url}/member`,{
             headers : {
                 Authorization :accessToken,
@@ -86,11 +78,7 @@ export const normalCheck = (dispatch, accessToken) => {
             tokenCreate(dispatch, setCookie, res.headers);
         })
         .catch(err=>{
-            console.log(err); 
-            console.log("리프레시 토큰 만료 - 로그아웃");
-
             if(err.response.data.status === 602){
-                console.log("들어옴");
                 // 로컬 없애는 로직 추가
                 dispatch({type:"accessToken", payload:""});
                 dispatch({type:"isLogin", payload:false});
@@ -105,7 +93,6 @@ export const normalCheck = (dispatch, accessToken) => {
 }
 
 export const checkToLogin = (dispatch, accessToken, navigate) => {
-    console.log("토큰 유효성 확인 중")
         axios.get(`${url}/member`,{
             headers : {
                 Authorization :accessToken,
@@ -117,11 +104,7 @@ export const checkToLogin = (dispatch, accessToken, navigate) => {
             tokenCreate(dispatch, setCookie, res.headers);
         })
         .catch(err=>{
-            console.log(err); 
-            console.log("리프레시 토큰 만료 - 로그아웃");
-
             if(err.response.data.status === 602){
-                console.log("들어옴");
                 // 로컬 없애는 로직 추가
                 dispatch({type:"accessToken", payload:""});
                 dispatch({type:"isLogin", payload:false});

@@ -7,8 +7,6 @@ const OAuth2Err = () => {
     const {errorCode} = useParams();
     
     useEffect(()=>{
-        console.log(errorCode);
-
         if(errorCode == "880"){
             Toast('error', '탈퇴한 회원입니다')
             .then(() => {

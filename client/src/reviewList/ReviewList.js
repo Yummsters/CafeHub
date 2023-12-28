@@ -70,16 +70,6 @@ const ReviewList = () => {
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
                 let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
                 setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
-                response.data.content.forEach((review) => {
-                    axios.get(`${url}/getMemberBadge/${review.memNo}`)
-                        .then(badgeResponse => {
-                            const badgeName = badgeResponse.data.badgeName || '';
-                            setPickBadge((prev) => [...prev, badgeName]);
-                        })
-                        .catch(error => {
-                            console.error('뱃지를 불러오지 못했습니다.:', error);
-                        });
-                })
             })
             .catch((error) => {
                 console.error('리뷰 가져오기 오류:', error);
@@ -106,10 +96,15 @@ const ReviewList = () => {
     };
     const clickReveiwBtn = (e) => {
         e.preventDefault();
-    
+        
         checkLogin(dispatch, accessToken, isLogin, navigate)
             .then(() => {
-                navigate("/reviewWrite");
+                if(member.memberType === "STORE"){
+                    Toast("error", "사장님은 리뷰 등록이 불가능합니다")
+                }else{
+                    navigate("/reviewWrite");
+                }
+                
             })
     };
       
@@ -143,7 +138,7 @@ const ReviewList = () => {
                                         <td colSpan={2}>
                                             <div className='writeInfo'>
                                                 <a href={`/userReview/${review.nickname}`}>
-                                                    <img className='badgeImg' src={`/img/${pickBadgeName[0]}`} alt='' />
+                                                    <img className='badgeImg' src={`/img/${review.badgeNo}.png}`} alt='' />
                                                     {review.nickname}</a> &nbsp;| 추천 {review.likeCount}
                                             </div>
                                             <div className='dateTime'>{review.regDate}</div>

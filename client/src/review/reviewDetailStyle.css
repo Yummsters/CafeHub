@@ -55,6 +55,7 @@
     display: flex;
     align-items: center;
     margin: 5px 0;
+    justify-content: right;
 }
 
 .detailContent {
@@ -92,6 +93,7 @@
     background: #007355;
     color: #FFF;
     margin: 0 3px;
+    border : none;
 }
 
 .Obtn {

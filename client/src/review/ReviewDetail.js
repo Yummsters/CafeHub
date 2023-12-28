@@ -438,7 +438,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <p>{review.tagNames.map((tag, i) => <span key={i}>{tag}&nbsp;</span>)}</p>
               </div>
               <div className="infoR">
-                <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}.png`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
+                <span><a href={`/userReview/${review.nickname}`}><img className='writerBadge' src={`/img/${pickBadgeName[0]}`} alt="house" />{review.nickname}</a></span>&nbsp;|&nbsp;
                 <span>추천 {likeCount}</span>
                 <p>{review.regDate}</p>
               </div>

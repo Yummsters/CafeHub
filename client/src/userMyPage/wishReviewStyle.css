@@ -10,11 +10,11 @@
     border-radius: 10px;
     margin:50px auto;
     padding:20px 40px 10px 40px;
+    position: relative;
 }
 
 .wishReview-title{
     font-size:30px;
-    margin: 15px;
     font-weight: bold;
 }
 
@@ -121,9 +121,10 @@
   }
 
   .pagination-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 50px;
+    position : absolute;
+    bottom : 5px;
+    transform: translateX(-50%);
+    left: 50%;
   }
 
   .noWish {
