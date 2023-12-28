@@ -133,7 +133,7 @@ const ReviewList = () => {
                                         <td colSpan={2}>
                                             <div className='writeInfo'>
                                                 <a href={`/userReview/${review.nickname}`}>
-                                                    <img className='badgeImg' src={`/img/${review.badgeNo}.png}`} alt='' />
+                                                    <img className='badgeImg' src={`/img/${review.badgeNo}.png`} alt='' />
                                                     {review.nickname}</a> &nbsp;| 추천 {review.likeCount}
                                             </div>
                                             <div className='dateTime'>{review.regDate}</div>

@@ -19,9 +19,9 @@ const MapLayout = ({ cafes }) => {
 
     cafes.forEach((cafe) => {
       var imageSrc = cafe.existing
-          ? "/img/marker_in.png" // 입점카페
+          ? "/img/map3.png" // 입점카페
           : "/img/marker_basic.png", // 기본카페
-        imageSize = cafe.existing ? new kakao.maps.Size(60, 60) : new kakao.maps.Size(30, 30),
+        imageSize = cafe.existing ? new kakao.maps.Size(60, 60) : new kakao.maps.Size(50, 50),
         imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커 좌표와 일치시킬 이미지 내 좌표
 
       // 마커이미지 생성
