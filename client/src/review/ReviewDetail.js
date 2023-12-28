@@ -453,7 +453,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 <div key={bestReply.replyNo} className="replyInfo">
                   <div className="infoT">
                     <p>
-                      <a href={`/userReview/${bestReply.nickname}`}><img src={`/img/${bestReply.badgeNo}.png`} alt="house" /> {bestReply.writer}</a>
+                      <a href={`/userReview/${bestReply.writer}`}><img src={`/img/${bestReply.badgeNo}.png`} alt="house" /> {bestReply.writer}</a>
                     </p>
                     <p>
                       <img src={bestReply.isReplyLike ? "/img/y_heart.png" : "/img/n_heart.png"} alt="heart" onClick={() => replyToggleLike(bestReply.replyNo)} />
@@ -507,7 +507,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                       <div className="infoT">
                         <p>
                           {reply.depth === 1 && <img src="/img/reply.png" alt="reReply" />}
-                          <a href={`/userReview/${reply.nickname}`}><img src={`/img/${reply.badgeNo}.png`} /> {reply.writer}</a>
+                          <a href={`/userReview/${reply.writer}`}><img src={`/img/${reply.badgeNo}.png`} /> {reply.writer}</a>
                         </p>
                         <p>
                           {reply.writerNo === memNo &&
