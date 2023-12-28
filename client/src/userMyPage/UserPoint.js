@@ -51,7 +51,6 @@ const UserPoint = () => {
             };
             axios.post(`${url}/payment/refund`, data)
                 .then((res) => {
-                    console.log(res);
                     resolve(res.data);
                 })
                 .catch((error) => {
@@ -65,7 +64,6 @@ const UserPoint = () => {
         if (payment.isSuccess) {
             axios.post(`${url}/buyPoint/${member.memNo}/${Number(payment.price) / 100}`)
                 .then((res) => {
-                    console.log(res.data);
                     dispatch({ type: "payment", payload: "" })
                     Toast('success', '포인트 적립이 완료되었습니다')
                 })
@@ -116,7 +114,7 @@ const UserPoint = () => {
                         tokenCreate(dispatch, setCookie, response.headers);
                     })
                     .catch((error) => {
-                        console.error('뱃지 구매 중 오류 발생:', error);
+                        console.error(error);
                         if (error.response !== undefined) {
                             tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                         }
@@ -148,7 +146,7 @@ const UserPoint = () => {
                             if (error.response !== undefined) {
                                 tokenExpried(dispatch, removeCookie, error.res.data, navigate);
                             }
-                            console.error('뱃지 착용 중 오류 발생:', error);
+                            console.error(error);
                         });
                 }
             });
@@ -175,7 +173,7 @@ const UserPoint = () => {
                             if (error.response !== undefined) {
                                 tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                             }
-                            console.error('뱃지 착용 중 오류 발생:', error);
+                            console.error(error);
                         });
                 }
             });
@@ -234,7 +232,7 @@ const UserPoint = () => {
                     if (error.response !== undefined) {
                         tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                     }
-                    console.error('에러 발생:', error);
+                    console.error(error);
                 });
         }
     }, []);
@@ -258,7 +256,7 @@ const UserPoint = () => {
                 if (error.response !== undefined) {
                     tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                 }
-                console.error('에러 발생:', error);
+                console.error(error);
             });
     }, []);
 

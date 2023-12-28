@@ -47,7 +47,7 @@ const ReviewList = () => {
     })
 
     useEffect(() => {
-        console.log(searchParams.get('page'));
+       
         setSearchKeyword(searchParams.get('search') ?? '');
         setInputKeyword(searchParams.get('search') ?? '');
         searchParams.get('page') && setPageInfo({ ...pageInfo, currentPage: parseInt(searchParams.get('page')) });
@@ -65,7 +65,6 @@ const ReviewList = () => {
             })
             .then((response) => {
                 setReviews(response.data.content);
-                console.log(response.data.content);
                 let totalPages = response.data.totalPages;
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
                 let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
@@ -82,17 +81,13 @@ const ReviewList = () => {
                 })
             })
             .catch((error) => {
-                console.error('리뷰 가져오기 오류:', error);
+               
                 if (error.response) {
-                    // 서버 응답이 도착한 경우
-                    console.error('서버 응답:', error.response.data);
-                    console.error('응답 상태 코드:', error.response.status);
+                  
                 } else if (error.request) {
-                    // 서버에 요청이 전송되지 않은 경우
-                    console.error('요청이 전송되지 않음:', error.request);
+                    
                 } else {
-                    // 오류를 발생시키는 요청을 설정하는 중에 문제가 발생한 경우
-                    console.error('오류를 발생시키는 중에 문제 발생:', error.message);
+                   
                 }
             });
     }, [pageInfo.currentPage, searchKeyword]);

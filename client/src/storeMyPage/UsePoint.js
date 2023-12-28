@@ -30,7 +30,6 @@ const UsePoint = () =>{
             }
         })
         .then(res=>{
-            console.log(res.data);
             tokenCreate(dispatch, setCookie, res.headers)
             .then(()=>{
                 setMyPoint(res.data);
@@ -48,7 +47,6 @@ const UsePoint = () =>{
         e.preventDefault();
         // 버튼 클릭 시 동작하는 함수
         const innerText = e.target.innerText;
-        console.log('Clicked:'+innerText);
         if(innerText !== '⬅️'){
             setPoint(point + +innerText);
         } 

@@ -37,7 +37,6 @@ const StoreBanner = () => {
     const failCafeAd = (icon, text) => {
         axios.delete(`${url}/cafeAd/${cafeNo}`)
             .then((res) => {
-                console.log(res.data);
                 dispatch({ type: "payment", payload: '' });
                 Toast(icon, text, 1200)
             })
@@ -66,14 +65,12 @@ const StoreBanner = () => {
             }
         })
             .then(res => {
-                console.log(res);
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
                         if (res.data.paymentKey === null) {
                             if (payment.isSuccess) {
                                 axios.put(`${url}/cafeAd/${cafeNo}/${payment.paymentKey}`)
                                     .then((res) => {
-                                        console.log(res.data);
                                         dispatch({ type: "payment", payload: '' });
                                         Toast('success', '광고 신청이 완료되었습니다')
                                         setTimeout(() => {
@@ -88,7 +85,6 @@ const StoreBanner = () => {
                                 }, 2000);
                             }
                         } else {
-                            console.log(res.data);
                             if (res.data.approved) { // 광고가 존재하면서 승인이 되어 있는 경우
                                 setIsAdExist(true);
                                 setIsApprove(true);
@@ -114,8 +110,6 @@ const StoreBanner = () => {
                 if (err.response !== undefined) {
                     tokenExpried(dispatch, removeCookie, err.response.data, navigate);
                 } else {
-                    console.log(err);
-                    console.log(err.data);
                     setIsAdExist(false);
                     setIsApprove(false);
                     descrInput.disabled = false;
@@ -165,9 +159,6 @@ const StoreBanner = () => {
             formData.append("thumbImg", thumbImg);
             formData.append("paymentKey", payment.paymentKey);
 
-            console.log(formData);
-            console.log(payment.paymentKey);
-
             axios.post(`${url}/store/cafeAd/${cafeNo}`, formData,
                 {
                     headers: {
@@ -179,7 +170,6 @@ const StoreBanner = () => {
                 .then(res => {
                     tokenCreate(dispatch, setCookie, res.headers)
                         .then(() => {
-                            console.log(res.data);
                             setIsAdExist(true);
                             setIsApprove(false);
                             setCafeAd(res.data);
@@ -223,10 +213,8 @@ const StoreBanner = () => {
                             cancelReason: reason,
                             paymentKey: payment.paymentKey
                         };
-                        console.log('data' + data);
                         axios.post(`${url}/payment/refund`, data)
                             .then((res) => {
-                                console.log(res);
                             })
                             .catch((error) => {
                                 console.log(error);

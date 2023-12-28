@@ -68,7 +68,7 @@ const WishStore = () => {
         setTotalPages(res.data.pageInfo.totalPages);
       })
       .catch((error) => {
-        console.error("에러:" + error);
+        console.error(error);
       });
   }, [cafeNo, currentPage]);
   

@@ -50,7 +50,6 @@ const MyReview = () => {
         })
             .then(res => {
                 tokenCreate(dispatch, setCookie, res.headers);
-                console.log("서버 응답 데이터:", res.data);
                 const list = res.data.data;
                 const resPageInfo = res.data.pageInfo;
 
@@ -85,7 +84,6 @@ const MyReview = () => {
             .then(res => {
                 tokenCreate(dispatch, setCookie, res.headers)
                 .then(() => {
-                console.log("응답 데이터:", res.data);
                 const auth = res.data.data;
                 const resPageInfo = res.data.pageInfo;
 
@@ -132,7 +130,7 @@ const MyReview = () => {
                     });
                 })
                 .catch((error) => {
-                    console.error('이미지 불러오기 오류:', error);
+                    console.error(error);
                     tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                                       
                 });
@@ -154,7 +152,7 @@ const MyReview = () => {
             })
             .catch(error => {
                 tokenExpried(dispatch, removeCookie, error.response.data, navigate);
-                console.error('에러 발생:', error);
+                console.error(error);
             });
     }, [memNo]);
 

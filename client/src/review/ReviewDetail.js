@@ -102,7 +102,7 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           },
         })
         .then((response) => {
-          console.log("댓글이 성공적으로 등록되었습니다");
+          
           tokenCreate(dispatch, setCookie, response.headers)
             .then(() => {
               setReplyContent("");
@@ -110,17 +110,12 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             })
         })
         .catch((error) => {
-          console.error("댓글 등록 에러", error);
+         
           if (error.response !== undefined) {
             tokenExpried(dispatch, removeCookie, error.response.data, navigate);
             if (error.response) {
-              console.error("응답 데이터:", error.response.data);
-              console.error("응답 상태 코드:", error.response.status);
-              console.error("응답 헤더:", error.response.headers);
             } else if (error.request) {
-              console.error("요청이 전송되었지만 응답을 받지 못했습니다.");
             } else {
-              console.error("요청을 설정하는 과정에서 에러가 발생했습니다.", error.message);
             }
           }
         });
@@ -138,23 +133,15 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .then((res) => {
         setReplies(res.data.content);
-        console.log(res.data.content);
         let totalPages = res.data.totalPages;
         let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.repliesPerPage) + 1;
         let endPage = Math.min(startPage + pageInfo.repliesPerPage - 1, totalPages);
-        console.log(totalPages)
-        console.log(startPage)
-        console.log(endPage)
         setPageInfo({ ...pageInfo, startPage: startPage, endPage: endPage, totalPages: totalPages })
       })
       .catch((error) => {
         if (error.response) {
-          console.error("Server responded with error status:", error.response.status);
-          console.error("Error response data:", error.response.data);
         } else if (error.request) {
-          console.error("No response received from the server.");
         } else {
-          console.error("Error while sending the request:", error.message);
         }
       });
   };
@@ -194,7 +181,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
                 .then(() => {
                   tokenCreate(dispatch, setCookie, response.headers)
                     .then(() => {
-                      console.log("대댓글이 성공적으로 등록되었습니다.");
                       setReReplyContent("");
                       fetchReplies();
                     })
@@ -214,7 +200,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
           }
         });
     } else {
-      console.error("댓글을 입력해주세요.");
       return;
     }
   };
@@ -233,13 +218,11 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         .then((response) => {
           tokenCreate(dispatch, setCookie, response.headers)
             .then(() => {
-              console.log("댓글 삭제 성공");
               Toast('success', '댓글이 삭제되었습니다');
               fetchReplies();
             })
         })
     } catch (error) {
-      console.log("댓글 삭제 에러");
       Toast('error', '댓글을 삭제하는 중에 오류가 발생했습니다');
       if (error.response !== undefined) {
         tokenExpried(dispatch, removeCookie, error.response.data, navigate);
@@ -287,7 +270,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
             })
         })
         .catch((error) => {
-          console.error("toggleLike 에러:" + error);
           if (error.response !== undefined) {
             tokenExpried(dispatch, removeCookie, error.response.data, navigate);
           }
@@ -324,7 +306,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
         });
     } else {
       Toast('error', '로그인이 필요합니다');
-      console.error('memNo 또는 replyNo가 유효하지 않습니다.');
     }
   }
 
@@ -363,7 +344,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
       })
       .then((res) => {
         setBestReply(res.data);
-        console.log(res.data.writerNo + "배댓");
       })
       .catch((error) => {
         console.error("베스트 댓글 가져오기 에러", error);
@@ -415,7 +395,6 @@ const ReviewDetail = ({ modalDetail, wishReviewNo }) => {
   }, [review]);
 
   const toDetail = (reviewNo) => {
-    console.log(reviewNo);
     navigate('/reviewDetail/' + reviewNo, { state: { reviewNo: reviewNo } });
   }
 

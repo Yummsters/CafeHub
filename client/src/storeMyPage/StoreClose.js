@@ -23,7 +23,7 @@ const StoreClose = () => {
     };
 
     const handleWithdrawal = (e) => {  
-        console.log(pwInput);  
+        
         // 자체 로그인 회원 탈퇴
         axios.post(`${url}/member/delete/normal/${memNo}`,{
           password : pwInput
@@ -35,8 +35,6 @@ const StoreClose = () => {
           }
         })
         .then(res=>{
-            console.log(res);
-            console.log(res.data);
             const isPwCorrect =res.data;
     
             if (isPwCorrect) {
@@ -57,8 +55,6 @@ const StoreClose = () => {
         })
         .catch(err=>{
             console.log(err);
-            console.log(err.data);
-
             if(err.data === '포인트 정산 후 탈퇴가 가능합니다'){
                 Toast('success', '포인트 정산 후 탈퇴가 가능합니다')
             }else{
