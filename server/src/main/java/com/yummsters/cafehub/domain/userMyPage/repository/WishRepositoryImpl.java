@@ -52,7 +52,7 @@ public class WishRepositoryImpl {
          List<WishReviewDto> reviewList = jpaQueryFactory
                 .select(Projections.constructor(WishReviewDto.class,
                         review.reviewNo, review.thumbImg,
-                        member.memNo, member.nickname, review.cafe.cafeName))
+                        member.memNo, review.member.nickname, review.cafe.cafeName))
                 .from(wishReview)
                 .leftJoin(wishReview.member, member)
                 .leftJoin(wishReview.review, review)
