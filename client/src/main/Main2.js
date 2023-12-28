@@ -68,7 +68,7 @@ const Main2 = () => {
             <Slider {...settings}>
               {reviews.map((review, index) => (
                 <Link to={`/reviewDetail/${review.reviewNo}`}
-                  state={{ reviewNo: `${review.reviewNo}` }} >
+                  state={{ reviewNo: `${review.reviewNo}` }} key={index} >
                   <div className='card' key={index}>
                     <img className='cardImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='카드 이미지' />
                     <br />

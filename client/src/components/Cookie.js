@@ -3,7 +3,6 @@ import { Cookies } from "react-cookie";
 const cookies = new Cookies();
 //쿠키에 값을 저장할때 
 export const setCookie = (name, value) => {
-  console.log(value)
   return cookies.set(name, value, { path : '/',  expires : new Date(Date.now() + 3600*1000) });
 };
 //쿠키에 있는 값을 꺼낼때 

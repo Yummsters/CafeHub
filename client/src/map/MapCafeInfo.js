@@ -150,7 +150,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
                   <tr></tr>
                 </tbody>
               </div>
-              <div className="pagination-container">
+              <div className="map-pagination-container">
                   <Pagination>
                     <PaginationItem disabled={currentPage === 1}>
                       <PaginationLink previous onClick={prevPage} />
@@ -169,7 +169,7 @@ const MapCafeInfo = ({ selectCafe, setSelectCafe, wish, setWish, wishModal, wish
               </div>
             </Table>
              ) : (
-              <div className="noReviewList">등록된 리뷰가 없습니다.</div>
+              <div className="noReviewList">등록된 리뷰가 없습니다</div>
             )}
         </div>
       </div>

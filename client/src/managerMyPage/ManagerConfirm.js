@@ -77,12 +77,13 @@ const ManagerConfirm = () => {
         <div className='manager-container'>
             <ManagerSideTab />
             <div className='manager-listBox'>
-                <br /><label className='listTitle'>등록 카페 결제 확인</label><br /><br />
+                <br /><label className='listTitle'>등록 카페 결제 확인</label>
                 {unpaidCafes.length === 0 ? (
                     <div>
-                        <p style={{marginLeft: "12%"}}>카페 목록이 존재하지 않습니다.</p>
+                        <p style={{textAlign : "center", fontSize : "20px", margin : "50px" }}>카페 목록이 존재하지 않습니다</p>
                     </div>
                 ) : (
+                    <>
                     <Table hover>
                         <tbody>
                             {unpaidCafes.map((cafe) => (
@@ -102,9 +103,7 @@ const ManagerConfirm = () => {
                             ))}
                         </tbody>
                     </Table>
-                )}
-
-                {unpaidCafes.length > 0 && (
+                    {unpaidCafes.length > 0 && (
                     <div className='manager-pagination'>
                         <ul className="pagination">
                             <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
@@ -120,7 +119,11 @@ const ManagerConfirm = () => {
                             </li>
                         </ul>
                     </div>
+                     )}
+                    </>
                 )}
+
+                
             </div>
         </div>
     );

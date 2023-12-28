@@ -77,6 +77,8 @@ const ManagerAd = () => {
           }
         })
           .then((response) => {
+            console.log(response);
+
             tokenCreate(dispatch, setCookie, response.headers)
               .then(() => {
                 setUnapprovedAds(response.data.responseList);
@@ -100,15 +102,15 @@ const ManagerAd = () => {
     <div className='manager-container'>
       <ManagerSideTab />
       <div className='manager-listBox'>
-        <br /><label className='listTitle'>광고 신청 현황</label><br /><br />
+        <br /><label className='listTitle'>광고 신청 현황</label>
 
         {unapprovedAds.length > 0 ? (
-          <Table hover>
+          <><Table hover>
             <tbody>
               {unapprovedAds.map((ad) => (
                 <tr key={ad.cafeAdNo} className={`test-${ad.cafeAdNo}`}>
                   <th scope="row" style={{ width: "115px" }}>
-                    <img className='listImg' src={`${url}/common/thumbImg/${ad.thumbImg}`} alt='' />
+                    <img className='listImg' src={`${url}/common/thumbImg/${ad.fileNum}`} alt='' />
                   </th>
                   <td colSpan={11}>
                     <div className='listMiniTitle'>{ad.cafeName}</div>
@@ -125,13 +127,7 @@ const ManagerAd = () => {
               ))}
             </tbody>
           </Table>
-        ) : (
-          <div>
-            <p style={{ marginLeft: "12%" }}>광고 신청 목록이 존재하지 않습니다.</p>
-          </div>
-        )}
-
-        <div className='manager-pagination'>
+          <div className='manager-pagination'>
           <ul className="pagination">
             <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
               <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
@@ -145,7 +141,12 @@ const ManagerAd = () => {
               <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
             </li>
           </ul>
-        </div>
+        </div></>
+        ) : (
+          <div>
+            <p style={{textAlign : "center", fontSize : "20px", margin : "50px" }}>광고 신청 목록이 존재하지 않습니다</p>
+          </div>
+        )}     
       </div>
     </div>
   );

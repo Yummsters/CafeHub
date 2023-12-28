@@ -131,14 +131,11 @@ const LoginPage = () => {
 
           // refreshtoken을 쿠키에 담아서 저장
           const refreshToken = res.headers.refresh;
-          console.log(res);
-          console.log("토큰 확인 = " + res.headers);
-          console.log("리프레시 확인 = " + refreshToken);
           setCookie("refreshToken", refreshToken);
 
           Toast('success', '로그인 완료되었습니다')
           .then(()=> {
-            //window.location.href = "/";
+            window.location.href = "/";
           })
         })
         .catch(err => {
