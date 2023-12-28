@@ -17,6 +17,7 @@
   width: 600px;
   height: 800px;
   overflow-y: scroll;
+  position: relative;
 }
 
 .x {
@@ -147,4 +148,10 @@
   .map_box {
     width: 100%;
   }
+}
+
+.map-pagination-container{
+  position : absolute;
+  transform: translateX(-50%);
+  left: 50%;
 }

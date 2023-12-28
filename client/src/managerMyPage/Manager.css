@@ -16,7 +16,7 @@ tbody tr {
   }
 
   .manager-listBox table{
-    width: 900px;
+    width: 850px;
     margin: 0 auto;
   }
 
@@ -29,7 +29,7 @@ tbody tr {
   .managerPointTitle{
     font-size: 30px;
     font-weight: bold;
-    margin-left: 30px;
+    margin-left: 50px;
   }
 
   .listImg {
@@ -63,7 +63,6 @@ tbody tr {
   }
 
   .manager-dateTime{
-    margin-left: 60px;
     width: 170px;
   }
   
@@ -75,8 +74,7 @@ tbody tr {
     background-color: #F59A23;
     color: white;
     border: none;
-    margin-bottom: 5px;
-    margin-left: 50px;
+    margin-left: 25px;
   }
 
   .managerPoint-permission {
@@ -88,7 +86,7 @@ tbody tr {
     color: white;
     border: none;
     margin-bottom: 5px;
-    margin-left: 20px;
+    margin-left: 25px;
   }
 
   .unpermission {
@@ -99,12 +97,13 @@ tbody tr {
     background-color: #D9D9D9;
     border: none;
     margin-bottom: 5px;
-    margin-left: 100px;
+    margin-left: 25px;
     button: disabled;
   }
 
   .permission-button{
     width: 200px;
+    margin : 0 auto;
   }
 
   .manager-pagination {
