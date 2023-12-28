@@ -10,8 +10,8 @@ const MapLayout = ({ cafes }) => {
   useEffect(() => {     
     var mapContainer = document.getElementById("mapView"),
       mapOption = {
-        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
-        level: 6,
+        center: new kakao.maps.LatLng(37.4738645692092,126.885434915952), // 지도의 중심좌표
+        level: 4,
       };
 
     // 지도를 생성합니다
@@ -45,15 +45,15 @@ const MapLayout = ({ cafes }) => {
       });
     });
     
-    if (navigator.geolocation) {
-      // GPS 기반
-      navigator.geolocation.getCurrentPosition(function (position) {
-        const lat = position.coords.latitude; // 위도
-        const lon = position.coords.longitude; // 경도
-        const locPosition = new kakao.maps.LatLng(lat, lon); // 사용자 위치
-        map.setCenter(locPosition); // 지도 중심 좌표 설정
-      });
-    }
+    // if (navigator.geolocation) {
+    //   // GPS 기반
+    //   navigator.geolocation.getCurrentPosition(function (position) {
+    //     const lat = position.coords.latitude; // 위도
+    //     const lon = position.coords.longitude; // 경도
+    //     const locPosition = new kakao.maps.LatLng(lat, lon); // 사용자 위치
+    //     map.setCenter(locPosition); // 지도 중심 좌표 설정
+    //   });
+    // }
   }, [cafes]);
 
   return (

@@ -60,6 +60,7 @@ const WishReview = () => {
         },
       })
       .then((res) => {
+        console.log(res.data);
         setWishReviewList(res.data.data);
         setTotalPages(res.data.pageInfo.totalPages);
       })
