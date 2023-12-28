@@ -29,7 +29,7 @@ const UserPoint = () => {
     // 페이먼트 관련
     const payment = useSelector(state => state.persistedReducer.payment);
     const [paymentModal, setPaymentModal] = useState(false);
-    const paymentData = { price: price, orderName: "포인트구매" };
+    const paymentData = { price: price, orderName: "포인트구매", memNo: member.memNo};
     const paymentOpen = () => {
         if (isLogin) {
             checkToLogin(dispatch, accessToken, navigate)

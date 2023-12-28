@@ -17,11 +17,12 @@ const StoreBanner = () => {
     const [fileUrl, setFileUrl] = useState(null);
     const [fileNum, setFileNum] = useState(0);
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const memNo = useSelector(state => state.persistedReducer.member.memNo);
 
     // 페이먼트 관련
     const payment = useSelector(state => state.persistedReducer.payment);
     const [paymentModal, setPaymentModal] = useState(false);
-    const paymentData = { price: 140000, orderName: "광고신청" };
+    const paymentData = { price: 140000, orderName: "광고신청", memNo: memNo};
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const openModal = () => {
