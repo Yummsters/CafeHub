@@ -22,14 +22,14 @@ const Main2 = () => {
   const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
   const isLogin = useSelector(state => state.persistedReducer.isLogin);
-  
+
   const handleGoReview = () => {
-    if(isLogin) {
+    if (isLogin) {
       navigate('/reviewWrite');
     } else {
       navigate('/login');
     }
-}
+  }
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -63,28 +63,30 @@ const Main2 = () => {
             당신을 위한 카페 리뷰 추천
           </p>
         </div>
-        {reviews.length > 0 ? (
-          <Slider {...settings}>
-            {reviews.map((review, index) => (
-              <Link to={`/reviewDetail/${review.reviewNo}`}
-                state={{reviewNo: `${review.reviewNo}` }} >
-                <div className='card' key={index}>
-                  <img className='cardImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='카드 이미지' />
-                  <br />
-                  <span className='cardrecommend'>
-                    <div className='cardTitle'>{review.title}</div>
-                    <div className='cardCafe'>-{review.cafeName}-</div>
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </Slider>
-        ) : (
-          <div className='noReviewCafeRec'>
-            <div>작성된 카페 리뷰가 없습니다.</div>
-            <button type='button' id='reviewbutton' onClick={handleGoReview}>&gt;&gt;리뷰 쓰러 가기</button>
-          </div>
-        )}
+        <div className='recReviewsWrapper'>
+          {reviews.length > 0 ? (
+            <Slider {...settings}>
+              {reviews.map((review, index) => (
+                <Link to={`/reviewDetail/${review.reviewNo}`}
+                  state={{ reviewNo: `${review.reviewNo}` }} >
+                  <div className='card' key={index}>
+                    <img className='cardImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='카드 이미지' />
+                    <br />
+                    <span className='cardrecommend'>
+                      <div className='cardTitle'>{review.title}</div>
+                      <div className='cardCafe'>-{review.cafeName}-</div>
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </Slider>
+          ) : (
+            <div className='noReviewCafeRec'>
+              <div>작성된 카페 리뷰가 없습니다.</div>
+              <button type='button' id='reviewbutton' onClick={handleGoReview}>&gt;&gt;리뷰 쓰러 가기</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
