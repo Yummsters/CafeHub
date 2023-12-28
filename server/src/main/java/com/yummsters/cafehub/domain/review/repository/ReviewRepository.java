@@ -10,17 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.yummsters.cafehub.domain.member.entity.Member;
-import com.yummsters.cafehub.domain.reply.entity.Reply;
 import com.yummsters.cafehub.domain.review.dto.ReviewInterface;
 import com.yummsters.cafehub.domain.review.entity.Review;
 
 import java.time.LocalDateTime;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
-	// 수빈 part ----------------------------------------------------------------
 	Review findByReviewNo(Integer reviewNo);
 	Page<Review> findByMember_MemNo(PageRequest pageRequest, Integer memNo);
-	// 혜리 part ----------------------------------------------------------------
+
 	@Query(value = "SELECT * "
 			+ "FROM review r "
 			+ "JOIN cafe c ON r.cafe_no = c.cafe_no "
@@ -59,9 +57,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<ReviewInterface> findReviewsByMemberNoWithReviews(@Param("memNo")Integer memNo);
     Integer countByMember_MemNo(Integer memNo);
 
-  // 희진 part --------
-  Page<Review> findAllByCafe_CafeNo(PageRequest pageRequest, Integer cafeNo);
-  Page<Review> findAllByMember_Nickname(PageRequest pageRequest, String nickname);
-  List<Review> findAllByModPossibleIsTrueAndRegDateIsBefore(LocalDateTime localDateTime);
-  Review findByThumbImg(String thumbImg);
+	Page<Review> findAllByCafe_CafeNo(PageRequest pageRequest, Integer cafeNo);
+	Page<Review> findAllByMember_Nickname(PageRequest pageRequest, String nickname);
+	List<Review> findAllByModPossibleIsTrueAndRegDateIsBefore(LocalDateTime localDateTime);
+	Review findByThumbImg(String thumbImg);
 }

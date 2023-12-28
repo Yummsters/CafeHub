@@ -38,9 +38,7 @@ public class FileUploadController {
        
         String fileName = file.getOriginalFilename();
         try {
-           
             file.transferTo(new File(uploadPath + fileName));
-            
         } catch (IOException e) {
            
             e.printStackTrace();
@@ -50,21 +48,15 @@ public class FileUploadController {
         return BASE_URL + fileName;
     }
 
-//    @GetMapping("/{filename:.+}")
-//    public ResponseEntity<Resource> getFile(@PathVariable String filename) throws IOException {
-//        // URL 디코딩
-//        String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8.toString());
-//        Resource fileResource = new FileSystemResource(uploadPath + decodedFilename);
-//
-//        return ResponseEntity.ok()
-//                .body(fileResource);
-//    }
-//
-//    @PostMapping("/cropAndUpload")
-//    public ResponseEntity<String> handleCroppedImageUpload(@RequestParam("croppedImage") MultipartFile croppedImage) {
-//        String imageUrl = generateImageUrl(croppedImage);
-//        return ResponseEntity.ok(imageUrl);
-//    }
+   @GetMapping("/{filename:.+}")
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) throws IOException {
+        // URL 디코딩
+        String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8.toString());
+        Resource fileResource = new FileSystemResource(uploadPath + decodedFilename);
+
+        return ResponseEntity.ok()
+                .body(fileResource);
+    }
 
     // 업로드 이미지 조회
     @GetMapping("/upload/{fileNum}")

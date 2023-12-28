@@ -1,6 +1,5 @@
 package com.yummsters.cafehub.domain.review.entity;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 import javax.persistence.*;
@@ -41,11 +40,7 @@ public class FileVo {
 	 @Lob
 	 @Column(name = "data", columnDefinition = "LONGBLOB")
 	private byte[] data;
-	 // 추가: reviewNo의 Getter 메서드
     public Integer getReviewNo() {
         return review != null ? review.getReviewNo() : null;
     }
-
-	/*@OneToOne(mappedBy = "fileVo")
-	private CafeAd cafeAd;*/
 }
