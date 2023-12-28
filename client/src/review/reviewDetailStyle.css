@@ -55,7 +55,7 @@
     display: flex;
     align-items: center;
     margin: 5px 0;
-    justify-content: right;
+   
 }
 
 .detailContent {
@@ -194,4 +194,8 @@
 .infoR .writerBadge {
     margin-right: 5px;
     margin-bottom: 5px;
+}
+.infoR p{
+    display: flex;
+    justify-content: right;
 }
