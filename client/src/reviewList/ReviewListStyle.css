@@ -125,7 +125,7 @@ tbody td {
 ul.pagination {
   display: flex;
   width: 436px;
-  height: 66px;
+  height: 45px;
   justify-content: center;
   flex-shrink: 0;
 }
