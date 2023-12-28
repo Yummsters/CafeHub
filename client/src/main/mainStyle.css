@@ -133,6 +133,7 @@
     background-color: white!important;
     border-radius: 10px;
     text-align: center;
+    margin: 0 auto;
 }
 
 .cardImg {
@@ -160,6 +161,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.recReviewsWrapper {
+    margin: 0px 5rem;
 }
 
 .Main3 {
