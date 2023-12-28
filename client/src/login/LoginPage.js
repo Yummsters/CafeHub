@@ -138,10 +138,11 @@ const LoginPage = () => {
 
           Toast('success', '로그인 완료되었습니다')
           .then(()=> {
-            window.location.href = "/";
+            //window.location.href = "/";
           })
         })
         .catch(err => {
+          console.log(err)
           const errStatus = err.response.data.status;
           // 로그인 에러
           if (errStatus === 401) {
