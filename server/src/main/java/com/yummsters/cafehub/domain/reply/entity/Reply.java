@@ -31,7 +31,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-@ToString
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

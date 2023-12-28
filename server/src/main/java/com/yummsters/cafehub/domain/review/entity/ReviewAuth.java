@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-
 public class ReviewAuth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,16 +39,5 @@ public class ReviewAuth {
         this.regDate = regDate;
         this.member = member;
         this.cafe = cafe;
-        
-    }
-
-    @Override
-    public String toString() {
-        return "ReviewAuth{" +
-                "reviewAuthNo=" + reviewAuthNo +
-                ", regDate=" + regDate +
-                ", member=" + member +
-                ", cafe=" + cafe +
-                '}';
     }
 }

@@ -29,7 +29,7 @@ public class Review {
    private Integer reviewNo;
    @Column(length = 255)
    private String title;
-   @Column
+   @Column(length = 500000000)
    private String content;
    @Column(name = "thumb_img", nullable = false,columnDefinition = "TEXT")
    private String thumbImg;

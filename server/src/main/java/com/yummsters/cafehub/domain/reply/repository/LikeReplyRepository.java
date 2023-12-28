@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.yummsters.cafehub.domain.reply.entity.LikeReply;
 import com.yummsters.cafehub.domain.reply.entity.Reply;
-import com.yummsters.cafehub.domain.review.entity.LikeReview;
-import com.yummsters.cafehub.domain.review.entity.Review;
 
 @Repository
 public interface LikeReplyRepository extends JpaRepository<LikeReply, Integer> {
