@@ -11,6 +11,8 @@
     width: 90%;
     display: flex;
     align-items: center;
+    
+    
 }
 .thumbnail-preview {
     width: 100px;
@@ -20,6 +22,7 @@
     margin-left: 20px;
  border: none;
  font-size: 20px;
+ outline: none;
 }
 
 .reviewTitle select {
@@ -37,6 +40,7 @@
     text-align: center;
     margin: 20px 0;
     font-weight: 600;
+
 }
 
 .line { /* 구분선 */
