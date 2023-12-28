@@ -171,7 +171,6 @@ const SignUp_User = () =>{
         if (member.id) {
             axios.get(`${url}/id/${member.id}`)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,

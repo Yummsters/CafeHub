@@ -36,10 +36,6 @@ const ReviewWrite = () => {
 
     useEffect(() => {
         if (token) {
-            console.log('현재 토큰:', token);
-            console.log(getCookie("refreshToken"));
-
-            // 토큰을 이용한 사용자 정보 가져오기
             axios.get(`${url}/member`, {
 
                 headers: {
@@ -57,7 +53,6 @@ const ReviewWrite = () => {
                         }));
                         fetchCafeList();
                     } else {
-                        console.error('error');
                     }
                 })
                 .catch(error => {
@@ -150,11 +145,9 @@ const ReviewWrite = () => {
             .then(res => {
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
-
-                        console.log(res);
                         let reviewNo = res.data;
 
-                        Toast('success', '리뷰 등록 성공!', '커피콩 1개 적립')
+                        Toast('success', '리뷰 등록 성공!\n커피콩 1개 적립')
                         .then(() => {
                             navigate(`/reviewList`);
                         });
@@ -181,7 +174,6 @@ const ReviewWrite = () => {
 
         })
             .then(res => {
-                // 토큰이 유효한 경우 확인 후 재발급
                 tokenCreate(dispatch, setCookie, res.headers);
                 setTagName([...res.data]);
             })

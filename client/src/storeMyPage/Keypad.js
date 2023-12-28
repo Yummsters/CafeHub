@@ -37,8 +37,6 @@ const Keypad = () => {
             }
         })
             .then(res => {
-                console.log(res);
-                console.log(res.data);
                 tokenCreate(dispatch, setCookie, res.headers)
                 .then(()=>{
                     navigate('/choicePoint/' + res.data);
@@ -46,7 +44,6 @@ const Keypad = () => {
                 
             })
             .catch(err => {
-                console.log(err);
                 if(err.response !== undefined){
                     if(err.response.status === 400){
                         Toast('error', '존재하지 않는 회원입니다')

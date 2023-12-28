@@ -101,8 +101,6 @@ const ReviewModify = () => {
 
         formData.append('tagName', JSON.stringify(tagNumbers.filter(tagNo => tagNo !== null)));
 
-        console.log("태그", JSON.stringify(tagNumbers.filter(tagNo => tagNo !== null)))
-
         if (selectedFile) {
             formData.append('files', selectedFile);
         }
@@ -142,7 +140,6 @@ const ReviewModify = () => {
                     .then(() => {
 
                         setThumbImg(response.data.review.thumbImg || '');
-                        console.log(response.data);
                         setReview({
                             title: response.data.review.title,
                             content: response.data.review.content,
@@ -201,7 +198,6 @@ const ReviewModify = () => {
 
     const tagClick = (i) => {
         let updatedTags;
-        console.log(i);
 
         if (selectedTags.includes(i)) {
             updatedTags = selectedTags.filter((item) => item !== i);
@@ -220,7 +216,6 @@ const ReviewModify = () => {
             const response = await axios.get(`${url}/reviewauth/${memNo}`);
 
             setCafes(response.data);
-            console.log('Cafes:', response.data);
         } catch (error) {
             console.error('Error fetching cafe list:', error);
         }
@@ -233,7 +228,6 @@ const ReviewModify = () => {
             setSelectedFile(file);
 
             uploadImages(file, (response) => {
-                console.log('이미지 업로드 결과:', response);
                 setIsFileSelected(true);
 
                 setImagePreview(URL.createObjectURL(file));
@@ -389,7 +383,6 @@ const ReviewModify = () => {
                                     },
                                 })
                                     .then((response) => {
-                                        console.log('이미지 업로드 성공', response.data);
                                         callback(response.data);
                                     })
                                     .catch((error) => {
@@ -405,7 +398,7 @@ const ReviewModify = () => {
                     {tagName.map((tag, i) => (
                         <div
                             key={i}
-                            className={selectedTags.includes(tag.tagName) ? 'selectTags' : 'tags'}
+                            className={selectedTags.includes(tag.tagName) ? 'selectTag' : 'tag'}
                             onClick={() => tagClick(tag.tagName)}>
                             {tag.tagName}
                         </div>

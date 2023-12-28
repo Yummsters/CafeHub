@@ -74,7 +74,6 @@ const StoreInfo = () => {
             })
             .then((response) => {
                 tokenCreate(dispatch, setCookie, response.headers)
-                console.log(response.data);
                 const cafeData = response.data;
 
 
@@ -93,14 +92,13 @@ const StoreInfo = () => {
                     setSelectedTags([cafeData.storeTag.storeTagNo - 1]);  
                     setFileName(cafeData.fileName);              
                 } else {
-                    console.error('카페 정보가 없습니다.');
                 }
             })
             .catch((error) => {
                 if (error.response !== undefined) {
                     tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                 }
-                console.error('카페 정보 가져오기 실패:', error);
+                console.error(error);
             });
     }, [accessToken]);
 
@@ -116,11 +114,8 @@ const StoreInfo = () => {
                 .then((response) => {
                     tokenCreate(dispatch, setCookie, response.headers)
               
-                    // Blob 객체를 URL로 변환
                     const imageUrl = URL.createObjectURL(response.data);
-                    console.log(imageUrl);
-
-                    // 이미지 데이터를 state에 설정
+                  
                     setCafe((prevCafe) => ({
                         ...prevCafe,
                         imageUrl: imageUrl,
@@ -130,7 +125,7 @@ const StoreInfo = () => {
                     if (error.response !== undefined) {
                         tokenExpried(dispatch, removeCookie, error.response.data, navigate);
                     }
-                    console.error('카페 사진 가져오기 실패:', error);
+                    console.error(error);
                 });
         }
     }, [cafe.thumbImg]);
@@ -145,7 +140,6 @@ const StoreInfo = () => {
         })
             .then((response) => {
                 tokenCreate(dispatch, setCookie, response.headers)
-                console.log(response.data);
                 if (response.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
                     Toast('error', '등록되지 않은 사업자등록번호입니다')
                     setCheck((prevWarnings) => ({
@@ -191,7 +185,6 @@ const StoreInfo = () => {
             Toast('error', '사업자등록번호를 변경하세요')
             return;
         }
-        console.log("tag = " + selectedTags);
 
         const formData = new FormData();
         formData.append('cafeName', cafe.cafeName);
@@ -220,7 +213,6 @@ const StoreInfo = () => {
             Toast('success', '정보 수정이 완료되었습니다');
             window.location.reload();
         
-            console.log(response);
         } catch (err) {
             if (err.response !== undefined) {
                 tokenExpried(dispatch, removeCookie, err.response.data, navigate);
@@ -241,10 +233,8 @@ const StoreInfo = () => {
             .then(response => {
                 tokenCreate(dispatch, setCookie, response.headers)
              
-                console.log(response);
-                console.log(response.data);
                 setTagList([...response.data]);
-                console.log(tagList);
+              
             })
             .catch(err => {
                 if (err.response !== undefined) {
@@ -272,7 +262,6 @@ const StoreInfo = () => {
         const file = e.target.files[0];
         setSelectedFile(file);
         setFileName(file.name);
-        console.log(file);
         const imageUrl = URL.createObjectURL(file);
         setCafe((prevCafe) => ({
             ...prevCafe,
@@ -292,7 +281,6 @@ const StoreInfo = () => {
                 }
             });
         } else {
-            console.error("Element with class 'storeInfo' not found.");
         }
     }, [])
 
@@ -330,8 +318,6 @@ const StoreInfo = () => {
                 }
             })
                 .then(res => {
-                    console.log(res);
-                    console.log(res.data);
                     tokenCreate(dispatch, setCookie, res.headers)
                         .then(() => {
                             setPoint(res.data);
@@ -351,7 +337,6 @@ const StoreInfo = () => {
 
     const tagClick = (i) => {
         let updatedTags;
-        console.log(i);
 
         if (selectedTags.includes(i)) {
             updatedTags = selectedTags.filter((item) => item !== i);

@@ -40,7 +40,6 @@ const SignUpStore = () => {
             if(payment.isSuccess) { // memNo이 존재(직전에회원가입)하고 결제완료된 경우 컬럼 update
                 axios.put(`${url}/signUpStore`, { memNo: payment.memNo, paymentKey: payment.paymentKey })
                 .then((res) => {
-                    console.log(res.data)
                     Toast('success', '가입 및 카페등록이 완료되었습니다')
                     dispatch({ type:"payment", payload:"" })
                     setTimeout(() => {
@@ -57,7 +56,6 @@ const SignUpStore = () => {
     const failSignup = () => {
         axios.delete(`${url}/signUpStore/${payment.memNo}`)
         .then((res) => {
-            console.log(res.data);
             dispatch({type:"payment", payload:''});
             Toast('error', '회원가입에 실패했습니다\n사유: 결제 오류')
         })
@@ -67,9 +65,8 @@ const SignUpStore = () => {
     useEffect(()=>{
         axios.get(`${url}/storeTagList`)
         .then(res=>{
-            console.log(res.data);
             setTagName([...res.data]);
-            console.log(tagName);
+           
         })
         .catch(err=>{
             console.log(err);
@@ -189,7 +186,6 @@ const SignUpStore = () => {
        
         axios.post(`${url}/business/${store.businessNo}`)
             .then((res) => {
-                console.log(res.data);
                 if (res.data.data[0].tax_type === "국세청에 등록되지 않은 사업자등록번호입니다.") {
                     Toast('error', '등록되지 않은 사업자등록번호입니다')
                     setCheck((prevWarnings) => ({
@@ -255,7 +251,6 @@ const SignUpStore = () => {
         if (member.email) {
             axios.get(`${url}/email/${member.email}`)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,
@@ -328,7 +323,6 @@ const SignUpStore = () => {
         if (!check.nickname) {
             axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,
@@ -350,7 +344,6 @@ const SignUpStore = () => {
         if (check.email) {
             axios.get(`${url}/email/${member.email}`)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,
@@ -392,13 +385,11 @@ const SignUpStore = () => {
                 // 카페 생성
                 axios.post(`${url}/cafeStore/store`, formData)
                     .then((cafeResponse) => {
-                        console.log(cafeResponse);
                         const cafeNo = cafeResponse.data;
 
                         // 회원가입
                         axios.post(`${url}/signUpStore/${cafeNo}`, member)
                             .then((res) => {
-                                console.log(res.data);
                                 setMemNo(res.data.memNo);
                                 dispatch({type:"payment", payload: { isSuccess: false, memNo: res.data.memNo }}); // 결제 전 새로고침하는 경우 회원가입 방지
                                 openModal(); // 결제창
@@ -428,7 +419,6 @@ const SignUpStore = () => {
         if (member.id) {
             axios.get(`${url}/id/${member.id}`)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,
@@ -460,7 +450,6 @@ const SignUpStore = () => {
         if (member.nickname) {
             axios.get(`${url}/nickname/${member.nickname}`)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setCheck((prevWarnings) => ({
                             ...prevWarnings,

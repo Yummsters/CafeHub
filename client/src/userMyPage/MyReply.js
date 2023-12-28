@@ -45,7 +45,6 @@ const User5 = () => {
             .then(res => {
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
-                console.log(res.data);
                 const list = res.data.data;
                 const resPageInfo = res.data.pageInfo;
 
@@ -56,8 +55,6 @@ const User5 = () => {
                     totalElements: resPageInfo.totalElements,
                     totalPages: resPageInfo.totalPages
                 });
-
-                console.log(replyList);
             })
             })
             .catch(err => {
@@ -85,8 +82,7 @@ const User5 = () => {
     };
 
     const replyDelete = (replyNo) => {
-        console.log(replyNo);
-
+     
         axios.delete(`${url}/replyDelete/${replyNo}`, {
             headers: {
                 Authorization: accessToken,
@@ -94,7 +90,6 @@ const User5 = () => {
             }
         })
             .then(res => {
-                console.log(res);
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
                         Toast('success', '댓글 삭제 완료')

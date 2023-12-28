@@ -181,7 +181,7 @@ body, button, input{
     justify-content: center;
     border: 2px solid #F59A23;
     border-radius: 10px;
-    width: 130px;
+    min-width: 130px;
     height: 45px;
     font-size: 18px;
     margin: 5px 20px 5px 0;

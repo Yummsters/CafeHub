@@ -30,8 +30,7 @@ const UserInfo = ({ sideTab }) => {
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [withdrawalConfirmed, setWithdrawalConfirmed] = useState(false);
   const [pickBadgeName, setPickBadge] = useState([]);
-  console.log(updateUser)
-
+ 
   // 배지--------------------------------------------
   useEffect(() => {
     if (isLogin) {
@@ -43,7 +42,7 @@ const UserInfo = ({ sideTab }) => {
             setPickBadge([badgeName]);
         })
         .catch(error => {
-            console.error('에러 발생:', error);
+            console.error(error);
         });
 }, []);
 
@@ -196,7 +195,6 @@ const UserInfo = ({ sideTab }) => {
     } 
     // 랜덤 코드
     const random = Math.floor(Math.random() * 9000) + 1000;
-    console.log("Random code set:", random);
     // 입력한 번호로 랜덤 코드 발송
     // axios.get(`${url}/check/sendSMS?phone=${updateUser.phone}&code=${random}`)
     // .then((res) => {
@@ -350,7 +348,6 @@ const UserInfo = ({ sideTab }) => {
     })
     .catch(err=>{
       console.log(err);
-      console.log(err.data);
     })
   };
 
@@ -366,7 +363,6 @@ const UserInfo = ({ sideTab }) => {
       }
     })
     .then(res=>{
-      console.log(res.data);
       const isEmailCorrect =res.data;
 
       if (isEmailCorrect) {
@@ -383,7 +379,6 @@ const UserInfo = ({ sideTab }) => {
     })
     .catch(err=>{
       console.log(err);
-      console.log(err.data);
     })
   };
 
