@@ -31,7 +31,7 @@ public interface CafeAdRepository extends JpaRepository<CafeAd, Integer> {
     List<CafeAdInterface> findApprovedAds();
     
     @Query(value = "SELECT c.cafe_name AS cafeName, "
-    		+ "c.thumb_img AS thumbImg, "
+    		+ "ca.file_num AS fileNum, "
             + "ca.description AS description, "
             + "ca.menu AS menu, "
             + "ca.reg_date AS regDate, "

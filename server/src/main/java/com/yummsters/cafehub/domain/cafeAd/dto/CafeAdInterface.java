@@ -7,7 +7,7 @@ public interface CafeAdInterface {
 	Boolean getIsApproved();
 	Boolean getIsPaid();
 	LocalDateTime getAuthDate();
-	String getFileNum();
+	Integer getFileNum();
 	String getCafeName();
 	String getDescription();
 	String getMenu();
