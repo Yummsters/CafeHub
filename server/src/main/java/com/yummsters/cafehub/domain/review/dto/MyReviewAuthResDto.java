@@ -44,6 +44,12 @@ public class MyReviewAuthResDto {
 		
 	 
 	    	public static MyReviewAuthResDto reviewToMyReviewAuthRes(ReviewAuth reviewAuth) {
+
+				System.out.println("5555555" + LocalDateTime.now().toLocalDate());
+				System.out.println("666666" + reviewAuth.getRegDate().plusDays(7).toLocalDate());
+				System.out.println("777777" + ChronoUnit.DAYS.between(LocalDateTime.now().toLocalDate(), reviewAuth.getRegDate().plusDays(7).toLocalDate()));
+				System.out.println("888888" + (int) ChronoUnit.DAYS.between(LocalDateTime.now().toLocalDate(), reviewAuth.getRegDate().plusDays(7).toLocalDate()));
+
 	    	    if (reviewAuth == null) {
 	    	        return null;
 	    	    } else {

@@ -1,6 +1,7 @@
 package com.yummsters.cafehub.domain.review.dto;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import com.yummsters.cafehub.domain.cafe.entity.Cafe;
@@ -27,12 +28,16 @@ public class ReviewAuthDto {
 	    private String cafeName;
 		private boolean writeAuth;
 		private Integer remainTime;
-	   
+
 	    public void setCafeName(String cafeName) {
 	        this.cafeName = cafeName;
 	    }
 	    
 	    public static ReviewAuthDto fromEntity(ReviewAuth reviewAuth) {
+			System.out.println("111111" + LocalDateTime.now().toLocalDate());
+			System.out.println("222222" + reviewAuth.getRegDate().plusDays(7).toLocalDate());
+			System.out.println("333333" + ChronoUnit.DAYS.between(LocalDateTime.now().toLocalDate(), reviewAuth.getRegDate().plusDays(7).toLocalDate()));
+			System.out.println("444444" + (int) ChronoUnit.DAYS.between(LocalDateTime.now().toLocalDate(), reviewAuth.getRegDate().plusDays(7).toLocalDate()));
 	        return ReviewAuthDto.builder()
 	                .reviewAuthNo(reviewAuth.getReviewAuthNo())
 	                .regDate(reviewAuth.getRegDate())
