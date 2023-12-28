@@ -24,8 +24,6 @@ const ManagerAd = () => {
     totalPages: 1
   });
 
-  console.log(pageInfo);
-
   const handlePageChange = (pageNumber) => {
     setSearchParams((prev) => {
       prev.delete('page');
@@ -49,7 +47,6 @@ const ManagerAd = () => {
             })
         })
     } catch (error) {
-      console.error('Error approving ad:', error);
       if (error.response !== undefined) {
         tokenExpried(dispatch, removeCookie, error.response.data, navigate);
       }
@@ -82,8 +79,6 @@ const ManagerAd = () => {
           .then((response) => {
             tokenCreate(dispatch, setCookie, response.headers)
               .then(() => {
-                console.log(response.data.responseList);
-                console.log(response.data.unapprovedAds);
                 setUnapprovedAds(response.data.responseList);
                 let totalPages = response.data.unapprovedAds.totalPages;
                 let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.cafesPerPage) + 1;

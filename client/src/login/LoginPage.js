@@ -120,7 +120,6 @@ const LoginPage = () => {
       password: storeLogin.password.trim() === ''
     }));
 
-    console.log(submitStoreCheck);
     if (submitStoreCheck) {
       axios.post(`${url}/login`, storeLogin)
         .then(res => {

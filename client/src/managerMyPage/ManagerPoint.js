@@ -65,9 +65,7 @@ const Manager2 = () => {
 
     // 포인트 정산
     const permitPoint = (e) => {
-        console.log("들어감");
         const memNo = e.target.id;
-
 
         axios.post(`${url}/manager/point/${memNo}`, null, {
             headers: {

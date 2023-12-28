@@ -57,16 +57,10 @@ const MainMap = () => {
   
       // 마커에 마우스 호버 이벤트 추가
       kakao.maps.event.addListener(marker, 'click', function () {
-        // infowindow.open(map, marker);
         setCafeNo(cafe.cafeNo);
         setSelectCafe(cafe);
         setShowModal(true);
-        // console.log(cafe.cafeNo)
       });
-  
-      // kakao.maps.event.addListener(marker, 'mouseout', function () {
-      //   infowindow.close();
-      // });
     });
 
     if (navigator.geolocation) { // GPS 기반
@@ -91,7 +85,6 @@ return (
           <img className="closeBtn" onClick={closeModal} src="/img/X.png" width={"70px"} alt=""/>
           <div className="cafeModalContent">
           <div className='modalMap'>
-            {/* <div id="mapView2"></div> */}
             <MapCafeInfo wishModal={true} selectCafe={selectCafe} wishCafeNo={cafeNo} wish={wish} setWish={setWish}/>
           </div>
         </div>

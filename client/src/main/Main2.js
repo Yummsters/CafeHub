@@ -37,7 +37,7 @@ const Main2 = () => {
         const response = await axios.get(`${url}/reviewList/member/${memNo ?? 0}`);
         setReviews(response.data);
       } catch (error) {
-        console.error('리뷰 목록 조회 실패', error);
+        console.error(' 목록 조회 실패', error);
       }
     };
 

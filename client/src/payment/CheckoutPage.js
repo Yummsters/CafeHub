@@ -53,8 +53,6 @@ export function CheckoutPage({paymentData, children}) {
     }
   };
 
-  console.log(paymentData.price);
-
   return (
     <>
     <div className='paymentModal'>

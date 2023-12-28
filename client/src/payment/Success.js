@@ -29,7 +29,6 @@ const Success = () => { // response 객체를 가지고 와서 추출하여 사�
     useEffect(() => {
         axios.post(`${url}/payment/result`, paymentData)
         .then((res) => {
-            console.log(res);
             setIsSuccess(true);
             setTimeout(() => {
               setShowMsg(`${paymentData.amount}원 결제 완료`);

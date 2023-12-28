@@ -40,7 +40,6 @@ const Main1 = () => {
     useEffect(() => {
         axios.get(`${url}/cafeAd/approvedAds`)
             .then((response) => {
-                console.log(response);
                 setApprovedAds(response.data);
             })
             .catch(error => {
