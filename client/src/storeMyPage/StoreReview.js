@@ -14,7 +14,7 @@ const StoreReview = () => {
     const accessToken = useSelector(state => state.persistedReducer.accessToken);
     const isLogin = useSelector(state => state.persistedReducer.isLogin);
 
-    const [cafeNo, setCafeNo] = useState(1);
+    const cafeNo = useSelector(state => state.persistedReducer.cafe.cafeNo);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -43,6 +43,7 @@ const StoreReview = () => {
                 }
             })
             .then(res => {
+                console.log(res);
                 tokenCreate(dispatch, setCookie, res.headers)
                     .then(() => {
                         const list = res.data.data;
