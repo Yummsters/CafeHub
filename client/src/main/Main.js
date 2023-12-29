@@ -8,7 +8,7 @@ const Main = () => {
     return (
         <div className='Main'>
             <Main1/>
-            <Main2/>
+            <div id="Main2"><Main2/></div>
             <Main3/>
             <Main4/>
         </div>

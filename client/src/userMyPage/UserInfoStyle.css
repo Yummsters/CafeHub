@@ -22,7 +22,6 @@
 
 .nicknameBox p {
     font-size: 35px;
-    padding-left: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,7 +35,7 @@
 .infoBox {
     width: 844px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    margin-bottom: 75px;
+    margin-bottom: 15px;
     padding-bottom: 10px;
     border-radius: 10px;
 }
@@ -44,7 +43,7 @@
 .pwBox {
     width: 844px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    margin-bottom: 20px;
+    margin: 75px 0 20px 0;
     padding-bottom: 10px;
     border-radius: 10px;
 }
@@ -69,7 +68,6 @@
 }
 
 .resign {
-    /* text-decoration: underline; */
     text-align: right;
     margin-bottom: 75px;
 }
@@ -145,14 +143,19 @@
   
   .error-message {
     color: red;
-    margin-top: 10px;
+    margin-top: 20px;
+  }
+
+  .error-message-blank{
+    color: white;
+    margin-top: 20px;
   }
   
   /* 추가 버튼 컨테이너 스타일 */
   .buttonContainer {
     display: flex;
     justify-content: space-between;
-    margin-top: 50px;
+    margin-top: 10px;
     width: 500px;
   }
   
@@ -175,15 +178,19 @@
     font-size: 15px;
   }
 
+
   .checkPw input {
     float: left;
-    margin-left: 20px;
     margin-bottom: 10px;
     width: 460px;
     border: none;
     background-color: #D3D3D3;
     outline: none;
-    font-size: 15px;
+    font-size: 20px;
+  }
+
+  .checkPw-text{
+    float: left;
   }
 
   .cancelBtn {
@@ -210,4 +217,25 @@
 
 .infoTitle p, .infoContent p, .pwTitle p, .pwContent p{
     margin-bottom: 0;
+}
+
+.userInfoMsg {
+  color: #F59A23;
+  font-size: 18px;
+}
+
+.phoneCodeBtn {
+  background-color: #F59A23;
+  color:#FFFFFF;
+  border: 0px;
+  border-radius: 10px;
+  margin-left: 15px;
+  font-size:15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.socialInfo {
+  text-align: center;
+  font-size: 16px;
+  color: #F59A23;
 }

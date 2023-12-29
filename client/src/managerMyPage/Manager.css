@@ -9,13 +9,14 @@ tbody tr {
 .manager-listBox {
     margin:50px auto;
     width: 1000px;
-    height: 700px;
+    min-height: 700px;
     border: 3px solid #007355;
     border-radius: 10px;
+    position : relative;
   }
 
   .manager-listBox table{
-    width: 750px;
+    width: 850px;
     margin: 0 auto;
   }
 
@@ -25,8 +26,27 @@ tbody tr {
     margin-left: 30px;
   }
 
+  .managerPointTitle{
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 50px;
+  }
+
   .listImg {
     margin-left: 22px;
+    vertical-align: middle;
+    border-radius: 10px;
+  }
+
+  .managerPoint-thumb{
+    margin-left: 10px;
+    vertical-align: middle;
+    border-radius: 10px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .managerPoint-bean{
     vertical-align: middle;
     border-radius: 10px;
   }
@@ -43,7 +63,7 @@ tbody tr {
   }
 
   .manager-dateTime{
-    margin-left: 50px;
+    width: 170px;
   }
   
   .permission {
@@ -54,8 +74,19 @@ tbody tr {
     background-color: #F59A23;
     color: white;
     border: none;
+    margin-left: 25px;
+  }
+
+  .managerPoint-permission {
+    font-size: 20px;
+    width: 115px;
+    height: 50px;
+    border-radius: 30px;
+    background-color: #F59A23;
+    color: white;
+    border: none;
     margin-bottom: 5px;
-    margin-left: 50px;
+    margin-left: 25px;
   }
 
   .unpermission {
@@ -66,12 +97,13 @@ tbody tr {
     background-color: #D9D9D9;
     border: none;
     margin-bottom: 5px;
-    margin-left: 50px;
-
+    margin-left: 25px;
+    button: disabled;
   }
 
   .permission-button{
     width: 200px;
+    margin : 0 auto;
   }
 
   .manager-pagination {
@@ -86,4 +118,40 @@ tbody tr {
     margin: 0 10px;
 }
 
+.managerPoint-Button {
+  height: 33px;
+  border: none;
+  color: black !important;
+  cursor: pointer;    /* 커서를 포인터로 변경하여 클릭 가능함을 나타냄 */
+  transition: background-color 0.3s ease;  /* hover 효과를 부드럽게 만듦 */
+}
+
+.description1.current-page {
+  color: #F59A23 !important;
+}
+
+.managerPoint-Button:active {
+  border: none;
+  color: #F59A23 !important;
+  background-color: none !important;
+  height: 33px;
+}
+
+.managerPoint-Button:disabled {
+  border: none;
+  color: #D9D9D9 !important;
+  background: none;
+  font-weight: bolder;
+}
+
+.managerPoint-Page{
+  position : absolute;
+  bottom : 10px;
+  transform: translateX(-50%);
+  left: 50%;
+
+}
   
+.manager-container .manager-listBox .listTitle th {
+  width: 100px;
+}

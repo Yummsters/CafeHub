@@ -1,83 +1,183 @@
 import React from 'react';
-import { Table } from 'reactstrap';
-import './User.css';
+import './myReplyStyle.css';
+import Swal from "sweetalert2";
+import { Table, Pagination, PaginationLink } from "reactstrap";
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import UserSideTab from '../components/UserSideTab';
+import { normalCheck, tokenCreate, tokenExpried } from '../login/TokenCheck';
+import axios from 'axios';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { url } from '../config.js'
+import { Toast, ToastBtn } from '../components/Toast.js';
+
 const User5 = () => {
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
+    const memNo = useSelector(state => state.persistedReducer.member.memNo);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [replyList, setReplyList] = useState([]);
+    const [pageInfo, setPageInfo] = useState({ page: 1, size: 5, totalElements: 1, totalPages: 1 });
+    const [page, setPage] = useState(1);
+    const [curPage, setCurPage] = useState(page);
+
+    let firstNum = curPage - (curPage % 5) + 1;
+    let lastNum = curPage - (curPage % 5) + 5;
+    let total = Math.min(4, (pageInfo.totalPages === 0 ? 1 : pageInfo.totalPages) - firstNum);
+
+    useEffect(() => {
+        getPage(page);
+    }, [])
+
+    const getPage = (page) => {
+        setPage(page);
+        setCurPage(page);
+
+        axios.get(`${url}/user/reply/${memNo}?page=${page}&&size=5`, {
+            headers: {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
+            }
+        })
+            .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
+                const list = res.data.data;
+                const resPageInfo = res.data.pageInfo;
+
+                setReplyList([...list]);
+                setPageInfo({
+                    page: resPageInfo.page,
+                    size: resPageInfo.size,
+                    totalElements: resPageInfo.totalElements,
+                    totalPages: resPageInfo.totalPages
+                });
+            })
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
+            })
+    }
+
+    const reviewDetail = (reviewNo) => {
+        if (isLogin) {
+            normalCheck(dispatch, accessToken);
+        }
+        navigate('/reviewDetail/' + reviewNo, {state: {reviewNo: reviewNo}});    }
+
+    const replyDeleteCheck = (e, replyNo) => {
+        e.stopPropagation();
+        ToastBtn('warning', '댓글 삭제', '댓글을 삭제하시겠습니까?')
+        .then((res) => {
+            if (res.isConfirmed) {
+                replyDelete(replyNo);
+            }
+        });
+    };
+
+    const replyDelete = (replyNo) => {
+     
+        axios.delete(`${url}/replyDelete/${replyNo}`, {
+            headers: {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
+            }
+        })
+            .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers)
+                    .then(() => {
+                        Toast('success', '댓글 삭제 완료')
+                        .then(() => {
+                            window.location.reload();
+                        })
+                    })
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response !== undefined) {
+                    tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                }
+            })
+    }
+
     return (
-        <div className='mypage'>
-            <UserSideTab/> 
-        <div className='listBox'>
-            <br/><label className='myreplylistTitle'>댓글 관리</label><br/><br/>
-            <Table hover>
-                <div className='myreplybox'>
-                    <tr>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>자세한 리뷰 감사해요 다음에 꼭 가봐야겠네요 군침이 싸악~</div>
-                        <div className='description1'>원글: 따뜻한 느낌의 책읽기 좋은 카페</div>
-                    </td>
-                    <td colSpan={2}>
-                        <img className='replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''/><br/>
-                        <div className='dateTime'>2023.11.15 11:01</div>
-                    </td>
-                    </tr>
-                    
-                    <tr>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>감성카페</div>
-                        <div className='description1'>감성이 철철 흘러내리는 카페</div>
-                        <div className='description2'>아메리카노, 시나몬라떼, 당근케이크</div>
-                    </td>
-                    <td colSpan={2}>
-                    <img className='replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''/><br/>
-                        <div className='dateTime'>2023.11.15 21:14</div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>디저트 카페</div>
-                        <div className='description1'>맛있는 디저트를 듬뿍 파는 카페</div>
-                        <div className='description2'>달걀빵, 오렌지주스, 크림치즈라떼</div>
-                    </td>
-                    <td colSpan={2}>
-                    <img className='replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''/><br/>
-                        <div className='dateTime'>2023.11.16 12:30</div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>빈티지 갬성</div>
-                        <div className='description1'>빈티지한 느낌과 함께 쉬어갈 수 있는 ‘빈티지 카페'에 어서오세요</div>
-                        <div className='description2'>콜드브루 아메리카노, 아메리카노, 콰테말라 원두 아메리카노</div>
-                    </td>
-                    <td colSpan={2}>
-                    <img className='replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''/><br/>
-                        <div className='dateTime'>2023.11.17 10:03</div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>수비니가 좋아하는 디저트 카페</div>
-                        <div className='description1'>디저트가 맛있는 슈페너 카페에서 달달한 시간 보내보세요!</div>
-                        <div className='description2'>아인슈페너, 밀크쉐이크, 황치즈 크럼블 치즈케이크</div>
-                    </td>
-                    <td colSpan={2}>
-                    <img className='replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''/><br/>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-
+        <div className='myReply-mypage'>
+            <UserSideTab />
+            <div className='myReplylistBox'>
+                <br /><label className='myreplylistTitle'>댓글 관리</label><br /><br />
+                {replyList.length == 0 && <div className="myreply0">작성한 댓글이 없습니다</div>}
+                <div className='myReply-table'>
+                    <Table hover>
+                        <tbody>
+                            {replyList.length != 0 && replyList.map(list => {
+                                return (
+                                    <tr key={list.replyNo} onClick={() => { reviewDetail(list.reviewNo) }}>
+                                        <td colSpan={8} >
+                                            <div className='myReply-listMiniTitle'>{list.content.length >30 ? list.content.slice(0, 30)+'...' : list.content }</div>
+                                            <div className='myReply-description1'>원글: {list.title}</div>
+                                        </td>
+                                        <td colSpan={4}>
+                                            <img className='myReply-replyDeleteBtn' src='/img/replyDeleteBtn.png' alt=''
+                                                onClick={(e) => replyDeleteCheck(e, list.replyNo)} /><br />
+                                            <div className='myReply-dateTime'>작성일 {list.regDate}</div>
+                                        </td>
+                                    </tr>);
+                            })}
+                        </tbody>
+                    </Table>
                 </div>
-                <div className='myreply-pagination'>
-                    <div className='myreply-prevPage'>&lt;</div>
-                    <div className='myreply-page'>1 2 3 맵사용해~</div>
-                    <div className='myreply-nextPage'>&gt;</div>
-                </div>
-            </Table>
-            
-        </div>
+                { replyList.length != 0 && <Pagination className="myReply-Page">
+                    <PaginationLink
+                        className='myReply-Button'
+                        onClick={() => { getPage(page - 1); setCurPage(page - 2); }}
+                        disabled={page === 1}>
+                        &lt;
+                    </PaginationLink>
+                    <PaginationLink
+                        className={`myReply-Button ${firstNum === page ? 'current-page' : ''}`}
+                        onClick={() => getPage(firstNum)}
+                        aria-current={page === firstNum ? "page" : null}>
+                        {firstNum}
+                    </PaginationLink>
+                    {Array(total).fill().map((_, i) => {
+                        if (i <= 2) {
+                            let pageNum = firstNum + 1 + i;
+                            return (
+                                <PaginationLink
+                                    className={`myReply-Button ${pageNum === page ? 'current-page' : ''}`}
+                                    key={i + 1}
+                                    onClick={() => { getPage(firstNum + 1 + i) }}
+                                    aria-current={page === firstNum + 1 + i ? "page" : null}>
+                                    {firstNum + 1 + i}
+                                </PaginationLink>
+                            )
+                        } else if (i >= 3) {
+                            let pageNum = lastNum;
+                            return (
+                                <PaginationLink
+                                    className={`myReply-Button ${pageNum === page ? 'current-page' : ''}`}
+                                    key={i + 1}
+                                    onClick={() => getPage(lastNum)}
+                                    aria-current={page === lastNum ? "page" : null}>
+                                    {lastNum}
+                                </PaginationLink>
+                            )
+                        }
+                    })}
+                    <PaginationLink
+                        className='myReply-Button'
+                        onClick={() => { getPage(page + 1); setCurPage(page); }}
+                        disabled={page >= pageInfo.totalPages}>
+                        &gt;
+                    </PaginationLink>
+                </Pagination>}
+            </div>
         </div>
     );
 };

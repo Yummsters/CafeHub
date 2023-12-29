@@ -1,22 +1,88 @@
 import keypadStyle from './keypadStyle.css';
+import axios from 'axios';
+import { Container, Col, Row } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { useDispatch } from 'react-redux';
+import {tokenCreate, tokenExpried} from '../login/TokenCheck';
+import { url } from '../config.js'
+import { Toast } from '../components/Toast.js';
 
-const Keypad = () =>{
-    return(
+const Keypad = () => {
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [phone, setPhone] = useState('010');
+
+    const handleClick = (e) => {
+        // 버튼 클릭 시 동작하는 함수
+        const innerText = e.target.innerText;
+        if (innerText !== '⬅️') {
+            setPhone(phone + innerText);
+        }
+        else {
+            if (phone.length !== 3) setPhone(phone.slice(0, -1));
+        }
+    };
+
+    const phoneSubmit = (e) => {
+        e.preventDefault();
+        setPhone('010');
+        axios.get(`${url}/member/phone/${phone}`, {
+            headers: {
+                Authorization: accessToken,
+                Refresh: getCookie("refreshToken")
+            }
+        })
+            .then(res => {
+                tokenCreate(dispatch, setCookie, res.headers)
+                .then(()=>{
+                    navigate('/choicePoint/' + res.data);
+                })
+                
+            })
+            .catch(err => {
+                if(err.response !== undefined){
+                    if(err.response.status === 400){
+                        Toast('error', '존재하지 않는 회원입니다')
+                    }else if(err.response.data.status === 602){
+                        tokenExpried(dispatch, removeCookie, err.response.data, navigate);
+                    }
+                }else{
+                    Toast('error', '관리자에게 문의주세요')
+                }    
+            })
+    }
+
+    const backPoint = () => {
+        window.location.href = "/storeInfo"
+    }
+
+    return (
         <div className="keypad-container">
-            <input className="keypadInput" type="text" id="phoneNum" name="phoneNum"/>
+            <div className="closeBtn">
+                <img onClick={backPoint} src='/img/Xb.png' style={{width : "50px"}} alt=''/>
+            </div>
+            <input className="keypadInput" type="text" id="phoneNum" name="phoneNum" style={{ height: '20vh' }} value={phone} />
             <div className="keypadNum-section">
-                <button className="keypad-1"> 1</button>
-                <button className="keypad-2"> 2</button>
-                <button className="keypad-3"> 3</button>
-                <button className="keypad-4"> 4</button>
-                <button className="keypad-5"> 5</button>
-                <button className="keypad-6"> 6</button>
-                <button className="keypad-7"> 7</button>
-                <button className="keypad-8"> 8</button>
-                <button className="keypad-9"> 9</button>
-                <button className="keypad-confirm"> 확인 </button>
-                <button className="keypad-0"> 0</button>
-                <button className="keypad-delete"> &lt; </button>
+                <Container>
+                    <Row xs="3" style={{ height: '80vh' }}>
+                        <Col className='keypad' name="1" onClick={handleClick}>1</Col>
+                        <Col className='keypad' name="2" onClick={handleClick}>2</Col>
+                        <Col className='keypad' name="3" onClick={handleClick}>3</Col>
+                        <Col className='keypad' name="4" onClick={handleClick}>4</Col>
+                        <Col className='keypad' name="5" onClick={handleClick}>5</Col>
+                        <Col className='keypad' name="6" onClick={handleClick}>6</Col>
+                        <Col className='keypad' name="7" onClick={handleClick}>7</Col>
+                        <Col className='keypad' name="8" onClick={handleClick}>8</Col>
+                        <Col className='keypad' name="9" onClick={handleClick}>9</Col>
+                        <Col className='keypad-confirm' onClick={phoneSubmit}>확인</Col>
+                        <Col className='keypad' name="0" onClick={handleClick}>0</Col>
+                        <Col className='keypad' name="cancel" onClick={handleClick}>⬅️</Col>
+                    </Row>
+                </Container>
             </div>
         </div>
     );

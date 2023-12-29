@@ -2,20 +2,19 @@
     display: flex;
 }
 
-
-
-/* 찜한 가게 블럭 */
+/* 찜한 카페 블럭 */
 .wishReview-list{
     border:3px solid #007355;
     width: 1000px;
+    min-height: 700px;
     border-radius: 10px;
     margin:50px auto;
     padding:20px 40px 10px 40px;
+    position: relative;
 }
 
 .wishReview-title{
     font-size:30px;
-    margin: 15px;
     font-weight: bold;
 }
 
@@ -23,7 +22,7 @@
     margin-bottom: 5px;
 }
 
-/* 찜한 가게 이미지 */
+/* 찜한 카페 이미지 */
 .wishReview-reviews {
     position: relative;
     display: inline-block;
@@ -31,7 +30,7 @@
 
 .wishReview-reviews img{
     width: 250px;
-    height: 200px;
+    height: 240px;
     border-radius: 10px;
     margin:10px 25px 10px 25px;
 }
@@ -44,7 +43,7 @@
     left: 50%; 
     transform: translate(-50%, -51%);
     width: 250px;
-    height: 200px;
+    height: 240px;
     border-radius: 10px;
 }
 
@@ -73,18 +72,31 @@
     align-items: center;
     z-index: 999;
   }
+
   .reviewModalContent {
     background-color: white;
     padding: 20px;
-    border-radius: 8px;
-    width: 1042px;
-    height: 658px;
+    border-radius: 10px;
+    width: 80%;
+    max-height: 90%;
     overflow-y: scroll;
+    /* border: 3px solid #007355; */
   }
   
   .closeBtn {
-    text-align: right;
+    position: absolute;
+    top: 20px;
+    right: 30px;
     cursor: pointer;
+    z-index: 999;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 300px;
+    right: 30px;
+    cursor: pointer;
+    z-index: 999;
   }
 
   .wishreview-pagination {
@@ -99,4 +111,28 @@
     margin: 0 10px;
   }
   
+  .ReviewWriter {
+    font-size: 20px;
+  }
   
+  .wishPagination {
+    background-color: #007355;
+    width: 100%;
+  }
+
+  .pagination-container {
+    position : absolute;
+    bottom : 5px;
+    transform: translateX(-50%);
+    left: 50%;
+  }
+
+  .noWish {
+    text-align: center;
+    font-size: 20px;
+    margin: 50px;
+  }
+
+  .reviewModalContent::-webkit-scrollbar, .modalCafe::-webkit-scrollbar, .map_box::-webkit-scrollbar{
+    display: none;
+  }

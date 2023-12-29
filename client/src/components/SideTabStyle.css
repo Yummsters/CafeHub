@@ -1,6 +1,7 @@
 .sideBox {
     background: #D9D9D9;
     width: 200px;
+    flex: 0 0 200px;    /*늘어나고 줄어드는 거 막기*/
     /* height: 920px; */
     /* float: left; */
 }

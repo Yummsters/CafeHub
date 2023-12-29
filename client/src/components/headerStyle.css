@@ -1,12 +1,21 @@
-/* 나눔명조 폰트 */
-@import url('https://fonts.googleapis.com/css?family=Nanum+Myeongjo&display=swap');
-/* 로고 폰트 */
-@import url('https://fonts.cdnfonts.com/css/dream-orphans');
-@import url('https://fonts.cdnfonts.com/css/coolvetica-2');
+@font-face {
+    font-family: 'GongGothicMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicLight.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    unicode-range: U+AC00-D7A3; /* 한글 */
+}
 
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    unicode-range:  U+0041-005A, U+0061-007A, U+0030-0039,U+0020-002F, U+003A-0040, U+005B-0060, U+007B-007E;
+}
 
-* {
-    font-family: 'Nanum Myeongjo', serif;
+*, a, input, button {
+    font-family: 'GongGothicMedium', 'GmarketSansMedium', sans-serif;
 }
 
 a {
@@ -17,10 +26,10 @@ a {
 .navBox {
     background: #F3F3F3;
     width: 100%;
-    height: 105px;
+    height: 100px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .navContent {
@@ -29,21 +38,18 @@ a {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .logo { /* 로고_Cafe */
     color: #F59A23;
     font-size: 50px;
-    font-weight: 800;
-    font-family: 'Dream Orphans', sans-serif;
-    /* font-family: 'Coolvetica', sans-serif; */
+    font-weight: 900;
+    margin: 0;
 }
 
 .hub { /* 로고_Hub */
     color: #007355;
-    font-family: 'Dream Orphans', sans-serif;
-    /* font-family: 'Coolvetica', sans-serif; */
 }
 
 .center {
@@ -58,4 +64,56 @@ a {
 
 .center > p, .right > p {
     padding: 0 15px;
+    margin: 0;
+}
+
+.hamburger-icon {
+    display: none; 
+}
+
+.menu-items {
+    display: none;
+    position: absolute;
+    top: 100px;
+    background: #F3F3F3; 
+    width: 100%;
+    text-align: center;
+    font-size: 17px;
+    z-index: 9999;
+}
+
+.hamburger-icon img {
+    width: 55px;
+    height: 55px;
+    margin-bottom: 10px;
+}
+
+.slide-down {
+    display: block;
+    animation: slideDown 0.3s ease forwards;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+@media screen and (max-width: 958px) {
+    .center, .right {
+        display: none; 
+    }
+
+    .menu-items, .hamburger-icon {
+        display: block;
+        cursor: pointer;
+    }
+    .menu-items a:hover {
+        color: #F59A23;
+    }
 }

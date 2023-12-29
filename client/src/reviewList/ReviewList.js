@@ -1,199 +1,167 @@
 import React from 'react';
 import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import './ReviewListStyle.css';
-
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { url } from '../config.js'
+import { getCookie, removeCookie, setCookie } from '../components/Cookie';
+import { normalCheck, tokenCreate, tokenExpried,checkLogin } from '../login/TokenCheck';
+import { Toast } from '../components/Toast.js';
 const ReviewList = () => {
+    const isLogin = useSelector(state => state.persistedReducer.isLogin);
+    const accessToken = useSelector(state => state.persistedReducer.accessToken);
+    const dispatch = useDispatch();
+
+    const member = useSelector(state => state.persistedReducer.member);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [reviews, setReviews] = useState([]);
+    const [inputKeyword, setInputKeyword] = useState(''); //input에 입력될 내용, 키워드
+    const [pickBadgeName, setPickBadge] = useState([]);
+    const navigate = useNavigate();
+
+    const handleSearchChange = (e) => {
+        setInputKeyword(e.target.value);
+    }
+
+    const handleSearch = () => {
+        setSearchParams((prev) => {
+            prev.delete('search');
+            prev.append('search', inputKeyword);
+            prev.delete('page');
+            prev.append('page', 1);
+            return prev;
+        });
+    };
+
+    const [pageInfo, setPageInfo] = useState({
+        currentPage: 1,
+        reviewsPerPage: 10,
+        startPage: 1,
+        endPage: 1,
+        totalPages: 1
+    })
+
+    useEffect(() => {
+       
+        setSearchKeyword(searchParams.get('search') ?? '');
+        setInputKeyword(searchParams.get('search') ?? '');
+        searchParams.get('page') && setPageInfo({ ...pageInfo, currentPage: parseInt(searchParams.get('page')) });
+    }, [searchParams]);
+
+    useEffect(() => {
+        if (!pageInfo) return false;
+        axios
+            .get(`${url}/reviewList`, {
+                params: {
+                    search: searchKeyword,
+                    page: pageInfo.currentPage - 1,
+                    size: pageInfo.reviewsPerPage,
+                },
+            })
+            .then((response) => {
+                setReviews(response.data.content);
+                let totalPages = response.data.totalPages;
+                let startPage = Math.floor((pageInfo.currentPage - 1) / pageInfo.reviewsPerPage) + 1;
+                let endPage = Math.min(startPage + pageInfo.reviewsPerPage - 1, totalPages);
+                setPageInfo((prev) => ({ ...prev, startPage: startPage, endPage: endPage, totalPages: totalPages }));
+            })
+            .catch((error) => {
+               
+                if (error.response) {
+                  
+                } else if (error.request) {
+                    
+                } else {
+                   
+                }
+            });
+    }, [pageInfo.currentPage, searchKeyword]);
+
+    const handlePageChange = (pageNumber) => {
+        setSearchParams((prev) => {
+            prev.delete('page');
+            prev.append('page', pageNumber);
+            return prev;
+        });
+    };
+    const clickReveiwBtn = (e) => {
+        e.preventDefault();
+        
+        checkLogin(dispatch, accessToken, isLogin, navigate)
+            .then(() => {
+                if(member.memberType === "STORE"){
+                    Toast("error", "사장님은 리뷰 등록이 불가능합니다")
+                }else{
+                    navigate("/reviewWrite");
+                }
+                
+            })
+    };
+      
     return (
         <div className='reviewWrapper'>
-        <div className='reviewListBox'>
-            <div className='searchBar'>
-                <input className='searchBox'></input>
-                <img src='/img/searchIcon.png' alt=''/>
+            <div className='reviewListBox'>
+                <div className='searchBar'>
+                    <input className='searchBox' value={inputKeyword} onChange={handleSearchChange}></input>
+                    <img className='searchBtn' src='/img/searchIcon.png' onClick={() => handleSearch()} alt="검색" />
+                </div>
+                <div className='reviewline' />
+                <button className='reviewBtn' onClick={ clickReveiwBtn}>
+                    리뷰 등록
+                </button>
+                {reviews.length !== 0 ?
+                    <div className='reviewtable'>
+                        <Table hover >
+                            <tbody>
+                                {reviews.map((review) => (
+                                    <tr key={review.reviewNo}>
+                                        <th scope='row' style={{ width: "100px" }}>
+                                            <img className='listImg' src={`${url}/common/thumbImg/${review.thumbImg}`} alt='' />
+                                        </th>
+                                        <td colSpan={10}>
+                                            <Link to={`/reviewDetail/${review.reviewNo}`}
+                                                state={{ reviewNo: `${review.reviewNo}` }} >
+                                                <div className='listMiniTitle'>{review.title}</div>
+                                            </Link>
+                                            <div className='description1'>{review.cafeName}</div>
+                                        </td>
+                                        <td colSpan={2}>
+                                            <div className='writeInfo'>
+                                                <a href={`/userReview/${review.nickname}`}>
+                                                    <img className='badgeImg' src={`/img/${review.badgeNo}.png`} alt='' />
+                                                    {review.nickname}</a> &nbsp;| 추천 {review.likeCount}
+                                            </div>
+                                            <div className='dateTime'>{review.regDate}</div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
+                    : <div className="noWish">리뷰가 없습니다</div>}
+                {reviews.length !== 0 ?
+                    <div className='reviewList-pagination'>
+                        <ul className="pagination">
+                            <li className={`page-item ${pageInfo.currentPage === 1 ? 'disabled' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage - 1)}>&lt;</button>
+                            </li>
+                            {Array.from({ length: Math.ceil(pageInfo.endPage - pageInfo.startPage + 1) }, (_, index) => (
+                                <li key={index} className={`page-item ${pageInfo.currentPage === index + 1 ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageChange(index + pageInfo.startPage)}>{index + pageInfo.startPage}</button>
+                                </li>
+                            ))}
+                            <li className={`page-item ${pageInfo.currentPage === pageInfo.endPage ? 'disabled' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageChange(pageInfo.currentPage + 1)}>&gt;</button>
+                            </li>
+                        </ul>
+                    </div>
+                    : <div></div>}
             </div>
-                    <div className='reviewline'/>
-                    <a href='/reviewModify'><button className='reviewBtn'>리뷰 등록</button></a>
-                    
-             <div className='reviewtable'>
-            <Table hover >
-                <tbody>
-                    
-
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad1.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>따뜻한 느낌의 책 읽기 좋은 카페</div>
-                        <div className='description1'>따뜻한 카페</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/cookies.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.15 11:01</div>
-                    </td>
-                    </tr>
-                    
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad2.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>편하게 이야기 나눌 수 있는 곳 발견</div>
-                        <div className='description1'>편한 이야기 카페</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/cupcake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.15 21:14</div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad3.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>베리가 가득해 더욱 맛있는</div>
-                        <div className='description1'>여수밤바다</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/icecream.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.16 12:30</div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad4.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 감성카페</div>
-                        <div className='description1'>혜리 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/macaroon.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.17 10:03</div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad5.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 안주가 맛있는 카페</div>
-                        <div className='description1'>선진 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/pancake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad5.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 안주가 맛있는 카페</div>
-                        <div className='description1'>선진 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/pancake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad5.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 안주가 맛있는 카페</div>
-                        <div className='description1'>선진 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/pancake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad5.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 안주가 맛있는 카페</div>
-                        <div className='description1'>선진 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/pancake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad5.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 안주가 맛있는 카페</div>
-                        <div className='description1'>선진 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/pancake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-                    <tr>
-                    <th scope="row">
-                        <img className='listImg' src='/img/Ad5.png' alt=''/>
-                    </th>
-                    <td colSpan={10}>
-                        <div className='listMiniTitle'>추천합니다 안주가 맛있는 카페</div>
-                        <div className='description1'>선진 집</div>
-                    </td>
-                    <td colSpan={2}>
-                        <div className='writeInfo'>
-                            <img src='/img/pancake.png' alt=''/>
-                            선진언니바보 | 추천 24
-                        </div>
-                        <div className='dateTime'>2023.11.18 18:30</div>
-                    </td>
-                    </tr>
-                <tr>
-              
-                </tr>
-                </tbody>
-            </Table>
-            </div>
-            <div className='reviewList-pagination'>
-                <div className='reviewList-prevPage'>&lt;</div>
-                <div className='reviewList-page'>1 2 3 맵사용해~</div>
-                <div className='reviewList-nextPage'>&gt;</div>
-            </div>
-        </div>
         </div>
     );
 };

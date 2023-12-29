@@ -7,6 +7,7 @@
     width: 100%;
     height: 170px;
     font-size: 60px;
+    border: none;
     text-align: center;
 }
 
@@ -15,22 +16,89 @@
     text-align: center;
 }
 
-.keypadNum-section button{
-    margin:20px;
+.keypad {
+    margin: 5px;
+    width: 29%;
     border-radius: 10px;
-    width: 350px;
-    height: 100px;
-    border : none;
-    font-size: 50px;
+    border: none;
+    font-size: 60px;
     background-color: #FFFFFF;
-}
-
-.keypadNum-section .keypad-confirm{
+    color: black;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .keypad-confirm {
+    width: 29%;
+    margin: 5px;
+    border-radius: 10px;
+    border: none;
+    font-size: 60px;
     background-color: #F59A23;
-}
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.keypadNum-section button:hover{
+.keypad:hover{
     background-color: #007355;
     color:white;
 }
-    
+.keypad-confirm:hover{
+    background-color: #007355;
+    color:white;
+}
+
+.choiceButton-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .choiceButton-container button {
+    margin: 0 20px; /* 각 버튼 사이의 간격을 조절할 수 있습니다. */
+    width: 35%;
+    height: 13vh;
+    font-size: 60px;
+    background-color: #007355;
+    border-radius: 20px;
+    border : none;
+  }
+
+  .choiceButton-container button:hover {
+    background-color: #F59A23;
+    border-radius: 20px;
+    border : none;
+
+  }
+
+  .choicePoint-title{
+    font-size: 70px;
+    text-align: center;
+    margin : 200px 0 150px 0;
+  }
+
+  .usePoint-container {
+    position: relative;
+  }
+  
+  .usePoint-public {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    font-size: 25px;
+    padding: 20px;
+    font-weight: bold;
+  }
+  
+  .keypadInput-usePoint {
+    height: 20vh;
+    position: relative;
+    z-index: 0;
+    padding:20px;
+    width: 100%;
+    font-size: 60px;
+    text-align: center;
+    border: none;
+  }

@@ -1,9 +1,15 @@
 /* 전체 박스 */
 .searchPw-container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.searchPw-bg {
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
-    width: 1000px;
-    height: 650px;
+    width: 80%;
+    min-width: 450px;
+    height: 700px;
     border-radius: 20px;
     margin:50px auto;
     background:url(/public/img/SearchPwImage.png);
@@ -90,11 +96,15 @@
 }
 .searchPw-button button {
     color:#FFFFFF;
-    font-size:25px;
+    font-size:20px;
     width:350px;
     height:50px;
     border-radius:50px;
     background-color:#007355;
     border:0px;
     margin:30px 0 10px 0;
+}
+
+.searchPwAuthNum button {
+    font-size: 16px;
 }

@@ -7,7 +7,8 @@
 
 .reviewBox {
     margin: 0 auto;
-    width: 85%;
+    width: 66%;
+    min-width: 600px;
     border-radius: 20px;
     background: #FFF;
     border: 3px solid #007355;
@@ -36,9 +37,11 @@
 .detailInfo {
     display: flex;
     justify-content: space-between;
+    margin: 30px auto;
+    border-bottom: 2px solid #007355;
 }
 
-.detailInfo img, .replyInfo .infoT img, .comment img {
+.detailInfo img, .replyInfo .infoT img, .reReplyInfo .infoT img, .comment img {
     width: 25px; height: 25px;
     margin-right: 10px;
     align-self: flex-start;
@@ -52,10 +55,12 @@
     display: flex;
     align-items: center;
     margin: 5px 0;
+   
 }
 
 .detailContent {
     margin: 50px auto;    
+    min-height: 400px;
 }
 
 .starNheart {
@@ -63,12 +68,12 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    margin-bottom: 50px;
+    margin: 50px;
 }
 
 .starNheart img {
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
 }
 
 .detailBtnBox{
@@ -88,6 +93,7 @@
     background: #007355;
     color: #FFF;
     margin: 0 3px;
+    border : none;
 }
 
 .Obtn {
@@ -123,22 +129,35 @@
     align-items: center;
 }
 
+.infoB {
+    gap: 10px;
+}
+
 .infoT .underline {
     text-decoration: underline;
 }
 
-.replyInfo p {
+.replyInfo p, .reReplyInfo p {
     display: flex;
     align-items: center;
     margin: 5px 0;
 }
 
-.replyInfo .infoB img {
+.replyInfo .infoB p:first-child, .reReplyInfo .infoB p:first-child {
+    word-break: break-all;
+}
+
+.replyInfo .infoB p:last-child, .reReplyInfo .infoB p:last-child {
+    flex: 0 0 auto;
+    word-break: keep-all;
+}
+
+.replyInfo .infoB img, .reReplyInfo .infoB img {
     width: 60px; height: 35px;
     margin-right: 10px;
 }
 
-.replyInfo .comment {
+.replyInfo .comment, .reReplyInfo .comment {
     width: 96%;
     margin-left: auto;
 }
@@ -153,4 +172,30 @@
 
 .reviewDetail-pagination div {
     margin: 0 15px;
+}
+
+#detailMap {
+    margin: 0 auto;
+    width: 100%;
+    height: 300px;
+    border-radius: 20px;
+}
+
+.detailContent img {
+    width: 300px;
+    margin: 0 auto;
+}
+
+.detailContent p, .detailContent {
+    font-size: 20px;
+    text-align: center;
+}
+
+.infoR .writerBadge {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.infoR p{
+    display: flex;
+    justify-content: right;
 }

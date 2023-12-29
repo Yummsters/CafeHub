@@ -96,20 +96,15 @@ body, button, input{
 /* 아이디/비밀번호 입력창 */
 .loginInputDiv input{
     border: 0px;
-    width:100px;
-    font-size:15px;
+    width:300px;
+    font-size:20px;
+    outline: none;
 }
 
-.login-authId{
+.login-auth{
     color:#F59A23;
-    margin-left: 230px;
+    float: right;
     font-size: 15px;
-}
-
-.login-authPw{
-    font-size: 15px;
-    color:#F59A23;
-    margin-left: 60px;
 }
 
 /* 소셜 로그인 버튼 */

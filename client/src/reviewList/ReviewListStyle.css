@@ -22,6 +22,7 @@ tbody td {
 }
 
 .reviewListBox {
+  min-height: 700px;
     width: 1000px;
     border: none;
     border-radius: 10px;
@@ -31,7 +32,6 @@ tbody td {
     flex-direction: column; /* 자식 요소들을 세로로 배치 */
     align-items: center; /* 수직 정렬 설정 */
     margin: 50px 0 75px 0;
-    justify-content: center;
   }
 .reviewline{
   border:1px solid #555555;
@@ -88,7 +88,7 @@ tbody td {
   .description1, .description2, .writeInfo, .dateTime {
     font-size: 15px;
     vertical-align: middle;
-    
+    margin-top: 3px;
   }
 
   .writeInfo {
@@ -97,6 +97,11 @@ tbody td {
     justify-content: flex-end; /* 우측 정렬 설정 */
     font-size: 14px; /* 원하는 텍스트 크기로 설정 */
     margin-right: 10px;
+}
+
+.badgeImg {
+  width: 24px;
+  margin-right: 5px;
 }
 
 .dateTime {
@@ -115,4 +120,32 @@ tbody td {
 
 .reviewList-pagination div {
   margin: 0 15px;
+}
+
+ul.pagination {
+  display: flex;
+  width: 436px;
+  height: 45px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.page-link {
+  color: inherit !important;
+  background-color: inherit !important;
+  border: none !important;
+}
+
+ul.pagination > li {
+  color: #000;
+  text-align: center;
+  font-family: NanumMyeongjo;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+ul.pagination > li.active {
+  color: #F59A23;
 }

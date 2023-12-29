@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import "./SideTabStyle.css"
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-const SideTab = () => {
+const UserSideTab = () => {
     const tabs = [
        {label:'회원 정보', link:'/userInfo'},
-       {label: '찜한 가게', link:'/WishStore'},
+       {label: '찜한 카페', link:'/WishStore'},
        {label:'찜한 리뷰', link:'/wishReview'},
        {label:'리뷰 관리' , link:'/myReivew'},
        {label:'댓글 관리', link:'/myReply'},
@@ -18,8 +18,7 @@ const SideTab = () => {
             <NavLink
                 key={index}
                 to={tab.link}
-                className={({isActive}) => (isActive ? 'selectTab':'tab')}
-            >
+                className={({isActive}) => (isActive ? 'selectTab':'tab')} >
                 {tab.label}
             </NavLink>
         ))}
@@ -28,4 +27,4 @@ const SideTab = () => {
     );
 };
 
-export default SideTab;
+export default UserSideTab;

@@ -1,23 +1,25 @@
+import { useLocation, useNavigate } from 'react-router';
 import searchId from './searchIdStyle.css';
-import { useState} from 'react';
 
-const SearchIdResult = () =>{
+const SearchIdResult = () => {
+    const location = useLocation();
+    const searchId = location.state.result;
+    const navigate = useNavigate();
+
     return(
         <div className='searchId-container'>
-        <div className='searchId-section'>
-            <div className='searchId-title'>아아디 찾기</div> <br/>
-            <div className='searchIdResult-text'>
-            
-            당신의 아이디는 <br/>
-            '수빈이 바보' 입니다.
-
-            
+            <div className='searchId-bg'>
+                <div className='searchId-section'>
+                    <div className='searchId-title'>아이디 찾기</div> <br/>
+                    <div className='searchIdResult-text'>
+                    아이디는 <br/> -------- <br/> <b>{searchId}</b> <br/> -------- <br/>입니다
+                    </div>
+                    <div className='searchId-button'>
+                        <button type="button" onClick={()=>navigate('/login')}> <span>확인</span> </button>
+                    </div>
+                    <div className='searchInfo'><a href="/searchPw">비밀번호 찾기</a></div>
+                </div>
             </div>
-            <div className='searchId-button'>
-                <button type="submit" > 확인 </button>
-            </div>
-            <div className='searchInfo'><a href="/signUpUser">회원가입</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/login">로그인</a> &nbsp;&nbsp; | &nbsp;&nbsp; <a href="/searchPw">비밀번호 찾기</a></div>
-        </div>
         </div>
     );
 }

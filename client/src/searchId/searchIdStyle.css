@@ -1,9 +1,15 @@
 /* 전체 박스 */
 .searchId-container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.searchId-bg {
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
-    width: 1000px;
-    height: 650px;
+    width: 80%;
+    min-width: 450px;
+    height: 700px;
     border-radius: 20px;
     margin: 50px auto;
     background:url(/public/img/SearchIdImage.png);
@@ -17,6 +23,7 @@
     border-radius: 20px;
     margin: 0 auto;
 }
+
 
 .searchId-title{
     margin: 50px 10px 30px 10px;
@@ -49,21 +56,27 @@
 
 .searchId-button button {
     color:#FFFFFF;
-    font-size:25px;
+    font-size:20px;
     width:350px;
     height:50px;
     border-radius:50px;
     background-color:#007355;
     border:0px;
-    margin:30px 0 10px 0;
+    margin: 60px 0 10px 0;
 }
+
+.searchId-button button span {
+    display: inline-block;
+    vertical-align: super;
+}
+
 
 /* 아이디 조회 결과 텍스트*/
 .searchIdResult-text{
     text-align: center;
     width: 400px;
-    height: 110px;
-    margin: 35px 20px 35px 20px;
+    height: fit-content;
+    margin: 0 20px;
     font-size:25px;
 }
 

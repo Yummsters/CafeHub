@@ -1,7 +1,3 @@
-body, button, input{
-    font-family:'NanumMyeongjo', sans-serif;;
-}
-
 .storeInfo-container {
     display: flex;
 }
@@ -48,12 +44,14 @@ body, button, input{
     border: 0px;
     width:250px;
     font-size:20px;
+    outline: none;
 }
 
 .storeInfoInputDiv-other input{
     border: 0px;
     width: 210px;;
     font-size:20px;
+    outline: none;
 }
 
 .storeInfoAuthNum {
@@ -94,15 +92,19 @@ body, button, input{
 .storeInfoInputDiv span{
     color: #F59A23;
 }
-
+.cafeInfo {
+    outline: none;
+    border: none;
+    width:450px;
+}
 .storeInfoInputDiv-other span{
     color: #F59A23;
 }
 
-/* 왼쪽 가게 미리보기 */
+/* 왼쪽 카페 미리보기 */
 .storeInfo{
     width: 487px;
-    height: 550px;
+    min-height: 550px;
     background-color: #f3f3f3cc;
     border-radius: 20px;
     margin:0px auto;
@@ -162,24 +164,12 @@ body, button, input{
     height:50px;
 }
 
-/* 태그 버튼 스타일*/
-.storeInfo-tag1{
-    border: 2px solid #F59A23;
-    border-radius: 10px;
-    width: 150px;
-    height: 45px;
-    font-size: 18px;
-    margin: 10px 10px 10px 0;
-    background-color: #FFFFFF;
+.StoreInfo-tag{
+    margin-left:20px;
+    display: flex;
+    width: 450px;
+    flex-wrap: wrap;
 }
-
-.storeInfo-tag1:hover {
-    border-radius: 10px;
-    border: 2px solid #F59A23;
-    background: #F59A23;
-    color: #FFF;
-}
-
-.storeInfo-tag{
-    margin-left: 20px;
+.StoreInfo-tag div{
+   
 }
